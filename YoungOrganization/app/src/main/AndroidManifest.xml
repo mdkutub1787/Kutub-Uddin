@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <uses-permission android:name="android.permission.INTERNET" />
+
+    <application
+        android:allowBackup="true"
+        android:dataExtractionRules="@xml/data_extraction_rules"
+        android:fullBackupContent="@xml/backup_rules"
+        android:icon="@drawable/app_icon"
+        android:label="@string/app_name"
+        android:roundIcon="@drawable/app_icon"
+        android:supportsRtl="true"
+        android:theme="@style/Theme.MaterialComponents.Light.NoActionBar">
+        <activity
+            android:name=".UserDashboardActivity"
+            android:exported="false"
+            android:label="আমার বিল"
+            android:parentActivityName=".HomeActivity"
+            android:theme="@style/Theme.MaterialComponents.Light.DarkActionBar" />
+
+        <activity
+            android:name=".AdminDashboardActivity"
+            android:exported="false"
+            android:label="অ্যাডমিন ড্যাশবোর্ড"
+            android:parentActivityName=".HomeActivity"
+            android:theme="@style/Theme.MaterialComponents.Light.DarkActionBar" />
+        <activity
+            android:name=".AddBillActivity"
+            android:exported="false"
+            android:label="নতুন বিল যোগ করুন"
+            android:parentActivityName=".HomeActivity"
+            android:theme="@style/Theme.MaterialComponents.Light.DarkActionBar" />
+        <activity
+            android:name=".EditBillActivity"
+            android:exported="false"
+            android:label="বিল আপডেট"
+            android:parentActivityName=".HomeActivity"
+            android:theme="@style/Theme.MaterialComponents.Light.DarkActionBar" />
+        <activity
+            android:name=".BillDetailsActivity"
+            android:exported="false"
+            android:label="বিলের বিস্তারিত"
+            android:parentActivityName=".HomeActivity"
+            android:theme="@style/Theme.MaterialComponents.Light.DarkActionBar" />
+
+        <activity
+            android:name=".ProfileActivity"
+            android:exported="false"
+            android:label="আমার প্রোফাইল"
+            android:parentActivityName=".HomeActivity"
+            android:theme="@style/Theme.MaterialComponents.Light.DarkActionBar" />
+        <activity
+            android:name=".RegisterActivity"
+            android:exported="false"
+            android:label="নতুন একাউন্ট"
+            android:parentActivityName=".HomeActivity"
+            android:theme="@style/Theme.MaterialComponents.Light.DarkActionBar" />
+
+        <activity
+            android:name=".UserListActivity"
+            android:exported="false"
+            android:label="সকল সদস্য"
+            android:parentActivityName=".HomeActivity"
+            android:theme="@style/Theme.MaterialComponents.Light.DarkActionBar" />
+
+        <activity
+            android:name=".OrganizationInfoActivity"
+            android:exported="false"
+            android:label="সংস্থার তথ্য"
+            android:parentActivityName=".HomeActivity"
+            android:theme="@style/Theme.MaterialComponents.Light.DarkActionBar" />
+
+        <activity
+            android:name=".RullsActivity"
+            android:exported="false"
+            android:label="কন্টেন্ট সম্পাদনা"
+            android:parentActivityName=".HomeActivity"
+            android:theme="@style/Theme.MaterialComponents.Light.DarkActionBar" />
+
+        <activity
+            android:name=".ProfileEditActivity"
+            android:exported="false"
+            android:label="প্রোফাইল এডিট"
+            android:parentActivityName=".ProfileActivity"
+            android:theme="@style/Theme.MaterialComponents.Light.DarkActionBar" />
+
+        <activity
+            android:name=".HomeActivity"
+            android:exported="false" />
+        <activity
+            android:name=".LoginActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".SplashActivity"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
+        <activity
+            android:name=".OrganizationTotalIncomeActivity"
+            android:exported="false"
+            android:label="মোট আয়"
+            android:parentActivityName=".HomeActivity"
+            android:theme="@style/Theme.MaterialComponents.Light.DarkActionBar" />
+
+        <activity
+            android:name=".TVChannelActivity"
+            android:exported="false"
+            android:label="TV Channel"
+            android:parentActivityName=".HomeActivity"
+            android:theme="@style/Theme.MaterialComponents.Light.DarkActionBar" />
+
+        <activity
+            android:name=".WebViewActivity"
+            android:exported="false"
+            android:label="ওয়েবসাইট"
+            android:parentActivityName=".TVChannelActivity"
+            android:theme="@style/Theme.MaterialComponents.Light.DarkActionBar" />
+
+        <activity
+            android:name=".NewsPaperActivity"
+            android:exported="false"
+            android:label="News Paper"
+            android:parentActivityName=".HomeActivity"
+            android:theme="@style/Theme.MaterialComponents.Light.DarkActionBar" />
+
+        <activity
+            android:name=".BankListActivity"
+            android:exported="false"
+            android:label="ব্যাংকসমূহ"
+            android:parentActivityName=".HomeActivity"
+            android:theme="@style/Theme.MaterialComponents.Light.DarkActionBar" />
+
+        <activity
+            android:name=".ProminentPersonActivity"
+            android:exported="false"
+            android:label="প্রখ্যাত ব্যক্তিত্ব"
+            android:parentActivityName=".HomeActivity"
+            android:theme="@style/Theme.MaterialComponents.Light.DarkActionBar" />
+
+
+    </application>
+
+</manifest>

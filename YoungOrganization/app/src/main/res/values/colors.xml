@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Primary Color Palette -->
+    <color name="md_theme_primary">#17648A</color>
+    <color name="md_theme_onPrimary">#FFFFFF</color>
+    <color name="md_theme_primaryContainer">#F8BBD0</color>
+    <color name="md_theme_onPrimaryContainer">#E2136E</color>
+
+    <!-- Secondary Color Palette -->
+    <color name="md_theme_secondary">#F06292</color>
+    <color name="md_theme_onSecondary">#FFFFFF</color>
+    <color name="md_theme_secondaryContainer">#F8BBD0</color>
+    <color name="md_theme_onSecondaryContainer">#E2136E</color>
+
+    <!-- Background and Surface Colors -->
+    <color name="md_theme_background">#FFFFFF</color>
+    <color name="md_theme_onBackground">#E2136E</color>
+    <color name="md_theme_surface">#FFFFFF</color>
+    <color name="md_theme_onSurface">#E2136E</color>
+    <color name="md_theme_surfaceVariant">#F8BBD0</color>
+    <color name="md_theme_onSurfaceVariant">#E2136E</color>
+    <color name="md_theme_outline">#E2136E</color>
+
+    <!-- Text and Error Colors -->
+    <color name="md_theme_textColorPrimary">#E2136E</color>
+    <color name="md_theme_textColorSecondary">#F06292</color>
+    <color name="md_theme_error">#FF0000</color>
+    <color name="md_theme_onError">#FFFFFF</color>
+
+    <!-- Original Colors (kept for reference, but new themes will override) -->
+    <color name="black">#FF000000</color>
+    <color name="white">#FFFFFFFF</color>
+    
+    <!-- Button Colors with Better Contrast -->
+    <color name="button_primary">#1976D2</color>
+    <color name="button_secondary">#388E3C</color>
+    <color name="button_text_white">#FFFFFF</color>
+</resources>

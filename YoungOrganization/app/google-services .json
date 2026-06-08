@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "351471663578",
+    "project_id": "young-organization-416b4",
+    "storage_bucket": "young-organization-416b4.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:351471663578:android:13f50996f1b570603fe8e3",
+        "android_client_info": {
+          "package_name": "com.kutub.youngorganization"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDdT5u4nWf0MOnk6aHN7djB8z2qQ8UexVA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
