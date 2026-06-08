@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Subject Management - EduManager Pro</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+
+<!-- Navbar -->
+<nav class="navbar navbar-expand-lg navbar-dark bg-info sticky-top mb-4">
+    <div class="container">
+        <a class="navbar-brand fw-bold" th:href="@{/}"><i class="bi bi-mortarboard-fill me-2"></i>EduManager Pro</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ms-auto">
+                <li class="nav-item"><a class="nav-link fw-semibold" th:href="@{/}"><i class="bi bi-speedometer2 me-1"></i> Dashboard</a></li>
+                <li class="nav-item"><a class="nav-link fw-semibold" th:href="@{/students}"><i class="bi bi-people me-1"></i> Students</a></li>
+                <li class="nav-item"><a class="nav-link fw-semibold" th:href="@{/teachers}"><i class="bi bi-person-badge me-1"></i> Teachers</a></li>
+                <li class="nav-item"><a class="nav-link fw-semibold" th:href="@{/grades}"><i class="bi bi-building me-1"></i> Grades</a></li>
+                <li class="nav-item"><a class="nav-link active fw-semibold" th:href="@{/subjects}"><i class="bi bi-book me-1"></i> Subjects</a></li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<div class="container-fluid px-4">
+    <!-- Alert Messages -->
+    <div th:if="${message}" class="alert alert-dismissible fade show shadow-sm border-0 mb-4" th:classappend="${alertClass}" role="alert">
+        <i th:class="${alertClass == 'alert-success' ? 'bi bi-check-circle-fill me-2' : 'bi bi-exclamation-triangle-fill me-2'}"></i>
+        <span th:text="${message}"></span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+
+    <div class="row">
+        <!-- Subject Form -->
+        <div class="col-xl-4 col-lg-5 mb-4">
+            <div class="card shadow-sm p-4 border-top border-4 border-info">
+                <div class="d-flex align-items-center mb-4 text-info">
+                    <i th:class="${subject != null && subject.id == null ? 'bi bi-journal-plus fs-3 me-2' : 'bi bi-pencil-square fs-3 me-2'}"></i>
+                    <h4 class="mb-0 fw-bold" th:text="${subject != null && subject.id == null ? 'Create New Subject' : 'Update Subject'}">Form</h4>
+                </div>
+
+                <form th:action="@{/subjects/save}" th:object="${subject}" method="POST">
+                    <input type="hidden" th:field="*{id}" />
+                    <div class="row g-3">
+                        <div class="col-12">
+                            <label class="form-label fw-semibold small text-muted">SUBJECT NAME</label>
+                            <input type="text" th:field="*{name}" class="form-control bg-light border-0 py-2" placeholder="Ex: Mathematics" required>
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label fw-semibold small text-muted">DESCRIPTION</label>
+                            <textarea th:field="*{description}" class="form-control bg-light border-0 py-2" rows="3" placeholder="Optional description"></textarea>
+                        </div>
+                        <div class="col-12 mt-4 d-grid">
+                            <button type="submit" class="btn btn-info fw-bold py-2 shadow-sm text-white">Save Subject</button>
+                            <a th:href="@{/subjects}" class="btn btn-link btn-sm text-decoration-none" th:if="${subject != null && subject.id != null}">Cancel</a>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Subject List -->
+        <div class="col-xl-8 col-lg-7">
+            <div class="table-container shadow-sm border-top border-4 border-info">
+                <div class="row align-items-center mb-4 text-info">
+                    <div class="col-md-6">
+                        <h4 class="text-dark fw-bold m-0"><i class="bi bi-book-fill me-2"></i>Subject Records</h4>
+                    </div>
+                </div>
+
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle">
+                        <thead class="bg-light small fw-bold text-secondary">
+                            <tr>
+                                <th>SUBJECT NAME</th>
+                                <th>DESCRIPTION</th>
+                                <th class="text-end">ACTIONS</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:each="sub : ${subjects}">
+                                <td th:text="${sub.name}" class="fw-bold text-dark"></td>
+                                <td th:text="${sub.description}" class="small text-muted"></td>
+                                <td class="text-end">
+                                    <a th:href="@{/subjects/edit/{id}(id=${sub.id})}" class="btn btn-action btn-outline-info shadow-sm" title="Edit"><i class="bi bi-pencil"></i></a>
+                                    <a th:href="@{/subjects/delete/{id}(id=${sub.id})}" class="btn btn-action btn-outline-danger shadow-sm ms-1" onclick="return confirm('Delete this subject?')" title="Delete"><i class="bi bi-trash"></i></a>
+                                </td>
+                            </tr>
+                            <tr th:if="${#lists.isEmpty(subjects)}">
+                                <td colspan="3" class="text-center py-4 text-muted">No subjects found. Create one!</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="purple">#FFBB86FC</color>
+    <color name="black">#FF000000</color>
+    <color name="light_gray">#F0F0F0</color>
+    <color name="red">#FF6B6B</color>
+    <color name="light_blue">#1971D7</color>
+    <color name="blue">#0D0DED</color>
+    <color name="dark_blue">#00008B</color>
+    <color name="green">#388E3C</color>
+    <color name="orange">#FFA500</color>
+    <color name="white">#FFFFFFFF</color>
+    <color name="light_yellow">#9DA600</color>
+    <color name="teal">#079E92</color>
+    <color name="semi_light_yellow">#EEEC00</color>
+    <color name="purple_200">#FFBB86FC</color>
+    <color name="purple_500">#4CAF50</color>
+    <color name="purple_700">#3E8E41</color>
+    <color name="teal_200">#FF03DAC5</color>
+    <color name="teal_700">#FF018786</color>
+    <color name="gray">#202020</color>
+    <color name="ash">#EDEDED</color>
+    <color name="colorBlue">#2B62B5</color>
+    <color name="yellow">#FFC107</color>
+    <color name="save_button_color">#4CAF50</color>
+    <color name="cancel_button_color">#FD1100</color>
+    <color name="back_ground_1">#A4CBED</color>
+    <color name="color_orange">#ED7D31</color>
+    <color name="text_color_green">#02561A</color>
+    <color name="button_color_green">#02A155</color>
+    <color name="placeholder_bg">#dddddd</color>
+    <color name="item_name">#0c0c0c</color>
+    <color name="description">#1a1a1a</color>
+    <color name="chef">#777</color>
+    <color name="timestamp">#777</color>
+    <color name="blue_black_dark">#13171d</color>
+    <color name="blue_black_light">#516179</color>
+    <color name="blue_grey_light">#A5B4C8</color>
+    <color name="google">#d34836</color>
+    <color name="black_effective">#2a2a2a</color>
+    <color name="bg_color">#f7f7f7</color>
+    <color name="toolbar_bg">#FFFFFF</color>
+    <color name="toolbar_text_color">#4B4B4B</color>
+    <color name="blue_color_picker">#0066FF</color>
+    <color name="brown_color_picker">#AF593E</color>
+    <color name="green_color_picker">#01A368</color>
+    <color name="orange_color_picker">#FF861F</color>
+    <color name="red_color_picker">#ED0A3F</color>
+    <color name="red_orange_color_picker">#FF3F34</color>
+    <color name="sky_blue_color_picker">#76D7EA</color>
+    <color name="violet_color_picker">#8359A3</color>
+    <color name="yellow_color_picker">#FBE870</color>
+    <color name="yellow_green_color_picker">#C5E17A</color>
+    <color name="tool_bg">#151414</color>
+    <color name="semi_black_transparent">#99000000</color>
+    <color name="transparent">#00000000</color>
+    <!--//tab color-->
+    <color name="tab_indicator">#F2F2F2</color>
+    <color name="tab_selected_color">#037EBE</color>
+    <color name="tab_text_color">#808080</color>
+    <color name="tab_background">#FFFFFF</color>
+
+    <color name="profilePrimaryDark">#FF3B30</color>
+    <color name="profileAccentColor">#F7F7F7</color>
+    <color name="whiteTextColor">#fff</color>
+    <color name="profileBackground">#fff</color>
+    <color name="blackTextColor">#000</color>
+    <color name="profileEditTextColor">#707070</color>
+
+    <color name="colorPrimary">#1F5BF3</color>
+    <color name="colorPrimaryDark">#0947E8</color>
+    <color name="colorAccent">#00A5FF</color>
+
+    <color name="primaryTextColor">#00a5ff</color>
+    <color name="loginBkColor">#f0f0f0</color>
+
+    <color name="whiteCardColor">#fff</color>
+
+    <color name="websiteButtonColor">#C2DCFF</color>
+
+    <!--three button color-->
+    <color name="approvedColor">#547A56</color>
+    <color name="pendingColor">#AA6601</color>
+    <color name="cancelColor">#A61106</color>
+
+    <!--    brown-->
+    <color name="chooseColor1">#F7EFEA</color>
+    <color name="chooseColor2">#E1D5C9</color>
+    <color name="chooseColor3">#D6BE8B</color>
+    <color name="chooseColor4">#AE9F85</color>
+
+    <!--    most uses color-->
+    <color name="royalBlue">#246EE9</color>
+    <color name="scarletRed">#FF2400</color>
+    <color name="mintGreen">#3EB489</color>
+
+    <!--    uses in leave entry-->
+    <color name="lGreen">#636C00</color>
+    <color name="lBlueGreyLight">#797C81</color>
+</resources>

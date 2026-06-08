@@ -1,0 +1,160 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    xmlns:tools="http://schemas.android.com/tools">
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:orientation="horizontal">
+                <View
+                    android:layout_width="1dp"
+                    android:layout_height="match_parent"
+                    android:background="#79272626" />
+                <TextView
+                    android:id="@+id/itemNameTV"
+                    android:layout_width="100dp"
+                    android:layout_height="match_parent"
+                    android:paddingStart="1dp"
+                    android:text="Item Name"
+                    android:textSize="@dimen/sp12"
+                    android:textStyle="bold"
+                    android:gravity="center"
+                    tools:ignore="HardcodedText,RtlSymmetry" />
+                <View
+                    android:layout_width="1dp"
+                    android:layout_height="match_parent"
+                    android:background="#79272626" />
+                <LinearLayout
+                    android:layout_width="187dp"
+                    android:layout_height="match_parent"
+                    android:orientation="horizontal">
+                    <TextView
+                        android:id="@+id/lastSupplierTV"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:paddingStart="1dp"
+                        android:layout_weight="1.5"
+                        android:text="Last Supplier"
+                        android:textSize="@dimen/sp12"
+                        android:textStyle="bold"
+                        android:gravity="center"
+                        tools:ignore="HardcodedText" />
+                    <View
+                        android:layout_width="1dp"
+                        android:layout_height="match_parent"
+                        android:background="#79272626" />
+                    <TextView
+                        android:id="@+id/lastRateTV"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:paddingStart="1dp"
+                        android:layout_weight="1"
+                        android:text="Last Rate"
+                        android:textSize="@dimen/sp12"
+                        android:textStyle="bold"
+                        android:gravity="center"
+                        tools:ignore="HardcodedText" />
+                    <View
+                        android:layout_width="1dp"
+                        android:layout_height="match_parent"
+                        android:background="#79272626" />
+                    <View
+                        android:layout_width="1dp"
+                        android:layout_height="match_parent"
+                        android:layout_marginLeft="@dimen/dp5"
+                        android:background="#79272626" />
+                </LinearLayout>
+
+            </LinearLayout>
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+                    <TextView
+                        android:id="@+id/rateTV"
+                        android:layout_width="100dp"
+                        android:layout_height="wrap_content"
+                        android:text="Rate"
+                        android:textSize="@dimen/sp12"
+                        android:textStyle="bold"
+                        android:gravity="center"
+                        tools:ignore="HardcodedText,RtlSymmetry" />
+                    <View
+                        android:layout_width="1dp"
+                        android:layout_height="match_parent"
+                        android:background="#79272626" />
+                </LinearLayout>
+                <LinearLayout
+                    android:layout_width="221dp"
+                    android:layout_height="match_parent"
+                    android:orientation="horizontal">
+                    <TextView
+                        android:id="@+id/qtyTV"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:paddingStart="1dp"
+                        android:layout_weight="1"
+                        android:text="Qty"
+                        android:textSize="@dimen/sp12"
+                        android:textStyle="bold"
+                        android:gravity="center"
+                        tools:ignore="HardcodedText" />
+                    <View
+                        android:layout_width="1dp"
+                        android:layout_height="match_parent"
+                        android:background="#79272626" />
+                    <TextView
+                        android:id="@+id/stockTV"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:paddingStart="1dp"
+                        android:layout_weight="1"
+                        android:text="Stock"
+                        android:textSize="@dimen/sp12"
+                        android:textStyle="bold"
+                        android:gravity="center"
+                        tools:ignore="HardcodedText" />
+                    <View
+                        android:layout_width="1dp"
+                        android:layout_height="match_parent"
+                        android:background="#79272626" />
+                    <TextView
+                        android:id="@+id/amountTV"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:paddingStart="1dp"
+                        android:layout_weight="1"
+                        android:text="Amount"
+                        android:textSize="@dimen/sp12"
+                        android:textStyle="bold"
+                        android:gravity="center"
+                        tools:ignore="HardcodedText" />
+                    <View
+                        android:layout_width="1dp"
+                        android:layout_height="match_parent"
+                        android:background="#79272626" />
+                </LinearLayout>
+            </LinearLayout>
+        </LinearLayout>
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="#79272626" />
+    </LinearLayout>
+
+</LinearLayout>

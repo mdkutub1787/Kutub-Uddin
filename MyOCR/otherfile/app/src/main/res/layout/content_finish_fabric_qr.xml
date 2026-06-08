@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingBottom="@dimen/dp5"
+    android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingTop="@dimen/dp5"
+    android:background="@color/dashboard_grey"
+    app:layout_behavior="@string/appbar_scrolling_view_behavior"
+    tools:showIn="@layout/activity_finish_fabric_qr_code">
+    <androidx.cardview.widget.CardView
+        android:id="@+id/item_card"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="10dp"
+        android:elevation="@dimen/dp5"
+        android:layout_marginTop="@dimen/dp10">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="@dimen/dp10"
+            android:orientation="vertical">
+
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:weightSum="1"
+                android:padding="@dimen/dp3"
+                android:orientation="horizontal">
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="@dimen/dp30"
+                    android:layout_weight=".4"
+                    android:textSize="@dimen/dp13"
+                    android:textColor="@color/list_header_title_text_color"
+                    android:textAllCaps="true"
+                    android:text="Batch No"/>
+
+                <EditText
+                    android:id="@+id/et_batch_no"
+                    android:layout_width="0dp"
+                    android:layout_height="@dimen/dp30"
+                    android:layout_weight=".6"
+                    android:textSize="@dimen/dp13"
+                    android:background="@drawable/edit_border"
+                    android:paddingLeft="5dp"
+
+                    android:textColor="@color/list_header_value_text_color"
+                    android:text=""/>
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:weightSum="1"
+                android:padding="@dimen/dp3"
+                android:orientation="horizontal">
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="@dimen/dp30"
+                    android:layout_weight=".4"
+                    android:textSize="@dimen/dp13"
+                    android:textColor="@color/list_header_title_text_color"
+                    android:textAllCaps="true"
+                    android:text="Barcode No"/>
+
+                <EditText
+                    android:id="@+id/et_barcode_no"
+                    android:layout_width="0dp"
+                    android:layout_height="@dimen/dp30"
+                    android:layout_weight=".6"
+                    android:textSize="@dimen/dp13"
+                    android:background="@drawable/edit_border"
+                    android:paddingLeft="5dp"
+
+                    android:textColor="@color/list_header_value_text_color"
+                    android:text=""/>
+
+            </LinearLayout>
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="bottom"
+                android:layout_marginTop="20dp">
+
+                <Button
+                    android:id="@+id/btn_search"
+                    style="@style/Button.Action.Positive"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentLeft="true"
+                    android:layout_alignParentStart="true"
+                    android:layout_alignParentTop="true"
+                    android:text="Search" />
+
+                <Button
+                    android:id="@+id/btn_print"
+                    style="@style/Button.Action.Positive"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentRight="true"
+                    android:text="Print" />
+            </RelativeLayout>
+            <CheckBox
+                android:visibility="gone"
+                style="@style/Button.Action.Positive"
+                android:text="Check All"
+                android:textAllCaps="false"
+                android:id="@+id/checkbox"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
+        </LinearLayout>
+
+    </androidx.cardview.widget.CardView>
+    <androidx.core.widget.NestedScrollView
+        android:layout_below="@+id/item_card"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rv_grey_roll"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:nestedScrollingEnabled="false"
+
+
+        />
+    </androidx.core.widget.NestedScrollView>
+
+</RelativeLayout>

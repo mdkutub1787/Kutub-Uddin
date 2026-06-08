@@ -1,0 +1,165 @@
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="16dp"
+    tools:context=".ui.PolicyActivity">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <!-- CardView for Two-Column Layout -->
+        <androidx.cardview.widget.CardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:cardCornerRadius="8dp"
+            app:cardElevation="4dp">
+
+            <GridLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:columnCount="2"
+                android:padding="12dp">
+
+                <!-- Date -->
+                <EditText
+                    android:id="@+id/etDate"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_columnWeight="1"
+                    android:hint="Date"
+                    android:padding="8dp"
+                    android:inputType="date"
+                    android:background="@drawable/rounded_edittext"
+                    android:drawableEnd="@drawable/ic_calendar" />
+
+                <!-- Policy Holder -->
+                <EditText
+                    android:id="@+id/etPolicyHolder"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_columnWeight="1"
+                    android:hint="Policy Holder"
+                    android:padding="8dp"
+                    android:inputType="textPersonName"
+                    android:background="@drawable/rounded_edittext" />
+
+                <!-- Bank Name -->
+                <EditText
+                    android:id="@+id/etBankName"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_columnWeight="1"
+                    android:hint="Bank Name"
+                    android:padding="8dp"
+                    android:inputType="text"
+                    android:background="@drawable/rounded_edittext" />
+
+                <!-- Address -->
+                <EditText
+                    android:id="@+id/etAddress"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_columnWeight="1"
+                    android:hint="Address"
+                    android:padding="8dp"
+                    android:inputType="textPostalAddress"
+                    android:background="@drawable/rounded_edittext" />
+
+                <!-- Sum Insured -->
+                <EditText
+                    android:id="@+id/etSumInsured"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_columnWeight="1"
+                    android:hint="Sum Insured"
+                    android:padding="8dp"
+                    android:inputType="numberDecimal"
+                    android:background="@drawable/rounded_edittext" />
+
+                <!-- Coverage -->
+                <EditText
+                    android:id="@+id/etCoverage"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_columnWeight="1"
+                    android:hint="Coverage"
+                    android:padding="8dp"
+                    android:inputType="text"
+                    android:background="@drawable/rounded_edittext" />
+
+                <!-- Construction -->
+                <Spinner
+                    android:id="@+id/spinnerConstruction"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_columnWeight="1"
+                    android:padding="8dp"
+                    android:spinnerMode="dropdown"
+                    android:background="@drawable/rounded_edittext"
+                    android:drawableEnd="@drawable/ic_arrow_down" />
+
+                <!-- Used As -->
+                <Spinner
+                    android:id="@+id/spinnerUsedAs"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_columnWeight="1"
+                    android:padding="8dp"
+                    android:spinnerMode="dropdown"
+                    android:background="@drawable/rounded_edittext"
+                    android:drawableEnd="@drawable/ic_arrow_down" />
+
+                <!-- Period From -->
+                <EditText
+                    android:id="@+id/etPeriodFrom"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_columnWeight="1"
+                    android:hint="Period From"
+                    android:padding="8dp"
+                    android:inputType="date"
+                    android:background="@drawable/rounded_edittext"
+                    android:drawableEnd="@drawable/ic_calendar" />
+
+                <!-- Period To -->
+                <EditText
+                    android:id="@+id/etPeriodTo"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_columnWeight="1"
+                    android:hint="Period To"
+                    android:padding="8dp"
+                    android:inputType="date"
+                    android:background="@drawable/rounded_edittext"
+                    android:drawableEnd="@drawable/ic_calendar" />
+            </GridLayout>
+        </androidx.cardview.widget.CardView>
+
+        <Button
+            android:id="@+id/btnSubmit"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Save Policy"
+            android:background="@drawable/rounded_edittext"/>
+
+        <!-- RecyclerView -->
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recyclerView"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            tools:listitem="@layout/policy_item" />
+
+        <!-- ProgressBar -->
+        <ProgressBar
+            android:id="@+id/progressBar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:visibility="gone" />
+    </LinearLayout>
+</ScrollView>

@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="horizontal"
+    tools:context=".ui.v_1_ui.report.V1_ShipmentScheduleManagementActivity">
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:orientation="horizontal"
+            android:weightSum="2"
+            >
+
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/startdate"
+                android:layout_width="0dp"
+                android:layout_height="50dp"
+                android:layout_marginStart="20dp"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:inputType="date"
+                android:paddingLeft="5dp"
+                android:paddingRight="5dp"
+                android:textColor="#222"
+                android:textColorHint="#222"
+                android:textSize="20dp"
+                android:layout_marginRight="5dp"
+                android:layout_marginLeft="20dp" />
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/ic_date_range_black_24dp">
+
+            </ImageView>
+
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/enddate"
+                android:layout_width="0dp"
+                android:layout_height="50dp"
+
+                android:layout_marginStart="5dp"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:paddingLeft="5dp"
+                android:paddingRight="5dp"
+                android:textColor="#222"
+                android:textColorHint="#353535"
+                android:textSize="20dp"
+                android:layout_marginRight="20dp"
+                android:layout_marginLeft="5dp" />
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/ic_date_range_black_24dp">
+
+            </ImageView>
+        </LinearLayout>
+
+
+
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/shipmentReportDataBT"
+            android:layout_width="match_parent"
+            android:layout_height="35dp"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginLeft="20dp"
+            android:layout_marginRight="20dp"
+            android:layout_marginTop="20dp"
+            android:background="@drawable/btn_border"
+            android:text="@string/preview_report"
+            android:textAllCaps="false"
+            android:textColor="#222"
+            android:textSize="20dp" />
+
+        <!--        <ListView-->
+        <!--            android:id="@+id/list"-->
+        <!--            android:layout_width="wrap_content"-->
+        <!--            android:layout_height="wrap_content">-->
+
+        <!--        </ListView>-->
+
+
+
+    </LinearLayout>
+
+
+
+
+
+</RelativeLayout>

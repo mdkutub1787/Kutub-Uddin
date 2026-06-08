@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".ui.v_1_ui.bunlde_wise_sewing.V1_Sewing_Output_Reject_Activity">
+    <RelativeLayout
+        android:id="@+id/alterLayout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rejectRecyclerView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_above="@id/rejectCloseBtn"
+            android:layout_marginTop="5dp"
+            android:layout_marginRight="5dp"
+            android:dividerHeight="5.0sp"
+            android:listSelector="#02fff6"
+            android:numColumns="1"
+            android:verticalSpacing="1dp"
+            tools:listitem="@layout/sewing_output_pop_up_layout" />
+
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/rejectCloseBtn"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:background="#4CAF50"
+            android:text="Done"
+            android:textColor="#fff"  />
+    </RelativeLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

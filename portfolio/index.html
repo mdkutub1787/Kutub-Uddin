@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>MD. Kutub Uddin | Portfolio</title>
+	<style>
+		body {
+			font-family: 'Inter', 'Segoe UI', Arial, sans-serif;
+			background: #fff;
+			margin: 0;
+			min-height: 100vh;
+		}
+		.container {
+			max-width: 1000px;
+			margin: 40px auto;
+			background: rgba(255,255,255,0.22);
+			padding: 56px 40px;
+			border-radius: 32px;
+			box-shadow: 0 16px 64px 0 rgba(37,99,235,0.18), 0 2px 16px rgba(6,182,212,0.10);
+			animation: fadeIn 1.2s ease;
+			backdrop-filter: blur(20px) saturate(200%);
+			border: 2px solid rgba(37,99,235,0.18);
+		}
+		@keyframes fadeIn {
+			from { opacity: 0; transform: translateY(40px); }
+			to { opacity: 1; transform: translateY(0); }
+		}
+		.header {
+			display: flex;
+			align-items: center;
+			gap: 48px;
+			margin-bottom: 48px;
+			background: linear-gradient(120deg, #2563eb 0%, #06b6d4 100%);
+			border-radius: 32px;
+			box-shadow: 0 12px 48px rgba(37,99,235,0.18);
+			padding: 32px 40px;
+			position: relative;
+			overflow: hidden;
+		}
+		.header::before {
+			content: '';
+			position: absolute;
+			top: -40px; left: -40px;
+			width: 120px; height: 120px;
+			background: radial-gradient(circle, #2563eb33 0%, transparent 70%);
+			z-index: 0;
+		}
+		.header::after {
+			content: '';
+			position: absolute;
+			bottom: -40px; right: -40px;
+			width: 120px; height: 120px;
+			background: radial-gradient(circle, #06b6d433 0%, transparent 70%);
+			z-index: 0;
+		}
+		.header > * { position: relative; z-index: 1; }
+		.profile-pic {
+			width: 160px;
+			height: 160px;
+			border-radius: 50%;
+			object-fit: cover;
+			background: linear-gradient(135deg, #2563eb 0%, #06b6d4 100%);
+			box-shadow: 0 12px 48px rgba(37,99,235,0.18);
+			border: 6px solid #2563eb;
+			transition: box-shadow 0.3s, border 0.3s;
+		}
+		.profile-pic:hover {
+			box-shadow: 0 24px 72px rgba(6,182,212,0.28);
+			border: 6px solid #06b6d4;
+		}
+		h1 {
+			font-size: 3.2rem;
+			color: #1e293b;
+			margin-bottom: 0;
+			letter-spacing: 2px;
+			font-weight: 900;
+			text-shadow: 0 2px 12px rgba(37,99,235,0.10);
+			background: none;
+		}
+		h2 {
+			color: #0f172a;
+			margin-top: 40px;
+			font-size: 1.7rem;
+			letter-spacing: 1px;
+			font-weight: 800;
+			text-shadow: 0 2px 8px rgba(6,182,212,0.10);
+		}
+		.info {
+			font-size: 1.22rem;
+			color: #fff;
+			margin-bottom: 12px;
+		}
+		.section {
+			margin-bottom: 48px;
+			background: #f8fafc;
+			border-radius: 24px;
+			box-shadow: 0 8px 32px rgba(37,99,235,0.10);
+			padding: 32px 26px;
+			transition: box-shadow 0.3s, background 0.3s;
+			border: 1.5px solid rgba(6,182,212,0.18);
+			position: relative;
+			overflow: hidden;
+		}
+		.section:hover {
+			box-shadow: 0 20px 48px rgba(6,182,212,0.18);
+			background: #fff;
+		}
+		.section::before {
+			content: '';
+			position: absolute;
+			top: -40px; left: -40px;
+			width: 120px; height: 120px;
+			background: radial-gradient(circle, #2563eb33 0%, transparent 70%);
+			z-index: 0;
+		}
+		.section::after {
+			content: '';
+			position: absolute;
+			bottom: -40px; right: -40px;
+			width: 120px; height: 120px;
+			background: radial-gradient(circle, #06b6d433 0%, transparent 70%);
+			z-index: 0;
+		}
+		.section > * { position: relative; z-index: 1; }
+		.career {
+			background: linear-gradient(90deg, #2563eb 0%, #06b6d4 100%);
+			padding: 32px;
+			border-radius: 24px;
+			margin-bottom: 40px;
+			box-shadow: 0 8px 32px rgba(6,182,212,0.10);
+			border: 1.5px solid rgba(6,182,212,0.10);
+		}
+		.edu-table {
+			width: 100%;
+			border-collapse: collapse;
+			margin-top: 16px;
+			font-size: 1.12rem;
+			background: #fff;
+			border-radius: 16px;
+			overflow: hidden;
+		}
+		.skills-table {
+			background: #f0f9ff;
+			border-radius: 16px;
+			border: 1.5px solid #2563eb;
+		}
+		.skills-table th {
+			background: linear-gradient(90deg, #2563eb 0%, #06b6d4 100%);
+			color: #fff;
+		}
+		.skills-table td {
+			background: #e0f2fe;
+		}
+		.edu-table th, .edu-table td {
+			border: 1px solid #bfe9ff;
+			padding: 14px 18px;
+			text-align: left;
+			color: #0f172a;
+		}
+		.edu-table th {
+			background: linear-gradient(90deg, #2563eb 0%, #06b6d4 100%);
+			color: #fff;
+			font-weight: 800;
+			letter-spacing: 1px;
+		}
+		.edu-table tr:nth-child(even) {
+			background: #f7fafc;
+		}
+		.edu-table tr:hover {
+			background: #06b6d444;
+			transition: background 0.2s;
+		}
+		.signature {
+			text-align: right;
+			font-style: italic;
+			margin-top: 40px;
+			color: #2563eb;
+			font-size: 1.2rem;
+			text-shadow: 0 2px 8px rgba(6,182,212,0.10);
+		}
+		/* Skill icons */
+		.edu-table img {
+			vertical-align: middle;
+			margin-right: 8px;
+			filter: drop-shadow(0 2px 4px #2563eb);
+			transition: transform 0.2s;
+		}
+		.edu-table img:hover {
+			transform: scale(1.18) rotate(-8deg);
+		}
+		@media (max-width: 700px) {
+			.container { padding: 10px; }
+			.header { flex-direction: column; gap: 10px; }
+			.section { padding: 14px 8px; }
+		}
+	</style>
+</head>
+<body>
+	<div class="container">
+		<div class="header" style="position:relative;">
+			<img src="https://raw.githubusercontent.com/mdkutub1787/General-Insurance-Management-System-Spring-Boot-With-Angular/main/passport.jpg" alt="MD. Kutub Uddin" class="profile-pic" onerror="this.style.display='none'">
+			<img src="https://avatars.githubusercontent.com/u/158472932?s=96&v=4" alt="Passport Size" style="position:absolute;top:64px;right:24px;width:160px;height:200px;border-radius:12px;box-shadow:0 4px 16px rgba(44,62,80,0.18);border:2px solid #2563eb;object-fit:cover;background:#fff;z-index:2;" onerror="this.style.display='none'">
+			<div>
+				<h1 style="display:flex;align-items:center;gap:12px;color:#fff;">
+					<span style="font-size:2.2rem;">👤</span> MD. Kutub Uddin
+				</h1>
+				<div class="info" style="display:flex;align-items:center;gap:8px;">
+					<span style="font-size:1.3rem;">📧</span>
+					<span>E-mail:</span>
+					<a href="mailto:mdkutub150@gmail.com" style="font-weight:600; color:#fff;">mdkutub150@gmail.com</a>
+				</div>
+				<div class="info" style="display:flex;align-items:center;gap:8px;">
+					<span style="font-size:1.3rem;">📱</span>
+					<span>Cell No:</span>
+					<a href="tel:+8801763001787" style="font-weight:600; color:#fff;">+8801763001787</a>
+				</div>
+				<div class="info" style="display:flex;align-items:center;gap:8px;">
+					<span style="font-size:1.3rem;">🏠</span>
+					<span>Address:</span>
+					<span style="font-weight:600; color:#fff;">44/Q/2, New Road, Jigatola, Dhanmondi, Dhaka 1209</span>
+				</div>
+				<div class="info" style="display:flex;align-items:center;gap:8px;">
+					<span style="font-size:1.3rem;">🆔</span>
+					<span>NID No.:</span>
+					<span style="font-weight:600; color:#fff;">95872163391</span>
+				</div>
+				<div class="info" style="display:flex;align-items:center;gap:8px;">
+					<span style="font-size:1.3rem;">💼</span>
+					<span>LinkedIn:</span>
+					<a href="https://linkedin.com/in/md-kutub-uddin-967972310" target="_blank" style="font-weight:600; color:#fff; text-decoration:none;">linkedin.com/in/md-kutub-uddin-967972310</a>
+				</div>
+				<div class="info" style="display:flex;align-items:center;gap:8px;">
+					<span style="font-size:1.3rem;">🌐</span>
+					<span>Facebook:</span>
+					<a href="https://www.facebook.com/kutubuddin150" target="_blank" style="font-weight:600; color:#fff; text-decoration:none;">facebook.com/kutubuddin150</a>
+				</div>
+			</div>
+		</div>
+
+		<div class="section career">
+			<h2>Career Objective</h2>
+			<p>IT Professional Diploma graduate seeking to apply my knowledge and skills to drive growth, optimize operations, and lead projects. Committed to continuous improvement, hard work, and integrity in a challenging environment.</p>
+		</div>
+
+		<div class="section">
+			<h2>Skills</h2>
+			<table class="edu-table skills-table" style="margin-top:12px;">
+				<thead>
+					<tr><th>Logo</th><th>Category</th><th>Details</th></tr>
+				</thead>
+				<tbody>
+					<tr>
+						<td><img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/java/java-original.svg" alt="Java" style="height:32px;" title="Java"></td>
+						<td>Core Java</td>
+						<td>OOP, Inheritance, Polymorphism, Collections, Generics, Exceptions, I/O, Multithreading, JVM, JDK, JRE</td>
+					</tr>
+					<tr>
+						<td>
+							<img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/mysql/mysql-original.svg" alt="MySQL" style="height:32px;" title="MySQL">
+							<img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/oracle/oracle-original.svg" alt="Oracle" style="height:32px;" title="Oracle">
+						</td>
+						<td>Database Management</td>
+						<td>SQL, MySQL, Oracle, Database Normalization</td>
+					</tr>
+					<tr>
+						<td>
+							<img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/spring/spring-original.svg" alt="Spring" style="height:32px;" title="Spring">
+							<img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/angularjs/angularjs-original.svg" alt="Angular" style="height:32px;" title="Angular">
+							<img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/flutter/flutter-original.svg" alt="Flutter" style="height:32px;" title="Flutter">
+							<img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/firebase/firebase-plain.svg" alt="Firebase" style="height:32px;" title="Firebase">
+							<img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/android/android-original.svg" alt="Android" style="height:32px;" title="Android">
+						</td>
+						<td>Technologies & Tools</td>
+						<td>Spring, Angular, Spring Boot, Thymeleaf, Firebase, Flutter, Android App Development, Web Development, JSP</td>
+					</tr>
+					<tr>
+						<td>
+							<img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/java/java-original.svg" alt="Java" style="height:32px;" title="Java">
+							<img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/typescript/typescript-original.svg" alt="TypeScript" style="height:32px;" title="TypeScript">
+							<img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/html5/html5-original.svg" alt="HTML" style="height:32px;" title="HTML">
+							<img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/css3/css3-original.svg" alt="CSS" style="height:32px;" title="CSS">
+							<img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/mysql/mysql-original.svg" alt="SQL" style="height:32px;" title="SQL">
+							<img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/dart/dart-original.svg" alt="Dart" style="height:32px;" title="Dart">
+						</td>
+						<td>Languages</td>
+						<td>Java, TypeScript, SQL, Dart, HTML, CSS</td>
+					</tr>
+				</tbody>
+			</table>
+		</div>
+
+		<div class="section">
+			<h2>Key Projects</h2>
+			<table class="edu-table" style="margin-top:12px;">
+				<thead>
+					<tr>
+						<th>Project Name</th>
+						<th>Description</th>
+						<th>Role</th>
+						<th>Technologies</th>
+						<th>GitHub</th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr>
+						<td><strong>SpringBoot with Angular Project</strong><br>General Insurance Management System (2024)</td>
+						<td>Insurance management app with client info and billing.</td>
+						<td>Lead Developer</td>
+						<td>Angular, SpringBoot, Thymeleaf, MySQL</td>
+						<td><a href="https://github.com/mdkutub1787/General-Insurance-Management-System-Spring-Boot-With-Angular" target="_blank">GitHub Link</a></td>
+					</tr>
+					<tr>
+						<td><strong>Angular Project</strong><br>General Insurance Management System (2024)</td>
+						<td>Insurance management app using JSON Server backend.</td>
+						<td>Lead Developer</td>
+						<td>Angular, JSON Server</td>
+						<td><a href="https://github.com/mdkutub1787/General-Insurance-Management-System-with-Angular" target="_blank">GitHub Link</a></td>
+					</tr>
+					<tr>
+						<td><strong>Flutter Project with SpringBoot</strong><br>General Insurance Management System (2024)</td>
+						<td>Insurance management app with Flutter frontend and Spring Boot RESTful API.</td>
+						<td>Lead Developer</td>
+						<td>Flutter, Spring Boot, Dart, Java, MySQL</td>
+						<td><a href="https://github.com/mdkutub1787/General-Insurance-Management-System-Spring-Boot-With-Flutter" target="_blank">GitHub Link</a></td>
+					</tr>
+					<tr>
+						<td><strong>Android Project</strong><br>Android Blood Donation Project (2024)</td>
+						<td>Blood donation management app using Firebase backend.</td>
+						<td>Lead Developer</td>
+						<td>Android Studio, Firebase</td>
+						<td><a href="https://github.com/mdkutub1787/Android-Blood-Donation-Project" target="_blank">GitHub Link</a></td>
+					</tr>
+				</tbody>
+			</table>
+		</div>
+
+		<div class="section">
+			<h2>Professional Training</h2>
+			<table class="edu-table" style="margin-top:12px;">
+				<thead>
+					<tr><th>Course</th><th>Duration</th><th>Institution</th></tr>
+				</thead>
+				<tbody>
+					<tr><td>Diploma-Enterprise Systems Analysis & Design - JEE</td><td>JAN 2024 - NOV 2024</td><td>IsDB-Bisew IT Scholarship Program</td></tr>
+				</tbody>
+			</table>
+		</div>
+
+		<div class="section">
+			<h2>Educational Qualifications</h2>
+			<table class="edu-table">
+				<tr><th>Degree</th><th>Concentration</th><th>Institution</th><th>CGPA / GPA</th><th>Year</th></tr>
+				<tr><td>M.S.S</td><td>Economics</td><td>Dhaka College</td><td>2.74/4</td><td>2023</td></tr>
+				<tr><td>B.S.S</td><td>Economics</td><td>Dhaka College</td><td>3.07/4</td><td>2021</td></tr>
+				<tr><td>HSC/Alim</td><td>General</td><td>Hogladangi M I Kamil Madrasah</td><td>4.64/5</td><td>2017</td></tr>
+				<tr><td>SSC/Dakhil</td><td>General</td><td>Sadaki Islamia Dakhil Madrasah</td><td>4.31/5</td><td>2015</td></tr>
+			</table>
+		</div>
+
+		<div class="section">
+			<h2>Personal Details</h2>
+			<table class="edu-table" style="margin-top:12px;">
+				<thead>
+					<tr><th>Field</th><th>Information</th></tr>
+				</thead>
+				<tbody>
+					<tr><td>Full Name</td><td>MD. KUTUB UDDIN</td></tr>
+					<tr><td>Father’s Name</td><td>MD. ABDUS SAMAD</td></tr>
+					<tr><td>Mother’s Name</td><td>FARIDA KHATUN</td></tr>
+					<tr><td>Date of Birth</td><td>13/08/2000</td></tr>
+					<tr><td>Sex</td><td>Male</td></tr>
+					<tr><td>Nationality</td><td>Bangladeshi</td></tr>
+					<tr><td>Religion</td><td>Islam</td></tr>
+					<tr><td>Marital Status</td><td>Single</td></tr>
+					<tr><td>Blood Group</td><td>B+(ve)</td></tr>
+					<tr><td>Permanent Address</td><td>Vill: Sadaki Chorpara,<br>Post Office: Gopalpur 7010,<br>Police Station: Kumarkhali,<br><strong>District: Kushtia</strong>,<br>Division: Khulna,<br>Country: Bangladesh</td></tr>
+				</tbody>
+			</table>
+		</div>
+
+		<div class="section">
+			<h2>References</h2>
+			<table class="edu-table" style="margin-top:12px;">
+				<thead>
+					<tr><th>Name</th><th>Position</th><th>Institution</th><th>Contact</th></tr>
+				</thead>
+				<tbody>
+					<tr><td>MD. MOSHAIDUL ISLAM</td><td>Consultant, Java Enterprise Edition</td><td>IDB-BISEW IT Scholarship Program</td><td>Cell: 01711071219<br>E-mail: moshaidul@gmail.com</td></tr>
+					<tr><td>MUHAMMAD EMRAN HOSSAIN</td><td>Trainer, Instructor of Java Enterprise Edition</td><td>IDB-BISEW IT Scholarship Program</td><td>Cell: 01619192323<br>E-mail: emranhss@gmail.com</td></tr>
+				</tbody>
+			</table>
+		</div>
+
+
+		<div class="signature">
+			Md Kutub Uddin<br>SIGNATURE
+		</div>
+	</div>
+</body>
+</html>

@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "877918542878",
+    "project_id": "smart-shop-da4db",
+    "storage_bucket": "smart-shop-da4db.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:877918542878:android:903b6f044cc387daa1220f",
+        "android_client_info": {
+          "package_name": "com.kutub.smart_shop"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBMwJOVrQctCz_hBskT8_6PWbkuX4rEl9g"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

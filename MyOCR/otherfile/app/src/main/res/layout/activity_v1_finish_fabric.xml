@@ -1,0 +1,871 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+xmlns:android="http://schemas.android.com/apk/res/android"
+xmlns:app="http://schemas.android.com/apk/res-auto"
+xmlns:tools="http://schemas.android.com/tools"
+android:layout_width="match_parent"
+android:layout_height="match_parent"
+android:orientation="vertical"
+android:background="@drawable/back_img"
+tools:context=".ui.v_1_ui.without_observation_qc.V1_FinishFabricActivity">
+<LinearLayout
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:orientation="vertical"
+        android:weightSum="10">
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="horizontal"
+            android:weightSum="3">
+
+            <androidx.cardview.widget.CardView
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight=".60"
+                android:layout_marginLeft="2dp"
+                android:layout_marginRight="2dp"
+                android:layout_marginTop="5dp"
+                app:cardCornerRadius="5dp">
+                <ScrollView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_marginBottom="20dp">
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:background="#ffffff"
+                        android:orientation="vertical">
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical">
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginRight="2dp"
+                                android:layout_marginLeft="2dp"
+                                android:layout_marginBottom="2dp"
+                                android:layout_marginTop="2dp"
+                                android:orientation="vertical">
+                                <LinearLayout
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:orientation="vertical">
+
+                                    <com.google.android.material.textfield.TextInputLayout
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:layout_marginRight="3dp"
+                                        android:layout_marginLeft="3dp"
+                                        android:layout_marginBottom="@dimen/dp3">
+                                        <androidx.appcompat.widget.AppCompatButton
+                                            android:id="@+id/TVDate"
+                                            android:layout_width="fill_parent"
+                                            android:layout_height="wrap_content"
+                                            android:layout_marginTop="16dp"
+                                            android:background="@drawable/textviewshape"
+                                            android:drawableTint="#FF4081"
+                                            android:gravity="center"
+                                            android:singleLine="true"
+                                            android:text="Date"
+                                            android:textSize="20sp"
+                                            android:textStyle="bold" />
+                                    </com.google.android.material.textfield.TextInputLayout>
+                                    <com.google.android.material.textfield.TextInputLayout
+                                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:layout_marginRight="3dp"
+                                        android:layout_marginLeft="3dp">
+
+                                        <TextView
+                                            android:id="@+id/TVbarcode"
+                                            android:layout_width="match_parent"
+                                            android:layout_height="wrap_content"
+                                            android:inputType="number"
+                                            android:background="@drawable/textviewshape"
+                                            android:padding="@dimen/dp5"
+                                            android:textColor="#000000"
+                                            android:hint="Barcode Number"
+                                            android:singleLine="true"/>
+                                    </com.google.android.material.textfield.TextInputLayout>
+                                    <com.google.android.material.textfield.TextInputLayout
+                                        android:id="@+id/userIDTextInputLayout"
+                                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:layout_marginRight="3dp"
+                                        android:layout_marginLeft="3dp">
+
+                                        <com.google.android.material.textfield.TextInputEditText
+                                            android:id="@+id/ETRollWidthInch"
+                                            android:layout_width="match_parent"
+                                            android:layout_height="wrap_content"
+                                            android:hint="Roll Width"
+                                            android:inputType="numberDecimal" />
+                                    </com.google.android.material.textfield.TextInputLayout>
+                                    <com.google.android.material.textfield.TextInputLayout
+                                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:layout_marginRight="3dp"
+                                        android:layout_marginLeft="3dp">
+
+                                        <com.google.android.material.textfield.TextInputEditText
+                                            android:id="@+id/TVRollLength"
+                                            android:layout_width="match_parent"
+                                            android:layout_height="wrap_content"
+                                            android:inputType="numberDecimal"
+                                            android:focusable="true"
+                                            android:hint="Roll Length" />
+                                    </com.google.android.material.textfield.TextInputLayout>
+                                    <com.google.android.material.textfield.TextInputLayout
+                                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:layout_marginRight="3dp"
+                                        android:layout_marginLeft="3dp">
+
+                                        <com.google.android.material.textfield.TextInputEditText
+                                            android:id="@+id/ETgsm"
+                                            android:layout_width="match_parent"
+                                            android:layout_height="wrap_content"
+                                            android:inputType="number"
+                                            android:singleLine="true"
+                                            android:hint="GSM" />
+                                    </com.google.android.material.textfield.TextInputLayout>
+                                    <LinearLayout
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:orientation="vertical"
+                                        android:layout_marginLeft="2dp"
+                                        android:layout_marginRight="2dp">
+                                        <TextView
+                                            android:layout_width="wrap_content"
+                                            android:layout_height="wrap_content"
+                                            android:text="Batch Wght"
+                                            android:layout_marginStart="3dp"/>
+                                        <TextView
+                                            android:id="@+id/TVRollKg"
+                                            android:layout_width="fill_parent"
+                                            android:layout_height="wrap_content"
+                                            android:drawableTint="#FF4081"
+                                            android:gravity="start"
+                                            android:textColor="#000000"
+                                            android:background="@drawable/textviewshape"
+                                            android:padding="@dimen/dp5"
+                                            android:textSize="18sp"
+                                            android:singleLine="true" />
+                                    </LinearLayout>
+                                    <com.google.android.material.textfield.TextInputLayout
+                                        android:id="@+id/TVPro_qtyTextInputLayout"
+                                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:layout_marginRight="3dp"
+                                        android:layout_marginLeft="3dp">
+
+                                        <com.google.android.material.textfield.TextInputEditText
+                                            android:id="@+id/TVPro_qty"
+                                            android:layout_width="match_parent"
+                                            android:layout_height="wrap_content"
+                                            android:text=""
+                                            android:inputType="numberDecimal"
+                                            android:hint="Prod. Qnty"/>
+                                    </com.google.android.material.textfield.TextInputLayout>
+                                    <com.google.android.material.textfield.TextInputLayout
+                                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:layout_marginRight="3dp"
+                                        android:layout_marginLeft="3dp">
+
+                                        <com.google.android.material.textfield.TextInputEditText
+                                            android:id="@+id/ETreject"
+                                            android:layout_width="match_parent"
+                                            android:layout_height="wrap_content"
+                                            android:inputType="numberDecimal"
+                                            android:singleLine="true"
+                                            android:hint="Reject Qty" />
+                                    </com.google.android.material.textfield.TextInputLayout>
+                                    <LinearLayout
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:orientation="vertical"
+                                        android:layout_marginLeft="2dp"
+                                        android:layout_marginRight="2dp">
+                                        <TextView
+                                            android:layout_width="wrap_content"
+                                            android:layout_height="wrap_content"
+                                            android:text="QC Pass Qnty"
+                                            android:layout_marginStart="3dp"/>
+                                        <TextView
+                                            android:id="@+id/qcPassQtyTV"
+                                            android:layout_width="fill_parent"
+                                            android:layout_height="wrap_content"
+                                            android:drawableTint="#FF4081"
+                                            android:gravity="start"
+                                            android:textColor="#000000"
+                                            android:background="@drawable/textviewshape"
+                                            android:padding="@dimen/dp5"
+                                            android:textSize="18sp"
+                                            android:singleLine="true" />
+                                    </LinearLayout>
+                                    <LinearLayout
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:orientation="vertical"
+                                        android:layout_marginLeft="2dp"
+                                        android:layout_marginRight="2dp">
+                                        <TextView
+                                            android:layout_width="wrap_content"
+                                            android:layout_height="wrap_content"
+                                            android:text="Loss/Gain (Kg)"
+                                            android:layout_marginStart="3dp"/>
+                                        <TextView
+                                            android:id="@+id/width_loss"
+                                            android:layout_width="fill_parent"
+                                            android:layout_height="wrap_content"
+                                            android:drawableTint="#FF4081"
+                                            android:gravity="start"
+                                            android:textColor="#000000"
+                                            android:background="@drawable/textviewshape"
+                                            android:padding="@dimen/dp5"
+                                            android:textSize="18sp"
+                                            android:singleLine="true" />
+                                    </LinearLayout>
+                                    <LinearLayout
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:orientation="vertical"
+                                        android:layout_marginLeft="2dp"
+                                        android:layout_marginRight="2dp">
+                                        <TextView
+                                            android:layout_width="wrap_content"
+                                            android:layout_height="wrap_content"
+                                            android:text="Loss/Gain (%)"
+                                            android:layout_marginStart="3dp"/>
+                                        <TextView
+                                            android:id="@+id/width_loss_pacentage"
+                                            android:layout_width="fill_parent"
+                                            android:layout_height="wrap_content"
+                                            android:drawableTint="#FF4081"
+                                            android:gravity="start"
+                                            android:textColor="#000000"
+                                            android:background="@drawable/textviewshape"
+                                            android:padding="@dimen/dp5"
+                                            android:textSize="18sp"
+                                            android:singleLine="true" />
+                                    </LinearLayout>
+                                    <LinearLayout
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:layout_marginLeft="2dp"
+                                        android:layout_marginRight="2dp"
+                                        android:layout_marginTop="2dp"
+                                        android:layout_marginBottom="2dp"
+                                        android:orientation="vertical">
+                                        <TextView
+                                            android:layout_width="match_parent"
+                                            android:layout_height="wrap_content"
+                                            android:text="QC Status"
+                                            android:textColor="@color/black"
+                                            android:textSize="14sp" />
+                                        <androidx.cardview.widget.CardView
+                                            android:layout_width="match_parent"
+                                            android:layout_height="35dp"
+                                            app:cardCornerRadius="3dp"
+                                            android:layout_marginBottom="1dp"
+                                            android:background="@drawable/edit_border"
+                                            android:layout_marginTop="2dp"
+                                            android:layout_marginLeft="1dp"
+                                            android:layout_marginRight="1dp">
+                                            <Spinner
+                                                android:id="@+id/spinnerQc"
+                                                android:layout_width="match_parent"
+                                                android:layout_height="match_parent"/>
+                                        </androidx.cardview.widget.CardView>
+                                    </LinearLayout>
+                                    <LinearLayout
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:layout_marginLeft="2dp"
+                                        android:layout_marginRight="2dp"
+                                        android:layout_marginTop="2dp"
+                                        android:layout_marginBottom="2dp"
+                                        android:orientation="vertical">
+                                        <TextView
+                                            android:layout_width="match_parent"
+                                            android:layout_height="wrap_content"
+                                            android:text="Shift Name"
+                                            android:textColor="@color/black"
+                                            android:textSize="14sp" />
+                                        <androidx.cardview.widget.CardView
+                                            android:layout_width="match_parent"
+                                            android:layout_height="35dp"
+                                            app:cardCornerRadius="3dp"
+                                            android:layout_marginBottom="1dp"
+                                            android:background="@drawable/edit_border"
+                                            android:layout_marginTop="2dp"
+                                            android:layout_marginLeft="1dp"
+                                            android:layout_marginRight="1dp">
+                                            <Spinner
+                                                android:id="@+id/shiftSpinner"
+                                                android:layout_width="match_parent"
+                                                android:layout_height="match_parent"/>
+                                        </androidx.cardview.widget.CardView>
+                                    </LinearLayout>
+                                    <com.google.android.material.textfield.TextInputLayout
+                                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:layout_marginRight="3dp"
+                                        android:visibility="gone"
+                                        android:layout_marginLeft="3dp">
+
+                                        <com.google.android.material.textfield.TextInputEditText
+                                            android:id="@+id/ETqc_pass"
+                                            android:layout_width="match_parent"
+                                            android:layout_height="wrap_content"
+                                            android:inputType="numberDecimal"
+                                            android:singleLine="true"
+                                            android:text="0"
+                                            android:hint="QC Pass Qty." />
+                                    </com.google.android.material.textfield.TextInputLayout>
+                                    <LinearLayout
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:orientation="vertical"
+                                        android:layout_marginLeft="2dp"
+                                        android:layout_marginRight="2dp">
+                                        <TextView
+                                            android:layout_width="wrap_content"
+                                            android:layout_height="wrap_content"
+                                            android:text="Batch No"
+                                            android:layout_marginStart="3dp"/>
+                                        <TextView
+                                            android:id="@+id/TVBatchNo"
+                                            android:layout_width="fill_parent"
+                                            android:layout_height="wrap_content"
+                                            android:drawableTint="#FF4081"
+                                            android:gravity="start"
+                                            android:textColor="#000000"
+                                            android:background="@drawable/textviewshape"
+                                            android:padding="@dimen/dp5"
+                                            android:textSize="18sp"
+                                            android:singleLine="true" />
+                                    </LinearLayout>
+                                    <LinearLayout
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:orientation="vertical"
+                                        android:layout_marginLeft="2dp"
+                                        android:layout_marginRight="2dp">
+                                        <TextView
+                                            android:layout_width="wrap_content"
+                                            android:layout_height="wrap_content"
+                                            android:text="Job Number"
+                                            android:layout_marginStart="3dp"/>
+                                        <TextView
+                                            android:id="@+id/TVJobNumber"
+                                            android:layout_width="fill_parent"
+                                            android:layout_height="wrap_content"
+                                            android:drawableTint="#FF4081"
+                                            android:gravity="start"
+                                            android:textColor="#000000"
+                                            android:background="@drawable/textviewshape"
+                                            android:padding="@dimen/dp5"
+                                            android:textSize="18sp"
+                                            android:singleLine="true" />
+                                    </LinearLayout>
+                                    <LinearLayout
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:orientation="vertical"
+                                        android:layout_marginLeft="2dp"
+                                        android:layout_marginRight="2dp">
+                                        <TextView
+                                            android:layout_width="wrap_content"
+                                            android:layout_height="wrap_content"
+                                            android:text="FSEO No"
+                                            android:layout_marginStart="3dp"/>
+                                        <TextView
+                                            android:id="@+id/TVorderNo"
+                                            android:layout_width="fill_parent"
+                                            android:layout_height="wrap_content"
+                                            android:drawableTint="#FF4081"
+                                            android:gravity="start"
+                                            android:textColor="#000000"
+                                            android:background="@drawable/textviewshape"
+                                            android:padding="@dimen/dp5"
+                                            android:textSize="18sp"
+                                            android:singleLine="true" />
+                                    </LinearLayout>
+                                    <LinearLayout
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:orientation="vertical"
+                                        android:layout_marginLeft="2dp"
+                                        android:layout_marginRight="2dp">
+                                        <TextView
+                                            android:layout_width="wrap_content"
+                                            android:layout_height="wrap_content"
+                                            android:text="Grey Dia"
+                                            android:layout_marginStart="3dp"/>
+                                        <EditText
+                                            android:id="@+id/ETdia"
+                                            android:layout_width="fill_parent"
+                                            android:layout_height="wrap_content"
+                                            android:drawableTint="#FF4081"
+                                            android:gravity="start"
+                                            android:editable="false"
+                                            android:textColor="#000000"
+                                            android:background="@drawable/textviewshape"
+                                            android:padding="@dimen/dp5"
+                                            android:textSize="18sp"
+                                            android:singleLine="true" />
+                                    </LinearLayout>
+                                    <LinearLayout
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:orientation="vertical"
+                                        android:layout_marginLeft="2dp"
+                                        android:layout_marginRight="2dp">
+                                        <TextView
+                                            android:layout_width="wrap_content"
+                                            android:layout_height="wrap_content"
+                                            android:text="Grey GSM"
+                                            android:layout_marginStart="3dp"/>
+                                        <EditText
+                                            android:id="@+id/ETGreyGSM"
+                                            android:layout_width="fill_parent"
+                                            android:layout_height="wrap_content"
+                                            android:drawableTint="#FF4081"
+                                            android:gravity="start"
+                                            android:editable="false"
+                                            android:textColor="#000000"
+                                            android:background="@drawable/textviewshape"
+                                            android:padding="@dimen/dp5"
+                                            android:textSize="18sp"
+                                            android:singleLine="true" />
+                                    </LinearLayout>
+                                    <LinearLayout
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:orientation="vertical"
+                                        android:layout_marginLeft="2dp"
+                                        android:layout_marginRight="2dp">
+                                        <TextView
+                                            android:layout_width="wrap_content"
+                                            android:layout_height="wrap_content"
+                                            android:text="Style"
+                                            android:layout_marginStart="3dp"/>
+                                        <TextView
+                                            android:id="@+id/TVstyle"
+                                            android:layout_width="fill_parent"
+                                            android:layout_height="wrap_content"
+                                            android:drawableTint="#FF4081"
+                                            android:gravity="start"
+                                            android:textColor="#000000"
+                                            android:background="@drawable/textviewshape"
+                                            android:padding="@dimen/dp5"
+                                            android:textSize="18sp"
+                                            android:singleLine="true" />
+                                    </LinearLayout>
+                                    <LinearLayout
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:orientation="vertical"
+                                        android:layout_marginLeft="2dp"
+                                        android:layout_marginRight="2dp">
+                                        <TextView
+                                            android:layout_width="wrap_content"
+                                            android:layout_height="wrap_content"
+                                            android:text="IR/LB"
+                                            android:layout_marginStart="3dp"/>
+                                        <TextView
+                                            android:id="@+id/TVirlb"
+                                            android:layout_width="fill_parent"
+                                            android:layout_height="wrap_content"
+                                            android:drawableTint="#FF4081"
+                                            android:gravity="start"
+                                            android:textColor="#000000"
+                                            android:background="@drawable/textviewshape"
+                                            android:padding="@dimen/dp5"
+                                            android:textSize="18sp"
+                                            android:singleLine="true" />
+                                    </LinearLayout>
+                                    <LinearLayout
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:orientation="vertical"
+                                        android:layout_marginLeft="2dp"
+                                        android:layout_marginRight="2dp">
+                                        <TextView
+                                            android:layout_width="wrap_content"
+                                            android:layout_height="wrap_content"
+                                            android:text="Body Part"
+                                            android:layout_marginStart="3dp"/>
+                                        <TextView
+                                            android:id="@+id/TVbodyPart"
+                                            android:layout_width="fill_parent"
+                                            android:layout_height="wrap_content"
+                                            android:drawableTint="#FF4081"
+                                            android:gravity="start"
+                                            android:textColor="#000000"
+                                            android:background="@drawable/textviewshape"
+                                            android:padding="@dimen/dp5"
+                                            android:textSize="18sp"
+                                            android:singleLine="true" />
+                                    </LinearLayout>
+                                    <LinearLayout
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:orientation="vertical"
+                                        android:layout_marginLeft="2dp"
+                                        android:layout_marginRight="2dp">
+                                        <TextView
+                                            android:layout_width="wrap_content"
+                                            android:layout_height="wrap_content"
+                                            android:text="Construction"
+                                            android:layout_marginStart="3dp"/>
+                                        <TextView
+                                            android:id="@+id/TVconstruction"
+                                            android:layout_width="fill_parent"
+                                            android:layout_height="wrap_content"
+                                            android:drawableTint="#FF4081"
+                                            android:gravity="start"
+                                            android:textColor="#000000"
+                                            android:background="@drawable/textviewshape"
+                                            android:padding="@dimen/dp5"
+                                            android:textSize="18sp"
+                                            android:singleLine="true" />
+                                    </LinearLayout>
+                                    <LinearLayout
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:orientation="vertical"
+                                        android:layout_marginLeft="2dp"
+                                        android:layout_marginRight="2dp">
+                                        <TextView
+                                            android:layout_width="wrap_content"
+                                            android:layout_height="wrap_content"
+                                            android:text="Color"
+                                            android:layout_marginStart="3dp"/>
+                                        <TextView
+                                            android:id="@+id/ETcolor"
+                                            android:layout_width="fill_parent"
+                                            android:layout_height="wrap_content"
+                                            android:drawableTint="#FF4081"
+                                            android:gravity="start"
+                                            android:textColor="#000000"
+                                            android:background="@drawable/textviewshape"
+                                            android:padding="@dimen/dp5"
+                                            android:textSize="18sp"
+                                            android:hint="Color"
+                                            android:singleLine="true" />
+                                    </LinearLayout>
+                                    <LinearLayout
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:orientation="vertical"
+                                        android:layout_marginLeft="2dp"
+                                        android:layout_marginRight="2dp">
+                                        <TextView
+                                            android:layout_width="wrap_content"
+                                            android:layout_height="wrap_content"
+                                            android:text="Dia Type"
+                                            android:layout_marginStart="3dp"/>
+                                        <TextView
+                                            android:id="@+id/TVdia_width"
+                                            android:layout_width="fill_parent"
+                                            android:layout_height="wrap_content"
+                                            android:drawableTint="#FF4081"
+                                            android:gravity="start"
+                                            android:textColor="#000000"
+                                            android:background="@drawable/textviewshape"
+                                            android:padding="@dimen/dp5"
+                                            android:textSize="18sp"
+                                            android:singleLine="true" />
+                                    </LinearLayout>
+
+                                </LinearLayout>
+                            </LinearLayout>
+                        </LinearLayout>
+                    </LinearLayout>
+                </ScrollView>
+            </androidx.cardview.widget.CardView>
+
+            <LinearLayout
+                android:id="@+id/linearGrid"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="2.40"
+                android:orientation="vertical">
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
+                    <GridView
+                        android:id="@+id/gridViewInfo"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginRight="2dp"
+                        android:layout_marginLeft="1dp"
+                        android:layout_marginTop="5dp"
+                        android:listSelector="#02fff6"
+                        tools:listitem="@layout/grid_layout"
+                        tools:itemCount="30"
+                        android:verticalSpacing="1dp" />
+                </LinearLayout>
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="2dp"
+                    android:orientation="vertical">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal">
+                        <androidx.cardview.widget.CardView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginRight="2dp"
+                            android:layout_marginLeft="2dp"
+                            android:layout_marginTop="2dp">
+                            <com.google.android.material.textfield.TextInputLayout
+                                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginRight="3dp"
+                                android:layout_marginLeft="3dp">
+                                <com.google.android.material.textfield.TextInputEditText
+                                    android:id="@+id/commentET"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:background="#ffffff"
+                                    android:padding="5dp"
+                                    android:textSize="16sp"
+                                    android:hint="Comments"
+                                    android:singleLine="true"/>
+                            </com.google.android.material.textfield.TextInputLayout>
+                        </androidx.cardview.widget.CardView>
+                        <androidx.cardview.widget.CardView
+                            android:layout_width="0dp"
+                            android:layout_height="match_parent"
+                            android:layout_weight="1"
+                            android:visibility="gone"
+                            android:layout_marginLeft="2dp"
+                            android:layout_marginTop="2dp"
+                            android:layout_marginRight="2dp"
+                            android:padding="1dp">
+                            <androidx.appcompat.widget.AppCompatButton
+                                android:id="@+id/observation_btn"
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:textSize="16sp"
+                                android:textColor="#000000"
+                                android:gravity="center"
+                                android:background="@drawable/defecttextviewshape"
+                                android:text="Show Result 2"/>
+                        </androidx.cardview.widget.CardView>
+
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="@dimen/dp50"
+                        android:orientation="horizontal">
+                        <androidx.cardview.widget.CardView
+                            android:layout_width="0dp"
+                            android:layout_height="match_parent"
+                            android:layout_weight="1"
+                            android:layout_marginLeft="2dp"
+                            android:layout_marginTop="2dp"
+                            android:layout_marginBottom="2dp"
+                            android:layout_marginRight="2dp"
+                            android:padding="1dp">
+                            <TextView
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:textSize="16sp"
+                                android:textColor="#000000"
+                                android:textAlignment="textEnd"
+                                android:layout_marginRight="30dp"
+                                android:gravity="end|center"
+                                android:text="Total Penalty Point:"/>
+                        </androidx.cardview.widget.CardView>
+                        <androidx.cardview.widget.CardView
+                            android:layout_width="0dp"
+                            android:layout_height="match_parent"
+                            android:layout_weight="1"
+                            android:layout_marginLeft="2dp"
+                            android:layout_marginTop="2dp"
+                            android:layout_marginBottom="2dp"
+                            android:layout_marginRight="2dp"
+                            android:padding="1dp">
+                            <TextView
+                                android:id="@+id/penaltyPointTV"
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:layout_weight="1"
+                                android:inputType="number"
+                                android:editable="false"
+                                android:layout_marginLeft="35dp"
+                                android:textSize="18sp"
+                                android:hint="0.00"
+                                android:textAlignment="textStart"
+                                android:gravity="start|center" />
+                        </androidx.cardview.widget.CardView>
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="@dimen/dp50"
+                        android:orientation="horizontal">
+                        <androidx.cardview.widget.CardView
+                            android:layout_width="0dp"
+                            android:layout_height="match_parent"
+                            android:layout_weight="1"
+                            android:layout_marginLeft="2dp"
+                            android:layout_marginTop="2dp"
+                            android:layout_marginBottom="2dp"
+                            android:layout_marginRight="2dp"
+                            android:padding="1dp">
+                            <TextView
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:layout_weight="1"
+                                android:textSize="16sp"
+                                android:textColor="#000000"
+                                android:textAlignment="textEnd"
+                                android:layout_marginRight="30dp"
+                                android:gravity="end|center"
+                                android:text="Total Point:"/>
+                        </androidx.cardview.widget.CardView>
+                        <androidx.cardview.widget.CardView
+                            android:layout_width="0dp"
+                            android:layout_height="match_parent"
+                            android:layout_weight="1"
+                            android:layout_marginLeft="2dp"
+                            android:layout_marginTop="2dp"
+                            android:layout_marginBottom="2dp"
+                            android:layout_marginRight="2dp"
+                            android:padding="1dp">
+                            <TextView
+                                android:id="@+id/toalPointTV"
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:layout_weight="1"
+                                android:inputType="number"
+                                android:textSize="16sp"
+                                android:layout_marginLeft="35dp"
+                                android:editable="false"
+                                android:textAlignment="textStart"
+                                android:gravity="start|center" />
+                        </androidx.cardview.widget.CardView>
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="@dimen/dp50"
+                        android:orientation="horizontal">
+                        <androidx.cardview.widget.CardView
+                            android:layout_width="0dp"
+                            android:layout_height="match_parent"
+                            android:layout_weight="1"
+                            android:layout_marginLeft="2dp"
+                            android:layout_marginTop="2dp"
+                            android:layout_marginBottom="2dp"
+                            android:layout_marginRight="2dp"
+                            android:padding="1dp">
+                            <TextView
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:layout_weight="1"
+                                android:textSize="16sp"
+                                android:textColor="#000000"
+                                android:textAlignment="textEnd"
+                                android:layout_marginRight="30dp"
+                                android:gravity="end|center"
+                                android:text="Fabric Grade:"/>
+                        </androidx.cardview.widget.CardView>
+                        <androidx.cardview.widget.CardView
+                            android:layout_width="0dp"
+                            android:layout_height="match_parent"
+                            android:layout_weight="1"
+                            android:layout_marginLeft="2dp"
+                            android:layout_marginTop="2dp"
+                            android:layout_marginBottom="2dp"
+                            android:layout_marginRight="2dp"
+                            android:padding="1dp">
+                            <TextView
+                                android:id="@+id/febricGradeTV"
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:layout_weight="1"
+                                android:textSize="18sp"
+                                android:editable="false"
+                                android:layout_marginLeft="35dp"
+                                android:textAlignment="textStart"
+                                android:gravity="start|center" />
+                        </androidx.cardview.widget.CardView>
+                    </LinearLayout>
+
+                </LinearLayout>
+            </LinearLayout>
+
+        </LinearLayout>
+
+
+
+    </LinearLayout>
+    <LinearLayout
+        android:id="@+id/linear"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/dp65"
+        android:layout_margin="5dp"
+        android:orientation="horizontal"
+        tools:ignore="NotSibling">
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/btnSave"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_marginLeft="5dp"
+            android:layout_weight="1"
+            android:layout_marginBottom="2dp"
+            android:background="@drawable/button_shape"
+            android:text="Save"
+            android:textColor="#ffffff"
+            android:textSize="20sp" />
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/btnTryAgain"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_marginLeft="5dp"
+            android:layout_weight="1"
+            android:layout_marginBottom="2dp"
+            android:background="@drawable/button_shape"
+            android:text="TRY AGAIN"
+            android:textColor="#ffffff"
+            android:textSize="20sp" />
+    </LinearLayout>
+</LinearLayout>
+
+<ProgressBar
+    android:visibility="gone"
+    android:id="@+id/loadingProgress"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_centerHorizontal="true"
+    android:background="@drawable/progressbar"
+    android:layout_centerVertical="true" />
+</RelativeLayout>

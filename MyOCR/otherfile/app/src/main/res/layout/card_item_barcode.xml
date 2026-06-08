@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<androidx.cardview.widget.CardView android:id="@+id/cost_item_card"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginBottom="@dimen/dp5"
+    android:elevation="0dp"
+    app:cardCornerRadius="@dimen/dp3"
+    android:layout_marginTop="@dimen/dp5"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="@dimen/dp5"
+        android:orientation="vertical">
+        <LinearLayout
+            android:id="@+id/lay_top"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:orientation="vertical"
+            android:paddingLeft="@dimen/dp5"
+            android:paddingRight="@dimen/dp5">
+            <TextView
+                android:id="@+id/title_text_view"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textStyle="bold"
+                android:textSize="@dimen/dp18"
+                android:background="@drawable/bottom_border_shadow"
+                android:textColor="@color/list_header_value_text_color"
+                android:text="33333333"/>
+
+            <TextView
+                android:id="@+id/sub_title_text_view1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/list_header_value_text_color"
+                android:textSize="@dimen/dp13"
+                android:text=""/>
+            <TextView
+                android:id="@+id/sub_title_text_view"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/list_header_value_text_color"
+                android:textSize="@dimen/dp13"
+                android:text=""/>
+            <TextView
+                android:id="@+id/sub_sub_title_text_view"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/list_header_value_text_color"
+                android:textSize="@dimen/dp13"
+                android:text=""/>
+        </LinearLayout>
+
+        <ImageView
+            android:id="@+id/iv_delete"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentTop="true"
+            app:srcCompat="@drawable/ic_delete_forever_black_24dp"/>
+        <LinearLayout
+            android:id="@+id/sub_item"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:paddingLeft="@dimen/dp5"
+            android:paddingBottom="@dimen/dp5"
+            android:paddingRight="@dimen/dp5"
+            android:layout_below="@+id/lay_top"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/sub_text_1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/list_header_value_text_color"
+                android:textSize="@dimen/dp13"
+                tools:text="Genre:  Crime, Drama, Thriller" />
+
+            <TextView
+                android:id="@+id/sub_text_2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/list_header_value_text_color"
+                android:textSize="@dimen/dp13"
+                tools:text="Year: 1993" />
+            <TextView
+                android:id="@+id/sub_text_3"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/list_header_value_text_color"
+                android:textSize="@dimen/dp13"
+                tools:text="Year: 1993" />
+            <TextView
+                android:id="@+id/sub_text_4"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/list_header_value_text_color"
+                android:textSize="@dimen/dp13"
+                tools:text="Year: 1993" />
+            <!--<TextView
+                android:id="@+id/sub_text_5"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                
+               
+                tools:text="Year: 1993" />-->
+            <TextView
+                android:id="@+id/sub_text_6"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/list_header_value_text_color"
+                android:textSize="@dimen/dp13"
+                tools:text="Year: 1993" />
+            <TextView
+                android:id="@+id/sub_text_7"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="@dimen/dp13"
+                android:textColor="@color/list_header_value_text_color"
+                tools:text="Year: 1993" />
+        </LinearLayout>
+    </RelativeLayout>
+
+</androidx.cardview.widget.CardView>

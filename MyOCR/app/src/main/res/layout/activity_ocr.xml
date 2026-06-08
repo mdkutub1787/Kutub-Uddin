@@ -1,0 +1,201 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/side_nav_bar"
+    tools:context=".ui.OcrActivity">
+
+    <com.google.android.material.appbar.AppBarLayout
+        android:id="@+id/appBarLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/teal"
+        android:elevation="4dp"
+        android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <androidx.appcompat.widget.Toolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            app:layout_scrollFlags="scroll|enterAlways"
+            app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
+            app:title="@string/add_ocr"
+            app:titleTextColor="@color/black" />
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:orientation="horizontal"
+            android:padding="16dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Select Your Category Name"
+                android:textStyle="bold"
+                android:textSize="15sp"
+                android:textAppearance="?attr/textAppearanceSubtitle1"
+                android:textColor="@color/white" />
+
+            <Spinner
+                android:id="@+id/categorySpinner"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="end"
+                android:textStyle="bold"
+                android:layout_marginStart="35dp"
+                android:tooltipText="Choose Category"
+                android:autofillHints="Choose Category" />
+        </LinearLayout>
+    </com.google.android.material.appbar.AppBarLayout>
+
+    <com.davemorrissey.labs.subscaleview.SubsamplingScaleImageView
+        android:id="@+id/imageIv"
+        android:layout_width="0dp"
+        android:layout_height="200dp"
+        android:hint="@string/image_preview"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/appBarLayout"
+        app:src="@drawable/ic_image_placeholder" />
+
+    <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/appCompatTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColor="@color/white"
+        android:textStyle="bold"
+        android:textSize="18sp"
+        android:layout_marginTop="15dp"
+        android:text="Select Image"
+        app:layout_constraintEnd_toStartOf="@+id/cameraBtn"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/imageIv" />
+
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/cameraBtn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="5dp"
+        android:backgroundTint="@color/yellow"
+        android:text="@string/camera"
+        android:textColor="@color/white"
+        app:layout_constraintEnd_toStartOf="@+id/galleryBtn"
+        app:layout_constraintStart_toEndOf="@+id/appCompatTextView"
+        app:layout_constraintTop_toBottomOf="@id/imageIv" />
+
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/galleryBtn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="5dp"
+        android:gravity="center"
+        android:backgroundTint="@color/text_color_green"
+        android:text="@string/gallery"
+        android:textColor="@color/white"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/cameraBtn"
+        app:layout_constraintTop_toBottomOf="@id/imageIv" />
+
+    <ScrollView
+        android:id="@+id/scrollView"
+        android:layout_width="0dp"
+        android:layout_height="260dp"
+        android:layout_marginTop="8dp"
+        android:background="@drawable/rounded_edit_text"
+        android:padding="5dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/cameraBtn">
+
+        <EditText
+            android:id="@+id/recognizedTextEt"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:autofillHints="@string/recognized_text_hint"
+            android:hint="@string/recognized_text_hint"
+            android:textColor="@color/black"
+            android:textSize="16sp"
+            android:background="@color/white"
+            android:gravity="top|start"
+            android:inputType="textMultiLine"
+            android:lines="13"/>
+    </ScrollView>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:orientation="vertical"
+        app:layout_constraintTop_toBottomOf="@+id/scrollView">
+
+        <GridLayout
+            android:id="@+id/buttonLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:columnCount="3"
+            android:rowCount="1">
+
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/copyBtn"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:backgroundTint="@color/color_orange"
+                android:layout_marginStart="50dp"
+                android:text="@string/copy"
+                android:textColor="@color/white"
+                app:layout_columnWeight="1" />
+
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/saveOnlineBtn"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:backgroundTint="@color/blue"
+                android:text="@string/save"
+                android:textColor="@color/white"
+                app:layout_columnWeight="1" />
+
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/shareBtn"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:backgroundTint="@color/green"
+                android:text="@string/share"
+                android:textColor="@color/white"
+                app:layout_columnWeight="1" />
+        </GridLayout>
+
+        <GridLayout
+            android:id="@+id/buttonLayout2"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:columnCount="2"
+            android:rowCount="1">
+
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/saveWordBtn"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:backgroundTint="@color/purple"
+                android:layout_marginStart="105dp"
+                android:text="@string/save_word"
+                android:textColor="@color/white"
+                app:layout_columnWeight="1" />
+
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/saveExcelBtn"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:backgroundTint="@color/teal"
+                android:text="@string/save_excel"
+                android:textColor="@color/white"
+                app:layout_columnWeight="1" />
+
+        </GridLayout>
+    </LinearLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

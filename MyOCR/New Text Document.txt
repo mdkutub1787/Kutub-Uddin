@@ -1,0 +1,74 @@
+📌 1. OCR টেক্সট ক্যাটাগরাইজেশন (Labeling & Folders)
+✅ ব্যবহারকারী টেক্সট ক্যাটাগরি অনুযায়ী সাজাতে পারবে, যেমন: Bills, Notes, Documents ইত্যাদি।
+✅ Firebase Firestore-এ টেক্সট Label বা Folder-wise সেভ করা যাবে।
+
+🔹 UI পরিবর্তন:
+
+OCR স্ক্যানের সময় Label সিলেক্ট করার অপশন।
+Home Screen-এ Tabs থাকবে (Bills, Notes, Documents)।
+📌 2. PDF & Text File Export
+✅ OCR করা টেক্সট PDF বা TXT ফাইলে এক্সপোর্ট করা যাবে।
+✅ ব্যবহারকারী শেয়ার, ডাউনলোড বা প্রিন্ট করতে পারবে।
+✅ Firebase Storage-এ PDF ফাইল সংরক্ষণ করা যাবে।
+
+🔹 UI পরিবর্তন:
+
+OCR স্ক্রিনে "Export as PDF" ও "Export as TXT" বাটন।
+
+📌 3. Realtime Collaboration (শেয়ার করা ফিচার)
+✅ ব্যবহারকারী OCR করা ফাইল শেয়ার লিংকের মাধ্যমে অন্যদের সাথে শেয়ার করতে পারবে।
+✅ Firebase Firestore-এ যে কেউ এডিট পারমিশন পেতে পারে (Google Docs-এর মতো)।
+✅ Owner & Editor Role থাকবে—শুধুমাত্র Owner ডিলিট করতে পারবে।
+
+🔹 UI পরিবর্তন:
+
+"Share" আইকন থাকবে, যেখানে লিংক জেনারেট হবে।
+শেয়ার করা ফাইলগুলোর জন্য আলাদা সেকশন থাকবে।
+
+📌 4. OCR হাইলাইটিং ও এডিটিং
+✅ OCR টেক্সট হাইলাইট, আন্ডারলাইন বা নোট যোগ করা যাবে।
+✅ OCR ভুল থাকলে ব্যবহারকারী সরাসরি ইডিট করতে পারবে।
+
+🔹 UI পরিবর্তন:
+
+TextView Editable হবে (ইউজার চাইলে কপি-পেস্টও করতে পারবে)।
+হাইলাইট করার জন্য কালার অপশন থাকবে (Yellow, Green, Blue)।
+
+📌 5. Voice-to-Text Conversion (OCR + Voice Input)
+✅ OCR টেক্সটের পাশাপাশি ব্যবহারকারী ভয়েস ইনপুট দিয়ে টেক্সট অ্যাড করতে পারবে।
+✅ Google Speech API ব্যবহার করে ভয়েস থেকে টেক্সট কনভার্ট হবে।
+
+🔹 UI পরিবর্তন:
+
+OCR স্ক্রিনে একটি মাইক্রোফোন বাটন থাকবে।
+ব্যবহারকারী বলে বলে টেক্সট লিখতে পারবে।
+
+📌 6. Dark Mode Support
+✅ অ্যাপ ডার্ক মোড সাপোর্ট করবে।
+✅ Firebase-এ ব্যবহারকারীর পছন্দ সেভ হবে।
+
+🔹 UI পরিবর্তন:
+
+ডার্ক মোড টগল বাটন (Settings Screen-এ)।
+Light/Dark Mode অনুযায়ী UI কালার পরিবর্তন হবে।
+
+📌 7. OCR History & Version Control
+✅ OCR করা ফাইলগুলোর পুরাতন ভার্সন সংরক্ষণ করা যাবে।
+✅ কেউ যদি পুরাতন টেক্সট ফিরিয়ে আনতে চায়, তাহলে "Restore Previous Version" অপশন থাকবে।
+
+🔹 UI পরিবর্তন:
+
+প্রতিটি ফাইলের "View History" অপশন।
+পুরাতন OCR টেক্সট থেকে নতুন ভার্সনে আপডেট করার ফিচার।
+
+
+সবগুলো ফিচার ভালো লেগেছে। কীভাবে এগুলো ওসিআর প্রজেক্টে ইমপ্লিমেন্ট করবো?
+
+
+App, Functionality are. First open app with splash screen.
+splash screen intent MainScreen, main screen contain all category with uncategory file will see below the screen.
+one fabutton will show on screen. When user click on of the category from list it shows all list from it.
+ again when user click on uncategory items, it will intent to view mode. if long press on the item will edit and delete mode.
+ when select edit mode, it intent edit screen. this will work for both categories and noncategories items.
+ i make same design. now need to add missing ui and design for this project. at first isee the ui design.
+ based on this design later you help me to make the app.

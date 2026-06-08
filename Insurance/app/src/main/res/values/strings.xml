@@ -1,0 +1,26 @@
+<resources>
+    <string name="app_name">Insurance</string>
+
+    <string-array name="policyholder_types">
+        <item>Select Policyholder</item>
+    </string-array>
+
+
+    <string-array name="construction_types">
+        <item>Select Construction</item>
+        <item>Brick</item>
+        <item>Concrete</item>
+        <item>Wood</item>
+        <item>Steel</item>
+    </string-array>
+
+    <string-array name="used_as_types">
+        <item>Select Use As</item>
+        <item>Residential</item>
+        <item>Commercial</item>
+        <item>Industrial</item>
+        <item>Agricultural</item>
+    </string-array>
+
+
+</resources>

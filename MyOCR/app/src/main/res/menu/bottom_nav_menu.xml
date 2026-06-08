@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/home"
+        android:title="Home"
+        android:icon="@drawable/ic_home_teal_24dp"/>
+    <item
+        android:id="@+id/create_ocr"
+        android:title="Create OCR"
+        android:icon="@drawable/ic_create_ocr_teal_24dp"/>
+    <item
+        android:id="@+id/add_category"
+        android:title="Add Category"
+        android:icon="@drawable/ic_category_teal_24dp"/>
+</menu>

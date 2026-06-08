@@ -1,0 +1,28 @@
+<RelativeLayout android:id="@+id/linearLayoutSewingIn"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginRight="2dp"
+    android:layout_marginLeft="2dp"
+    android:layout_marginTop="2dp"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <androidx.cardview.widget.CardView
+        android:layout_width="match_parent"
+        android:layout_height="75dp"
+        app:cardCornerRadius="3dp"
+        android:layout_marginTop="2dp"
+        app:cardBackgroundColor="@color/card_color"
+        android:layout_marginLeft="1dp"
+        android:layout_marginRight="1dp">
+        <CheckBox
+            android:id="@+id/operationNameTV"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:text="Defect Name"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            android:padding="5dp"
+            android:textColor="#2C2B2B"
+            android:gravity="center|left"/>
+    </androidx.cardview.widget.CardView>
+</RelativeLayout>

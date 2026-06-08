@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<LinearLayout
+    android:id="@+id/cost_item_card"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_margin="@dimen/dp2"
+    app:cardBackgroundColor="@color/ballReleaseColor"
+    app:cardCornerRadius="@dimen/dp5"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <TextView
+        android:id="@+id/defectNameTV"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/dp40"
+        android:gravity="center"
+        android:background="@drawable/backgroundimgbutton"
+        android:text="Defect 1"
+        android:textSize="14sp"
+        android:textStyle="bold"
+        android:textColor="@color/blue_700"/>
+</LinearLayout>

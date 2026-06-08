@@ -1,0 +1,122 @@
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_margin="5dp"
+    android:background="@color/white"
+    android:padding="12dp"
+    app:cardCornerRadius="12dp"
+    app:cardElevation="6dp">
+
+    <GridLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:columnCount="2"
+        android:padding="10dp"
+        android:rowCount="4">
+
+        <!-- Policyholder -->
+        <TextView
+            android:id="@+id/tvPolicyholder"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_row="0"
+            android:layout_column="0"
+            android:layout_columnWeight="1"
+            android:contentDescription="Policyholder name"
+            android:text="Policyholder: John Doe"
+            android:textColor="@color/black"
+            android:textSize="14sp" />
+
+        <!-- Bank Name -->
+        <TextView
+            android:id="@+id/tvBankName"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_row="0"
+            android:layout_column="1"
+            android:layout_columnWeight="1"
+            android:contentDescription="Bank name"
+            android:text="Bank: ABC Bank"
+            android:textColor="@color/black"
+            android:textSize="14sp" />
+
+        <!-- Sum Insured -->
+        <TextView
+            android:id="@+id/tvSumInsured"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_row="1"
+            android:layout_column="0"
+            android:layout_columnWeight="1"
+            android:contentDescription="Sum insured amount"
+            android:text="Sum Insured:"
+            android:textColor="@color/black"
+            android:textSize="14sp" />
+
+        <!-- Fire -->
+        <TextView
+            android:id="@+id/tvFire"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_row="1"
+            android:layout_column="1"
+            android:layout_columnWeight="1"
+            android:contentDescription="Fire rate"
+            android:text="Fire"
+            android:textColor="@color/black"
+            android:textSize="14sp" />
+
+        <!-- RSD -->
+        <TextView
+            android:id="@+id/tvRsd"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_row="2"
+            android:layout_column="0"
+            android:layout_columnWeight="1"
+            android:contentDescription="RSD rate"
+            android:text="RSD"
+            android:textColor="@color/black"
+            android:textSize="14sp" />
+
+        <!-- Tax -->
+        <TextView
+            android:id="@+id/tvTax"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_row="2"
+            android:layout_column="1"
+            android:layout_columnWeight="1"
+            android:contentDescription="Tax rate"
+            android:text="Tax"
+            android:textColor="@color/black"
+            android:textSize="14sp" />
+
+        <!-- Net Premium -->
+        <TextView
+            android:id="@+id/tvNetPremium"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_row="3"
+            android:layout_column="0"
+            android:layout_columnWeight="1"
+            android:contentDescription="Net premium amount"
+            android:text="Net Premium"
+            android:textColor="@color/black"
+            android:textSize="14sp" />
+
+        <!-- Gross Premium -->
+        <TextView
+            android:id="@+id/tvGrossPremium"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_row="3"
+            android:layout_column="1"
+            android:layout_columnWeight="1"
+            android:contentDescription="Gross premium amount"
+            android:text="Gross Premium"
+            android:textColor="@color/black"
+            android:textSize="14sp" />
+    </GridLayout>
+</androidx.cardview.widget.CardView>

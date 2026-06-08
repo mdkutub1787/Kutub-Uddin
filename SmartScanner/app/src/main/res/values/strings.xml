@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">Smart Scanner</string>
+    <string name="scan">Scan</string>
+    <string name="scan_a_barcode">Scan a barcode</string>
+</resources>

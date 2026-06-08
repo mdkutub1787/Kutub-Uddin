@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<network-security-config>
+    <base-config cleartextTrafficPermitted="true">
+        <trust-anchors>
+            <certificates src="system" />
+        </trust-anchors>
+    </base-config>
+</network-security-config>
+<!--<?xml version="1.0" encoding="utf-8"?>-->
+<!--<network-security-config>-->
+<!--    <domain-config cleartextTrafficPermitted="true">-->
+<!--        <domain includeSubdomains="true">10.10.10.11:8000</domain>-->
+<!--        <domain includeSubdomains="true">10.10.10.11</domain>-->
+<!--        <domain includeSubdomains="true">192.168.6.104</domain>-->
+<!--        <domain includeSubdomains="true">103.120.203.96:8000</domain>-->
+<!--        <domain includeSubdomains="true">203.202.255.1560</domain>-->
+<!--        <domain includeSubdomains="true">103.120.203.96</domain>-->
+<!--        <domain includeSubdomains="true">203.202.255.156</domain>-->
+<!--    </domain-config>-->
+<!--</network-security-config>-->
+

@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "641034281817",
+    "project_id": "myocr-33435",
+    "storage_bucket": "myocr-33435.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:641034281817:android:7bdb21dd91e957f4306248",
+        "android_client_info": {
+          "package_name": "com.mrahmed.myocr"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCPrT8NkjNTZEtwnvlMXnMS34L2nKXfJGk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

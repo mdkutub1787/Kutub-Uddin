@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/backgroundimgbutton"
+    tools:context=".ui.v_1_ui.electronic_approval.ApproveFragment">
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/approvalDetailsRecyclerView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_margin="@dimen/dp5"
+        tools:listitem="@layout/item_approval_details"/>
+    <LinearLayout
+        android:id="@+id/noDataFoundLy"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="gone"
+        android:layout_gravity="center"
+        android:gravity="center"
+        android:orientation="vertical">
+        <ImageView
+            android:layout_width="@dimen/dp90"
+            android:layout_height="@dimen/dp90"
+            android:gravity="center"
+            android:layout_gravity="center"
+            android:src="@drawable/ignore"/>
+    </LinearLayout>
+
+
+</FrameLayout>

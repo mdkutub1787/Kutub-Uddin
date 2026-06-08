@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="utf-8"?><!--
+  ~ Copyright (C) 2017 MINDORKS NEXTGEN PRIVATE LIMITED
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~     https://mindorks.com/license/apache-v2
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License
+  -->
+
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <color name="colorPrimary">#0277BD</color>
+    <color name="colorPrimaryDark">#01579B</color>
+    <color name="colorAccent">#0277BD</color>
+    <color name="light_gray">#dbdbdb</color>
+    <color name="gray">#808080</color>
+    <color name="deep_ash">#343434</color>
+    <color name="semi_gray">#151B54</color>
+    <color name="dark_gray">#151B54</color>
+    <color name="bg_color">#f7f7f7</color>
+    <color name="black">#000000</color>
+    <color name="click">#D7E3D7</color>
+    <color name="green_dark">#096820</color>
+    <color name="green_light">#085E1E</color>
+    <color name="white">#ffffff</color>
+    <color name="black_effective">#2a2a2a</color>
+    <color name="shadow">#d0d8dc</color>
+    <color name="transparent">#00000000</color>
+    <color name="translucent_white">#88ffffff</color>
+    <color name="fb">#3b5998</color>
+    <color name="google">#d34836</color>
+    <drawable name="textColor">#2a940a</drawable>
+    <color name="app_btn_color">#3DC6F4</color>
+    <color name="app_header_text_color">#ed1e79</color>
+    <color name="ash">#EDEDED</color>
+
+
+    <color name="splash_bg">#F8F6EC</color>
+    <array name="splash_circle_colors">
+        <item>#4CAF50</item>
+        <item>#E91E63</item>
+        <item>#FF9800</item>
+        <item>#6C7178</item>
+        <item>#FFEB3B</item>
+        <item>#03A9F4</item>
+    </array>
+
+    <!--Design colors-->
+    <color name="card_color">#E5F0FF</color>
+    <color name="red_dark">#F06423</color>
+    <color name="red_dark2">#D85A1B</color>
+    <color name="cyan_light">#c9ebee</color>
+    <color name="grey_200">#EEEEEE</color>
+    <color name="cyan">#b5e3e7</color>
+    <color name="cyan_dark">#70BDC6</color>
+    <color name="navy_blue">#214258</color>
+    <color name="navy_blue_dark">#1C3A4E</color>
+    <color name="light_green">#78DC96</color>
+    <color name="light_blue">#55C8F0</color>
+    <color name="blue_black_dark">#13171d</color>
+    <color name="blue_black_light">#516179</color>
+    <color name="blue_grey_light">#A5B4C8</color>
+    <color name="orange">#FFA500</color>
+    <color name="yellow">#fff44f</color>
+    <color name="baseReleaseColor">#212121</color>
+    <color name="basePressColor">#FAFAFA</color>
+    <color name="ballReleaseColor">#9E9E9E</color>
+
+    <!--//toolbar-->
+    <color name="toolbar_bg">#FFFFFF</color>
+    <color name="toolbar_text_color">#4B4B4B</color>
+
+    <!--//tab color-->
+    <color name="tab_indicator">#F2F2F2</color>
+    <color name="tab_selected_color">#037EBE</color>
+    <color name="tab_text_color">#808080</color>
+    <color name="tab_background">#FFFFFF</color>
+    <!--//login screen-->
+    <color name="screenBg">#F2F2F2</color>
+    <color name="hint_color">#C7C7C7</color>
+    <color name="bg_login_button">#037EBE</color>
+
+    <!--//dashboard-->
+    <color name="dashboard_grey">#EEEEEE</color>
+    <color name="dashboard_line">#CCCCCC</color>
+    <color name="dashboard_text_dark">#4a4a4a</color>
+    <color name="dashboard_text_light">#808080</color>
+    <color name="dashboard_green">#A8CC66</color>
+    <color name="dashboard_blue">#3DA1CC</color>
+    <color name="dashboard_orange">#FF734C</color>
+    <color name="dashboard_non_select">#324F5C</color>
+
+    <color name="list_header_title_text_color">#6EABD1</color>
+    <color name="list_header_title_text_color1">#555454</color>
+    <color name="list_header_value_text_color">#037EBE</color>
+    <color name="list_item_text_highlight">#4A4A4A</color>
+    <color name="list_item_text_normal">#808080</color>
+    <color name="red">#FF0000</color>
+
+    <color name="blue_color_picker">#0066FF</color>
+    <color name="brown_color_picker">#AF593E</color>
+    <color name="green_color_picker">#01A368</color>
+    <color name="orange_color_picker">#FF861F</color>
+    <color name="red_color_picker">#ED0A3F</color>
+    <color name="red_orange_color_picker">#FF3F34</color>
+    <color name="sky_blue_color_picker">#76D7EA</color>
+    <color name="violet_color_picker">#8359A3</color>
+    <color name="yellow_color_picker">#FBE870</color>
+    <color name="yellow_green_color_picker">#C5E17A</color>
+    <color name="tool_bg">#151414</color>
+    <color name="semi_black_transparent">#99000000</color>
+
+</resources>

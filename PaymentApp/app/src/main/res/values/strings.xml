@@ -1,0 +1,31 @@
+<resources>
+    <string name="app_name">Payment App</string>
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+    <string name="nav_header_name">User Name</string>
+    <string name="nav_header_email">user@email.com</string>
+    <string name="nav_header_number">+21212345678</string>
+    <string name="nav_header_balence">1000.00 $</string>
+    <string name="nav_header_desc">Navigation header</string>
+    <string name="action_settings">Settings</string>
+    <string name="action_logout">Logout</string>
+
+    <string name="menu_home">Home</string>
+    <string name="menu_profile">Profile</string>
+    <string name="menu_slideshow">Slideshow</string>
+    <string name="menu_send_money">Send Money</string>
+    <string name="user_not_authenticated">User is not authenticated</string>
+    <string name="fill_all_fields">Please fill in all fields</string>
+    <string name="send_money_to_yourself">You can not send money to yourself</string>
+    <string name="invalid_amount_format">Invalid amount format</string>
+    <string name="amount_greater_than_0">Amount must be greater than 0</string>
+    <string name="insufficient_balance">Insufficient balance</string>
+    <string name="sender_not_found">Sender not found</string>
+    <string name="error_checking_sender_balance">Error checking sender balance</string>
+    <string name="transaction_failed">Transaction failed: </string>
+    <string name="transaction_successful">Transaction successful</string>
+    <string name="sender_or_receiver_not_found">string</string>
+    <string name="invalid_balance_format">string</string>
+
+
+</resources>

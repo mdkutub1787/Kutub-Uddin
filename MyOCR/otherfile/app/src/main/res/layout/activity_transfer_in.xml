@@ -1,0 +1,350 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/backgroundimgbutton"
+    tools:context=".ui.v_1_ui.transfer.transfer_in.V1_TransferInActivity">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@drawable/backgroundimgbutton"
+        tools:context=".ui.v_1_ui.transfer.transfer_in.V1_TransferInActivity">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+
+            <androidx.cardview.widget.CardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="@dimen/dp5"
+                android:layout_marginTop="@dimen/dp5"
+                android:layout_marginRight="@dimen/dp5"
+                app:cardCornerRadius="@dimen/dp5">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="@drawable/border_black"
+                    android:orientation="vertical"
+                    android:padding="@dimen/dp5">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:orientation="horizontal">
+
+                        <LinearLayout
+                            android:layout_width="@dimen/dp0"
+                            android:layout_height="wrap_content"
+                            android:layout_marginRight="@dimen/dp2"
+                            android:layout_weight="1"
+                            android:orientation="horizontal">
+
+                            <androidx.cardview.widget.CardView
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_margin="@dimen/dp5"
+                                android:layout_weight="1"
+                                app:cardCornerRadius="@dimen/dp5">
+
+                                <androidx.appcompat.widget.AppCompatButton
+                                    android:id="@+id/locationScanBT"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="@dimen/dp50"
+                                    android:background="#324F5C"
+                                    android:drawableRight="@drawable/ic_baseline_qr_code_scanner_24_1"
+                                    android:padding="@dimen/dp5"
+                                    android:text="Location"
+                                    android:textColor="@color/basePressColor"
+                                    android:textSize="12sp"
+                                    android:textStyle="bold" />
+                            </androidx.cardview.widget.CardView>
+
+                            <androidx.cardview.widget.CardView
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_margin="@dimen/dp5"
+                                android:layout_weight="1"
+                                app:cardCornerRadius="@dimen/dp5">
+
+                                <androidx.appcompat.widget.AppCompatAutoCompleteTextView
+                                    android:id="@+id/locationScanTV"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="@dimen/dp50"
+                                    android:background="@drawable/edit_border"
+                                    android:editable="false"
+                                    android:gravity="center"
+                                    android:padding="@dimen/dp5"
+                                    android:text=""
+                                    android:textColor="@color/black"
+                                    android:textSize="20sp"
+                                    android:textStyle="bold" />
+                            </androidx.cardview.widget.CardView>
+                        </LinearLayout>
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:orientation="horizontal">
+
+                        <LinearLayout
+                            android:layout_width="@dimen/dp0"
+                            android:layout_height="wrap_content"
+                            android:layout_marginRight="@dimen/dp2"
+                            android:layout_weight="1"
+                            android:orientation="horizontal">
+
+                            <androidx.cardview.widget.CardView
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_margin="@dimen/dp5"
+                                android:layout_weight="1"
+                                app:cardCornerRadius="@dimen/dp5">
+
+                                <androidx.appcompat.widget.AppCompatButton
+                                    android:id="@+id/barcodeScanBT"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="@dimen/dp50"
+                                    android:background="#324F5C"
+                                    android:drawableRight="@drawable/ic_baseline_qr_code_scanner_24_1"
+                                    android:padding="@dimen/dp5"
+                                    android:text="Barcode Scan"
+                                    android:textColor="@color/basePressColor"
+                                    android:textSize="12sp"
+                                    android:textStyle="bold" />
+                            </androidx.cardview.widget.CardView>
+
+                            <androidx.cardview.widget.CardView
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_margin="@dimen/dp5"
+                                android:layout_weight="1"
+                                app:cardCornerRadius="@dimen/dp5">
+
+                                <androidx.appcompat.widget.AppCompatAutoCompleteTextView
+                                    android:id="@+id/barcodeScanTV"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="@dimen/dp50"
+                                    android:background="@drawable/edit_border"
+                                    android:editable="false"
+                                    android:gravity="center"
+                                    android:padding="@dimen/dp5"
+                                    android:text=""
+                                    android:textColor="@color/black"
+                                    android:textSize="20sp"
+                                    android:textStyle="bold" />
+                            </androidx.cardview.widget.CardView>
+                        </LinearLayout>
+                    </LinearLayout>
+                </LinearLayout>
+            </androidx.cardview.widget.CardView>
+
+            <androidx.cardview.widget.CardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="@dimen/dp5"
+                android:layout_marginTop="@dimen/dp5"
+                android:layout_marginRight="@dimen/dp5"
+                app:cardBackgroundColor="@color/ballReleaseColor"
+                app:cardCornerRadius="@dimen/dp5">
+
+                <androidx.cardview.widget.CardView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="@dimen/dp1"
+                    app:cardCornerRadius="@dimen/dp5">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="@dimen/dp40"
+                        android:orientation="horizontal">
+
+                        <TextView
+                            android:id="@+id/serialTV"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center"
+                            android:layout_margin="@dimen/dp5"
+                            android:text="SL"
+                            android:textColor="@color/blue_black_light"
+                            android:textSize="10sp"
+                            android:textStyle="bold" />
+
+                        <View
+                            android:layout_width="1dp"
+                            android:layout_height="@dimen/dp30"
+                            android:layout_gravity="center"
+                            android:background="@color/ballReleaseColor" />
+
+                        <LinearLayout
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center"
+                            android:layout_weight=".3"
+                            android:gravity="center"
+                            android:orientation="horizontal">
+
+                            <ImageView
+                                android:id="@+id/qrCodeClick"
+                                android:layout_width="@dimen/dp20"
+                                android:layout_height="@dimen/dp20"
+                                android:src="@drawable/ic_baseline_qr_code_2_24_black" />
+                        </LinearLayout>
+
+                        <View
+                            android:layout_width="1dp"
+                            android:layout_height="@dimen/dp30"
+                            android:layout_gravity="center"
+                            android:background="@color/ballReleaseColor" />
+
+                        <LinearLayout
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center|left"
+                            android:layout_marginLeft="@dimen/dp10"
+                            android:layout_weight="2"
+                            android:orientation="vertical">
+
+                            <TextView
+                                android:id="@+id/rfidItemTV"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_gravity="left"
+                                android:gravity="center|left"
+                                android:text="Barcode"
+                                android:textColor="@color/black_effective"
+                                android:textSize="14sp"
+                                android:textStyle="bold" />
+                        </LinearLayout>
+
+                        <View
+                            android:layout_width="1dp"
+                            android:layout_height="@dimen/dp30"
+                            android:layout_gravity="center"
+                            android:background="@color/ballReleaseColor" />
+
+                        <LinearLayout
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center|left"
+                            android:layout_marginLeft="@dimen/dp10"
+                            android:layout_weight="1"
+                            android:orientation="vertical">
+
+                            <TextView
+                                android:id="@+id/wightTV"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_gravity="left"
+                                android:gravity="center|left"
+                                android:text="Weight"
+                                android:textColor="@color/black_effective"
+                                android:textSize="14sp"
+                                android:textStyle="bold" />
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center"
+                            android:layout_weight=".3"
+                            android:gravity="center"
+                            android:orientation="horizontal">
+
+                            <ImageView
+                                android:id="@+id/deleteBtn"
+                                android:layout_width="@dimen/dp30"
+                                android:layout_height="@dimen/dp30"
+                                android:src="@drawable/ic_baseline_delete_forever_24_red" />
+                        </LinearLayout>
+                    </LinearLayout>
+                </androidx.cardview.widget.CardView>
+            </androidx.cardview.widget.CardView>
+
+            <androidx.cardview.widget.CardView
+                android:id="@+id/outPutListCard"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="@dimen/dp5"
+                android:layout_marginTop="@dimen/dp5"
+                android:layout_marginRight="@dimen/dp5"
+                android:layout_weight="1"
+                android:visibility="visible"
+                app:cardCornerRadius="@dimen/dp5">
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/barcodeRecyclerView"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    tools:itemCount="15"
+                    tools:listitem="@layout/transfer_layout" />
+            </androidx.cardview.widget.CardView>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/listCard"
+                android:layout_alignParentBottom="true"
+                android:layout_gravity="center"
+                android:layout_marginTop="5dp"
+                android:layout_marginBottom="5dp"
+                android:gravity="center"
+                android:orientation="horizontal"
+                android:padding="5dp">
+
+                <LinearLayout
+                    android:layout_width="@dimen/dp0"
+                    android:layout_height="wrap_content"
+                    android:layout_marginRight="@dimen/dp2"
+                    android:layout_weight="1"
+                    android:orientation="horizontal">
+
+                    <androidx.cardview.widget.CardView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_margin="@dimen/dp5"
+                        android:layout_weight="1"
+                        app:cardCornerRadius="@dimen/dp5">
+
+                        <androidx.appcompat.widget.AppCompatButton
+                            android:id="@+id/saveBT"
+                            android:layout_width="match_parent"
+                            android:layout_height="@dimen/dp60"
+                            android:background="#4CAF50"
+                            android:padding="@dimen/dp20"
+                            android:text="SAVE"
+                            android:textColor="@color/white"
+                            android:textSize="16sp"
+                            android:textStyle="bold" />
+                    </androidx.cardview.widget.CardView>
+
+                    <androidx.cardview.widget.CardView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_margin="@dimen/dp5"
+                        android:layout_weight="1"
+                        app:cardCornerRadius="@dimen/dp5">
+
+                        <androidx.appcompat.widget.AppCompatButton
+                            android:id="@+id/resetBT"
+                            android:layout_width="match_parent"
+                            android:layout_height="@dimen/dp60"
+                            android:background="#FF9800"
+                            android:padding="@dimen/dp20"
+                            android:text="RESET"
+                            android:textColor="@color/semi_gray"
+                            android:textSize="16sp"
+                            android:textStyle="bold" />
+                    </androidx.cardview.widget.CardView>
+                </LinearLayout>
+            </LinearLayout>
+        </LinearLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

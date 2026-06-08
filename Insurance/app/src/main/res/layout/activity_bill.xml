@@ -1,0 +1,138 @@
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="16dp"
+    tools:context=".ui.BillActivity">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <!-- CardView for Two-Column Layout -->
+        <androidx.cardview.widget.CardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:cardCornerRadius="8dp"
+            app:cardElevation="4dp">
+
+            <GridLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:columnCount="2"
+                android:padding="12dp">
+
+                <!-- Policy Holder -->
+                <Spinner
+                    android:id="@+id/spinnerPolicyHolder"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_columnWeight="1"
+                    android:padding="8dp"
+                    android:background="@drawable/rounded_edittext" />
+
+                <!-- Bank Name -->
+                <TextView
+                    android:id="@+id/tvBankName"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_columnWeight="1"
+                    android:hint="Bank Name"
+                    android:padding="8dp"
+                    android:inputType="text"
+                    android:background="@drawable/rounded_edittext" />
+
+                <!-- Sum Insured -->
+                <TextView
+                    android:id="@+id/tvSumInsured"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_columnWeight="1"
+                    android:hint="Sum Insured"
+                    android:padding="8dp"
+                    android:inputType="numberDecimal"
+                    android:background="@drawable/rounded_edittext" />
+
+                <!-- Fire Rate -->
+                <EditText
+                    android:id="@+id/etFire"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_columnWeight="1"
+                    android:hint="Fire Rate"
+                    android:padding="8dp"
+                    android:inputType="numberDecimal"
+                    android:background="@drawable/rounded_edittext" />
+
+                <!-- RSD Rate -->
+                <EditText
+                    android:id="@+id/etRsd"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_columnWeight="1"
+                    android:hint="RSD Rate"
+                    android:padding="8dp"
+                    android:inputType="numberDecimal"
+                    android:background="@drawable/rounded_edittext" />
+
+                <!-- Tax Rate -->
+                <EditText
+                    android:id="@+id/etTax"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_columnWeight="1"
+                    android:hint="Tax Rate"
+                    android:padding="8dp"
+                    android:inputType="numberDecimal"
+                    android:background="@drawable/rounded_edittext" />
+
+                <!-- Gross Premium -->
+                <EditText
+                    android:id="@+id/etNetPremium"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_columnWeight="1"
+                    android:hint="Net Premium"
+                    android:padding="8dp"
+                    android:inputType="numberDecimal"
+                    android:background="@drawable/rounded_edittext" />
+
+                <!-- Net Premium -->
+                <EditText
+                    android:id="@+id/etGrossPremium"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_columnWeight="1"
+                    android:hint="Gross Premium"
+                    android:padding="8dp"
+                    android:inputType="numberDecimal"
+                    android:background="@drawable/rounded_edittext" />
+            </GridLayout>
+        </androidx.cardview.widget.CardView>
+
+        <Button
+            android:id="@+id/btnSubmit"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Save Bill"
+            android:background="@drawable/rounded_edittext"/>
+
+        <!-- RecyclerView -->
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recyclerView"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            tools:listitem="@layout/bill_item" />
+
+        <!-- ProgressBar -->
+        <ProgressBar
+            android:id="@+id/progressBar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:visibility="gone" />
+    </LinearLayout>
+</ScrollView>

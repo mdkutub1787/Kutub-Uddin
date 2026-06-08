@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Grades Management</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f4f7f6; }
+        .container { margin-top: 20px; }
+        .form-section { background: white; padding: 20px; border-radius: 10px; box-shadow: 0 0 15px rgba(0,0,0,0.05); margin-bottom: 30px; }
+        .table-section { background: white; padding: 20px; border-radius: 10px; box-shadow: 0 0 15px rgba(0,0,0,0.05); }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+        <h1 class="h2">Grades/Classes Management</h1>
+        <div th:if="${message}" th:class="'alert ' + ${alertClass} + ' alert-dismissible fade show p-2 px-3 m-0'" role="alert">
+            <span th:text="${message}"></span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    </div>
+
+    <!-- Add/Edit Grade Form -->
+    <div class="form-section">
+        <h5><i class="fas fa-plus"></i> Add/Edit Grade</h5>
+        <form th:action="@{/grades/save}" th:object="${grade}" method="post" class="row g-3">
+            <input type="hidden" th:field="*{id}">
+            <div class="col-md-4">
+                <label class="form-label">Name</label>
+                <input type="text" th:field="*{name}" class="form-control" required>
+            </div>
+            <div class="col-md-4">
+                <label class="form-label">Section</label>
+                <input type="text" th:field="*{section}" class="form-control">
+            </div>
+            <div class="col-md-4">
+                <label class="form-label">Room</label>
+                <select th:field="*{room.id}" class="form-select">
+                    <option value="">Select Room</option>
+                    <option th:each="r : ${allRooms}" th:value="${r.id}" th:text="${r.name}"></option>
+                </select>
+            </div>
+            <div class="col-12 text-end">
+                <button type="submit" class="btn btn-primary">Save Grade</button>
+            </div>
+        </form>
+    </div>
+
+    <!-- Grades List -->
+    <div class="table-section">
+        <table class="table table-hover">
+            <thead>
+                <tr>
+                    <th>ID</th><th>Name</th><th>Section</th><th>Room</th><th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="g : ${grades}">
+                    <td th:text="${g.id}"></td>
+                    <td th:text="${g.name}"></td>
+                    <td th:text="${g.section}"></td>
+                    <td th:text="${g.room != null ? g.room.name : '-'}"></td>
+                    <td>
+                        <a th:href="@{/grades/edit(id=${g.id})}" class="btn btn-sm btn-info text-white">Edit</a>
+                        <a th:href="@{/grades/delete(id=${g.id})}" class="btn btn-sm btn-danger">Delete</a>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+</body>
+</html>

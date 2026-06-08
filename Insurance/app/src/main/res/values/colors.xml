@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Basic Colors -->
+    <color name="black">#FF000000</color>
+    <color name="white">#FFFFFFFF</color>
+    <color name="transparent">#00000000</color>
+
+    <!-- Gray Shades -->
+    <color name="gray_100">#F5F5F5</color>
+    <color name="gray_200">#EEEEEE</color>
+    <color name="gray_300">#E0E0E0</color>
+    <color name="gray_400">#BDBDBD</color>
+    <color name="gray_500">#9E9E9E</color>
+    <color name="gray_600">#757575</color>
+    <color name="gray_700">#616161</color>
+    <color name="gray_800">#424242</color>
+    <color name="gray_900">#212121</color>
+
+    <!-- Primary Color Scheme -->
+    <color name="colorPrimary">#673AB7</color> <!-- Deep Purple -->
+    <color name="colorPrimaryVariant">#512DA8</color> <!-- Darker Deep Purple -->
+    <color name="colorOnPrimary">#FFFFFF</color> <!-- White text on Deep Purple -->
+
+    <!-- Secondary Color Scheme -->
+    <color name="colorSecondary">#FFC107</color> <!-- Amber -->
+    <color name="colorSecondaryVariant">#FFA000</color> <!-- Darker Amber -->
+    <color name="colorOnSecondary">#000000</color> <!-- Black text on Amber -->
+
+    <!-- Other Functional Colors -->
+    <color name="green">#4CAF50</color> <!-- Green -->
+    <color name="light_green">#81C784</color> <!-- Light Green -->
+    <color name="dark_green">#388E3C</color> <!-- Dark Green -->
+    <color name="red">#F44336</color> <!-- Red -->
+    <color name="light_red">#E57373</color> <!-- Light Red -->
+    <color name="dark_red">#D32F2F</color> <!-- Dark Red -->
+    <color name="blue">#2196F3</color> <!-- Blue -->
+    <color name="light_blue">#64B5F6</color> <!-- Light Blue -->
+    <color name="dark_blue">#1976D2</color> <!-- Dark Blue -->
+    <color name="yellow">#FFEB3B</color> <!-- Yellow -->
+    <color name="light_yellow">#FFF59D</color> <!-- Light Yellow -->
+    <color name="dark_yellow">#FBC02D</color> <!-- Dark Yellow -->
+    <color name="orange">#FF9800</color> <!-- Orange -->
+    <color name="light_orange">#FFB74D</color> <!-- Light Orange -->
+    <color name="dark_orange">#F57C00</color> <!-- Dark Orange -->
+
+    <!-- Text Colors -->
+    <color name="textPrimary">#212121</color> <!-- Dark Gray -->
+    <color name="textSecondary">#757575</color> <!-- Medium Gray -->
+    <color name="textDisabled">#BDBDBD</color> <!-- Light Gray -->
+
+    <!-- Background Colors -->
+    <color name="background">#FAFAFA</color> <!-- Light Gray Background -->
+    <color name="surface">#FFFFFF</color> <!-- White Card Surface -->
+
+    <!-- Divider Color -->
+    <color name="divider">#BDBDBD</color> <!-- Light Gray Divider -->
+
+    <!-- Error Color -->
+    <color name="error">#B00020</color> <!-- Dark Red Error -->
+</resources>

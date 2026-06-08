@@ -1,0 +1,26 @@
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <!-- ImageView -->
+    <ImageView
+        android:id="@+id/carouselImage"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:scaleType="centerCrop" />
+
+    <!-- Title TextView -->
+    <TextView
+        android:id="@+id/carouselTitle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="top"
+        android:layout_margin="16dp"
+        android:background="#80000000"
+        android:gravity="center"
+        android:padding="8dp"
+        android:text="Title"
+        android:textColor="#FFFFFF"
+        android:textSize="18sp"
+        android:visibility="visible" />
+</FrameLayout>

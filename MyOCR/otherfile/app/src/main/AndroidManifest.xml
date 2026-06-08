@@ -1,0 +1,1006 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    package="com.logicsoftbd.lsl">
+
+    <uses-feature android:name="android.hardware.usb.host" />
+
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.BLUETOOTH" />
+    <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
+    <uses-permission android:name="android.permission.BLUETOOTH_CONNECT" />
+    <uses-permission android:name="android.permission.BLUETOOTH_SCAN" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.RECEIVE_EXPORTED_BROADCAST" />
+    <uses-permission
+        android:name="android.permission.LOCAL_MAC_ADDRESS"
+        tools:ignore="ProtectedPermissions" />
+    <uses-permission android:name="android.permission.CAMERA" />
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
+    <uses-permission android:name="android.permission.CHANGE_WIFI_MULTICAST_STATE" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.MANAGE_EXTERNAL_STORAGE" />
+    <uses-permission
+        android:name="android.permission.MANAGE_EXTERNAL_STORAGE"
+        tools:ignore="ScopedStorage" />
+    <uses-permission android:name="android.permission.REQUEST_INSTALL_PACKAGES" />
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
+    <uses-permission android:name="com.symbol.datawedge.permission.CONTENT_PROVIDER" />
+
+    <uses-feature
+        android:glEsVersion="0x00020000"
+        android:required="true" />
+    <uses-feature
+        android:name="android.hardware.camera"
+        android:required="false" />
+
+    <application
+        android:name=".MvpApp"
+        android:icon="@mipmap/ic_launcher"
+        android:label="@string/app_name"
+        android:networkSecurityConfig="@xml/network_security_config"
+        android:requestLegacyExternalStorage="true"
+        android:supportsRtl="true"
+        android:theme="@style/AppTheme"
+        android:usesCleartextTraffic="true">
+        <activity
+            android:name=".ui.v_1_ui.dyeing_production.V1_DyeingProductionPDAActivity"
+            android:exported="false"
+            android:label="Dyeing Production V1"
+            android:parentActivityName=".ui.v_1_ui.menu.V1_MenuActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/Theme.MaterialComponents.Light.DarkActionBar"
+            android:windowSoftInputMode="stateAlwaysHidden" />
+        <activity
+            android:name=".ui.v_1_ui.finishing.V1_FinishingForPdaActivity"
+            android:exported="false"
+            android:label="Finishing"
+            android:parentActivityName=".ui.v_1_ui.menu.V1_MenuActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/Theme.MaterialComponents.Light.DarkActionBar"
+            android:windowSoftInputMode="stateAlwaysHidden" />
+        <activity
+            android:name=".ui.v_1_ui.finishing.V1_FabricFinishingQCActivity"
+            android:exported="false"
+            android:label="Finishing QC"
+            android:parentActivityName=".ui.v_1_ui.menu.V1_MenuActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/Theme.MaterialComponents.Light.DarkActionBar"
+            android:windowSoftInputMode="stateAlwaysHidden" />
+        <activity
+            android:name=".ui.v_1_ui.fabric_bag.V1_AOPDeptBagReceiveActivity"
+            android:exported="false"
+            android:label="AOP Dept. Bag Receive"
+            android:parentActivityName=".ui.v_1_ui.menu.V1_MenuActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/Theme.MaterialComponents.Light.DarkActionBar"
+            android:windowSoftInputMode="stateAlwaysHidden" />
+        <activity
+            android:name=".ui.v_1_ui.fabric_bag.V1_DyedAOPDeptBagReceiveActivity"
+            android:exported="false"
+            android:label="Dyed &amp; AOP Fabric Rcvd"
+            android:parentActivityName=".ui.v_1_ui.menu.V1_MenuActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/Theme.MaterialComponents.Light.DarkActionBar"
+            android:windowSoftInputMode="stateAlwaysHidden" />
+        <activity
+            android:name=".ui.v_1_ui.fabric_bag.V1_GreyStoreRejectFabricBagActivity"
+            android:exported="false"
+            android:label="Grey Store Reject Fabric Bag"
+            android:parentActivityName=".ui.v_1_ui.menu.V1_MenuActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/Theme.MaterialComponents.Light.DarkActionBar"
+            android:windowSoftInputMode="stateAlwaysHidden" />
+        <activity
+            android:name=".ui.v_1_ui.bundle_wise_sewing_pcs.V1_BundleWiseSewingInput_PCSActivity"
+            android:exported="false"
+            android:label="Bundle Wise Sewing Input PCS"
+            android:parentActivityName=".ui.v_1_ui.menu.V1_MenuActivity"
+            android:theme="@style/Theme.MaterialComponents.Light.DarkActionBar"
+            android:windowSoftInputMode="stateAlwaysHidden" />
+        <activity
+            android:name=".ui.v_1_ui.fabric_bag.V1_BagKeepingQcActivity"
+            android:exported="false"
+            android:label="Bag Keeping V1"
+            android:parentActivityName=".ui.v_1_ui.menu.V1_MenuActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/Theme.MaterialComponents.Light.DarkActionBar"
+            android:windowSoftInputMode="stateAlwaysHidden" />
+        <activity
+            android:name=".ui.v_1_ui.finish_fabric_roll_receive.V1_GmtFinishReceiveActivity"
+            android:exported="false"
+            android:label="GMT Finish Receive"
+            android:parentActivityName=".ui.v_1_ui.menu.V1_MenuActivity"
+            android:theme="@style/Theme.MaterialComponents.Light.DarkActionBar"
+            android:windowSoftInputMode="stateAlwaysHidden" />
+        <activity
+            android:name=".ui.v_1_ui.yarn_rfid.V1_RFIDTagForYarnIssueReturnActivity"
+            android:exported="false"
+            android:label="RFID Tag for Yarn Issue Return"
+            android:parentActivityName=".ui.v_1_ui.menu.V1_MenuActivity"
+            android:theme="@style/Theme.MaterialComponents.Light.DarkActionBar"
+            android:windowSoftInputMode="stateAlwaysHidden" />
+        <activity
+            android:name=".ui.v_1_ui.without_observation_qc.V1_FinishFabricScannerDashboardActivity"
+            android:exported="false"
+            android:label="Dashboard"
+            android:parentActivityName=".ui.v_1_ui.menu.V1_MenuActivity"
+            android:theme="@style/Theme.MaterialComponents.Light.DarkActionBar"
+            android:windowSoftInputMode="stateAlwaysHidden" />
+        <activity
+            android:name=".ui.v_1_ui.about.PrintTestActivity"
+            android:exported="false"
+            android:label="Dashboard"
+            android:parentActivityName=".ui.v_1_ui.menu.V1_MenuActivity"
+            android:theme="@style/Theme.MaterialComponents.Light.DarkActionBar"
+            android:windowSoftInputMode="stateAlwaysHidden" />
+        <activity
+            android:name=".ui.v_1_ui.fabric_bag.V1_BagKeepingActivity"
+            android:exported="false"
+            android:label="Bag Keeping V1"
+            android:parentActivityName=".ui.v_1_ui.menu.V1_MenuActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/Theme.MaterialComponents.Light.DarkActionBar"
+            android:windowSoftInputMode="stateAlwaysHidden" />
+        <activity
+            android:name=".ui.v_1_ui.fabric_bag.V1_BagKeepingPrintActivity"
+            android:exported="false"
+            android:label="Bag Keeping V1"
+            android:parentActivityName=".ui.v_1_ui.menu.V1_MenuActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/Theme.MaterialComponents.Light.DarkActionBar"
+            android:windowSoftInputMode="stateAlwaysHidden" />
+        <activity
+            android:name=".ui.v_1_ui.fabric_bag.V1_AOPBagKeepingActivity"
+            android:exported="false"
+            android:label="AOP Bag Keeping V1"
+            android:parentActivityName=".ui.v_1_ui.menu.V1_MenuActivity"
+            android:theme="@style/Theme.MaterialComponents.Light.DarkActionBar"
+            android:windowSoftInputMode="stateAlwaysHidden" />
+        <activity
+            android:name=".ui.v_1_ui.fabric_bag.V1_EmptyBagReceiveActivity"
+            android:exported="false"
+            android:label="Empty Bag Receive"
+            android:parentActivityName=".ui.v_1_ui.menu.V1_MenuActivity"
+            android:theme="@style/Theme.MaterialComponents.Light.DarkActionBar"
+            android:windowSoftInputMode="stateAlwaysHidden" />
+        <activity
+            android:name=".ui.v_1_ui.fabric_bag.V1_BagDeliveryActivity"
+            android:exported="false"
+            android:label="Fabric Bag Issue To RMG Store"
+            android:parentActivityName=".ui.v_1_ui.menu.V1_MenuActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/Theme.MaterialComponents.Light.DarkActionBar"
+            android:windowSoftInputMode="stateAlwaysHidden" />
+        <activity
+            android:name=".ui.v_1_ui.fabric_bag.V1_BagReceiveActivity"
+            android:exported="false"
+            android:label="Bag Receive V1"
+            android:parentActivityName=".ui.v_1_ui.menu.V1_MenuActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/Theme.MaterialComponents.Light.DarkActionBar"
+            android:windowSoftInputMode="stateAlwaysHidden" />
+        <activity
+            android:name=".ui.v_1_ui.fabric_bag.V1_BagIssueActivity"
+            android:exported="false"
+            android:label="Finish Fabric Issue To Cutting"
+            android:parentActivityName=".ui.v_1_ui.menu.V1_MenuActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/Theme.MaterialComponents.Light.DarkActionBar"
+            android:windowSoftInputMode="stateAlwaysHidden" />
+        <activity
+            android:name=".ui.v_1_ui.fabric_bag.V1_BagReturnActivity"
+            android:exported="false"
+            android:label="Cutting Dept. Bag Return"
+            android:parentActivityName=".ui.v_1_ui.menu.V1_MenuActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/Theme.MaterialComponents.Light.DarkActionBar"
+            android:windowSoftInputMode="stateAlwaysHidden" />
+        <activity
+            android:name=".ui.v_1_ui.without_observation_qc.V2_FinishFabricQcEntryActivity"
+            android:exported="false"
+            android:label="Finish Fabric QC Entry V2"
+            android:parentActivityName=".ui.v_1_ui.without_observation_qc.V1_FinishFabricScannerDashboardActivity"
+            android:screenOrientation="landscape"
+            android:theme="@style/Theme.MaterialComponents.Light.DarkActionBar"
+            android:windowSoftInputMode="stateAlwaysHidden" />
+        <activity
+            android:name=".ui.v_1_ui.finish_fabric.finish_fabric_issue.V1_Finish_Fabric_Issue"
+            android:exported="false" />
+        <activity
+            android:name=".ui.v_1_ui.yarn_rfid.V1_YarnTransferEntryActivity"
+            android:exported="false"
+            android:label="Yarn RFID Transfer"
+            android:parentActivityName=".ui.v_1_ui.menu.V1_MenuActivity"
+            android:theme="@style/Theme.MaterialComponents.Light.DarkActionBar" />
+        <activity
+            android:name=".ui.v_1_ui.finish_fabric.finish_fabric_receive.V1_Finish_Fabric_Receive"
+            android:exported="false"
+            android:label="Gtm Finish Fab. Receive"
+            android:parentActivityName=".ui.v_1_ui.menu.V1_MenuActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/Theme.MaterialComponents.Light.DarkActionBar" />
+        <activity
+            android:name=".ui.v_1_ui.finish_fabric.finish_fabric_transfer_out.V1_finish_fabric_transfer_out_activity"
+            android:exported="false"
+            android:label="Gtm Finish Fab. Transfer Out"
+            android:parentActivityName=".ui.v_1_ui.menu.V1_MenuActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/Theme.MaterialComponents.Light.DarkActionBar" />
+        <activity
+            android:name=".ui.v_1_ui.finish_fabric.finish_fabric_transfer_in.V1_finish_fabric_transfer_in_Activity"
+            android:exported="false"
+            android:label="Gtm Finish Fab. Transfer In"
+            android:parentActivityName=".ui.v_1_ui.menu.V1_MenuActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/Theme.MaterialComponents.Light.DarkActionBar" />
+        <activity
+            android:name=".ui.v_1_ui.finish_fabric.finish_fabric_receive_old.V1_FinishFabricReceiveActivity"
+            android:exported="false"
+            android:label="Finish Fabric Roll Receive"
+            android:parentActivityName=".ui.v_1_ui.menu.V1_MenuActivity"
+            android:theme="@style/Theme.MaterialComponents.Light.DarkActionBar" />
+        <activity
+            android:name=".ui.v_1_ui.roll_wise_gray_fabric_delivery_store.V1_RollWiseGreyFabricDeliveryToStoreActivity"
+            android:exported="false"
+            android:label="Gray Fabric Delivery To Store"
+            android:parentActivityName=".ui.v_1_ui.menu.V1_MenuActivity"
+            android:theme="@style/Theme.MaterialComponents.Light.DarkActionBar" />
+        <activity
+            android:name=".ui.v_1_ui.roll_wise_gray_fabric_delivery_store.V1_RollWiseGreyFabricDeliveryToStorePDAActivity"
+            android:exported="false"
+            android:label="Gray Fabric Delivery To Store PDA"
+            android:parentActivityName=".ui.v_1_ui.menu.V1_MenuActivity"
+            android:theme="@style/Theme.MaterialComponents.Light.DarkActionBar" />
+        <activity
+            android:name=".ui.slitting_squeezing.SlittingSqeezingRollWiseActivity"
+            android:launchMode="singleTop"
+            android:parentActivityName=".ui.main.MainActivity"
+            android:screenOrientation="portrait">
+
+            <!-- Parent activity meta-data to support 4.0 and lower -->
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.logicsoftbd.lsl.ui.main.MainActivity" />
+        </activity>
+        <activity
+            android:name=".ui.stentering.StenteringRollWiseActivity"
+            android:launchMode="singleTop"
+            android:parentActivityName=".ui.main.MainActivity"
+            android:screenOrientation="portrait">
+
+            <!-- Parent activity meta-data to support 4.0 and lower -->
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.logicsoftbd.lsl.ui.main.MainActivity" />
+        </activity>
+        <activity
+            android:name=".ui.compacting.CompactingRollWiseActivity"
+            android:launchMode="singleTop"
+            android:parentActivityName=".ui.main.MainActivity"
+            android:screenOrientation="portrait">
+
+            <!-- Parent activity meta-data to support 4.0 and lower -->
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.logicsoftbd.lsl.ui.main.MainActivity" />
+        </activity>
+        <activity
+            android:name=".ui.v_1_ui.electronic_approval.V1_ApprovalItemDetailsActivity"
+            android:exported="false"
+            android:label="Approval Details"
+            android:parentActivityName=".ui.v_1_ui.electronic_approval.V1_ApprovalDetailsActivity"
+            android:theme="@style/Theme.AppCompat.Light.Dialog" />
+        <activity
+            android:name=".ui.v_1_ui.transfer.transfer_in.V1_TransferInActivity"
+            android:exported="false"
+            android:label="Transfer IN"
+            android:parentActivityName=".ui.v_1_ui.menu.V1_MenuActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/Theme.MaterialComponents.Light.DarkActionBar" />
+        <activity
+            android:name=".ui.v_1_ui.transfer.transfer_in.V1_TransferInForPDADeviceActivity"
+            android:exported="false"
+            android:label="Transfer IN"
+            android:parentActivityName=".ui.v_1_ui.menu.V1_MenuActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/Theme.MaterialComponents.Light.DarkActionBar" />
+        <activity
+            android:name=".ui.v_1_ui.transfer.transfer_out.V1_TransferoutActivity"
+            android:exported="false"
+            android:label="Transfer OUT"
+            android:parentActivityName=".ui.v_1_ui.menu.V1_MenuActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/Theme.MaterialComponents.Light.DarkActionBar" />
+        <activity
+            android:name=".ui.v_1_ui.transfer.transfer_out.V1_TransferoutForPDADeviceActivity"
+            android:exported="false"
+            android:label="Transfer OUT"
+            android:parentActivityName=".ui.v_1_ui.menu.V1_MenuActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/Theme.MaterialComponents.Light.DarkActionBar" />
+        <activity
+            android:name=".ui.v_1_ui.yarn_rfid.V1_YarnRfidReceiveActivity"
+            android:exported="false"
+            android:label="Yarn RFID Receive"
+            android:parentActivityName=".ui.v_1_ui.menu.V1_MenuActivity"
+            android:theme="@style/Theme.MaterialComponents.Light.DarkActionBar" />
+        <activity
+            android:name=".ui.v_1_ui.cutting.V1_CuttingStoreIssueActivity"
+            android:exported="false"
+            android:label="Cutting Store Issue"
+            android:parentActivityName=".ui.v_1_ui.menu.V1_MenuActivity"
+            android:theme="@style/Theme.MaterialComponents.Light.DarkActionBar" />
+        <activity
+            android:name=".ui.v_1_ui.cutting.V1_CuttingStoreReceiveActivity"
+            android:exported="false"
+            android:label="Cutting Store Receive"
+            android:parentActivityName=".ui.v_1_ui.menu.V1_MenuActivity"
+            android:theme="@style/Theme.MaterialComponents.Light.DarkActionBar" />
+        <activity
+            android:name=".ui.v_1_ui.settings.V1_SettingsActivity"
+            android:exported="true"
+            android:label=""
+            android:theme="@style/Theme.AppCompat.Light.Dialog" />
+        <activity
+            android:name=".ui.v_1_ui.style_wise_sewing.V1_StyleWiseSewingActivity_v5"
+            android:exported="false"
+            android:label="Style Wise Sewing Output"
+            android:parentActivityName=".ui.v_1_ui.menu.V1_MenuActivity"
+            android:screenOrientation="landscape"
+            android:theme="@style/Theme.MaterialComponents.Light.NoActionBar" />
+        <activity
+            android:name=".ui.v_1_ui.style_wise_sewing.V1_StyleWiseSewingActivity_v6"
+            android:exported="false"
+            android:label="Style Wise Sewing Output"
+            android:parentActivityName=".ui.v_1_ui.menu.V1_MenuActivity"
+            android:screenOrientation="landscape"
+            android:theme="@style/Theme.MaterialComponents.Light.NoActionBar" />
+        <activity
+            android:name=".ui.v_1_ui.style_wise_sewing.V1_StyleWiseSewingActivity_v8"
+            android:exported="false"
+            android:label="Style Wise Sewing Output PCS"
+            android:parentActivityName=".ui.v_1_ui.menu.V1_MenuActivity"
+            android:screenOrientation="landscape"
+            android:theme="@style/Theme.MaterialComponents.Light.NoActionBar" />
+        <activity
+            android:name=".ui.v_1_ui.style_wise_sewing.V1_StyleWiseSewingActivity_v6_offline"
+            android:exported="false"
+            android:label="Style Wise Sewing Output"
+            android:parentActivityName=".ui.v_1_ui.menu.V1_MenuActivity"
+            android:screenOrientation="landscape"
+            android:theme="@style/Theme.MaterialComponents.Light.NoActionBar" />
+        <activity
+            android:name=".ui.v_1_ui.electronic_approval.V1_ApprovalDetailsActivity"
+            android:exported="true"
+            android:label="Approval Details List"
+            android:parentActivityName=".ui.v_1_ui.electronic_approval.V1_ElectronicApprovalActivity"
+            android:theme="@style/Theme.MaterialComponents.Light.DarkActionBar" />
+        <activity
+            android:name=".ui.v_1_ui.electronic_approval.V1_ElectronicApprovalActivity"
+            android:exported="true"
+            android:label="Approval Menu List"
+            android:parentActivityName=".ui.v_1_ui.menu.V1_MenuActivity"
+            android:taskAffinity=""
+            android:theme="@style/Theme.MaterialComponents.Light.DarkActionBar">
+            <intent-filter>
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name=".ui.v_1_ui.buyer_meeting.V1_MeetingArchiveActivity"
+            android:exported="false"
+            android:label="Meeting Archive"
+            android:parentActivityName=".ui.v_1_ui.home.V1_HomeActivity"
+            android:theme="@style/Theme.MaterialComponents.Light.DarkActionBar" />
+        <activity
+            android:name=".ui.v_1_ui.login.CompanyInfoActivity"
+            android:exported="false"
+            android:label="Logic Software Ltd."
+            android:parentActivityName=".ui.login.LoginActivity" />
+        <activity
+            android:name=".ui.v_1_ui.style_wise_sewing.V1_StyleWiseSewingActivity_v2"
+            android:exported="false"
+            android:label="Style Wise Sewing Output"
+            android:parentActivityName=".ui.v_1_ui.menu.V1_MenuActivity"
+            android:screenOrientation="landscape"
+            android:theme="@style/Theme.MaterialComponents.Light.NoActionBar" />
+        <activity
+            android:name=".ui.v_1_ui.style_wise_sewing.V1_StyleWiseSewingActivity_v3"
+            android:exported="false"
+            android:label="Style Wise Sewing Output"
+            android:parentActivityName=".ui.v_1_ui.menu.V1_MenuActivity"
+            android:screenOrientation="landscape"
+            android:theme="@style/Theme.MaterialComponents.Light.NoActionBar" />
+        <activity
+            android:name=".ui.v_1_ui.style_wise_sewing.V1_StyleWiseSewingActivity_v4"
+            android:exported="false"
+            android:label="Style Wise Sewing Output"
+            android:parentActivityName=".ui.v_1_ui.menu.V1_MenuActivity"
+            android:screenOrientation="landscape"
+            android:theme="@style/Theme.MaterialComponents.Light.NoActionBar" />
+        <activity
+            android:name=".ui.v_1_ui.config.V1_StyleWiseLineConfigActivity_v3"
+            android:exported="false"
+            android:label="@string/title_activity_config"
+            android:parentActivityName=".ui.v_1_ui.menu.V1_MenuActivity"
+            android:screenOrientation="landscape"
+            android:theme="@style/Theme.MaterialComponents.Light.DarkActionBar" />
+        <activity
+            android:name=".ui.v_1_ui.device_session.V1_ActiveDeviceStatusActivity"
+            android:exported="false"
+            android:label="@string/active_device_status"
+            android:parentActivityName=".ui.v_1_ui.menu.V1_MenuActivity"
+            android:screenOrientation="landscape"
+            android:theme="@style/Theme.MaterialComponents.Light.DarkActionBar" />
+        <activity
+            android:name=".ui.v_1_ui.apk_update.V1_ApkUpdateActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ui.v_1_ui.config.V1_StyleWiseLineConfigActivity"
+            android:exported="false"
+            android:label="@string/title_activity_config"
+            android:parentActivityName=".ui.v_1_ui.menu.V1_MenuActivity"
+            android:screenOrientation="landscape"
+            android:theme="@style/Theme.MaterialComponents.Light.DarkActionBar" />
+        <activity
+            android:name=".ui.v_1_ui.style_wise_sewing.V1_StyleWiseSewingActivity"
+            android:exported="false"
+            android:label="Style Wise Sewing Output"
+            android:parentActivityName=".ui.v_1_ui.menu.V1_MenuActivity"
+            android:screenOrientation="landscape"
+            android:theme="@style/Theme.MaterialComponents.Light.NoActionBar" />
+        <activity
+            android:name=".ui.v_1_ui.bunlde_wise_sewing.V1_SewingOutputOperationActivity"
+            android:exported="false"
+            android:label="DEFECTIVE-Select Operation"
+            android:parentActivityName=".ui.v_1_ui.bunlde_wise_sewing.V1_SewingOutputActivity" />
+        <activity
+            android:name=".ui.v_1_ui.grey_fabric_roll_issue.V1_GreyFabricRollIssueActivity"
+            android:label="Grey Roll Issue"
+            android:parentActivityName=".ui.v_1_ui.menu.V1_MenuActivity"
+            android:theme="@style/Theme.MaterialComponents.Light.DarkActionBar" />
+        <activity
+            android:name=".ui.v_1_ui.grey_fabric_roll_issue.V1_GreyFabricRollIssueForPDODeviceActivity"
+            android:label="Grey Roll Issue"
+            android:parentActivityName=".ui.v_1_ui.menu.V1_MenuActivity"
+            android:theme="@style/Theme.MaterialComponents.Light.DarkActionBar" />
+        <activity
+            android:name=".ui.v_1_ui.qr_code.V1_ScannerActivity"
+            android:launchMode="singleTop"
+            android:parentActivityName=".ui.main.MainActivity"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="stateAlwaysHidden|adjustResize">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.logicsoftbd.lsl.ui.main.MainActivity" />
+        </activity>
+        <activity
+            android:name=".ui.v_1_ui.grey_fabric_roll_receive.V1_GreyRollReceiveActivity"
+            android:label="Grey Roll Receive V1"
+            android:parentActivityName=".ui.v_1_ui.menu.V1_MenuActivity"
+            android:theme="@style/Theme.MaterialComponents.Light.DarkActionBar" />
+        <activity
+            android:name=".ui.v_1_ui.grey_fabric_roll_receive.V1_GreyRollReceiveForPDODeviceActivity"
+            android:label="Grey Roll Receive V1"
+            android:parentActivityName=".ui.v_1_ui.menu.V1_MenuActivity"
+            android:theme="@style/Theme.MaterialComponents.Light.DarkActionBar" />
+        <activity
+            android:name=".ui.v_1_ui.bunlde_wise_sewing.V1_Sewing_Output_Reject_Activity"
+            android:exported="false"
+            android:parentActivityName=".ui.v_1_ui.bunlde_wise_sewing.V1_SewingOutputActivity" />
+        <activity
+            android:name=".ui.v_1_ui.bunlde_wise_sewing.V1_Sewing_Output_Spot_Activity"
+            android:exported="false"
+            android:parentActivityName=".ui.v_1_ui.bunlde_wise_sewing.V1_SewingOutputActivity" />
+        <activity
+            android:name=".ui.v_1_ui.bunlde_wise_sewing.V1_Sewing_Output_Alter_Activity"
+            android:exported="false"
+            android:parentActivityName=".ui.v_1_ui.bunlde_wise_sewing.V1_SewingOutputActivity" />
+        <activity
+            android:name=".ui.v_1_ui.production_operation.V1_ProductionOperationActivity"
+            android:exported="false"
+            android:label="Production In Operation Level"
+            android:parentActivityName=".ui.v_1_ui.menu.V1_MenuActivity"
+            android:theme="@style/Theme.MaterialComponents.Light.DarkActionBar" />
+        <activity
+            android:name=".ui.v_1_ui.bi.V1_BI_01_Activity"
+            android:exported="false"
+            android:label="Business Intelligence"
+            android:parentActivityName=".ui.v_1_ui.menu.V1_MenuActivity"
+            android:theme="@style/Theme.MaterialComponents.Light.DarkActionBar" /> <!-- <activity -->
+        <!-- android:name="com.logicsoftbd.lsl.ui.v_1_ui.sewing_defect.EditImageActivity" -->
+        <!-- android:exported="false" -->
+        <!-- android:parentActivityName="com.logicsoftbd.lsl.ui.v_1_ui.bunlde_wise_sewing.V1_SewingOutputActivity" -->
+        <!-- android:screenOrientation="portrait" -->
+        <!-- android:theme="@style/AppTheme.NoActionBar" /> -->
+        <activity
+            android:name=".ui.v_1_ui.menu.V1_MenuActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ui.v_1_ui.about.V1_GuestActivity"
+            android:exported="false"
+            android:label="Guest Session"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".ui.v_1_ui.qr_code.V1_ReportQRBarcodeScannerActivity"
+            android:exported="false"
+            android:label="@string/report_scanner"
+            android:screenOrientation="portrait"
+            android:theme="@style/Theme.MaterialComponents.Light.DarkActionBar" />
+        <activity
+            android:name=".ui.v_1_ui.report.V1_ShipmentScheduleManagementActivity"
+            android:exported="false"
+            android:label="@string/shipment_schedule"
+            android:parentActivityName=".ui.v_1_ui.menu.V1_MenuActivity"
+            android:theme="@style/Theme.MaterialComponents.Light.DarkActionBar" />
+        <activity
+            android:name=".ui.v_1_ui.report.V1_ShipmentPendingReportActivity"
+            android:exported="false"
+            android:label="@string/shipment_pending_report"
+            android:parentActivityName=".ui.v_1_ui.menu.V1_MenuActivity"
+            android:theme="@style/Theme.MaterialComponents.Light.DarkActionBar" />
+        <activity
+            android:name=".ui.v_1_ui.report.V1_PlanVsBookedVsCapacityActivity"
+            android:exported="false"
+            android:label="@string/planVsBookedVsCapacity"
+            android:theme="@style/Theme.MaterialComponents.Light.DarkActionBar" />
+        <activity
+            android:name=".ui.v_1_ui.report.V1_PlanVsBookedReportActivity"
+            android:exported="false"
+            android:label="@string/plan_vs_booked"
+            android:parentActivityName=".ui.v_1_ui.menu.V1_MenuActivity"
+            android:theme="@style/Theme.MaterialComponents.Light.DarkActionBar" />
+        <activity
+            android:name=".ui.v_1_ui.report.V1_ConsolitatedOrderSummeryctivity"
+            android:exported="false"
+            android:label="@string/consulate"
+            android:parentActivityName=".ui.v_1_ui.menu.V1_MenuActivity"
+            android:theme="@style/Theme.MaterialComponents.Light.DarkActionBar" />
+        <activity
+            android:name=".ui.v_1_ui.report.V1_ChallanReportActivity"
+            android:exported="false"
+            android:label="@string/challan_report"
+            android:theme="@style/Theme.MaterialComponents.Light.DarkActionBar" />
+        <activity
+            android:name=".ui.v_1_ui.report.V1_CapacityVsPlanActivity"
+            android:exported="false"
+            android:label="@string/planVsCapacity"
+            android:theme="@style/Theme.MaterialComponents.Light.DarkActionBar" />
+        <activity
+            android:name=".ui.v_1_ui.report.V1_CapacityVsAllocatedReportActivity"
+            android:exported="false"
+            android:label="Capacity Vs Allocated Report"
+            android:theme="@style/Theme.MaterialComponents.Light.DarkActionBar" />
+        <activity
+            android:name=".ui.v_1_ui.report.V1_BundleTrackingReportActivity"
+            android:exported="false"
+            android:label="@string/bunlde_tracking_info"
+            android:parentActivityName=".ui.v_1_ui.qr_code.V1_ReportQRBarcodeScannerActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/Theme.MaterialComponents.Light.DarkActionBar" />
+        <activity
+            android:name=".ui.v_1_ui.report.V1_ReportHomeActivity"
+            android:exported="false"
+            android:label="@string/reportScan"
+            android:parentActivityName=".ui.v_1_ui.menu.V1_MenuActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/Theme.MaterialComponents.Light.DarkActionBar" />
+        <activity
+            android:name=".ui.v_1_ui.report.V1_QcReportActivity"
+            android:exported="false"
+            android:label="Roll Tracking Id"
+            android:parentActivityName=".ui.v_1_ui.menu.V1_MenuActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/Theme.MaterialComponents.Light.DarkActionBar" />
+        <activity
+            android:name=".ui.v_1_ui.with_observation_qc.V1_GreyObsActivity"
+            android:exported="false"
+            android:label="Grey Observation QC"
+            android:theme="@style/Theme.MaterialComponents.Light.DarkActionBar" />
+        <activity
+            android:name=".ui.v_1_ui.with_observation_qc.V1_FinishFabricObsActivity"
+            android:exported="false"
+            android:label="Observation Finish Fabric"
+            android:theme="@style/Theme.MaterialComponents.Light.DarkActionBar" />
+        <activity
+            android:name=".ui.v_1_ui.with_observation_qc.V1_BatchDetailsActivity"
+            android:exported="false"
+            android:label="@string/batch_details"
+            android:parentActivityName=".ui.v_1_ui.menu.V1_MenuActivity"
+            android:theme="@style/Theme.MaterialComponents.Light.DarkActionBar" />
+        <activity
+            android:name=".ui.v_1_ui.without_observation_qc.V1_FinishFabricActivity"
+            android:exported="false"
+            android:label="Finish Fabric QC Entry"
+            android:theme="@style/Theme.MaterialComponents.Light.DarkActionBar"
+            android:windowSoftInputMode="stateAlwaysHidden|adjustResize" />
+        <activity
+            android:name=".ui.v_1_ui.without_observation_qc.V1_GreyFabricActivity"
+            android:exported="false"
+            android:label="Grey Fabric QC Entry"
+            android:screenOrientation="portrait"
+            android:theme="@style/Theme.MaterialComponents.Light.DarkActionBar"
+            android:windowSoftInputMode="stateAlwaysHidden" />
+        <activity
+            android:name=".ui.v_1_ui.without_observation_qc.V2_GreyFabricActivity"
+            android:exported="false"
+            android:label="Grey Fabric QC Entry"
+            android:screenOrientation="portrait"
+            android:theme="@style/Theme.MaterialComponents.Light.DarkActionBar"
+            android:windowSoftInputMode="stateAlwaysHidden" />
+        <activity
+            android:name=".ui.v_1_ui.linking.V1_LinkingOutputActivity"
+            android:exported="false"
+            android:parentActivityName=".ui.v_1_ui.menu.V1_MenuActivity"
+            android:theme="@style/Theme.MaterialComponents.Light.DarkActionBar" />
+        <activity
+            android:name=".ui.v_1_ui.linking.V1_LinkingInputActivity"
+            android:exported="false"
+            android:theme="@style/Theme.MaterialComponents.Light.DarkActionBar" />
+        <activity
+            android:name=".ui.v_1_ui.line_wise_sewing.V1_LineWiseSewingOutputActivity"
+            android:exported="false"
+            android:label="@string/sewing_line_output"
+            android:parentActivityName=".ui.v_1_ui.menu.V1_MenuActivity"
+            android:theme="@style/Theme.MaterialComponents.Light.DarkActionBar" />
+        <activity
+            android:name=".ui.v_1_ui.line_wise_sewing.V1_LineWiseSewingInputActivity"
+            android:exported="false"
+            android:label="@string/sewing_line_input"
+            android:parentActivityName=".ui.v_1_ui.menu.V1_MenuActivity"
+            android:theme="@style/Theme.MaterialComponents.Light.DarkActionBar" />
+        <activity
+            android:name=".ui.v_1_ui.bunlde_wise_sewing.V1_SewingOutputActivity"
+            android:exported="false"
+            android:label="Bundle Wise Sewing Output"
+            android:parentActivityName=".ui.v_1_ui.menu.V1_MenuActivity"
+            android:theme="@style/Theme.MaterialComponents.Light.DarkActionBar" />
+        <activity
+            android:name=".ui.v_1_ui.bunlde_wise_sewing.V1_SewingOutputActivity_v1"
+            android:exported="false"
+            android:label="Bundle Wise Sewing Output"
+            android:parentActivityName=".ui.v_1_ui.menu.V1_MenuActivity"
+            android:theme="@style/Theme.MaterialComponents.Light.DarkActionBar" />
+        <activity
+            android:name=".ui.v_1_ui.qr_code.V1_QRBarcodeScannerActivity"
+            android:exported="false"
+            android:label="@string/barcode_scan"
+            android:parentActivityName=".ui.v_1_ui.home.V1_HomeActivity"
+            android:theme="@style/Theme.MaterialComponents.Light.DarkActionBar" />
+        <activity
+            android:name=".ui.v_1_ui.bunlde_wise_sewing.V1_SewingInputActivity"
+            android:exported="false"
+            android:label="Bundle Wise Sewing Input"
+            android:parentActivityName=".ui.v_1_ui.menu.V1_MenuActivity"
+            android:theme="@style/Theme.MaterialComponents.Light.DarkActionBar" />
+        <activity
+            android:name=".ui.v_1_ui.home.V1_HomeActivity"
+            android:exported="false"
+            android:label="@string/scanner_page"
+            android:screenOrientation="portrait"
+            android:theme="@style/Theme.MaterialComponents.Light.DarkActionBar" />
+        <activity
+            android:name=".ui.v_1_ui.approval.V1_ApprovalActivity"
+            android:exported="false"
+            android:label="@string/approval"
+            android:parentActivityName=".ui.v_1_ui.menu.V1_MenuActivity"
+            android:theme="@style/Theme.MaterialComponents.Light.DarkActionBar" />
+        <activity
+            android:name=".ui.v_1_ui.config.V1_ConfigActivity"
+            android:exported="false"
+            android:label="@string/title_activity_config"
+            android:parentActivityName=".ui.v_1_ui.menu.V1_MenuActivity"
+            android:theme="@style/Theme.MaterialComponents.Light.DarkActionBar" />
+        <activity
+            android:name=".ui.v_1_ui.menu.V1_v1_MenuActivity"
+            android:exported="false"
+            android:label="@string/title_activity_menu"
+            android:theme="@style/Theme.MaterialComponents.Light.DarkActionBar" />
+        <activity
+            android:name=".ui.v_1_ui.login.V1_LoginActivity"
+            android:exported="false"
+            android:label="Login"
+            android:theme="@style/Theme.MaterialComponents.Light.NoActionBar" />
+        <activity
+            android:name=".ui.home.HomeActivity"
+            android:exported="false"
+            android:label="Home"
+            android:theme="@style/Theme.MaterialComponents.Light.DarkActionBar" />
+        <activity
+            android:name=".ui.compacting.CompactingActivity"
+            android:launchMode="singleTop"
+            android:parentActivityName=".ui.main.MainActivity"
+            android:screenOrientation="landscape">
+
+            <!-- Parent activity meta-data to support 4.0 and lower -->
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.logicsoftbd.lsl.ui.main.MainActivity" />
+        </activity>
+        <activity
+            android:name=".ui.stentering.StenteringActivity"
+            android:launchMode="singleTop"
+            android:parentActivityName=".ui.main.MainActivity"
+            android:screenOrientation="landscape">
+
+            <!-- Parent activity meta-data to support 4.0 and lower -->
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.logicsoftbd.lsl.ui.main.MainActivity" />
+        </activity>
+        <activity
+            android:name=".ui.slitting_squeezing.SlittingSqueezingActivity"
+            android:launchMode="singleTop"
+            android:parentActivityName=".ui.main.MainActivity"
+            android:screenOrientation="landscape">
+
+            <!-- Parent activity meta-data to support 4.0 and lower -->
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.logicsoftbd.lsl.ui.main.MainActivity" />
+        </activity>
+        <activity
+            android:name=".ui.dyeingProduction.DyeingProductionActivity"
+            android:launchMode="singleTop"
+            android:parentActivityName=".ui.main.MainActivity"
+            android:screenOrientation="landscape">
+
+            <!-- Parent activity meta-data to support 4.0 and lower -->
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.logicsoftbd.lsl.ui.main.MainActivity" />
+        </activity>
+        <activity
+            android:name=".ui.process.greyroll.KnittingQcResultEntryActivity"
+            android:launchMode="singleTop"
+            android:parentActivityName=".ui.main.MainActivity"
+            android:screenOrientation="landscape">
+
+            <!-- Parent activity meta-data to support 4.0 and lower -->
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.logicsoftbd.lsl.ui.main.MainActivity" />
+        </activity>
+        <activity android:name=".ui.process.greyroll.FinishFabricIssueRollReceiveActivity" />
+        <activity android:name=".ui.process.greyroll.FinishFabricIssueRollActivity" />
+        <activity
+            android:name=".ui.process.greyroll.FinishFabricResultSetActivity"
+            android:launchMode="singleTop"
+            android:parentActivityName=".ui.main.MainActivity"
+            android:screenOrientation="landscape">
+
+            <!-- Parent activity meta-data to support 4.0 and lower -->
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.logicsoftbd.lsl.ui.main.MainActivity" />
+        </activity>
+        <activity android:name=".ui.process.greyroll.FinishFabricQrCodePrintActivity" />
+        <activity
+            android:name=".ui.process.greyroll.FinishFabricQrCodeActivity"
+            android:launchMode="singleTop"
+            android:parentActivityName=".ui.main.MainActivity"
+            android:screenOrientation="portrait">
+
+            <!-- Parent activity meta-data to support 4.0 and lower -->
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.logicsoftbd.lsl.ui.main.MainActivity" />
+        </activity>
+        <activity android:name=".ui.process.greyroll.FinishFabricPrintActivity" />
+        <activity
+            android:name=".ui.process.quantityactivity.FinishFabricIOQuantityActivity"
+            android:launchMode="singleTop"
+            android:parentActivityName=".ui.process.greyroll.FinishFabricInputActivity"
+            android:screenOrientation="portrait">
+
+            <!-- Parent activity meta-data to support 4.0 and lower -->
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.logicsoftbd.lsl.ui.process.greyroll.FinishFabricInputActivity" />
+        </activity>
+        <activity
+            android:name=".ui.process.greyroll.FinishFabricInputActivity"
+            android:launchMode="singleTop"
+            android:parentActivityName=".ui.main.MainActivity"
+            android:screenOrientation="portrait">
+
+            <!-- Parent activity meta-data to support 4.0 and lower -->
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.logicsoftbd.lsl.ui.main.MainActivity" />
+        </activity>
+
+        <service android:name=".service.SyncService" />
+
+        <activity
+            android:name=".ui.splash.SplashActivity"
+            android:exported="true"
+            android:launchMode="singleTop"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppThemeFullScreen">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name=".ui.login.LoginActivity"
+            android:launchMode="singleTop"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".ui.main.MainActivity"
+            android:launchMode="singleTop"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".ui.feed.FeedActivity"
+            android:launchMode="singleTop"
+            android:parentActivityName=".ui.main.MainActivity"
+            android:screenOrientation="portrait">
+
+            <!-- Parent activity meta-data to support 4.0 and lower -->
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.logicsoftbd.lsl.ui.main.MainActivity" />
+        </activity>
+        <activity
+            android:name=".ui.process.scanprocess.ScannerActivity"
+            android:launchMode="singleTop"
+            android:parentActivityName=".ui.main.MainActivity"
+            android:screenOrientation="portrait">
+
+            <!-- Parent activity meta-data to support 4.0 and lower -->
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.logicsoftbd.lsl.ui.main.MainActivity" />
+        </activity>
+        <activity
+            android:name=".ui.process.greyroll.ReceiveActivity"
+            android:launchMode="singleTop"
+            android:parentActivityName=".ui.main.MainActivity"
+            android:screenOrientation="portrait">
+
+            <!-- Parent activity meta-data to support 4.0 and lower -->
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.logicsoftbd.lsl.ui.main.MainActivity" />
+        </activity>
+        <activity
+            android:name=".ui.process.greyroll.CuttingQcActivity"
+            android:launchMode="singleTop"
+            android:parentActivityName=".ui.main.MainActivity"
+            android:screenOrientation="portrait">
+
+            <!-- Parent activity meta-data to support 4.0 and lower -->
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.logicsoftbd.lsl.ui.main.MainActivity" />
+        </activity>
+        <activity
+            android:name=".ui.process.greyroll.CuttingQcActivity_test"
+            android:launchMode="singleTop"
+            android:parentActivityName=".ui.main.MainActivity"
+            android:screenOrientation="portrait">
+
+            <!-- Parent activity meta-data to support 4.0 and lower -->
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.logicsoftbd.lsl.ui.main.MainActivity" />
+        </activity>
+        <activity
+            android:name=".ui.process.greyroll.IssueWorkActivity"
+            android:launchMode="singleTop"
+            android:parentActivityName=".ui.main.MainActivity"
+            android:screenOrientation="portrait">
+
+            <!-- Parent activity meta-data to support 4.0 and lower -->
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.logicsoftbd.lsl.ui.main.MainActivity" />
+        </activity>
+        <activity
+            android:name=".ui.process.greyroll.ReceiveWorkActivity"
+            android:launchMode="singleTop"
+            android:parentActivityName=".ui.main.MainActivity"
+            android:screenOrientation="portrait">
+
+            <!-- Parent activity meta-data to support 4.0 and lower -->
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.logicsoftbd.lsl.ui.main.MainActivity" />
+        </activity>
+        <activity
+            android:name=".ui.process.greyroll.IssueActivity"
+            android:launchMode="singleTop"
+            android:parentActivityName=".ui.main.MainActivity"
+            android:screenOrientation="portrait">
+
+            <!-- Parent activity meta-data to support 4.0 and lower -->
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.logicsoftbd.lsl.ui.main.MainActivity" />
+        </activity>
+        <activity
+            android:name=".ui.process.greyroll.SewingInputActivity"
+            android:launchMode="singleTop"
+            android:parentActivityName=".ui.main.MainActivity"
+            android:screenOrientation="portrait">
+
+            <!-- Parent activity meta-data to support 4.0 and lower -->
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.logicsoftbd.lsl.ui.main.MainActivity" />
+        </activity>
+        <activity
+            android:name=".ui.process.quantityactivity.SewingIOQuantityActivity"
+            android:launchMode="singleTop"
+            android:parentActivityName=".ui.process.greyroll.SewingInputActivity"
+            android:screenOrientation="portrait">
+
+            <!-- Parent activity meta-data to support 4.0 and lower -->
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.logicsoftbd.lsl.ui.process.greyroll.SewingInputActivity" />
+        </activity>
+        <activity
+            android:name=".ui.process.quantityactivity.EmbSpQuantityActivity"
+            android:launchMode="singleTop"
+            android:parentActivityName=".ui.process.greyroll.ReceiveWorkActivity"
+            android:screenOrientation="portrait">
+
+            <!-- Parent activity meta-data to support 4.0 and lower -->
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.logicsoftbd.lsl.ui.process.greyroll.ReceiveWorkActivity" />
+        </activity>
+        <activity
+            android:name=".ui.process.quantityactivity.CuttingQcQuantityActivity"
+            android:launchMode="singleTop"
+            android:parentActivityName=".ui.process.greyroll.CuttingQcActivity"
+            android:screenOrientation="portrait">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.logicsoftbd.lsl.ui.process.greyroll.CuttingQcActivity" />
+        </activity>
+        <activity android:name=".ui.v_1_ui.base_url.BaseUrlActivity" />
+        <activity
+            android:name=".ui.v_1_ui.buyer_meeting.PdfWebViewActivity"
+            android:exported="true"
+            android:label=""
+            android:theme="@style/Theme.AppCompat.Light.DialogWhenLarge" />
+
+        <provider
+            android:name="androidx.core.content.FileProvider"
+            android:authorities="${applicationId}.provider"
+            android:enabled="true"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/file_provider_paths" />
+        </provider>
+
+        <service
+            android:name=".pushNotification.FcmMessagingService"
+            android:directBootAware="true"
+            android:enabled="true"
+            android:exported="false"
+            android:permission="com.google.android.c2dm.permission.SEND">
+            <intent-filter>
+                <action android:name="com.google.firebase.MESSAGING_EVENT" />
+                <action android:name="com.google.android.c2dm.intent.RECEIVE" />
+            </intent-filter>
+        </service>
+    </application>
+
+</manifest>

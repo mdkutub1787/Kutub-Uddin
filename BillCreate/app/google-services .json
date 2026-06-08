@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "682241348816",
+    "project_id": "bill-create-fd321",
+    "storage_bucket": "bill-create-fd321.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:682241348816:android:d3d8d4bf5ba264670d7ad5",
+        "android_client_info": {
+          "package_name": "com.kutub.billcreate"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB97DjHXDqM7MZ5i1zxCJ5SSReM46jbI70"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

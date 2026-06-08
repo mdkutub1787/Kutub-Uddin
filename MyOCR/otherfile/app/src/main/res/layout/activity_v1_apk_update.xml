@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:custom="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/mainLayout"
+    android:layout_gravity="center"
+    android:gravity="center"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context=".ui.v_1_ui.apk_update.V1_ApkUpdateActivity">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:minHeight="40dp"
+        android:text="Smart Track need to update. Please wait..."
+        android:layout_gravity="center"
+        android:gravity="center"
+        android:textAllCaps="false"
+        android:layout_margin="10dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+<!--    <com.github.silvestrpredko.dotprogressbar.DotProgressBar-->
+<!--        android:id="@+id/progress_bar_dot"-->
+<!--        android:layout_width="wrap_content"-->
+<!--        android:layout_height="@dimen/dp20"-->
+<!--        android:layout_marginTop="20dp"-->
+<!--        custom:amount="12"-->
+<!--        custom:animationDirection="right"-->
+<!--        custom:duration="200"-->
+<!--        custom:endColor="@color/colorPrimary"-->
+<!--        custom:startColor="@color/white" />-->
+    <Button
+        android:id="@+id/buttonDownload"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@color/purple_200"
+        android:minHeight="40dp"
+        android:layout_marginTop="10dp"
+        android:text="Download"
+        android:layout_gravity="center"
+        android:gravity="center"
+        android:textAllCaps="false"
+        android:textColor="@color/white"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+</LinearLayout>

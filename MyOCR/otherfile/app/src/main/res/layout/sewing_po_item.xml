@@ -1,0 +1,43 @@
+<RelativeLayout android:id="@+id/linearLayoutSewingIn"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_marginRight="2dp"
+    android:layout_marginLeft="2dp"
+    android:layout_marginBottom="2dp"
+    android:layout_marginTop="2dp"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <androidx.cardview.widget.CardView
+        android:id="@+id/poCard"
+        android:layout_width="match_parent"
+        android:layout_height="90dp"
+        app:cardCornerRadius="3dp"
+        android:layout_marginRight="2dp"
+        android:layout_marginLeft="2dp"
+        android:layout_marginBottom="1dp"
+        android:layout_marginTop="2dp">
+        <RelativeLayout
+            android:id="@+id/badge4"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+            <RelativeLayout
+                android:id="@+id/relative_layout3"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content">
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/poNameTV"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_gravity="center"
+                    android:gravity="center|left"
+                    android:paddingLeft="5dp"
+                    android:text="RED"
+                    android:textColor="#464D73"
+                    android:textSize="22sp"
+                    android:textStyle="normal" />
+            </RelativeLayout>
+        </RelativeLayout>
+    </androidx.cardview.widget.CardView>
+</RelativeLayout>
+

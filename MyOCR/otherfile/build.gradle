@@ -1,0 +1,100 @@
+// Top-level build file where you can add configuration options common to all sub-projects/modules.
+//plugins {
+//    id 'com.android.application' version '7.2.2' apply false
+//    id 'com.android.library' version '7.2.2' apply false
+//}
+
+apply plugin: 'io.codearte.nexus-staging'
+
+
+buildscript {
+//    ext.kotlin_version = '1.5.31'
+    ext.kotlin_version = '1.8.0'
+//    repositories {
+////        jcenter {
+////            url "http://jcenter.bintray.com/"
+////        }
+//        google()
+//        mavenCentral()
+//
+//    }
+
+    repositories {
+        google()
+        jcenter()
+    }
+    dependencies {
+        classpath 'com.android.tools.build:gradle:7.2.2'
+
+        // NOTE: Do not place your application dependencies here; they belong
+        // in the individual module build.gradle files
+        classpath 'org.greenrobot:greendao-gradle-plugin:3.3.0'
+        classpath "com.github.dcendents:android-maven-gradle-plugin:2.0"
+        classpath 'io.codearte.gradle.nexus:gradle-nexus-staging-plugin:0.22.0'
+        classpath 'androidx.navigation:navigation-safe-args-gradle-plugin:2.4.1'
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
+        classpath 'com.google.gms:google-services:4.3.15'
+    }
+    gradle.projectsEvaluated {
+        tasks.withType(JavaCompile) {
+            options.compilerArgs << "-Xlint:deprecation"
+        }
+    }
+}
+
+allprojects {
+//    repositories {
+//
+////        jcenter {
+////            url "http://jcenter.bintray.com/"
+////        }
+//
+//        maven { url "https://jitpack.io" }
+//        maven{
+//
+//            url "https://maven.google.com"
+//        }
+//
+//        google()
+//    }
+    repositories {
+        google()
+        jcenter()
+        maven { url 'https://jitpack.io' }
+    }
+}
+
+task clean(type: Delete) {
+    delete rootProject.buildDir
+}
+
+
+
+// Define versions in a single place
+ext {
+    // Sdk and tools
+    minSdkVersion = 19
+    targetSdkVersion = 34
+    compileSdkVersion = 34
+    buildToolsVersion = '30.0.2'
+
+    gsonVersion = '2.8.0'
+    glideVersion = '3.7.0'
+
+    rx2FastAndroidNetworking = '1.0.0'
+
+    dagger2Version = '2.42'
+    rxjava2Version = '2.0.6'
+    rxandroidVersion = '2.0.1'
+    greenDaoVersion = '3.2.0'
+    placeholderviewVersion = '0.6.1'
+    debugDBVersion = '1.0.0'
+    timberVersion = '4.5.1'
+    qreader = '2.1.2'
+    dotProgressBar = '1.1'
+
+    //Test dependencies
+    junitVersion = '4.12'
+    espressoVersion = '2.2.2'
+    mockitoVersion = '2.7.1'
+}

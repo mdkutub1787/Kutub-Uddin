@@ -1,0 +1,178 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingBottom="@dimen/dp5"
+    android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingTop="@dimen/dp5"
+    android:background="@color/dashboard_grey"
+    app:layout_behavior="@string/appbar_scrolling_view_behavior"
+    tools:context=".ui.process.greyroll.SewingInputActivity"
+    tools:showIn="@layout/activity_sewing">
+    <androidx.cardview.widget.CardView
+        android:id="@+id/item_card"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="10dp"
+        android:elevation="@dimen/dp5"
+        android:layout_marginTop="@dimen/dp10">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="@dimen/dp10"
+            android:orientation="vertical">
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingLeft="@dimen/dp5"
+                android:paddingBottom="@dimen/dp10"
+                android:orientation="horizontal">
+
+                <ImageView
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:layout_column="0"
+                    android:layout_gravity="center"
+                    app:srcCompat="@drawable/ic_date_range_black_24dp" />
+
+
+                <TextView
+                    android:id="@+id/tvDate"
+                    style="@android:style/Widget.DeviceDefault.Light.Spinner"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_horizontal"
+                    android:paddingLeft="@dimen/dp20"
+                    android:ems="10"
+                    android:hint="Enter date" />
+
+            </LinearLayout>
+
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingLeft="@dimen/dp5"
+                android:paddingBottom="@dimen/dp10"
+                android:orientation="horizontal">
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight=".2"
+
+                    android:textSize="@dimen/dp13"
+                    android:textColor="@color/list_header_title_text_color"
+                    android:text="FLOOR"/>
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight=".1"
+
+                    android:textSize="@dimen/dp13"
+                    android:textColor="@color/list_header_value_text_color"
+                    android:text=":"/>
+
+                <Spinner
+                    android:id="@+id/spinner_floor"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight=".7" />
+
+            </LinearLayout>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingLeft="@dimen/dp5"
+                android:paddingBottom="@dimen/dp10"
+                android:orientation="horizontal">
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight=".2"
+
+                    android:textSize="@dimen/dp13"
+                    android:textColor="@color/list_header_title_text_color"
+                    android:text="LINE"/>
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight=".1"
+
+                    android:textSize="@dimen/dp13"
+                    android:textColor="@color/list_header_value_text_color"
+                    android:text=":"/>
+
+                <Spinner
+                    android:id="@+id/spinner_line"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight=".7" />
+
+            </LinearLayout>
+            <LinearLayout
+                android:id="@+id/lay_hour"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingLeft="@dimen/dp5"
+                android:paddingBottom="@dimen/dp7"
+                android:orientation="horizontal">
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight=".4"
+                    android:textSize="@dimen/dp13"
+                    android:textColor="@color/list_header_title_text_color"
+                    android:text="HOUR"/>
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight=".1"
+
+                    android:textSize="@dimen/dp13"
+                    android:textColor="@color/list_header_value_text_color"
+                    android:text=":"/>
+
+                <TextView
+                    android:id="@+id/tvHour"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight=".2"
+                    android:ems="10"
+                    android:text="0"
+                    android:gravity="left"
+                    android:textSize="@dimen/dp13"
+                    android:textColor="@color/list_header_value_text_color"
+                    android:hint="H" />
+
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+    </androidx.cardview.widget.CardView>
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rv_grey_roll"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/item_card"
+        android:clickable="true"
+        android:scrollIndicators="none" />
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/fab"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentBottom="true"
+        android:layout_marginStart="@dimen/dp16"
+        android:layout_marginTop="@dimen/dp16"
+        android:layout_marginEnd="@dimen/dp16"
+        android:layout_marginBottom="@dimen/dp16"
+        app:srcCompat="@drawable/ic_add_white_24dp" />
+
+</RelativeLayout>

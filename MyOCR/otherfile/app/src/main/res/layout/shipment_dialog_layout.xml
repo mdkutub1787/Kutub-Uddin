@@ -1,0 +1,276 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical"
+    android:padding="5dp"
+    android:gravity="center"
+    android:layout_height="match_parent">
+    <TextView android:id="@+id/title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Shipment Report Data"
+        android:background="#000000"
+        android:textColor="#fff"
+        android:textSize="30sp"
+        android:gravity="center"
+        />
+<!--    <android.support.v7.widget.RecyclerView-->
+<!--        android:id="@+id/recycler_view"-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="300dp"-->
+<!--        android:layout_below="@+id/title"-->
+<!--        android:layout_gravity="center_horizontal"-->
+<!--        />-->
+    <LinearLayout
+        android:id="@+id/grid_layout"
+        android:layout_width="match_parent"
+        android:layout_height="700dp"
+        android:layout_below="@+id/title"
+        android:layout_gravity="center_horizontal"
+        android:orientation="vertical">
+        <GridView
+            android:id="@+id/shipmentGrid"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginRight="5dp"
+            android:layout_marginTop="5dp"
+            android:listSelector="#02fff6"
+            android:numColumns="1"
+            android:dividerHeight="5.0sp"
+            android:verticalSpacing="1dp"
+            tools:listitem="@layout/shipment_report_items"></GridView>
+    </LinearLayout>
+
+
+    <LinearLayout
+        android:gravity="center"
+        android:layout_width="match_parent"
+        android:layout_height="100dp"
+        android:background="#DAF5F8"
+        android:layout_below="@id/grid_layout"
+        android:layout_marginTop="0dp"
+        android:layout_marginBottom="5dp"
+        android:orientation="vertical">
+        <HorizontalScrollView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
+        <LinearLayout
+
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <LinearLayout
+                android:background="#FFFFFF"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft=".5dp"
+                android:layout_marginTop="1dp"
+                android:layout_marginRight=".5dp"
+                android:orientation="vertical"
+                android:padding="5dp">
+
+                <TextView
+
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="2"
+                    android:textSize="20sp"
+                    android:background="#E1FCF2"
+                    android:gravity="center"
+                    android:text="Total Quantity"
+                    android:textColor="#FF3030"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/totalQunt"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="1dp"
+                    android:layout_marginBottom="1dp"
+                    android:layout_weight="2"
+                    android:textSize="20sp"
+                    android:textColor="#000000"
+                    android:background="#ffffff"
+                    android:layout_gravity="center" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:background="#FFFFFF"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft=".5dp"
+                android:layout_marginTop="1dp"
+                android:layout_marginRight=".5dp"
+                android:orientation="vertical"
+                android:padding="5dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="2"
+                    android:textSize="20sp"
+                    android:background="#E1FCF2"
+                    android:gravity="center"
+                    android:text="Quantity Value"
+                    android:textColor="#FF3030"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/quantyVal"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginRight="1dp"
+                    android:layout_marginBottom="1dp"
+                    android:layout_weight="2"
+                    android:textSize="20sp"
+                    android:textColor="#000000"
+                    android:background="#ffffff"
+                    android:layout_gravity="center"/>
+            </LinearLayout>
+            <LinearLayout
+                android:background="#FFFFFF"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft=".5dp"
+                android:layout_marginTop="1dp"
+                android:layout_marginRight=".5dp"
+                android:orientation="vertical"
+                android:padding="5dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="2"
+                    android:background="#E1FCF2"
+                    android:textSize="20sp"
+                    android:gravity="center"
+                    android:text="Full Shipped"
+                    android:textColor="#FF3030"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/fullShipped"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                   android:layout_gravity="center"
+                    android:layout_marginHorizontal="1dp"
+                    android:layout_marginBottom="1dp"
+                    android:layout_weight="2"
+                    android:textSize="20sp"
+                    android:textColor="#000000"
+                    android:background="#ffffff"
+                    />
+            </LinearLayout>
+
+            <LinearLayout
+                android:background="#FFFFFF"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft=".5dp"
+                android:layout_marginTop="1dp"
+                android:layout_marginRight=".5dp"
+                android:orientation="vertical"
+                android:padding="5dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="2"
+                    android:textSize="20sp"
+                    android:background="#E1FCF2"
+                    android:gravity="center"
+                    android:text="Partial Shipped"
+                    android:textColor="#FF3030"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/partialShipped"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginRight="1dp"
+                    android:layout_marginBottom="1dp"
+                    android:layout_weight="2"
+                    android:textSize="20sp"
+                    android:textColor="#000000"
+                    android:background="#ffffff"
+                    android:layout_gravity="center" />
+            </LinearLayout>
+            <LinearLayout
+                android:background="#FFFFFF"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft=".5dp"
+                android:layout_marginTop="1dp"
+                android:layout_marginRight=".5dp"
+                android:orientation="vertical"
+                android:padding="5dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="2"
+                    android:textSize="20sp"
+                    android:background="#E1FCF2"
+                    android:gravity="center"
+                    android:text="Running"
+                    android:textColor="#FF3030"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/runningTotal"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginRight="1dp"
+                    android:layout_marginBottom="1dp"
+                    android:layout_weight="2"
+                    android:textSize="20sp"
+                    android:textColor="#000000"
+                    android:background="#ffffff"
+                    android:layout_gravity="center" />
+            </LinearLayout>
+
+
+
+
+
+        </LinearLayout>
+
+        </HorizontalScrollView>
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="130dp"
+        android:layout_below="@id/grid_layout"
+        android:gravity="right"
+        android:layout_marginTop="70dp"
+        android:layout_marginBottom="5dp"
+        android:orientation="horizontal">
+
+
+
+
+        <Button android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Back"
+            android:textAllCaps="false"
+            android:layout_marginTop="20dp"
+            android:layout_gravity="center"
+            android:gravity="center"
+            android:textStyle="bold"
+            android:background="@drawable/button_shape"
+            android:textColor="#fff"
+            android:id="@+id/yes"
+            />
+
+<!--        <View android:layout_width="2dp" android:layout_height="match_parent"-->
+<!--            android:background="#fff"-->
+<!--            />-->
+
+    </LinearLayout>
+
+
+
+</RelativeLayout>

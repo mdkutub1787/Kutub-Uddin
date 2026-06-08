@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:showIn="navigation_view">
+
+    <group android:checkableBehavior="single">
+        <item
+            android:id="@+id/nav_approval"
+            android:icon="@drawable/ic_baseline_format_list_bulleted_24"
+            android:title="Approval Page" />
+        <item
+            android:id="@+id/nav_report"
+            android:icon="@drawable/ic_baseline_format_list_bulleted_24"
+            android:title="Roll Id Tracking" />
+        <item
+            android:id="@+id/nav_bundle_tracking"
+            android:icon="@drawable/ic_baseline_format_list_bulleted_24"
+            android:title="Bundle Tracking Report" />
+        <item
+            android:id="@+id/nav_swing_input"
+            android:icon="@drawable/ic_baseline_format_list_bulleted_24"
+            android:title="Bundle Wise Sewing Input" />
+        <item
+            android:id="@+id/nav_swing_output"
+            android:icon="@drawable/ic_baseline_format_list_bulleted_24"
+            android:title="Bundle Wise Sewing Output" />
+        <item
+            android:id="@+id/linewisenav_swing_input"
+            android:icon="@drawable/ic_baseline_format_list_bulleted_24"
+            android:title="Line Wise Sewing Input" />
+        <item
+            android:id="@+id/linewisenav_swing_output"
+            android:icon="@drawable/ic_baseline_format_list_bulleted_24"
+            android:title="Line Wise Sewing Output" />
+
+        <item
+            android:id="@+id/linking_input"
+            android:icon="@drawable/ic_baseline_format_list_bulleted_24"
+            android:title="Linking Input" />
+        <item
+            android:id="@+id/linking_output"
+            android:icon="@drawable/ic_baseline_format_list_bulleted_24"
+            android:title="Linking Output" />
+        <item
+            android:id="@+id/nav_swing_config"
+            android:icon="@drawable/ic_baseline_format_list_bulleted_24"
+            android:title="Bundle Wise Sewing Config" />
+
+<!--                <item-->
+<!--                    android:id="@+id/nav_grey_fabric_qc_observation"-->
+<!--                    android:icon="@drawable/ic_baseline_format_list_bulleted_24"-->
+<!--                    android:title="Grey Fabric QC with Observation" />-->
+        <item
+            android:id="@+id/nav_finish_fabric_qc_observation"
+            android:icon="@drawable/ic_baseline_format_list_bulleted_24"
+            android:title="Finish Fabric With Observation" />
+    </group>
+
+    <item android:title="Communicate">
+        <menu>
+            <item
+                android:id="@+id/nav_share"
+                android:icon="@drawable/ic_baseline_format_list_bulleted_24"
+                android:title="Share" />
+            <item
+                android:id="@+id/nav_about"
+                android:icon="@drawable/ic_baseline_format_list_bulleted_24"
+                android:title="About" />
+        </menu>
+    </item>
+
+</menu>

@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".ui.home.HomeActivity">
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_margin="@dimen/dp10"
+        android:orientation="horizontal">
+        <Button
+            android:id="@+id/v1Btn"
+            android:layout_width="0dp"
+            android:layout_height="@dimen/dp100"
+            android:layout_margin="@dimen/dp5"
+            android:layout_weight="1"
+            android:backgroundTint="@color/dashboard_blue"
+            android:text="V1"/>
+        <Button
+            android:id="@+id/v2Btn"
+            android:layout_width="0dp"
+            android:layout_height="@dimen/dp100"
+            android:layout_margin="@dimen/dp5"
+            android:layout_weight="1"
+            android:backgroundTint="@color/dashboard_green"
+            android:text="V2"/>
+    </LinearLayout>
+</LinearLayout>

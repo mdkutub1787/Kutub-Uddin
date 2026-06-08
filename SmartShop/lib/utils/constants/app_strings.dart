@@ -1,0 +1,37 @@
+class AppStrings {
+  static const String appName = 'app_name';
+  static const String welcomeMessage = 'welcome_message';
+  static const String loginTitle = 'login_title';
+  static const String registerTitle = 'register_title';
+  static const String categoriesTitle = 'categories_title';
+  static const String featuredProductsTitle = 'featured_products_title';
+  static const String searchHint = 'search_hint';
+  static const String offerBannerTitle = 'offer_banner_title';
+  static const String offerBannerSubtitle = 'offer_banner_subtitle';
+  static const String shopNow = 'shop_now';
+  static const String seeAll = 'see_all';
+  static const String logout = 'logout';
+  static const String settings = 'settings';
+  static const String darkMode = 'dark_mode';
+  static const String language = 'language';
+  static const String themeColor = 'theme_color';
+  static const String emailLabel = 'email_label';
+  static String get passwordLabel => 'password_label'; // Testing mix
+  static const String confirmPasswordLabel = 'confirm_password_label';
+  static const String forgotPassword = 'forgot_password';
+  static const String noAccount = 'no_account';
+  static const String registerNow = 'register_now';
+  static const String fillAllFields = 'fill_all_fields';
+  static const String passwordMismatch = 'password_mismatch';
+  static const String registrationSubtitle = 'registration_subtitle';
+  static const String welcomeBack = 'welcome_back';
+  static const String homeMenu = 'home_menu';
+  static const String myOrdersMenu = 'my_orders_menu';
+  static const String wishlistMenu = 'wishlist_menu';
+  static const String profileMenu = 'profile_menu';
+  static const String help = 'help';
+  static const String loading = 'loading';
+  static const String noProducts = 'no_products';
+  static const String bestQuality = 'best_quality';
+  static const String limitedOffer = 'limited_offer';
+}

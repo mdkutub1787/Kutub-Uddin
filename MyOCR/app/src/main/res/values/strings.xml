@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">My OCR</string>
+    <string name="camera">Camera</string>
+    <string name="gallery">Gallery</string>
+    <string name="recognized_text_hint">Recognized text will appear here</string>
+    <string name="copy">Copy</string>
+    <string name="SaveOnline">Save Online</string>
+    <string name="share">Share</string>
+    <string name="save_word">Save Word</string>
+    <string name="load_word">Load Word</string>
+    <string name="save_excel">Save Excel</string>
+    <string name="load_excel">Load Excel</string>
+    <string name="image_preview">Image Preview</string>
+    <string name="scanned_text_will_appear_here">Scanned text will appear here…</string>
+    <string name="save_ocr_text">Save OCR Text</string>
+    <string name="all_ocr_files">All OCR Files</string>
+    <string name="category_title">Category Title</string>
+    <string name="add_ocr">Add OCR</string>
+    <string name="file_content">File Content</string>
+    <string name="last_updated_just_now">Last updated: Just now</string>
+    <string name="app_logo">Application Logo</string>
+    <string name="view_category_list">Category List</string>
+    <string name="ocr_new_scan">Scan New OCR</string>
+    <string name="edit_text_hint">Edit Your text here</string>
+    <string name="total_category">Total Category</string>
+    <string name="save">Save To Online</string>
+    <string name="save_category">Save Category</string>
+    <string name="choose_color">Choose Color</string>
+    <string name="enter_category_name">Enter Category Name</string>
+    
+    <string-array name="category_colors">
+        <item name="purple">#FFBB86FC</item>
+        <item name="black">#FF000000</item>
+        <item name="light_gray">#F0F0F0</item>
+        <item name="red">#FF6B6B</item>
+        <item name="light_blue">#1971D7</item>
+        <item name="blue">#0D0DED</item>
+        <item name="dark_blue">#00008B</item>
+        <item name="green">#388E3C</item>
+        <item name="orange">#FFA500</item>
+        <item name="white">#FFFFFFFF</item>
+        <item name="light_yellow">#9DA600</item>
+        <item name="teal">#079E92</item>
+        <item name="semi_light_yellow">#EEEC00</item>
+        <item name="purple_200">#FFBB86FC</item>
+        <item name="purple_500">#4CAF50</item>
+        <item name="purple_700">#3E8E41</item>
+        <item name="teal_200">#FF03DAC5</item>
+        <item name="teal_700">#FF018786</item>
+        <item name="gray">#202020</item>
+        <item name="ash">#EDEDED</item>
+        <item name="colorBlue">#2B62B5</item>
+        <item name="yellow">#FFC107</item>
+        <item name="save_button_color">#4CAF50</item>
+        <item name="cancel_button_color">#FD1100</item>
+        <item name="back_ground_1">#A4CBED</item>
+        <item name="color_orange">#ED7D31</item>
+        <item name="text_color_green">#02561A</item>
+        <item name="button_color_green">#02A155</item>
+        <item name="placeholder_bg">#dddddd</item>
+        <item name="item_name">#0c0c0c</item>
+        <item name="description">#1a1a1a</item>
+        <item name="chef">#777</item>
+        <item name="timestamp">#777</item>
+        <item name="blue_black_dark">#13171d</item>
+        <item name="blue_black_light">#516179</item>
+        <item name="blue_grey_light">#A5B4C8</item>
+        <item name="google">#d34836</item>
+        <item name="black_effective">#2a2a2a</item>
+        <item name="bg_color">#f7f7f7</item>
+        <item name="toolbar_bg">#FFFFFF</item>
+        <item name="toolbar_text_color">#4B4B4B</item>
+        <item name="blue_color_picker">#0066FF</item>
+        <item name="brown_color_picker">#AF593E</item>
+        <item name="green_color_picker">#01A368</item>
+        <item name="orange_color_picker">#FF861F</item>
+        <item name="red_color_picker">#ED0A3F</item>
+        <item name="red_orange_color_picker">#FF3F34</item>
+        <item name="sky_blue_color_picker">#76D7EA</item>
+        <item name="violet_color_picker">#8359A3</item>
+        <item name="yellow_color_picker">#FBE870</item>
+        <item name="yellow_green_color_picker">#C5E17A</item>
+        <item name="tool_bg">#151414</item>
+        <item name="semi_black_transparent">#99000000</item>
+        <item name="transparent">#00000000</item>
+        <!--//tab Color-->
+        <item name="tab_indicator">#F2F2F2</item>
+        <item name="tab_selected_color">#037EBE</item>
+        <item name="tab_text_color">#808080</item>
+        <item name="tab_background">#FFFFFF</item>
+
+        <item name="profilePrimaryDark">#FF3B30</item>
+        <item name="profileAccentColor">#F7F7F7</item>
+        <item name="whiteTextColor">#fff</item>
+        <item name="profileBackground">#fff</item>
+        <item name="blackTextColor">#000</item>
+        <item name="profileEditTextColor">#707070</item>
+
+        <item name="colorPrimary">#1F5BF3</item>
+        <item name="colorPrimaryDark">#0947E8</item>
+        <item name="colorAccent">#00A5FF</item>
+
+        <item name="primaryTextColor">#00a5ff</item>
+        <item name="loginBkColor">#f0f0f0</item>
+
+        <item name="whiteCardColor">#fff</item>
+
+        <item name="websiteButtonColor">#C2DCFF</item>
+
+        <!--three button Color-->
+        <item name="approvedColor">#547A56</item>
+        <item name="pendingColor">#AA6601</item>
+        <item name="cancelColor">#A61106</item>
+
+        <!--  set  brown-->
+        <item name="chooseColor1">#F7EFEA</item>
+        <item name="chooseColor2">#E1D5C9</item>
+        <item name="chooseColor3">#D6BE8B</item>
+        <item name="chooseColor4">#AE9F85</item>
+
+        <!--    most uses Color-->
+        <item name="royalBlue">#246EE9</item>
+        <item name="scarletRed">#FF2400</item>
+        <item name="mintGreen">#3EB489</item>
+
+        <!--    uses in leave entry-->
+        <item name="lGreen">#636C00</item>
+        <item name="lBlueGreyLight">#797C81</item>
+    </string-array>
+
+</resources>

@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<RelativeLayout android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+
+    android:orientation="vertical"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+        <LinearLayout
+            android:id="@+id/lay_top"
+            android:padding="5dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_centerVertical="true"
+            android:orientation="vertical"
+            android:paddingLeft="@dimen/dp5"
+            android:paddingRight="@dimen/dp5">
+            <EditText
+                android:id="@+id/edit_defect"
+                android:layout_width="wrap_content"
+                android:minWidth="@dimen/dp150"
+                android:layout_height="@dimen/dp30"
+                android:layout_weight="1"
+                android:textSize="@dimen/dp13"
+                android:background="@drawable/edit_border"
+                android:paddingLeft="5dp"
+                android:focusable="false"
+                android:gravity="center"
+
+                android:textColor="@color/list_header_value_text_color"
+                android:text="ds"/>
+        </LinearLayout>
+
+
+
+
+    </RelativeLayout>
+
+

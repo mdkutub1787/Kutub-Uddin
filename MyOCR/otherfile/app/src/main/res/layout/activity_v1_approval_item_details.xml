@@ -1,0 +1,293 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".ui.v_1_ui.electronic_approval.V1_ApprovalItemDetailsActivity">
+
+    <androidx.cardview.widget.CardView
+        android:id="@+id/approvalDetailsCard"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:visibility="visible">
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:layout_margin="@dimen/dp1">
+
+            <HorizontalScrollView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content">
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical">
+                        <LinearLayout
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical">
+                            <View
+                                android:layout_width="match_parent"
+                                android:layout_height="1dp"
+                                android:background="#79272626" />
+                            <LinearLayout
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:orientation="horizontal"
+                                android:background="#5C639D21">
+                                <LinearLayout
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:orientation="horizontal">
+                                    <View
+                                        android:layout_width="1dp"
+                                        android:layout_height="match_parent"
+                                        android:background="#79272626" />
+                                    <TextView
+                                        android:layout_width="100dp"
+                                        android:layout_height="wrap_content"
+                                        android:paddingStart="1dp"
+                                        android:text="Category"
+                                        android:textSize="@dimen/sp14"
+                                        android:textStyle="normal"
+                                        tools:ignore="HardcodedText,RtlSymmetry" />
+                                    <View
+                                        android:layout_width="1dp"
+                                        android:layout_height="match_parent"
+                                        android:background="#79272626" />
+                                    <TextView
+                                        android:id="@+id/categoryNameTV"
+                                        android:layout_width="180dp"
+                                        android:layout_height="wrap_content"
+                                        android:paddingStart="1dp"
+                                        android:text=""
+                                        android:textSize="@dimen/sp14"
+                                        android:gravity="center"
+                                        tools:ignore="HardcodedText" />
+                                    <View
+                                        android:layout_width="1dp"
+                                        android:layout_height="match_parent"
+                                        android:background="#79272626" />
+                                    <View
+                                        android:layout_width="1dp"
+                                        android:layout_height="match_parent"
+                                        android:layout_marginLeft="@dimen/dp5"
+                                        android:background="#79272626" />
+                                    <TextView
+                                        android:layout_width="100dp"
+                                        android:layout_height="wrap_content"
+                                        android:paddingStart="1dp"
+                                        android:text="ISO/Asset No:"
+                                        android:textSize="@dimen/sp14"
+                                        android:textStyle="normal"
+                                        tools:ignore="HardcodedText,RtlSymmetry" />
+                                    <View
+                                        android:layout_width="1dp"
+                                        android:layout_height="match_parent"
+                                        android:background="#79272626" />
+                                    <TextView
+                                        android:id="@+id/assesNameTV"
+                                        android:layout_width="220dp"
+                                        android:layout_height="wrap_content"
+                                        android:text=""
+                                        android:textSize="@dimen/sp14"
+                                        android:gravity="center"
+                                        tools:ignore="HardcodedText" />
+                                    <View
+                                        android:layout_width="1dp"
+                                        android:layout_height="match_parent"
+                                        android:background="#79272626" />
+                                </LinearLayout>
+                            </LinearLayout>
+                            <View
+                                android:layout_width="match_parent"
+                                android:layout_height="1dp"
+                                android:background="#79272626" />
+                            <LinearLayout
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:orientation="horizontal"
+                                android:background="#8F177FAE">
+                                <LinearLayout
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="match_parent"
+                                    android:orientation="horizontal">
+                                    <View
+                                        android:layout_width="1dp"
+                                        android:layout_height="match_parent"
+                                        android:background="#79272626" />
+                                    <TextView
+                                        android:layout_width="100dp"
+                                        android:layout_height="match_parent"
+                                        android:paddingStart="1dp"
+                                        android:text="Item Name"
+                                        android:textSize="@dimen/sp12"
+                                        android:textStyle="bold"
+                                        android:gravity="center"
+                                        tools:ignore="HardcodedText,RtlSymmetry" />
+                                    <View
+                                        android:layout_width="1dp"
+                                        android:layout_height="match_parent"
+                                        android:background="#79272626" />
+                                    <LinearLayout
+                                        android:layout_width="187dp"
+                                        android:layout_height="match_parent"
+                                        android:orientation="horizontal">
+                                        <TextView
+                                            android:layout_width="0dp"
+                                            android:layout_height="match_parent"
+                                            android:paddingStart="1dp"
+                                            android:layout_weight="1.5"
+                                            android:text="Last Supplier"
+                                            android:textSize="@dimen/sp12"
+                                            android:textStyle="bold"
+                                            android:gravity="center"
+                                            tools:ignore="HardcodedText" />
+                                        <View
+                                            android:layout_width="1dp"
+                                            android:layout_height="match_parent"
+                                            android:background="#79272626" />
+                                        <TextView
+                                            android:layout_width="0dp"
+                                            android:layout_height="match_parent"
+                                            android:paddingStart="1dp"
+                                            android:layout_weight="1"
+                                            android:text="Last Rate"
+                                            android:textSize="@dimen/sp12"
+                                            android:textStyle="bold"
+                                            android:gravity="center"
+                                            tools:ignore="HardcodedText" />
+                                        <View
+                                            android:layout_width="1dp"
+                                            android:layout_height="match_parent"
+                                            android:background="#79272626" />
+                                        <View
+                                            android:layout_width="1dp"
+                                            android:layout_height="match_parent"
+                                            android:layout_marginLeft="@dimen/dp5"
+                                            android:background="#79272626" />
+                                    </LinearLayout>
+
+                                </LinearLayout>
+                                <LinearLayout
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:orientation="horizontal">
+                                    <LinearLayout
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:orientation="horizontal">
+                                        <TextView
+                                            android:layout_width="100dp"
+                                            android:layout_height="wrap_content"
+                                            android:text="Rate"
+                                            android:textSize="@dimen/sp12"
+                                            android:textStyle="bold"
+                                            android:gravity="center"
+                                            tools:ignore="HardcodedText,RtlSymmetry" />
+                                        <View
+                                            android:layout_width="1dp"
+                                            android:layout_height="match_parent"
+                                            android:background="#79272626" />
+                                    </LinearLayout>
+                                    <LinearLayout
+                                        android:layout_width="221dp"
+                                        android:layout_height="match_parent"
+                                        android:orientation="horizontal">
+                                        <TextView
+                                            android:layout_width="0dp"
+                                            android:layout_height="match_parent"
+                                            android:paddingStart="1dp"
+                                            android:layout_weight="1"
+                                            android:text="Qty"
+                                            android:textSize="@dimen/sp12"
+                                            android:textStyle="bold"
+                                            android:gravity="center"
+                                            tools:ignore="HardcodedText" />
+                                        <View
+                                            android:layout_width="1dp"
+                                            android:layout_height="match_parent"
+                                            android:background="#79272626" />
+                                        <TextView
+                                            android:layout_width="0dp"
+                                            android:layout_height="match_parent"
+                                            android:paddingStart="1dp"
+                                            android:layout_weight="1"
+                                            android:text="Stock"
+                                            android:textSize="@dimen/sp12"
+                                            android:textStyle="bold"
+                                            android:gravity="center"
+                                            tools:ignore="HardcodedText" />
+                                        <View
+                                            android:layout_width="1dp"
+                                            android:layout_height="match_parent"
+                                            android:background="#79272626" />
+                                        <TextView
+                                            android:layout_width="0dp"
+                                            android:layout_height="match_parent"
+                                            android:paddingStart="1dp"
+                                            android:layout_weight="1"
+                                            android:text="Amount"
+                                            android:textSize="@dimen/sp12"
+                                            android:textStyle="bold"
+                                            android:gravity="center"
+                                            tools:ignore="HardcodedText" />
+                                        <View
+                                            android:layout_width="1dp"
+                                            android:layout_height="match_parent"
+                                            android:background="#79272626" />
+                                    </LinearLayout>
+                                </LinearLayout>
+                            </LinearLayout>
+                            <View
+                                android:layout_width="match_parent"
+                                android:layout_height="1dp"
+                                android:background="#79272626" />
+                        </LinearLayout>
+                    </LinearLayout>
+                    <androidx.recyclerview.widget.RecyclerView
+                        android:id="@+id/approvalDetailsRecyclerView"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        tools:listitem="@layout/custom_layout_for_approval_details"
+                        tools:itemCount="10"/>
+                </LinearLayout>
+
+            </HorizontalScrollView>
+
+        </LinearLayout>
+    </androidx.cardview.widget.CardView>
+    <LinearLayout
+        android:id="@+id/errorDataSetLayout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:layout_gravity="center"
+        android:gravity="center"
+        android:visibility="gone">
+        <ImageView
+            android:layout_width="@dimen/dp200"
+            android:layout_height="@dimen/dp200"
+            android:src="@drawable/no_data_found"
+            android:layout_gravity="center"/>
+    </LinearLayout>
+
+    <ProgressBar
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/progressBar"
+        android:visibility="gone"
+        android:layout_centerInParent="true"/>
+</RelativeLayout>

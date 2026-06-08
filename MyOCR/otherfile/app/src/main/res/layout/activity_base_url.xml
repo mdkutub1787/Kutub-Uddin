@@ -1,0 +1,156 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:custom="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/parentLayout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".ui.v_1_ui.base_url.BaseUrlActivity">
+
+    <ScrollView
+        android:id="@+id/ScrollView01"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:fillViewport="true">
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:background="@drawable/backgroundimgbutton">
+            <RelativeLayout
+                android:id="@+id/logoLay"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_alignParentTop="true">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:orientation="vertical">
+
+                    <androidx.cardview.widget.CardView
+                        android:layout_width="@dimen/dp80"
+                        android:layout_height="@dimen/dp80"
+                        android:layout_marginTop="@dimen/dp16"
+                        custom:cardBackgroundColor="@color/white"
+                        custom:cardCornerRadius="@dimen/dp5">
+
+                        <ImageView
+                            android:id="@+id/logo"
+                            android:layout_width="@dimen/dp80"
+                            android:layout_height="@dimen/dp80"
+                            android:padding="@dimen/dp10"
+                            android:src="@drawable/logic" />
+                    </androidx.cardview.widget.CardView>
+
+                    <TextView
+                        android:id="@+id/versionTV"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="V2.0.9"
+                        android:textColor="@android:color/black"
+                        android:layout_marginTop="@dimen/dp5"
+                        android:textSize="@dimen/dp12"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerHorizontal="true"
+                        android:layout_marginLeft="@dimen/dp40"
+                        android:layout_marginTop="@dimen/dp10"
+                        android:layout_marginRight="@dimen/dp40"
+                        android:text="REGISTER BASE URL"
+                        android:textColor="@android:color/black"
+                        android:textSize="@dimen/dp24"
+                        android:textStyle="bold" />
+                </LinearLayout>
+
+            </RelativeLayout>
+
+            <androidx.cardview.widget.CardView
+                android:id="@+id/login_form"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                android:layout_marginLeft="@dimen/dp20"
+                android:layout_marginRight="@dimen/dp20"
+                android:orientation="vertical">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="@dimen/dp20"
+                    android:orientation="vertical">
+
+                    <TextView
+                        style="@style/TextStyle.EditText"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="@dimen/dp15"
+                        android:text="BASE URL"
+                        android:textColor="#464D73" />
+
+                    <androidx.appcompat.widget.AppCompatEditText
+                        android:id="@+id/baseURLET"
+                        style="@style/TextStyle.EditText"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:hint="Enter url"
+                        android:inputType="text"
+                        android:textSize="@dimen/dp14" />
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:layout_marginTop="@dimen/dp16"
+                        android:layout_marginBottom="@dimen/dp20"
+                        android:orientation="horizontal">
+                        <androidx.appcompat.widget.AppCompatButton
+                            android:id="@+id/baseURLBtn"
+                            android:layout_width="wrap_content"
+                            android:layout_height="@dimen/dp40"
+                            android:layout_gravity="center"
+                            android:layout_marginTop="@dimen/dp16"
+                            android:layout_marginBottom="@dimen/dp20"
+                            android:background="@drawable/login_button"
+                            android:elevation="0dp"
+                            android:textSize="@dimen/dp12"
+                            android:paddingLeft="@dimen/dp60"
+                            android:paddingRight="@dimen/dp60"
+                            android:text="SAVE"
+                            android:textColor="@android:color/white" />
+                        <androidx.appcompat.widget.AppCompatButton
+                            android:id="@+id/loginBtn"
+                            android:layout_width="wrap_content"
+                            android:layout_height="@dimen/dp40"
+                            android:layout_gravity="center"
+                            android:layout_marginTop="@dimen/dp16"
+                            android:layout_marginBottom="@dimen/dp20"
+                            android:layout_marginLeft="@dimen/dp10"
+                            android:background="@drawable/login_button"
+                            android:elevation="0dp"
+                            android:textSize="@dimen/dp12"
+                            android:paddingLeft="@dimen/dp60"
+                            android:paddingRight="@dimen/dp60"
+                            android:text="LOGIN"
+                            android:textColor="@android:color/white" />
+                    </LinearLayout>
+                </LinearLayout>
+            </androidx.cardview.widget.CardView>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/login_form"
+                android:layout_marginTop="@dimen/dp8"
+                android:gravity="center_horizontal"
+                android:text="@string/copy_right"
+                android:textColor="#464D73"
+                android:textSize="@dimen/dp12" />
+        </RelativeLayout>
+    </ScrollView>
+</LinearLayout>
