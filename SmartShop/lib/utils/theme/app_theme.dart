@@ -131,7 +131,7 @@ class AppTheme {
       ),
       inputDecorationTheme: InputDecorationTheme(
         filled: true,
-        fillColor: AppColors.slate900.withOpacity(0.5),
+        fillColor: AppColors.slate900.withValues(alpha: 0.5),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(_borderRadius),
           borderSide: BorderSide.none,

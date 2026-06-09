@@ -73,7 +73,7 @@ class _AdminVerificationScreenState extends State<AdminVerificationScreen> {
                   Container(
                     padding: const EdgeInsets.all(20),
                     decoration: BoxDecoration(
-                      color: settings.primaryColor.withValues(alpha: 0.1),
+                      color: settings.primaryColor.withOpacity(0.1),
                       shape: BoxShape.circle,
                     ),
                     child: Icon(
@@ -147,7 +147,7 @@ class _AdminVerificationScreenState extends State<AdminVerificationScreen> {
             Container(
               padding: const EdgeInsets.all(15),
               decoration: BoxDecoration(
-                color: Colors.orange.withValues(alpha: 0.1),
+                color: Colors.orange.withOpacity(0.1),
                 border: Border.all(color: Colors.orange, width: 1),
                 borderRadius: BorderRadius.circular(10),
               ),
@@ -204,4 +204,3 @@ class _AdminVerificationScreenState extends State<AdminVerificationScreen> {
     );
   }
 }
-

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:easy_localization/easy_localization.dart';
+import 'package:intl/intl.dart';
 import '../../view_models/order_view_model.dart';
 import '../../view_models/auth_view_model.dart';
 import '../../utils/constants/app_strings.dart';
@@ -49,7 +50,7 @@ class _MyOrdersScreenState extends State<MyOrdersScreen> {
                         trailing: Container(
                           padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                           decoration: BoxDecoration(
-                            color: _getStatusColor(order.status).withOpacity(0.1),
+                            color: _getStatusColor(order.status).withValues(alpha: 0.1),
                             borderRadius: BorderRadius.circular(10),
                           ),
                           child: Text(

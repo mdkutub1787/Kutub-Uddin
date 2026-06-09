@@ -1,14 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:easy_localization/easy_localization.dart';
-import '../../view_models/wishlist_view_model.dart';
-import '../../view_models/product_view_model.dart';
-import '../../view_models/cart_view_model.dart';
-import '../../view_models/auth_view_model.dart';
-import '../../utils/constants/app_strings.dart';
-import '../../routes/app_routes.dart';
-
-import '../../widgets/custom_app_bar.dart';
+import 'package:smart_shop/view_models/wishlist_view_model.dart';
+import 'package:smart_shop/view_models/product_view_model.dart';
+import 'package:smart_shop/view_models/cart_view_model.dart';
+import 'package:smart_shop/view_models/auth_view_model.dart';
+import 'package:smart_shop/utils/constants/app_strings.dart';
+import 'package:smart_shop/routes/app_routes.dart';
+import 'package:smart_shop/widgets/custom_app_bar.dart';
 
 class WishlistScreen extends StatelessWidget {
   const WishlistScreen({super.key});

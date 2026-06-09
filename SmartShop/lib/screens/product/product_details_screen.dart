@@ -1,13 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:easy_localization/easy_localization.dart';
-import '../../models/product_model.dart';
-import '../../view_models/cart_view_model.dart';
-import '../../view_models/wishlist_view_model.dart';
-import '../../view_models/auth_view_model.dart';
-import '../../utils/constants/app_strings.dart';
-
-import '../../widgets/custom_app_bar.dart';
+import 'package:smart_shop/models/product_model.dart';
+import 'package:smart_shop/view_models/cart_view_model.dart';
+import 'package:smart_shop/view_models/wishlist_view_model.dart';
+import 'package:smart_shop/view_models/auth_view_model.dart';
+import 'package:smart_shop/utils/constants/app_strings.dart';
+import 'package:smart_shop/widgets/custom_app_bar.dart';
 
 class ProductDetailsScreen extends StatelessWidget {
   final ProductModel product;
@@ -101,7 +100,7 @@ class ProductDetailsScreen extends StatelessWidget {
         color: Theme.of(context).cardColor,
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.05),
+            color: Colors.black.withValues(alpha: 0.05),
             blurRadius: 10,
             offset: const Offset(0, -5),
           )
@@ -124,7 +123,7 @@ class ProductDetailsScreen extends StatelessWidget {
                   decoration: BoxDecoration(
                     border: Border.all(color: isFav ? Colors.red : Colors.grey.shade300),
                     borderRadius: BorderRadius.circular(15),
-                    color: isFav ? Colors.red.withOpacity(0.1) : null,
+                    color: isFav ? Colors.red.withValues(alpha: 0.1) : null,
                   ),
                   child: Icon(
                     isFav ? Icons.favorite : Icons.favorite_border,

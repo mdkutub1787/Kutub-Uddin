@@ -38,7 +38,7 @@ class _MainScreenState extends State<MainScreen> {
       ),
       bottomNavigationBar: NavigationBarTheme(
         data: NavigationBarThemeData(
-          indicatorColor: settings.primaryColor.withOpacity(0.15),
+          indicatorColor: settings.primaryColor.withValues(alpha: 0.15),
           labelTextStyle: WidgetStateProperty.resolveWith((states) {
             if (states.contains(WidgetState.selected)) {
               return TextStyle(

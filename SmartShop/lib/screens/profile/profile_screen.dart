@@ -1,12 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../../view_models/auth_view_model.dart';
-import '../../view_models/settings_view_model.dart';
 import 'package:easy_localization/easy_localization.dart';
-import '../../utils/constants/app_strings.dart';
-import '../../routes/app_routes.dart';
-
-import '../../widgets/custom_app_bar.dart';
+import 'package:smart_shop/view_models/auth_view_model.dart';
+import 'package:smart_shop/view_models/settings_view_model.dart';
+import 'package:smart_shop/utils/constants/app_strings.dart';
+import 'package:smart_shop/routes/app_routes.dart';
+import 'package:smart_shop/widgets/custom_app_bar.dart';
 
 class ProfileScreen extends StatelessWidget {
   const ProfileScreen({super.key});
@@ -53,10 +52,19 @@ class ProfileScreen extends StatelessWidget {
               user?.displayName ?? "User Name",
               style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
             ),
+            const SizedBox(height: 5),
             Text(
               user?.email ?? "email@example.com",
               style: const TextStyle(fontSize: 16, color: Colors.grey),
             ),
+            if (user?.phoneNumber != null && user!.phoneNumber.isNotEmpty)
+              Padding(
+                padding: const EdgeInsets.only(top: 5),
+                child: Text(
+                  user.phoneNumber,
+                  style: const TextStyle(fontSize: 16, color: Colors.grey),
+                ),
+              ),
             // Show admin badge if user is admin
             if (authViewModel.isAdmin)
               Padding(
@@ -64,7 +72,7 @@ class ProfileScreen extends StatelessWidget {
                 child: Container(
                   padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                   decoration: BoxDecoration(
-                    color: Colors.amber.withOpacity(0.2),
+                    color: Colors.amber.withValues(alpha: 0.2),
                     border: Border.all(color: Colors.amber),
                     borderRadius: BorderRadius.circular(20),
                   ),
