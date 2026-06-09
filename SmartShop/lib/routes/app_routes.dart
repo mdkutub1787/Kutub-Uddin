@@ -14,7 +14,10 @@ import '../screens/profile/admin_verification_screen.dart';
 import '../models/product_model.dart';
 import '../models/order_model.dart';
 
+import '../screens/splash/splash_screen.dart';
+
 class AppRoutes {
+  static const String splash = '/';
   static const String login = '/login';
   static const String register = '/register';
   static const String main = '/main';
@@ -30,6 +33,8 @@ class AppRoutes {
 
   static Route<dynamic> generateRoute(RouteSettings settings) {
     switch (settings.name) {
+      case splash:
+        return MaterialPageRoute(builder: (_) => const SplashScreen());
       case login:
         return MaterialPageRoute(builder: (_) => const LoginScreen());
       case register:

@@ -49,5 +49,10 @@
   "total_revenue": "মোট আয়",
   "successful_orders": "সফল অর্ডার",
   "low_stock_alert": "স্টক কম সতর্কতা",
-  "recent_performance": "সাম্প্রতিক পারফরম্যান্স"
+  "recent_performance": "সাম্প্রতিক পারফরম্যান্স",
+  "stock": "স্টক",
+  "in_stock": "স্টক আছে",
+  "out_of_stock": "স্টক নেই",
+  "pieces": "টি",
+  "currency": "৳"
 }

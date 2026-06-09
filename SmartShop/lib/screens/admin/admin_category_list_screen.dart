@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../view_models/category_view_model.dart';
 import '../../models/category_model.dart';
+import '../../widgets/custom_app_bar.dart';
 
 class AdminCategoryListScreen extends StatefulWidget {
   const AdminCategoryListScreen({super.key});
@@ -16,7 +17,7 @@ class _AdminCategoryListScreenState extends State<AdminCategoryListScreen> {
     final categoryViewModel = context.watch<CategoryViewModel>();
 
     return Scaffold(
-      appBar: AppBar(title: const Text("Category Manager"), centerTitle: true),
+      appBar: const CustomAppBar(title: "Category Manager"),
       body: categoryViewModel.isLoading
           ? const Center(child: CircularProgressIndicator())
           : ListView.builder(

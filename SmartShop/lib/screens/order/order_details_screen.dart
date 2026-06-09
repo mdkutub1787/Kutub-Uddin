@@ -6,6 +6,10 @@ import '../../view_models/settings_view_model.dart';
 import '../../view_models/order_view_model.dart';
 import '../../repositories/order_repository.dart';
 
+import 'package:smart_shop/utils/constants/app_strings.dart';
+import 'package:easy_localization/easy_localization.dart';
+import '../../widgets/custom_app_bar.dart';
+
 class OrderDetailsScreen extends StatelessWidget {
   final OrderModel order;
 
@@ -16,9 +20,8 @@ class OrderDetailsScreen extends StatelessWidget {
     final settings = context.watch<SettingsViewModel>();
     
     return Scaffold(
-      appBar: AppBar(
-        title: const Text("Order Details", style: TextStyle(fontWeight: FontWeight.bold)),
-        centerTitle: true,
+      appBar: const CustomAppBar(
+        title: "Order Details",
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16.0),
@@ -32,7 +35,7 @@ class OrderDetailsScreen extends StatelessWidget {
               style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 10),
-            _buildItemsList(context),
+            _buildItemsList(context, settings),
             const SizedBox(height: 20),
             _buildPriceSummary(context, settings),
             const SizedBox(height: 30),
@@ -120,7 +123,7 @@ class OrderDetailsScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildItemsList(BuildContext context) {
+  Widget _buildItemsList(BuildContext context, SettingsViewModel settings) {
     return ListView.builder(
       shrinkWrap: true,
       physics: const NeverScrollableScrollPhysics(),
@@ -165,15 +168,15 @@ class OrderDetailsScreen extends StatelessWidget {
                     ),
                     const SizedBox(height: 4),
                     Text(
-                      "৳${item.product.price} x ${item.quantity}",
-                      style: const TextStyle(color: Colors.grey),
+                      "${AppStrings.currency.tr()} ${NumberFormat('#,##,###').format(item.product.price.toInt())} x ${item.quantity}",
+                      style: const TextStyle(color: Colors.grey, fontWeight: FontWeight.w500),
                     ),
                   ],
                 ),
               ),
               Text(
-                "৳${item.product.price * item.quantity}",
-                style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                "${AppStrings.currency.tr()} ${NumberFormat('#,##,###').format((item.product.price * item.quantity).toInt())}",
+                style: TextStyle(fontWeight: FontWeight.w900, fontSize: 16, color: settings.primaryColor),
               ),
             ],
           ),
@@ -195,18 +198,18 @@ class OrderDetailsScreen extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               const Text("Subtotal", style: TextStyle(fontSize: 16)),
-              Text("৳${order.totalAmount}", style: const TextStyle(fontSize: 16)),
+              Text("${AppStrings.currency.tr()} ${NumberFormat('#,##,###').format(order.totalAmount.toInt())}", style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
             ],
           ),
-          const SizedBox(height: 8),
-          const Row(
+          const SizedBox(height: 12),
+          Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text("Delivery Fee", style: TextStyle(fontSize: 16)),
-              Text("৳0", style: TextStyle(fontSize: 16)),
+              const Text("Delivery Fee", style: TextStyle(fontSize: 16)),
+              Text("${AppStrings.currency.tr()} 0", style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
             ],
           ),
-          const Divider(height: 24),
+          const Divider(height: 32),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
@@ -214,12 +217,22 @@ class OrderDetailsScreen extends StatelessWidget {
                 "Total Amount",
                 style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
               ),
-              Text(
-                "৳${order.totalAmount}",
-                style: TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                  color: settings.primaryColor,
+              Text.rich(
+                TextSpan(
+                  children: [
+                    TextSpan(
+                      text: "${AppStrings.currency.tr()} ",
+                      style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: settings.primaryColor),
+                    ),
+                    TextSpan(
+                      text: NumberFormat('#,##,###').format(order.totalAmount.toInt()),
+                      style: TextStyle(
+                        fontSize: 24,
+                        fontWeight: FontWeight.w900,
+                        color: settings.primaryColor,
+                      ),
+                    ),
+                  ],
                 ),
               ),
             ],

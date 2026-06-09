@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../view_models/settings_view_model.dart';
+import '../../widgets/custom_app_bar.dart';
 import 'admin_product_list_screen.dart';
 import 'admin_category_list_screen.dart';
 import 'admin_order_list_screen.dart';
@@ -14,9 +15,8 @@ class AdminDashboardScreen extends StatelessWidget {
     final settings = context.watch<SettingsViewModel>();
     
     return Scaffold(
-      appBar: AppBar(
-        title: const Text("Control Panel"),
-        centerTitle: true,
+      appBar: const CustomAppBar(
+        title: "Control Panel",
       ),
       body: SingleChildScrollView(
         child: Column(

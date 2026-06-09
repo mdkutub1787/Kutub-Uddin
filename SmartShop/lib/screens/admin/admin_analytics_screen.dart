@@ -6,17 +6,17 @@ import '../../models/product_model.dart';
 import '../../repositories/order_repository.dart';
 import '../../repositories/product_repository.dart';
 import '../../utils/constants/app_strings.dart';
+import '../../widgets/custom_app_bar.dart';
 
-class AdminAnalyticsScreen extends StatelessWidget {
+class AdminAnalyticsScreen extends StatelessWidget { 
   const AdminAnalyticsScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.grey[50],
-      appBar: AppBar(
-        title: Text(AppStrings.analyticsTitle.tr(), style: const TextStyle(fontWeight: FontWeight.bold)),
-        centerTitle: true,
+      appBar: CustomAppBar(
+        title: AppStrings.analyticsTitle.tr(),
       ),
       body: RefreshIndicator(
         onRefresh: () async {

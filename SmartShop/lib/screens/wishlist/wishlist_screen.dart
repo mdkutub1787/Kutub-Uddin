@@ -8,6 +8,8 @@ import 'package:smart_shop/view_models/auth_view_model.dart';
 import 'package:smart_shop/utils/constants/app_strings.dart';
 import 'package:smart_shop/routes/app_routes.dart';
 import 'package:smart_shop/widgets/custom_app_bar.dart';
+import 'package:smart_shop/widgets/product_list_item.dart';
+import 'package:smart_shop/widgets/app_card.dart';
 
 class WishlistScreen extends StatelessWidget {
   const WishlistScreen({super.key});
@@ -50,56 +52,36 @@ class WishlistScreen extends StatelessWidget {
                 itemCount: favoriteProducts.length,
                 itemBuilder: (context, index) {
                   final product = favoriteProducts[index];
-                  return Card(
-                    margin: const EdgeInsets.only(bottom: 16),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
-                    child: ListTile(
-                      contentPadding: const EdgeInsets.all(10),
-                      leading: ClipRRect(
-                        borderRadius: BorderRadius.circular(10),
-                        child: Image.network(
-                          product.imageUrl, 
-                          width: 60, height: 60, 
-                          fit: BoxFit.cover,
-                          errorBuilder: (_, __, ___) => Container(width: 60, height: 60, color: Colors.grey[200], child: const Icon(Icons.image_not_supported)),
+                  return ProductListItem(
+                    product: product,
+                    trailing: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        IconButton(
+                          icon: const Icon(Icons.add_shopping_cart, color: Colors.blue),
+                          onPressed: () {
+                            bool added = cartVM.addItem(product);
+                            if (added) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(content: Text(AppStrings.addedToCart.tr()), duration: const Duration(seconds: 1), behavior: SnackBarBehavior.floating),
+                              );
+                            } else {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(content: Text("Out of stock!"), backgroundColor: Colors.red, behavior: SnackBarBehavior.floating),
+                              );
+                            }
+                          },
                         ),
-                      ),
-                      title: Text(product.name, style: const TextStyle(fontWeight: FontWeight.bold)),
-                      subtitle: Text("৳${product.price}"),
-                      trailing: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          IconButton(
-                            icon: const Icon(Icons.add_shopping_cart, color: Colors.blue),
-                            onPressed: () {
-                              bool added = cartVM.addItem(product);
-                              if (added) {
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  SnackBar(content: Text(AppStrings.addedToCart.tr()), duration: const Duration(seconds: 1), behavior: SnackBarBehavior.floating),
-                                );
-                              } else {
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  const SnackBar(content: Text("Out of stock!"), backgroundColor: Colors.red, behavior: SnackBarBehavior.floating),
-                                );
-                              }
-                            },
-                          ),
-                          IconButton(
-                            icon: const Icon(Icons.delete_outline, color: Colors.red),
-                            onPressed: () {
-                              final auth = context.read<AuthViewModel>();
-                              if (auth.user != null) {
-                                wishlistVM.toggleWishlist(auth.user!.uid, product.id);
-                              }
-                            },
-                          ),
-                        ],
-                      ),
-                      onTap: () => Navigator.pushNamed(
-                        context,
-                        AppRoutes.productDetails,
-                        arguments: product,
-                      ),
+                        IconButton(
+                          icon: const Icon(Icons.delete_outline, color: Colors.red),
+                          onPressed: () {
+                            final auth = context.read<AuthViewModel>();
+                            if (auth.user != null) {
+                              wishlistVM.toggleWishlist(auth.user!.uid, product.id);
+                            }
+                          },
+                        ),
+                      ],
                     ),
                   );
                 },

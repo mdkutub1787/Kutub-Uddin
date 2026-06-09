@@ -9,6 +9,9 @@ import '../../repositories/order_repository.dart';
 
 import '../../routes/app_routes.dart';
 
+import '../../widgets/custom_app_bar.dart';
+import '../../widgets/app_card.dart';
+
 class MyOrdersScreen extends StatefulWidget {
   const MyOrdersScreen({super.key});
 
@@ -33,9 +36,8 @@ class _MyOrdersScreenState extends State<MyOrdersScreen> {
     final orderViewModel = context.watch<OrderViewModel>();
 
     return Scaffold(
-      appBar: AppBar(
-        title: Text(AppStrings.myOrdersMenu.tr(), style: const TextStyle(fontWeight: FontWeight.bold)),
-        centerTitle: true,
+      appBar: CustomAppBar(
+        title: AppStrings.myOrdersMenu.tr(),
       ),
       body: RefreshIndicator(
         onRefresh: () async {
@@ -62,82 +64,76 @@ class _MyOrdersScreenState extends State<MyOrdersScreen> {
                     itemCount: orderViewModel.userOrders.length,
                     itemBuilder: (context, index) {
                       final order = orderViewModel.userOrders[index];
-                      return Card(
+                      return AppCard(
                         margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                        elevation: 2,
-                        shadowColor: Colors.black12,
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
-                        child: InkWell(
-                          borderRadius: BorderRadius.circular(15),
-                          onTap: () {
-                            Navigator.pushNamed(
-                              context,
-                              AppRoutes.orderDetails,
-                              arguments: order,
-                            );
-                          },
-                          child: Padding(
-                            padding: const EdgeInsets.all(16.0),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Row(
-                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                  children: [
-                                    Expanded(
-                                      child: Column(
-                                        crossAxisAlignment: CrossAxisAlignment.start,
-                                        children: [
-                                          Text(
-                                            "Order ID: ${order.id}",
-                                            style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
-                                            maxLines: 1,
-                                            overflow: TextOverflow.ellipsis,
-                                          ),
-                                          const SizedBox(height: 4),
-                                          Text(
-                                            DateFormat('dd MMM yyyy, hh:mm a').format(order.date),
-                                            style: const TextStyle(color: Colors.grey, fontSize: 12),
-                                          ),
-                                        ],
-                                      ),
+                        onTap: () {
+                          Navigator.pushNamed(
+                            context,
+                            AppRoutes.orderDetails,
+                            arguments: order,
+                          );
+                        },
+                        child: Padding(
+                          padding: const EdgeInsets.all(16.0),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Expanded(
+                                    child: Column(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          "Order ID: ${order.id}",
+                                          style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
+                                          maxLines: 1,
+                                          overflow: TextOverflow.ellipsis,
+                                        ),
+                                        const SizedBox(height: 4),
+                                        Text(
+                                          DateFormat('dd MMM yyyy, hh:mm a').format(order.date),
+                                          style: const TextStyle(color: Colors.grey, fontSize: 12),
+                                        ),
+                                      ],
                                     ),
-                                    _buildStatusBadge(order.status),
-                                  ],
-                                ),
-                                const Divider(height: 24),
-                                Row(
-                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                  children: [
-                                    Text(
-                                      "${order.items.length} Items",
-                                      style: const TextStyle(fontWeight: FontWeight.w500),
+                                  ),
+                                  _buildStatusBadge(order.status),
+                                ],
+                              ),
+                              const Divider(height: 24),
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Text(
+                                    "${order.items.length} Items",
+                                    style: const TextStyle(fontWeight: FontWeight.w500),
+                                  ),
+                                  Text(
+                                    "Total: ৳${order.totalAmount}",
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 16,
+                                      color: Theme.of(context).primaryColor,
                                     ),
-                                    Text(
-                                      "Total: ৳${order.totalAmount}",
-                                      style: TextStyle(
-                                        fontWeight: FontWeight.bold,
-                                        fontSize: 16,
-                                        color: Theme.of(context).primaryColor,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                                const SizedBox(height: 12),
-                                Row(
-                                  children: [
-                                    const Icon(Icons.info_outline, size: 16, color: Colors.blueGrey),
-                                    const SizedBox(width: 4),
-                                    const Text(
-                                      "Tap to view details & items",
-                                      style: TextStyle(fontSize: 12, color: Colors.blueGrey),
-                                    ),
-                                    const Spacer(),
-                                    Icon(Icons.arrow_forward_ios, size: 14, color: Colors.grey[400]),
-                                  ],
-                                ),
-                              ],
-                            ),
+                                  ),
+                                ],
+                              ),
+                              const SizedBox(height: 12),
+                              Row(
+                                children: [
+                                  const Icon(Icons.info_outline, size: 16, color: Colors.blueGrey),
+                                  const SizedBox(width: 4),
+                                  const Text(
+                                    "Tap to view details & items",
+                                    style: TextStyle(fontSize: 12, color: Colors.blueGrey),
+                                  ),
+                                  const Spacer(),
+                                  Icon(Icons.arrow_forward_ios, size: 14, color: Colors.grey[400]),
+                                ],
+                              ),
+                            ],
                           ),
                         ),
                       );

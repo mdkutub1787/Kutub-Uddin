@@ -49,5 +49,10 @@
   "total_revenue": "Total Revenue",
   "successful_orders": "Successful Orders",
   "low_stock_alert": "Low Stock Alert",
-  "recent_performance": "Recent Performance"
+  "recent_performance": "Recent Performance",
+  "stock": "Stock",
+  "in_stock": "In Stock",
+  "out_of_stock": "Out of Stock",
+  "pieces": "pcs",
+  "currency": "TK"
 }

@@ -4,17 +4,44 @@ import '../models/product_model.dart';
 
 class CartViewModel extends ChangeNotifier {
   final Map<String, CartItem> _items = {};
+  double _discountAmount = 0.0;
+  final double _deliveryFee = 50.0; // Fixed delivery fee for demo
 
   Map<String, CartItem> get items => {..._items};
 
   int get itemCount => _items.length;
 
-  double get totalAmount {
+  double get subtotal {
     var total = 0.0;
     _items.forEach((key, cartItem) {
       total += cartItem.totalPrice;
     });
     return total;
+  }
+
+  double get deliveryFee => _items.isEmpty ? 0 : _deliveryFee;
+  double get discountAmount => _discountAmount;
+
+  double get totalAmount {
+    return subtotal + deliveryFee - _discountAmount;
+  }
+
+  bool applyCoupon(String code) {
+    if (code.toUpperCase() == 'SMART20') {
+      _discountAmount = subtotal * 0.2; // 20% discount
+      notifyListeners();
+      return true;
+    } else if (code.toUpperCase() == 'FREESHIP') {
+      _discountAmount = 0; // Just an example, maybe set delivery fee to 0
+      notifyListeners();
+      return true;
+    }
+    return false;
+  }
+
+  void resetDiscount() {
+    _discountAmount = 0;
+    notifyListeners();
   }
 
   /// Adds an item to the cart if stock allows.

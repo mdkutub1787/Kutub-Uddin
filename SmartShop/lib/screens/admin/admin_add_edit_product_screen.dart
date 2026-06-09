@@ -4,6 +4,7 @@ import 'package:image_picker/image_picker.dart';
 import '../../models/product_model.dart';
 import '../../view_models/product_view_model.dart';
 import '../../view_models/category_view_model.dart';
+import '../../widgets/custom_app_bar.dart';
 
 class AdminAddEditProductScreen extends StatefulWidget {
   final ProductModel? product;
@@ -78,7 +79,7 @@ class _AdminAddEditProductScreenState extends State<AdminAddEditProductScreen> {
   Widget build(BuildContext context) {
     final categoryViewModel = context.watch<CategoryViewModel>();
     return Scaffold(
-      appBar: AppBar(title: Text(widget.product == null ? "Add Product" : "Edit Product"), centerTitle: true),
+      appBar: CustomAppBar(title: widget.product == null ? "Add Product" : "Edit Product"),
       body: _isSaving ? const Center(child: CircularProgressIndicator()) : SingleChildScrollView(
         padding: const EdgeInsets.all(20),
         child: Form(

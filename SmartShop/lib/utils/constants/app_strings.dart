@@ -50,4 +50,9 @@ class AppStrings {
   static const String successfulOrders = 'successful_orders';
   static const String lowStockAlert = 'low_stock_alert';
   static const String recentPerformance = 'recent_performance';
+  static const String stock = 'stock';
+  static const String inStock = 'in_stock';
+  static const String outOfStock = 'out_of_stock';
+  static const String pieces = 'pieces';
+  static const String currency = 'currency';
 }

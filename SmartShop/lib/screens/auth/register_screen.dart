@@ -6,6 +6,8 @@ import '../../view_models/auth_view_model.dart';
 import '../../routes/app_routes.dart';
 import '../../utils/constants/app_strings.dart';
 
+import '../../view_models/loading_view_model.dart';
+
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({super.key});
 
@@ -172,6 +174,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
       return;
     }
 
+    final loading = context.read<LoadingViewModel>();
+    loading.show(message: "Creating your account...");
+
     bool success = await authViewModel.register(
       _emailController.text.trim(),
       _passwordController.text,
@@ -179,6 +184,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
       phoneNumber: _phoneController.text.trim(),
       address: _addressController.text.trim(),
     );
+
+    loading.hide();
 
     if (success && mounted) {
       await authViewModel.logout();

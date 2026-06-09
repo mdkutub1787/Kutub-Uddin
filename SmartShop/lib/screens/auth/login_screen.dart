@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import 'package:easy_localization/easy_localization.dart';
 import '../../view_models/auth_view_model.dart';
 import '../../routes/app_routes.dart';
+import '../../view_models/loading_view_model.dart';
 import '../../utils/constants/app_colors.dart';
 import '../../utils/constants/app_strings.dart';
 
@@ -49,22 +50,22 @@ class _LoginScreenState extends State<LoginScreen> {
                   Hero(
                     tag: 'app_logo',
                     child: Container(
-                      padding: const EdgeInsets.all(24),
+                      padding: const EdgeInsets.all(30),
                       decoration: BoxDecoration(
                         color: Theme.of(context).cardColor,
-                        borderRadius: BorderRadius.circular(30),
+                        borderRadius: BorderRadius.circular(35),
                         boxShadow: [
                           BoxShadow(
-                            color: Theme.of(context).primaryColor.withValues(alpha: 0.1),
-                            blurRadius: 30,
-                            offset: const Offset(0, 10),
+                            color: Theme.of(context).primaryColor.withValues(alpha: 0.15),
+                            blurRadius: 40,
+                            offset: const Offset(0, 15),
                           )
                         ],
                       ),
-                      child: Icon(
-                        Icons.shopping_bag_rounded,
-                        size: 64,
-                        color: Theme.of(context).primaryColor,
+                      child: Image.asset(
+                        'assets/images/app_icon.png',
+                        height: 100,
+                        width: 100,
                       ),
                     ),
                   ),
@@ -204,13 +205,19 @@ class _LoginScreenState extends State<LoginScreen> {
       return;
     }
 
+    final loading = context.read<LoadingViewModel>();
+    loading.show(message: "Logging you in...");
+
     bool success = await authViewModel.login(
       _emailController.text.trim(),
       _passwordController.text,
     );
+    
+    loading.hide();
+
     if (success && mounted) {
       TextInput.finishAutofillContext();
-      Navigator.pushReplacementNamed(context, AppRoutes.dashboard);
+      Navigator.pushReplacementNamed(context, AppRoutes.main);
     } else if (authViewModel.error != null) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(

@@ -2,6 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../view_models/product_view_model.dart';
 import '../../models/product_model.dart';
+import '../../widgets/custom_app_bar.dart';
+import '../../widgets/app_card.dart';
+import 'package:easy_localization/easy_localization.dart';
+import 'package:smart_shop/utils/constants/app_strings.dart';
 import 'admin_add_edit_product_screen.dart';
 import 'package:smart_shop/utils/constants/app_colors.dart';
 
@@ -13,9 +17,8 @@ class AdminProductListScreen extends StatelessWidget {
     final productViewModel = context.watch<ProductViewModel>();
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text("Product Management"),
-        centerTitle: true,
+      appBar: const CustomAppBar(
+        title: "Product Management",
       ),
       body: productViewModel.isLoading && productViewModel.featuredProducts.isEmpty
           ? const Center(child: CircularProgressIndicator())
@@ -66,13 +69,8 @@ class AdminProductListScreen extends StatelessWidget {
   }
 
   Widget _buildProductCard(BuildContext context, ProductModel product, ProductViewModel vm) {
-    return Card(
-      elevation: 0,
+    return AppCard(
       margin: const EdgeInsets.only(bottom: 12),
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(15),
-        side: const BorderSide(color: AppColors.slate200),
-      ),
       child: Padding(
         padding: const EdgeInsets.all(12),
         child: Row(
@@ -81,11 +79,11 @@ class AdminProductListScreen extends StatelessWidget {
               borderRadius: BorderRadius.circular(12),
               child: Image.network(
                 product.imageUrl,
-                width: 70,
-                height: 70,
+                width: 75,
+                height: 75,
                 fit: BoxFit.cover,
                 errorBuilder: (_, __, ___) => Container(
-                  width: 70, height: 70, color: AppColors.slate100,
+                  width: 75, height: 75, color: AppColors.slate100,
                   child: const Icon(Icons.image_not_supported),
                 ),
               ),
@@ -103,23 +101,27 @@ class AdminProductListScreen extends StatelessWidget {
                   ),
                   const SizedBox(height: 5),
                   Text(
-                    "৳${product.price}",
+                    "৳${product.price.toInt()}",
                     style: TextStyle(
                       color: Theme.of(context).primaryColor,
                       fontWeight: FontWeight.w900,
+                      fontSize: 16,
                     ),
                   ),
                   const SizedBox(height: 5),
-                  Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-                    decoration: BoxDecoration(
-                      color: AppColors.slate100,
-                      borderRadius: BorderRadius.circular(5),
-                    ),
-                    child: Text(
-                      "Rating: ${product.rating}",
-                      style: const TextStyle(fontSize: 10, fontWeight: FontWeight.bold),
-                    ),
+                  Row(
+                    children: [
+                      Icon(Icons.inventory_2_outlined, size: 12, color: product.stock > 0 ? Colors.green : Colors.red),
+                      const SizedBox(width: 4),
+                      Text(
+                        "${AppStrings.stock.tr()}: ${product.stock}",
+                        style: TextStyle(
+                          fontSize: 12, 
+                          color: product.stock > 0 ? Colors.green : Colors.red,
+                          fontWeight: FontWeight.bold
+                        ),
+                      ),
+                    ],
                   ),
                 ],
               ),

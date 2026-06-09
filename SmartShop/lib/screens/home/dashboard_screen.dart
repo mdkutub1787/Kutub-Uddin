@@ -10,8 +10,10 @@ import 'package:smart_shop/view_models/wishlist_view_model.dart';
 import 'package:smart_shop/utils/constants/app_strings.dart';
 import 'package:smart_shop/routes/app_routes.dart';
 import 'package:smart_shop/screens/admin/admin_dashboard_screen.dart';
-import 'package:smart_shop/widgets/custom_app_bar.dart';
-import 'package:smart_shop/utils/constants/app_colors.dart';
+import '../../widgets/product_card.dart';
+import '../../widgets/empty_state_widget.dart';
+import '../../widgets/custom_app_bar.dart';
+import '../../widgets/app_card.dart';
 
 class DashboardScreen extends StatelessWidget {
   const DashboardScreen({super.key});
@@ -42,10 +44,14 @@ class DashboardScreen extends StatelessWidget {
                   Text(
                     AppStrings.appName.tr(),
                     style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w500, color: Colors.white70),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
                   ),
                   Text(
                     "Hello, ${auth.user?.name ?? 'Guest'}!",
                     style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.white),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
                   ),
                 ],
               ),
@@ -83,33 +89,18 @@ class DashboardScreen extends StatelessWidget {
           ],
         ),
       ),
-      floatingActionButton: FloatingActionButton.extended(
-        onPressed: () {},
-        backgroundColor: settings.primaryColor,
-        icon: const Icon(Icons.support_agent_rounded, color: Colors.white),
-        label: Text(
-          AppStrings.help.tr(),
-          style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
-        ),
-      ),
     );
   }
 
   Widget _buildSearchBar(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.fromLTRB(16, 20, 16, 16),
-      child: Container(
-        height: 60,
-        decoration: BoxDecoration(
-          color: Theme.of(context).cardColor,
-          borderRadius: BorderRadius.circular(18),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withValues(alpha: 0.04),
-              blurRadius: 20,
-              offset: const Offset(0, 4),
-            )
-          ],
+      child: AppCard(
+        elevation: 6,
+        borderRadius: 20,
+        border: Border.all(
+          color: Theme.of(context).primaryColor.withValues(alpha: 0.3), 
+          width: 2
         ),
         child: TextField(
           textAlignVertical: TextAlignVertical.center,
@@ -120,7 +111,9 @@ class DashboardScreen extends StatelessWidget {
             enabledBorder: InputBorder.none,
             focusedBorder: InputBorder.none,
             prefixIcon: Icon(Icons.search_rounded, color: Theme.of(context).primaryColor, size: 28),
-            contentPadding: EdgeInsets.zero,
+            contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 15),
+            fillColor: Theme.of(context).cardColor,
+            filled: true,
           ),
         ),
       ),
@@ -128,50 +121,104 @@ class DashboardScreen extends StatelessWidget {
   }
 
   Widget _buildPromoBanner(BuildContext context) {
-    return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-      height: 160,
-      width: double.infinity,
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(24),
-        gradient: const LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: [AppColors.promoStart, AppColors.promoEnd],
-        ),
+    return SizedBox(
+      height: 180,
+      child: PageView(
+        children: [
+          _promoItem(
+            context,
+            "SUMMER SALE",
+            "Get up to 50% OFF",
+            "On all electronics",
+            const Color(0xFF1A237E),
+            const Color(0xFF3949AB),
+            Icons.flash_on_rounded,
+          ),
+          _promoItem(
+            context,
+            "NEW ARRIVAL",
+            "Exclusive Collection",
+            "Fresh stock available",
+            const Color(0xFFD32F2F),
+            const Color(0xFFEF5350),
+            Icons.new_releases_rounded,
+          ),
+          _promoItem(
+            context,
+            "FREE SHIPPING",
+            "On orders over ৳1000",
+            "Limited time offer",
+            const Color(0xFF388E3C),
+            const Color(0xFF66BB6A),
+            Icons.local_shipping_rounded,
+          ),
+        ],
       ),
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(24),
-        child: Stack(
-          children: [
-            Positioned(
-              right: -30,
-              top: -30,
-              child: Icon(Icons.local_mall_rounded, size: 200, color: Colors.white.withValues(alpha: 0.1)),
-            ),
-            Padding(
-              padding: const EdgeInsets.all(24.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text(
-                    AppStrings.limitedOffer.tr().toUpperCase(),
-                    style: const TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.bold),
-                  ),
-                  const SizedBox(height: 8),
-                  Text(
-                    AppStrings.offerBannerTitle.tr(),
-                    style: const TextStyle(color: Colors.white, fontSize: 26, fontWeight: FontWeight.w900),
-                  ),
-                  Text(
-                    AppStrings.offerBannerSubtitle.tr(),
-                    style: const TextStyle(color: Colors.white70, fontSize: 16),
-                  ),
-                ],
+    );
+  }
+
+  Widget _promoItem(
+    BuildContext context,
+    String tag,
+    String title,
+    String sub,
+    Color color1,
+    Color color2,
+    IconData icon,
+  ) {
+    return AppCard(
+      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      borderRadius: 24,
+      elevation: 8,
+      child: Container(
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(24),
+          gradient: LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: [color1, color2],
+          ),
+        ),
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(24),
+          child: Stack(
+            children: [
+              Positioned(
+                right: -20,
+                top: -20,
+                child: Icon(icon, size: 150, color: Colors.white.withValues(alpha: 0.1)),
               ),
-            )
-          ],
+              Padding(
+                padding: const EdgeInsets.all(24.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                      decoration: BoxDecoration(
+                        color: Colors.white.withValues(alpha: 0.2),
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: Text(
+                        tag,
+                        style: const TextStyle(color: Colors.white, fontSize: 10, fontWeight: FontWeight.bold),
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+                    Text(
+                      title,
+                      style: const TextStyle(color: Colors.white, fontSize: 24, fontWeight: FontWeight.w900),
+                    ),
+                    Text(
+                      sub,
+                      style: const TextStyle(color: Colors.white70, fontSize: 14),
+                    ),
+                  ],
+                ),
+              )
+            ],
+          ),
         ),
       ),
     );
@@ -183,10 +230,29 @@ class DashboardScreen extends StatelessWidget {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Text(title, style: const TextStyle(fontSize: 22, fontWeight: FontWeight.w900)),
-          TextButton(
-            onPressed: onSeeAll,
-            child: Text(AppStrings.seeAll.tr(), style: const TextStyle(fontWeight: FontWeight.bold)),
+          Expanded(
+            child: Text(
+              title, 
+              style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w900),
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+            ),
+          ),
+          AppCard(
+            borderRadius: 12,
+            elevation: 2,
+            onTap: onSeeAll,
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+              child: Text(
+                AppStrings.seeAll.tr(), 
+                style: TextStyle(
+                  fontWeight: FontWeight.bold, 
+                  color: Theme.of(context).primaryColor,
+                  fontSize: 12,
+                ),
+              ),
+            ),
           )
         ],
       ),
@@ -216,24 +282,32 @@ class DashboardScreen extends StatelessWidget {
                       padding: const EdgeInsets.symmetric(horizontal: 10),
                       child: Column(
                         children: [
-                          Container(
-                            height: 70,
+                          AppCard(
                             width: 70,
-                            decoration: BoxDecoration(
-                              color: isSelected ? cat.color : cat.color.withValues(alpha: 0.1),
-                              borderRadius: BorderRadius.circular(20),
-                              border: isSelected ? Border.all(color: Colors.white, width: 2) : null,
+                            height: 70,
+                            borderRadius: 20,
+                            elevation: isSelected ? 8 : 2,
+                            color: isSelected ? cat.color : Theme.of(context).cardColor,
+                            border: isSelected 
+                                ? Border.all(color: Colors.white, width: 2) 
+                                : Border.all(color: cat.color.withValues(alpha: 0.1), width: 1),
+                            onTap: () => productVM.filterByCategory(cat.id),
+                            child: Icon(
+                              cat.icon, 
+                              color: isSelected ? Colors.white : cat.color, 
+                              size: 30
                             ),
-                            child: Icon(cat.icon, color: isSelected ? Colors.white : cat.color, size: 30),
                           ),
                           const SizedBox(height: 8),
                           Text(
                             cat.name,
                             style: TextStyle(
-                              fontSize: 14,
+                              fontSize: 13,
                               fontWeight: isSelected ? FontWeight.w900 : FontWeight.bold,
                               color: isSelected ? cat.color : null,
                             ),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
                           ),
                         ],
                       ),
@@ -252,10 +326,14 @@ class DashboardScreen extends StatelessWidget {
     return Consumer<ProductViewModel>(
       builder: (context, viewModel, child) {
         if (viewModel.isLoading && viewModel.featuredProducts.isEmpty) {
-          return SizedBox(height: 280, child: Center(child: Text(AppStrings.loading.tr())));
+          return const SizedBox(height: 280, child: Center(child: CircularProgressIndicator()));
         }
         if (viewModel.featuredProducts.isEmpty) {
-          return SizedBox(height: 280, child: Center(child: Text(AppStrings.noProducts.tr())));
+          return const EmptyStateWidget(
+            icon: Icons.inventory_2_outlined,
+            title: "No Products",
+            subtitle: "Check back later for new arrivals!",
+          );
         }
         return SizedBox(
           height: 310,
@@ -264,7 +342,7 @@ class DashboardScreen extends StatelessWidget {
             scrollDirection: Axis.horizontal,
             itemCount: viewModel.featuredProducts.length,
             itemBuilder: (context, index) {
-              return _buildProductCard(context, viewModel.featuredProducts[index], settings);
+              return ProductCard(product: viewModel.featuredProducts[index]);
             },
           ),
         );
@@ -296,7 +374,7 @@ class DashboardScreen extends StatelessWidget {
                     scrollDirection: Axis.horizontal,
                     itemCount: categoryProducts.length,
                     itemBuilder: (context, index) {
-                      return _buildProductCard(context, categoryProducts[index], settings);
+                      return ProductCard(product: categoryProducts[index]);
                     },
                   ),
                 ),
@@ -305,163 +383,6 @@ class DashboardScreen extends StatelessWidget {
           }).toList(),
         );
       },
-    );
-  }
-
-  Widget _buildProductCard(BuildContext context, product, SettingsViewModel settings) {
-    return GestureDetector(
-      onTap: () => Navigator.pushNamed(
-        context,
-        AppRoutes.productDetails,
-        arguments: product,
-      ),
-      child: Container(
-        width: 165,
-        margin: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
-        decoration: BoxDecoration(
-          color: Theme.of(context).cardColor,
-          borderRadius: BorderRadius.circular(20),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withValues(alpha: 0.05),
-              blurRadius: 10,
-              offset: const Offset(0, 4),
-            )
-          ],
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Expanded(
-              child: Stack(
-                children: [
-                  ClipRRect(
-                    borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
-                    child: Image.network(
-                      product.imageUrl,
-                      width: double.infinity,
-                      height: double.infinity,
-                      fit: BoxFit.cover,
-                      errorBuilder: (context, error, stackTrace) => Container(
-                        color: AppColors.slate100,
-                        child: const Center(
-                          child: Icon(Icons.image_not_supported_outlined, color: AppColors.slate400),
-                        ),
-                      ),
-                    ),
-                  ),
-                  if (product.hasDiscount)
-                    Positioned(
-                      top: 10,
-                      left: 0,
-                      child: Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                        decoration: const BoxDecoration(
-                          color: Colors.red,
-                          borderRadius: BorderRadius.only(topRight: Radius.circular(10), bottomRight: Radius.circular(10)),
-                        ),
-                        child: Text(
-                          product.discountType == 'percentage' 
-                              ? "${product.discountValue.toInt()}% OFF" 
-                              : "৳${product.discountValue.toInt()} OFF",
-                          style: const TextStyle(color: Colors.white, fontSize: 10, fontWeight: FontWeight.bold),
-                        ),
-                      ),
-                    ),
-                  Positioned(
-                    top: 8,
-                    right: 8,
-                    child: Consumer<WishlistViewModel>(
-                      builder: (context, wishlistVM, child) {
-                        final isFav = wishlistVM.isFavorite(product.id);
-                        return GestureDetector(
-                          onTap: () {
-                            final auth = context.read<AuthViewModel>();
-                            if (auth.user != null) {
-                              wishlistVM.toggleWishlist(auth.user!.uid, product.id);
-                            }
-                          },
-                          child: CircleAvatar(
-                            backgroundColor: Colors.white.withValues(alpha: 0.9),
-                            radius: 14,
-                            child: Icon(
-                              isFav ? Icons.favorite : Icons.favorite_border,
-                              color: isFav ? Colors.red : AppColors.slate400,
-                              size: 16,
-                            ),
-                          ),
-                        );
-                      },
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.all(12.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    product.name,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
-                  ),
-                  const SizedBox(height: 4),
-                  Row(
-                    children: [
-                      Text(
-                        "৳${product.price}",
-                        style: TextStyle(
-                          color: settings.primaryColor,
-                          fontWeight: FontWeight.w900,
-                          fontSize: 15,
-                        ),
-                      ),
-                      if (product.hasDiscount) ...[
-                        const SizedBox(width: 5),
-                        Text(
-                          "৳${product.originalPrice}",
-                          style: const TextStyle(
-                            color: Colors.grey,
-                            decoration: TextDecoration.lineThrough,
-                            fontSize: 11,
-                          ),
-                        ),
-                      ]
-                    ],
-                  ),
-                  const SizedBox(height: 10),
-                  SizedBox(
-                    width: double.infinity,
-                    child: ElevatedButton(
-                      onPressed: () {
-                        bool added = context.read<CartViewModel>().addItem(product);
-                        if (added) {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(content: Text(AppStrings.addedToCart.tr()), duration: const Duration(seconds: 1), behavior: SnackBarBehavior.floating),
-                          );
-                        }
-                      },
-                      style: ElevatedButton.styleFrom(
-                        padding: EdgeInsets.zero,
-                        minimumSize: const Size(0, 35),
-                        backgroundColor: product.stock > 0 ? settings.primaryColor : Colors.grey,
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-                      ),
-                      child: Text(
-                        product.stock > 0 ? "Add to Cart" : "Out of Stock",
-                        style: const TextStyle(fontSize: 12, color: Colors.white),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ],
-        ),
-      ),
     );
   }
 
@@ -530,6 +451,10 @@ class DashboardScreen extends StatelessWidget {
                     Navigator.pop(context);
                     Navigator.push(context, MaterialPageRoute(builder: (_) => const AdminDashboardScreen()));
                   }),
+                _buildDrawerItem(context, Icons.support_agent_rounded, AppStrings.help.tr(), () {
+                  Navigator.pop(context);
+                  // Add help functionality here if needed
+                }),
                 const Divider(),
                 // Language Switcher
                 ListTile(
@@ -554,10 +479,19 @@ class DashboardScreen extends StatelessWidget {
                   onChanged: (val) => settings.setThemeMode(val ? ThemeMode.dark : ThemeMode.light),
                 ),
                 // Theme Color Picker
-                ListTile(
-                  leading: const Icon(Icons.color_lens_rounded),
-                  title: Text(AppStrings.themeColor.tr()),
-                  subtitle: SingleChildScrollView(
+                Padding(
+                  padding: const EdgeInsets.only(left: 16, top: 10),
+                  child: Row(
+                    children: [
+                      const Icon(Icons.color_lens_rounded, color: Colors.grey),
+                      const SizedBox(width: 32),
+                      Text(AppStrings.themeColor.tr(), style: const TextStyle(fontSize: 16)),
+                    ],
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.only(left: 64, bottom: 10),
+                  child: SingleChildScrollView(
                     scrollDirection: Axis.horizontal,
                     child: Row(
                       children: [
