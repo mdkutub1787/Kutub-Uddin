@@ -10,6 +10,7 @@ class OrderModel {
   final String userAddress;
   final List<CartItem> items;
   final double totalAmount;
+  final double deliveryFee;
   final DateTime date;
   final String status;
 
@@ -21,6 +22,7 @@ class OrderModel {
     required this.userAddress,
     required this.items,
     required this.totalAmount,
+    this.deliveryFee = 0.0,
     required this.date,
     required this.status,
   });
@@ -39,6 +41,7 @@ class OrderModel {
         'imageUrl': item.product.imageUrl,
       }).toList(),
       'totalAmount': totalAmount,
+      'deliveryFee': deliveryFee,
       'date': date.toIso8601String(),
       'status': status,
     };
@@ -77,6 +80,7 @@ class OrderModel {
       userAddress: data['userAddress'] ?? '',
       items: orderItems,
       totalAmount: (data['totalAmount'] ?? 0).toDouble(),
+      deliveryFee: (data['deliveryFee'] ?? 0).toDouble(),
       date: data['date'] != null ? DateTime.parse(data['date']) : DateTime.now(),
       status: data['status'] ?? 'Pending',
     );

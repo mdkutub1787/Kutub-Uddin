@@ -12,12 +12,14 @@ class ProductListItem extends StatelessWidget {
   final ProductModel product;
   final Widget? trailing;
   final VoidCallback? onTap;
+  final String? heroTag;
 
   const ProductListItem({
     super.key,
     required this.product,
     this.trailing,
     this.onTap,
+    this.heroTag,
   });
 
   @override
@@ -29,14 +31,17 @@ class ProductListItem extends StatelessWidget {
       onTap: onTap ?? () => Navigator.pushNamed(
         context,
         AppRoutes.productDetails,
-        arguments: product,
+        arguments: {
+          'product': product,
+          'heroTag': heroTag ?? product.id,
+        },
       ),
       child: Padding(
         padding: const EdgeInsets.all(12),
         child: Row(
           children: [
             Hero(
-              tag: 'product-list-${product.id}',
+              tag: heroTag ?? product.id,
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(15),
                 child: Image.network(
@@ -65,42 +70,33 @@ class ProductListItem extends StatelessWidget {
                     overflow: TextOverflow.ellipsis,
                   ),
                   const SizedBox(height: 4),
-                  Row(
-                    children: [
-                      Text.rich(
-                        TextSpan(
-                          children: [
-                            TextSpan(
-                              text: "${AppStrings.currency.tr()} ",
-                              style: TextStyle(
-                                color: settings.primaryColor,
-                                fontWeight: FontWeight.bold,
-                                fontSize: 13,
-                              ),
-                            ),
-                            TextSpan(
-                              text: NumberFormat('#,##,###').format(product.price.toInt()),
-                              style: TextStyle(
-                                color: settings.primaryColor,
-                                fontWeight: FontWeight.w900,
-                                fontSize: 17,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                      if (product.hasDiscount) ...[
-                        const SizedBox(width: 8),
+                  if (product.hasDiscount)
+                    Row(
+                      children: [
                         Text(
-                          "${AppStrings.currency.tr()} ${NumberFormat('#,##,###').format(product.originalPrice.toInt())}",
+                          "৳${NumberFormat('#,##,###').format(product.originalPrice.toInt())}",
                           style: const TextStyle(
                             color: Colors.grey,
                             decoration: TextDecoration.lineThrough,
-                            fontSize: 12,
+                            fontSize: 13,
                           ),
                         ),
-                      ]
-                    ],
+                        const SizedBox(width: 8),
+                        Text(
+                          product.discountType == 'percentage' 
+                            ? "${product.discountValue.toInt()}% OFF" 
+                            : "৳${product.discountValue.toInt()} OFF",
+                          style: const TextStyle(color: Colors.red, fontSize: 11, fontWeight: FontWeight.bold),
+                        ),
+                      ],
+                    ),
+                  Text(
+                    "৳${NumberFormat('#,##,###').format(product.price.toInt())}",
+                    style: TextStyle(
+                      color: settings.primaryColor,
+                      fontWeight: FontWeight.w900,
+                      fontSize: 18,
+                    ),
                   ),
                   const SizedBox(height: 6),
                   Row(
@@ -111,14 +107,18 @@ class ProductListItem extends StatelessWidget {
                         color: product.stock > 0 ? Colors.green : Colors.red,
                       ),
                       const SizedBox(width: 4),
-                      Text(
-                        product.stock > 0
-                            ? "${AppStrings.stock.tr()}: ${product.stock} ${AppStrings.pieces.tr()}"
-                            : AppStrings.outOfStock.tr(),
-                        style: TextStyle(
-                          fontSize: 11,
-                          color: product.stock > 0 ? Colors.green : Colors.red,
-                          fontWeight: FontWeight.bold,
+                      Expanded(
+                        child: Text(
+                          product.stock > 0
+                              ? "${AppStrings.stock.tr()}: ${product.stock} ${AppStrings.pieces.tr()}"
+                              : AppStrings.outOfStock.tr(),
+                          style: TextStyle(
+                            fontSize: 11,
+                            color: product.stock > 0 ? Colors.green : Colors.red,
+                            fontWeight: FontWeight.bold,
+                          ),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
                         ),
                       ),
                     ],

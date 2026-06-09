@@ -31,6 +31,7 @@ class AppStrings {
   static const String myOrdersMenu = 'my_orders_menu';
   static const String wishlistMenu = 'wishlist_menu';
   static const String profileMenu = 'profile_menu';
+  static const String accountMenu = 'account_menu';
   static const String help = 'help';
   static const String loading = 'loading';
   static const String noProducts = 'no_products';

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:smart_shop/models/product_model.dart';
+import 'package:smart_shop/view_models/category_view_model.dart';
 import 'package:smart_shop/view_models/cart_view_model.dart';
 import 'package:smart_shop/view_models/wishlist_view_model.dart';
 import 'package:smart_shop/view_models/auth_view_model.dart';
@@ -10,8 +11,9 @@ import 'package:smart_shop/widgets/custom_app_bar.dart';
 
 class ProductDetailsScreen extends StatelessWidget {
   final ProductModel product;
+  final String? heroTag;
 
-  const ProductDetailsScreen({super.key, required this.product});
+  const ProductDetailsScreen({super.key, required this.product, this.heroTag});
 
   @override
   Widget build(BuildContext context) {
@@ -22,7 +24,7 @@ class ProductDetailsScreen extends StatelessWidget {
             expandedHeight: 400,
             flexibleSpace: FlexibleSpaceBar(
               background: Hero(
-                tag: product.id,
+                tag: heroTag ?? product.id,
                 child: Image.network(
                   product.imageUrl, 
                   fit: BoxFit.cover,
@@ -61,34 +63,70 @@ class ProductDetailsScreen extends StatelessWidget {
                     ),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    crossAxisAlignment: CrossAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
                       Expanded(
-                        child: Text(
-                          product.name,
-                          style: const TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              product.name,
+                              style: const TextStyle(fontSize: 26, fontWeight: FontWeight.bold),
+                            ),
+                            const SizedBox(height: 5),
+                            Consumer<CategoryViewModel>(
+                              builder: (context, catVM, child) {
+                                final category = catVM.categories.firstWhere(
+                                  (c) => c.id == product.categoryId,
+                                  orElse: () => catVM.categories.isNotEmpty 
+                                      ? catVM.categories.first 
+                                      : catVM.categories.first, // Just a placeholder if not found
+                                );
+                                return Text(
+                                  "Category: ${catVM.categories.any((c) => c.id == product.categoryId) ? catVM.categories.firstWhere((c) => c.id == product.categoryId).name : 'General'}",
+                                  style: TextStyle(color: Colors.grey[600], fontSize: 14),
+                                );
+                              },
+                            ),
+                          ],
                         ),
                       ),
+                      const SizedBox(width: 10),
                       Column(
                         crossAxisAlignment: CrossAxisAlignment.end,
                         children: [
-                          Text(
-                            "৳${product.price}",
-                            style: TextStyle(
-                              fontSize: 24,
-                              fontWeight: FontWeight.w900,
-                              color: Theme.of(context).primaryColor,
+                          if (product.hasDiscount) ...[
+                            Container(
+                              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                              decoration: BoxDecoration(
+                                color: Colors.red,
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                              child: Text(
+                                product.discountType == 'percentage' 
+                                    ? "${product.discountValue.toInt()}% OFF" 
+                                    : "৳${product.discountValue.toInt()} OFF",
+                                style: const TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.bold),
+                              ),
                             ),
-                          ),
-                          if (product.hasDiscount)
+                            const SizedBox(height: 4),
                             Text(
-                              "৳${product.originalPrice}",
+                              "৳${NumberFormat('#,##,###').format(product.originalPrice.toInt())}",
                               style: const TextStyle(
                                 fontSize: 16,
                                 color: Colors.grey,
                                 decoration: TextDecoration.lineThrough,
                               ),
                             ),
+                          ],
+                          Text(
+                            "৳${NumberFormat('#,##,###').format(product.price.toInt())}",
+                            style: TextStyle(
+                              fontSize: 28,
+                              fontWeight: FontWeight.w900,
+                              color: Theme.of(context).primaryColor,
+                            ),
+                          ),
                         ],
                       ),
                     ],

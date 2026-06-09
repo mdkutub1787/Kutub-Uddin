@@ -342,7 +342,11 @@ class DashboardScreen extends StatelessWidget {
             scrollDirection: Axis.horizontal,
             itemCount: viewModel.featuredProducts.length,
             itemBuilder: (context, index) {
-              return ProductCard(product: viewModel.featuredProducts[index]);
+              final product = viewModel.featuredProducts[index];
+              return ProductCard(
+                product: product, 
+                heroTag: 'featured-${product.id}',
+              );
             },
           ),
         );
@@ -374,7 +378,11 @@ class DashboardScreen extends StatelessWidget {
                     scrollDirection: Axis.horizontal,
                     itemCount: categoryProducts.length,
                     itemBuilder: (context, index) {
-                      return ProductCard(product: categoryProducts[index]);
+                      final product = categoryProducts[index];
+                      return ProductCard(
+                        product: product,
+                        heroTag: 'cat-${category.id}-${product.id}',
+                      );
                     },
                   ),
                 ),
@@ -449,7 +457,7 @@ class DashboardScreen extends StatelessWidget {
                 if (authViewModel.isAdmin)
                   _buildDrawerItem(context, Icons.admin_panel_settings, "Admin Panel", () {
                     Navigator.pop(context);
-                    Navigator.push(context, MaterialPageRoute(builder: (_) => const AdminDashboardScreen()));
+                    Navigator.pushNamed(context, AppRoutes.adminDashboard);
                   }),
                 _buildDrawerItem(context, Icons.support_agent_rounded, AppStrings.help.tr(), () {
                   Navigator.pop(context);

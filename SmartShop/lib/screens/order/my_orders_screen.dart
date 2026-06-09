@@ -1,16 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:easy_localization/easy_localization.dart';
-import 'package:intl/intl.dart';
-import '../../view_models/order_view_model.dart';
-import '../../view_models/auth_view_model.dart';
-import '../../utils/constants/app_strings.dart';
-import '../../repositories/order_repository.dart';
-
-import '../../routes/app_routes.dart';
-
-import '../../widgets/custom_app_bar.dart';
-import '../../widgets/app_card.dart';
+import 'package:smart_shop/view_models/order_view_model.dart';
+import 'package:smart_shop/view_models/auth_view_model.dart';
+import 'package:smart_shop/utils/constants/app_strings.dart';
+import 'package:smart_shop/repositories/order_repository.dart';
+import 'package:smart_shop/routes/app_routes.dart';
+import 'package:smart_shop/widgets/custom_app_bar.dart';
+import 'package:smart_shop/widgets/app_card.dart';
+import 'package:smart_shop/widgets/empty_state_widget.dart';
 
 class MyOrdersScreen extends StatefulWidget {
   const MyOrdersScreen({super.key});
@@ -49,14 +47,12 @@ class _MyOrdersScreenState extends State<MyOrdersScreen> {
         child: orderViewModel.isLoading && orderViewModel.userOrders.isEmpty
             ? const Center(child: CircularProgressIndicator())
             : orderViewModel.userOrders.isEmpty
-                ? Center(
-                    child: ListView(
-                      physics: const AlwaysScrollableScrollPhysics(),
-                      children: const [
-                        SizedBox(height: 200),
-                        Center(child: Text("No orders yet!")),
-                      ],
-                    ),
+                ? EmptyStateWidget(
+                    icon: Icons.receipt_long_outlined,
+                    title: "No Orders Yet",
+                    subtitle: "Looks like you haven't placed any orders yet. Start shopping now!",
+                    actionText: "Browse Products",
+                    onAction: () => Navigator.pushNamedAndRemoveUntil(context, AppRoutes.main, (route) => false),
                   )
                 : ListView.builder(
                     padding: const EdgeInsets.only(top: 8, bottom: 20),

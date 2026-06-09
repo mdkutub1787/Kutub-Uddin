@@ -11,6 +11,7 @@ import '../screens/order/order_details_screen.dart';
 import '../screens/wishlist/wishlist_screen.dart';
 import '../screens/profile/edit_profile_screen.dart';
 import '../screens/profile/admin_verification_screen.dart';
+import '../screens/admin/admin_dashboard_screen.dart';
 import '../models/product_model.dart';
 import '../models/order_model.dart';
 
@@ -30,6 +31,7 @@ class AppRoutes {
   static const String wishlist = '/wishlist';
   static const String editProfile = '/edit-profile';
   static const String adminVerification = '/admin-verification';
+  static const String adminDashboard = '/admin-dashboard';
 
   static Route<dynamic> generateRoute(RouteSettings settings) {
     switch (settings.name) {
@@ -55,10 +57,27 @@ class AppRoutes {
         return MaterialPageRoute(builder: (_) => const EditProfileScreen());
       case adminVerification:
         return MaterialPageRoute(builder: (_) => const AdminVerificationScreen());
+      case adminDashboard:
+        return MaterialPageRoute(builder: (_) => const AdminDashboardScreen());
       case productDetails:
-        final product = settings.arguments as ProductModel;
+        if (settings.arguments is ProductModel) {
+          final product = settings.arguments as ProductModel;
+          return MaterialPageRoute(
+            builder: (_) => ProductDetailsScreen(product: product),
+          );
+        } else if (settings.arguments is Map) {
+          final args = settings.arguments as Map<String, dynamic>;
+          return MaterialPageRoute(
+            builder: (_) => ProductDetailsScreen(
+              product: args['product'] as ProductModel,
+              heroTag: args['heroTag'] as String?,
+            ),
+          );
+        }
         return MaterialPageRoute(
-          builder: (_) => ProductDetailsScreen(product: product),
+          builder: (_) => const Scaffold(
+            body: Center(child: Text('Invalid product details arguments')),
+          ),
         );
       case orderDetails:
         final order = settings.arguments as OrderModel;

@@ -8,6 +8,7 @@ import 'package:smart_shop/view_models/auth_view_model.dart';
 import 'package:smart_shop/utils/constants/app_strings.dart';
 import 'package:smart_shop/routes/app_routes.dart';
 import 'package:smart_shop/widgets/custom_app_bar.dart';
+import 'package:smart_shop/widgets/empty_state_widget.dart';
 import 'package:smart_shop/widgets/product_list_item.dart';
 import 'package:smart_shop/widgets/app_card.dart';
 
@@ -37,14 +38,12 @@ class WishlistScreen extends StatelessWidget {
           await context.read<ProductViewModel>().fetchFeaturedProducts();
         },
         child: favoriteProducts.isEmpty
-            ? Center(
-                child: ListView(
-                  physics: const AlwaysScrollableScrollPhysics(),
-                  children: const [
-                    SizedBox(height: 200),
-                    Center(child: Text("Your wishlist is empty!")),
-                  ],
-                ),
+            ? EmptyStateWidget(
+                icon: Icons.favorite_border_rounded,
+                title: "Your wishlist is empty!",
+                subtitle: "Tap the heart on any product to save it here for later.",
+                actionText: "Go Shopping",
+                onAction: () => Navigator.pop(context),
               )
             : ListView.builder(
                 physics: const AlwaysScrollableScrollPhysics(),

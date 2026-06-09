@@ -5,11 +5,20 @@ import '../models/product_model.dart';
 class CartViewModel extends ChangeNotifier {
   final Map<String, CartItem> _items = {};
   double _discountAmount = 0.0;
-  final double _deliveryFee = 50.0; // Fixed delivery fee for demo
+  
+  // Delivery related
+  bool _isInsideDhaka = true;
+  final double _deliveryFeeDhaka = 60.0;
+  final double _deliveryFeeOutside = 150.0;
 
   Map<String, CartItem> get items => {..._items};
-
   int get itemCount => _items.length;
+  bool get isInsideDhaka => _isInsideDhaka;
+
+  void setInsideDhaka(bool value) {
+    _isInsideDhaka = value;
+    notifyListeners();
+  }
 
   double get subtotal {
     var total = 0.0;
@@ -19,7 +28,10 @@ class CartViewModel extends ChangeNotifier {
     return total;
   }
 
-  double get deliveryFee => _items.isEmpty ? 0 : _deliveryFee;
+  double get deliveryFee {
+    if (_items.isEmpty) return 0;
+    return _isInsideDhaka ? _deliveryFeeDhaka : _deliveryFeeOutside;
+  }
   double get discountAmount => _discountAmount;
 
   double get totalAmount {

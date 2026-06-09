@@ -6,6 +6,7 @@ import 'package:smart_shop/view_models/settings_view_model.dart';
 import 'package:smart_shop/utils/constants/app_strings.dart';
 import 'package:smart_shop/routes/app_routes.dart';
 import 'package:smart_shop/widgets/custom_app_bar.dart';
+import 'package:smart_shop/widgets/app_card.dart';
 
 class ProfileScreen extends StatelessWidget {
   const ProfileScreen({super.key});
@@ -26,6 +27,18 @@ class ProfileScreen extends StatelessWidget {
             const SizedBox(height: 20),
             _buildProfileHeader(context, user, settings, authViewModel.isAdmin),
             const SizedBox(height: 30),
+
+            if (authViewModel.isAdmin) ...[
+              _buildAdminCard(context, settings),
+              const SizedBox(height: 20),
+              const Padding(
+                padding: EdgeInsets.symmetric(horizontal: 20),
+                child: Align(
+                  alignment: Alignment.centerLeft,
+                  child: Text("User Menu", style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: Colors.grey)),
+                ),
+              ),
+            ],
             
             _buildProfileItem(Icons.shopping_bag_outlined, AppStrings.myOrdersMenu.tr(), () {
               Navigator.pushNamed(context, AppRoutes.myOrders);
@@ -55,6 +68,45 @@ class ProfileScreen extends StatelessWidget {
             _buildProfileItem(Icons.logout, AppStrings.logout.tr(), () => authViewModel.logout(), isExit: true),
             const SizedBox(height: 40),
           ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildAdminCard(BuildContext context, SettingsViewModel settings) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 20),
+      child: AppCard(
+        color: settings.primaryColor,
+        borderRadius: 20,
+        onTap: () => Navigator.pushNamed(context, AppRoutes.adminDashboard),
+        child: Padding(
+          padding: const EdgeInsets.all(20),
+          child: Row(
+            children: [
+              const CircleAvatar(
+                backgroundColor: Colors.white24,
+                child: Icon(Icons.admin_panel_settings, color: Colors.white),
+              ),
+              const SizedBox(width: 15),
+              const Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      "Admin Control Panel",
+                      style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold),
+                    ),
+                    Text(
+                      "Manage products, orders & analytics",
+                      style: TextStyle(color: Colors.white70, fontSize: 12),
+                    ),
+                  ],
+                ),
+              ),
+              const Icon(Icons.arrow_forward_ios, color: Colors.white, size: 18),
+            ],
+          ),
         ),
       ),
     );

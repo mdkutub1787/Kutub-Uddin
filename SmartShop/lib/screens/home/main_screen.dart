@@ -3,7 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'dashboard_screen.dart';
 import '../cart/cart_screen.dart';
-import '../wishlist/wishlist_screen.dart';
+import '../order/my_orders_screen.dart';
 import '../profile/profile_screen.dart';
 import '../../view_models/cart_view_model.dart';
 import '../../view_models/settings_view_model.dart';
@@ -21,7 +21,7 @@ class _MainScreenState extends State<MainScreen> {
 
   final List<Widget> _screens = [
     const DashboardScreen(),
-    const WishlistScreen(),
+    const MyOrdersScreen(),
     const CartScreen(),
     const ProfileScreen(),
   ];
@@ -73,9 +73,9 @@ class _MainScreenState extends State<MainScreen> {
               label: AppStrings.homeMenu.tr(),
             ),
             NavigationDestination(
-              icon: const Icon(Icons.favorite_outline_rounded),
-              selectedIcon: const Icon(Icons.favorite_rounded),
-              label: AppStrings.wishlistMenu.tr(),
+              icon: const Icon(Icons.receipt_long_outlined),
+              selectedIcon: const Icon(Icons.receipt_long_rounded),
+              label: AppStrings.myOrdersMenu.tr(),
             ),
             NavigationDestination(
               icon: Badge(
@@ -91,9 +91,9 @@ class _MainScreenState extends State<MainScreen> {
               label: AppStrings.myCart.tr(),
             ),
             NavigationDestination(
-              icon: const Icon(Icons.person_outline_rounded),
-              selectedIcon: const Icon(Icons.person_rounded),
-              label: AppStrings.profileMenu.tr(),
+              icon: const Icon(Icons.account_circle_outlined),
+              selectedIcon: const Icon(Icons.account_circle_rounded),
+              label: AppStrings.accountMenu.tr(),
             ),
           ],
         ),

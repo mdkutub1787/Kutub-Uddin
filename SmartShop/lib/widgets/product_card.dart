@@ -13,11 +13,13 @@ import 'app_card.dart';
 class ProductCard extends StatelessWidget {
   final ProductModel product;
   final double width;
+  final String? heroTag;
 
   const ProductCard({
     super.key,
     required this.product,
     this.width = 175,
+    this.heroTag,
   });
 
   @override
@@ -30,7 +32,10 @@ class ProductCard extends StatelessWidget {
       onTap: () => Navigator.pushNamed(
         context,
         AppRoutes.productDetails,
-        arguments: product,
+        arguments: {
+          'product': product,
+          'heroTag': heroTag ?? product.id,
+        },
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -39,7 +44,7 @@ class ProductCard extends StatelessWidget {
             child: Stack(
               children: [
                 Hero(
-                  tag: 'product-${product.id}',
+                  tag: heroTag ?? product.id,
                   child: Container(
                     decoration: const BoxDecoration(
                       borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
@@ -127,47 +132,43 @@ class ProductCard extends StatelessWidget {
                   style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
                 ),
                 const SizedBox(height: 6),
-                Row(
-                  children: [
-                    Text.rich(
-                      TextSpan(
-                        children: [
-                          TextSpan(
-                            text: "${AppStrings.currency.tr()} ",
-                            style: TextStyle(
-                              color: settings.primaryColor,
-                              fontWeight: FontWeight.bold,
-                              fontSize: 14,
-                            ),
-                          ),
-                          TextSpan(
-                            text: NumberFormat('#,##,###').format(product.price.toInt()),
-                            style: TextStyle(
-                              color: settings.primaryColor,
-                              fontWeight: FontWeight.w900,
-                              fontSize: 18,
-                            ),
-                          ),
-                        ],
-                      ),
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                    if (product.hasDiscount) ...[
-                      const SizedBox(width: 4),
-                      Expanded(
-                        child: Text(
-                          "${AppStrings.currency.tr()} ${NumberFormat('#,##,###').format(product.originalPrice.toInt())}",
-                          style: const TextStyle(
-                            color: Colors.grey,
-                            decoration: TextDecoration.lineThrough,
-                            fontSize: 11,
-                          ),
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
+                if (product.hasDiscount)
+                  Row(
+                    children: [
+                      Text(
+                        "৳${NumberFormat('#,##,###').format(product.originalPrice.toInt())}",
+                        style: const TextStyle(
+                          color: Colors.grey,
+                          decoration: TextDecoration.lineThrough,
+                          fontSize: 12,
                         ),
                       ),
-                    ]
+                      const SizedBox(width: 5),
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
+                        decoration: BoxDecoration(
+                          color: Colors.red.withValues(alpha: 0.1),
+                          borderRadius: BorderRadius.circular(4),
+                        ),
+                        child: Text(
+                          product.discountType == 'percentage' 
+                            ? "-${product.discountValue.toInt()}%" 
+                            : "-৳${product.discountValue.toInt()}",
+                          style: const TextStyle(color: Colors.red, fontSize: 10, fontWeight: FontWeight.bold),
+                        ),
+                      ),
+                    ],
+                  ),
+                Row(
+                  children: [
+                    Text(
+                      "৳${NumberFormat('#,##,###').format(product.price.toInt())}",
+                      style: TextStyle(
+                        color: settings.primaryColor,
+                        fontWeight: FontWeight.w900,
+                        fontSize: 18,
+                      ),
+                    ),
                   ],
                 ),
                 const SizedBox(height: 8),

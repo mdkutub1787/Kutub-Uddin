@@ -45,6 +45,12 @@ class ProductViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
+  void clearSearch() {
+    _filteredProducts = [];
+    _selectedCategoryId = '';
+    notifyListeners();
+  }
+
   Future<void> fetchFeaturedProducts() async {
     _isLoading = true;
     notifyListeners();

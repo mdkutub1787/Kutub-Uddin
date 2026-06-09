@@ -186,6 +186,8 @@ class OrderDetailsScreen extends StatelessWidget {
   }
 
   Widget _buildPriceSummary(BuildContext context, SettingsViewModel settings) {
+    final double subtotal = order.totalAmount - order.deliveryFee;
+    
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
@@ -198,7 +200,7 @@ class OrderDetailsScreen extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               const Text("Subtotal", style: TextStyle(fontSize: 16)),
-              Text("${AppStrings.currency.tr()} ${NumberFormat('#,##,###').format(order.totalAmount.toInt())}", style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+              Text("${AppStrings.currency.tr()} ${NumberFormat('#,##,###').format(subtotal.toInt())}", style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
             ],
           ),
           const SizedBox(height: 12),
@@ -206,7 +208,7 @@ class OrderDetailsScreen extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               const Text("Delivery Fee", style: TextStyle(fontSize: 16)),
-              Text("${AppStrings.currency.tr()} 0", style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+              Text("${AppStrings.currency.tr()} ${NumberFormat('#,##,###').format(order.deliveryFee.toInt())}", style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
             ],
           ),
           const Divider(height: 32),

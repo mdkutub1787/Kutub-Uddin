@@ -46,6 +46,7 @@ class _CartScreenState extends State<CartScreen> {
               child: Column(
                 children: [
                   _buildAddressSection(context, auth, settings),
+                  _buildDeliveryMethodSection(context, cart, settings),
                   _buildItemsList(context, cart, settings),
                   _buildCouponSection(context, cart, settings),
                   _buildOrderSummary(context, cart, settings),
@@ -54,6 +55,91 @@ class _CartScreenState extends State<CartScreen> {
               ),
             ),
       bottomSheet: cart.items.isEmpty ? null : _buildCheckoutButton(context, cart, settings),
+    );
+  }
+
+  Widget _buildDeliveryMethodSection(BuildContext context, CartViewModel cart, SettingsViewModel settings) {
+    return Container(
+      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: Colors.grey.withValues(alpha: 0.1)),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Text(
+            "Delivery Area",
+            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+          ),
+          const SizedBox(height: 12),
+          Row(
+            children: [
+              Expanded(
+                child: _deliveryOption(
+                  context, 
+                  "Inside Dhaka", 
+                  "60", 
+                  cart.isInsideDhaka, 
+                  () => cart.setInsideDhaka(true),
+                  settings
+                ),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: _deliveryOption(
+                  context, 
+                  "Outside Dhaka", 
+                  "150", 
+                  !cart.isInsideDhaka, 
+                  () => cart.setInsideDhaka(false),
+                  settings
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _deliveryOption(BuildContext context, String title, String price, bool isSelected, VoidCallback onTap, SettingsViewModel settings) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 8),
+        decoration: BoxDecoration(
+          color: isSelected ? settings.primaryColor.withValues(alpha: 0.05) : Colors.grey[50],
+          borderRadius: BorderRadius.circular(15),
+          border: Border.all(
+            color: isSelected ? settings.primaryColor : Colors.grey.withValues(alpha: 0.2),
+            width: 1.5,
+          ),
+        ),
+        child: Column(
+          children: [
+            Text(
+              title,
+              style: TextStyle(
+                fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+                color: isSelected ? settings.primaryColor : Colors.black54,
+                fontSize: 13,
+              ),
+            ),
+            const SizedBox(height: 4),
+            Text(
+              "৳$price",
+              style: TextStyle(
+                fontWeight: FontWeight.w900,
+                color: isSelected ? settings.primaryColor : Colors.black87,
+                fontSize: 16,
+              ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 
@@ -307,6 +393,7 @@ class _CartScreenState extends State<CartScreen> {
       userAddress: auth.user!.address,
       items: cart.items.values.toList(),
       totalAmount: cart.totalAmount,
+      deliveryFee: cart.deliveryFee,
       date: DateTime.now(),
       status: 'Pending',
     );
