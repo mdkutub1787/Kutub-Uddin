@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:easy_localization/easy_localization.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../../view_models/auth_view_model.dart';
 import '../../routes/app_routes.dart';
 import '../../view_models/loading_view_model.dart';
@@ -19,6 +20,37 @@ class _LoginScreenState extends State<LoginScreen> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   bool _isPasswordVisible = false;
+  bool _rememberMe = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadSavedCredentials();
+  }
+
+  Future<void> _loadSavedCredentials() async {
+    final prefs = await SharedPreferences.getInstance();
+    final savedEmail = prefs.getString('saved_email');
+    final savedPassword = prefs.getString('saved_password');
+    if (savedEmail != null && savedPassword != null) {
+      setState(() {
+        _emailController.text = savedEmail;
+        _passwordController.text = savedPassword;
+        _rememberMe = true;
+      });
+    }
+  }
+
+  Future<void> _saveCredentials() async {
+    final prefs = await SharedPreferences.getInstance();
+    if (_rememberMe) {
+      await prefs.setString('saved_email', _emailController.text.trim());
+      await prefs.setString('saved_password', _passwordController.text);
+    } else {
+      await prefs.remove('saved_email');
+      await prefs.remove('saved_password');
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -135,25 +167,39 @@ class _LoginScreenState extends State<LoginScreen> {
                           onSubmitted: (_) => _handleLogin(authViewModel),
                         ),
                         
-                        // Forgot Password
-                        Align(
-                          alignment: Alignment.centerRight,
-                          child: TextButton(
-                            onPressed: () {
-                              if (_emailController.text.isEmpty) {
-                                ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Please enter your email first")));
-                                return;
-                              }
-                              authViewModel.forgotPassword(_emailController.text.trim());
-                              ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Password reset email sent!")));
-                            },
-                            child: Text(
-                              AppStrings.forgotPassword.tr(),
-                              style: TextStyle(
-                                  color: primaryColor,
-                                  fontWeight: FontWeight.bold),
+                        // Remember Me & Forgot Password
+                        Row(
+                          children: [
+                            SizedBox(
+                              height: 24,
+                              width: 24,
+                              child: Checkbox(
+                                value: _rememberMe,
+                                activeColor: primaryColor,
+                                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(5)),
+                                onChanged: (val) => setState(() => _rememberMe = val ?? false),
+                              ),
                             ),
-                          ),
+                            const SizedBox(width: 8),
+                            Text("Remember Me", style: TextStyle(color: Colors.grey[700], fontWeight: FontWeight.w500)),
+                            const Spacer(),
+                            TextButton(
+                              onPressed: () {
+                                if (_emailController.text.isEmpty) {
+                                  ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Please enter your email first")));
+                                  return;
+                                }
+                                authViewModel.forgotPassword(_emailController.text.trim());
+                                ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Password reset email sent!")));
+                              },
+                              child: Text(
+                                AppStrings.forgotPassword.tr(),
+                                style: TextStyle(
+                                    color: primaryColor,
+                                    fontWeight: FontWeight.bold),
+                              ),
+                            ),
+                          ],
                         ),
                         
                         const SizedBox(height: 32),
@@ -298,6 +344,7 @@ class _LoginScreenState extends State<LoginScreen> {
     loading.hide();
 
     if (success && mounted) {
+      await _saveCredentials();
       TextInput.finishAutofillContext();
       Navigator.pushReplacementNamed(context, AppRoutes.main);
     } else if (authViewModel.error != null) {

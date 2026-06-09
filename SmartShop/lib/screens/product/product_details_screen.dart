@@ -150,41 +150,75 @@ class ProductDetailsScreen extends StatelessWidget {
   Widget _buildBottomBar(BuildContext context) {
     final primaryColor = Theme.of(context).primaryColor;
     return Container(
-      padding: const EdgeInsets.fromLTRB(25, 20, 28, 30),
+      padding: const EdgeInsets.fromLTRB(25, 15, 25, 35),
       decoration: BoxDecoration(
         color: Theme.of(context).cardColor,
-        borderRadius: const BorderRadius.vertical(top: Radius.circular(35)),
-        boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.05), blurRadius: 20, offset: const Offset(0, -5))],
+        borderRadius: const BorderRadius.vertical(top: Radius.circular(40)),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.08), 
+            blurRadius: 30, 
+            offset: const Offset(0, -10)
+          )
+        ],
       ),
-      child: Row(
-        children: [
-          Container(
-            height: 60,
-            width: 60,
-            decoration: BoxDecoration(color: Colors.grey[100], borderRadius: BorderRadius.circular(20), border: Border.all(color: Colors.grey[300]!)),
-            child: IconButton(icon: Icon(Icons.share_outlined, color: Colors.grey[700]), onPressed: () {}),
-          ),
-          const SizedBox(width: 20),
-          Expanded(
-            child: SizedBox(
+      child: SafeArea(
+        child: Row(
+          children: [
+            Container(
               height: 60,
-              child: ElevatedButton(
-                onPressed: product.stock > 0 ? () {
-                  bool added = context.read<CartViewModel>().addItem(product);
-                  if (added) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(AppStrings.addedToCart.tr()), behavior: SnackBarBehavior.floating));
-                } : null,
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: primaryColor,
-                  foregroundColor: Colors.white,
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-                  elevation: 5,
-                  shadowColor: primaryColor.withValues(alpha: 0.4),
-                ),
-                child: Text(product.stock > 0 ? "ADD TO CART" : "OUT OF STOCK", style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w900, letterSpacing: 1.2)),
+              width: 60,
+              decoration: BoxDecoration(
+                color: Colors.grey[100], 
+                borderRadius: BorderRadius.circular(20),
+                border: Border.all(color: Colors.grey[200]!)
+              ),
+              child: IconButton(
+                icon: Icon(Icons.share_rounded, color: Colors.grey[700]), 
+                onPressed: () {}
               ),
             ),
-          ),
-        ],
+            const SizedBox(width: 20),
+            Expanded(
+              child: SizedBox(
+                height: 60,
+                child: ElevatedButton(
+                  onPressed: product.stock > 0 ? () {
+                    bool added = context.read<CartViewModel>().addItem(product);
+                    if (added) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Row(
+                            children: [
+                              const Icon(Icons.check_circle_rounded, color: Colors.white),
+                              const SizedBox(width: 10),
+                              const Text("Added to your cart!", style: TextStyle(fontWeight: FontWeight.bold)),
+                            ],
+                          ),
+                          behavior: SnackBarBehavior.floating,
+                          backgroundColor: primaryColor,
+                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
+                          margin: const EdgeInsets.all(20),
+                        )
+                      );
+                    }
+                  } : null,
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: primaryColor,
+                    foregroundColor: Colors.white,
+                    elevation: 10,
+                    shadowColor: primaryColor.withValues(alpha: 0.4),
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(22)),
+                  ),
+                  child: Text(
+                    product.stock > 0 ? "ADD TO CART" : "OUT OF STOCK", 
+                    style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w900, letterSpacing: 1.2)
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

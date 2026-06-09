@@ -26,34 +26,42 @@ class ProductListItem extends StatelessWidget {
   Widget build(BuildContext context) {
     final settings = context.watch<SettingsViewModel>();
 
-    return AppCard(
-      margin: const EdgeInsets.only(bottom: 12),
-      onTap: onTap ?? () => Navigator.pushNamed(
+    void navigateToDetails() {
+      Navigator.pushNamed(
         context,
         AppRoutes.productDetails,
         arguments: {
           'product': product,
           'heroTag': heroTag ?? product.id,
         },
-      ),
+      );
+    }
+
+    return AppCard(
+      margin: const EdgeInsets.only(bottom: 12),
+      // Removed onTap from here to disable whole card click
       child: Padding(
         padding: const EdgeInsets.all(12),
         child: Row(
           children: [
-            Hero(
-              tag: heroTag ?? product.id,
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(15),
-                child: Image.network(
-                  product.imageUrl,
-                  width: 80,
-                  height: 80,
-                  fit: BoxFit.cover,
-                  errorBuilder: (_, __, ___) => Container(
+            // Image is clickable
+            GestureDetector(
+              onTap: navigateToDetails,
+              child: Hero(
+                tag: heroTag ?? product.id,
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(15),
+                  child: Image.network(
+                    product.imageUrl,
                     width: 80,
                     height: 80,
-                    color: Colors.grey[100],
-                    child: const Icon(Icons.image_not_supported, color: Colors.grey),
+                    fit: BoxFit.cover,
+                    errorBuilder: (_, __, ___) => Container(
+                      width: 80,
+                      height: 80,
+                      color: Colors.grey[100],
+                      child: const Icon(Icons.image_not_supported, color: Colors.grey),
+                    ),
                   ),
                 ),
               ),

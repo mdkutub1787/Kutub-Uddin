@@ -8,6 +8,7 @@ import '../../view_models/auth_view_model.dart';
 import '../../view_models/navigation_view_model.dart';
 import '../../models/order_model.dart';
 import '../../utils/constants/app_strings.dart';
+import '../../routes/app_routes.dart';
 import '../../widgets/custom_app_bar.dart';
 import '../../widgets/empty_state_widget.dart';
 import 'package:intl/intl.dart';
@@ -256,42 +257,92 @@ class _CartScreenState extends State<CartScreen> {
   }
 
   Widget _buildCouponSection(BuildContext context, CartViewModel cart, SettingsViewModel settings) {
-    return Container(
-      margin: const EdgeInsets.all(16),
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(15),
-        border: Border.all(color: Colors.grey.withValues(alpha: 0.1)),
-      ),
-      child: Row(
-        children: [
-          const Icon(Icons.confirmation_num_outlined, color: Colors.grey),
-          const SizedBox(width: 10),
-          Expanded(
-            child: TextField(
-              controller: _couponController,
-              decoration: const InputDecoration(
-                hintText: "Enter Coupon Code",
-                border: InputBorder.none,
+    return Column(
+      children: [
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              const Text("Have a coupon?", style: TextStyle(fontWeight: FontWeight.bold, color: Colors.black87)),
+              TextButton(
+                onPressed: () => Navigator.pushNamed(context, AppRoutes.offers),
+                child: Text("View Offers", style: TextStyle(color: settings.primaryColor, fontWeight: FontWeight.bold)),
               ),
+            ],
+          ),
+        ),
+        Container(
+          margin: const EdgeInsets.symmetric(horizontal: 16),
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(15),
+            border: Border.all(color: Colors.grey.withValues(alpha: 0.1)),
+          ),
+          child: Row(
+            children: [
+              const Icon(Icons.confirmation_num_outlined, color: Colors.grey),
+              const SizedBox(width: 10),
+              Expanded(
+                child: TextField(
+                  controller: _couponController,
+                  decoration: const InputDecoration(
+                    hintText: "Enter Coupon Code",
+                    border: InputBorder.none,
+                  ),
+                ),
+              ),
+              TextButton(
+                onPressed: () {
+                  if (_couponController.text.isEmpty) return;
+                  try {
+                    String result = cart.applyCoupon(_couponController.text);
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text(result == 'Success' ? "Coupon Applied!" : result),
+                        backgroundColor: result == 'Success' ? Colors.green : Colors.red,
+                      ),
+                    );
+                    if (result == 'Success') _couponController.clear();
+                  } catch (e) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(content: Text("Invalid Coupon"), backgroundColor: Colors.red),
+                    );
+                  }
+                },
+                child: const Text("Apply", style: TextStyle(fontWeight: FontWeight.bold)),
+              ),
+            ],
+          ),
+        ),
+        if (cart.appliedCoupon != null)
+          Container(
+            margin: const EdgeInsets.fromLTRB(16, 8, 16, 0),
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+            decoration: BoxDecoration(
+              color: Colors.green.withValues(alpha: 0.1),
+              borderRadius: BorderRadius.circular(10),
+              border: Border.all(color: Colors.green.withValues(alpha: 0.2)),
+            ),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const Icon(Icons.check_circle_outline, color: Colors.green, size: 16),
+                const SizedBox(width: 8),
+                Text(
+                  "Coupon '${cart.appliedCoupon!.code}' applied",
+                  style: const TextStyle(color: Colors.green, fontWeight: FontWeight.bold, fontSize: 12),
+                ),
+                const SizedBox(width: 8),
+                GestureDetector(
+                  onTap: () => cart.removeCoupon(),
+                  child: const Icon(Icons.cancel, color: Colors.green, size: 16),
+                ),
+              ],
             ),
           ),
-          TextButton(
-            onPressed: () {
-              bool success = cart.applyCoupon(_couponController.text);
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                  content: Text(success ? "Coupon Applied!" : "Invalid Coupon"),
-                  backgroundColor: success ? Colors.green : Colors.red,
-                ),
-              );
-              if (success) _couponController.clear();
-            },
-            child: const Text("Apply", style: TextStyle(fontWeight: FontWeight.bold)),
-          ),
-        ],
-      ),
+      ],
     );
   }
 

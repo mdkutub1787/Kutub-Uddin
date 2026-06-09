@@ -39,4 +39,9 @@ class WishlistViewModel extends ChangeNotifier {
   bool isFavorite(String productId) {
     return _wishlistProductIds.contains(productId);
   }
+
+  void clear() {
+    _wishlistProductIds = [];
+    notifyListeners();
+  }
 }

@@ -5,6 +5,8 @@ import 'package:smart_shop/view_models/auth_view_model.dart';
 import 'package:smart_shop/view_models/settings_view_model.dart';
 import 'package:smart_shop/utils/constants/app_strings.dart';
 import 'package:smart_shop/routes/app_routes.dart';
+import 'package:smart_shop/view_models/cart_view_model.dart';
+import 'package:smart_shop/view_models/wishlist_view_model.dart';
 import 'package:smart_shop/widgets/custom_app_bar.dart';
 import 'package:smart_shop/widgets/app_card.dart';
 
@@ -65,7 +67,14 @@ class ProfileScreen extends StatelessWidget {
                 Navigator.pushNamed(context, AppRoutes.adminVerification);
               }),
               
-            _buildProfileItem(Icons.logout, AppStrings.logout.tr(), () => authViewModel.logout(), isExit: true),
+            _buildProfileItem(Icons.logout, AppStrings.logout.tr(), () async {
+              context.read<CartViewModel>().clearCart();
+              context.read<WishlistViewModel>().clear();
+              await authViewModel.logout();
+              if (context.mounted) {
+                Navigator.pushNamedAndRemoveUntil(context, AppRoutes.login, (route) => false);
+              }
+            }, isExit: true),
             const SizedBox(height: 40),
           ],
         ),

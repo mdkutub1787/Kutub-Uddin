@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import '../models/cart_model.dart';
 import '../models/product_model.dart';
+import '../models/coupon_model.dart';
 
 class CartViewModel extends ChangeNotifier {
   final Map<String, CartItem> _items = {};
   double _discountAmount = 0.0;
+  CouponModel? _appliedCoupon;
   
   // Delivery related
   bool _isInsideDhaka = true;
@@ -14,9 +16,50 @@ class CartViewModel extends ChangeNotifier {
   Map<String, CartItem> get items => {..._items};
   int get itemCount => _items.length;
   bool get isInsideDhaka => _isInsideDhaka;
+  CouponModel? get appliedCoupon => _appliedCoupon;
+
+  // Mock available coupons
+  final List<CouponModel> _availableCoupons = [
+    CouponModel(
+      id: '1',
+      code: 'SMART20',
+      title: '20% Mega Discount',
+      description: 'Get 20% off on all products. Min purchase ৳1000',
+      discountValue: 20,
+      type: CouponType.percentage,
+      minPurchase: 1000,
+      expiryDate: DateTime.now().add(const Duration(days: 30)),
+    ),
+    CouponModel(
+      id: '2',
+      code: 'FIRST500',
+      title: 'First Purchase Offer',
+      description: 'Flat ৳500 off on your first order. Min purchase ৳5000',
+      discountValue: 500,
+      type: CouponType.fixedAmount,
+      minPurchase: 5000,
+      expiryDate: DateTime.now().add(const Duration(days: 60)),
+    ),
+    CouponModel(
+      id: '3',
+      code: 'FREESHIP',
+      title: 'Free Delivery',
+      description: 'Free delivery on orders above ৳2000',
+      discountValue: 0,
+      type: CouponType.freeDelivery,
+      minPurchase: 2000,
+      expiryDate: DateTime.now().add(const Duration(days: 15)),
+    ),
+  ];
+
+  List<CouponModel> get availableCoupons => _availableCoupons;
 
   void setInsideDhaka(bool value) {
     _isInsideDhaka = value;
+    // Re-validate free delivery coupon if applied
+    if (_appliedCoupon?.type == CouponType.freeDelivery) {
+      _calculateDiscount();
+    }
     notifyListeners();
   }
 
@@ -30,6 +73,7 @@ class CartViewModel extends ChangeNotifier {
 
   double get deliveryFee {
     if (_items.isEmpty) return 0;
+    if (_appliedCoupon?.type == CouponType.freeDelivery) return 0;
     return _isInsideDhaka ? _deliveryFeeDhaka : _deliveryFeeOutside;
   }
   double get discountAmount => _discountAmount;
@@ -38,20 +82,53 @@ class CartViewModel extends ChangeNotifier {
     return subtotal + deliveryFee - _discountAmount;
   }
 
-  bool applyCoupon(String code) {
-    if (code.toUpperCase() == 'SMART20') {
-      _discountAmount = subtotal * 0.2; // 20% discount
-      notifyListeners();
-      return true;
-    } else if (code.toUpperCase() == 'FREESHIP') {
-      _discountAmount = 0; // Just an example, maybe set delivery fee to 0
-      notifyListeners();
-      return true;
+  String applyCoupon(String code) {
+    final coupon = _availableCoupons.firstWhere(
+      (c) => c.code.toUpperCase() == code.toUpperCase(),
+      orElse: () => throw 'Invalid Coupon',
+    );
+
+    if (!coupon.isActive || coupon.isExpired) {
+      return 'Coupon expired or inactive';
     }
-    return false;
+
+    if (subtotal < coupon.minPurchase) {
+      return 'Minimum purchase ৳${coupon.minPurchase} required';
+    }
+
+    _appliedCoupon = coupon;
+    _calculateDiscount();
+    notifyListeners();
+    return 'Success';
+  }
+
+  void _calculateDiscount() {
+    if (_appliedCoupon == null) {
+      _discountAmount = 0;
+      return;
+    }
+
+    switch (_appliedCoupon!.type) {
+      case CouponType.percentage:
+        _discountAmount = subtotal * (_appliedCoupon!.discountValue / 100);
+        break;
+      case CouponType.fixedAmount:
+        _discountAmount = _appliedCoupon!.discountValue;
+        break;
+      case CouponType.freeDelivery:
+        _discountAmount = 0; // Handled in deliveryFee getter
+        break;
+    }
+  }
+
+  void removeCoupon() {
+    _appliedCoupon = null;
+    _discountAmount = 0;
+    notifyListeners();
   }
 
   void resetDiscount() {
+    _appliedCoupon = null;
     _discountAmount = 0;
     notifyListeners();
   }

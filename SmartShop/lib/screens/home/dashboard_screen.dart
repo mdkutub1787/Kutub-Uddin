@@ -8,6 +8,8 @@ import 'package:smart_shop/view_models/settings_view_model.dart';
 import 'package:smart_shop/utils/constants/app_strings.dart';
 import 'package:smart_shop/routes/app_routes.dart';
 import 'package:smart_shop/view_models/navigation_view_model.dart';
+import '../../view_models/cart_view_model.dart';
+import '../../view_models/wishlist_view_model.dart';
 import '../../widgets/product_card.dart';
 import '../../widgets/empty_state_widget.dart';
 import '../../widgets/custom_app_bar.dart';
@@ -100,7 +102,6 @@ class DashboardScreen extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       _buildSearchBar(context),
-                      _buildPromoBanner(context),
                       _buildSectionHeader(context, AppStrings.categoriesTitle.tr(), () {}),
                       _buildCategoryList(context),
                       _buildSectionHeader(context, AppStrings.featuredProductsTitle.tr(), () {}),
@@ -147,54 +148,6 @@ class DashboardScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildPromoBanner(BuildContext context) {
-    return SizedBox(
-      height: 190,
-      child: PageView(
-        children: [
-          _promoItem(context, "UP TO 50% OFF", "Summer Electronics Sale", "Shop now for best deals", const Color(0xFF0F2027), const Color(0xFF203A43), Icons.flash_on_rounded),
-          _promoItem(context, "NEW ARRIVAL", "Exclusive Fashion", "Fresh styles for you", const Color(0xFFED213A), const Color(0xFF93291E), Icons.shopping_bag_rounded),
-          _promoItem(context, "FREE DELIVERY", "Orders over ৳2000", "Use code: FREE2024", const Color(0xFF1D976C), const Color(0xFF93F9B9), Icons.local_shipping_rounded),
-        ],
-      ),
-    );
-  }
-
-  Widget _promoItem(BuildContext context, String tag, String title, String sub, Color c1, Color c2, IconData icon) {
-    return AppCard(
-      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-      borderRadius: 25,
-      child: Container(
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(25),
-          gradient: LinearGradient(colors: [c1, c2], begin: Alignment.topLeft, end: Alignment.bottomRight),
-        ),
-        child: Stack(
-          children: [
-            Positioned(right: -30, bottom: -30, child: Icon(icon, size: 160, color: Colors.white.withValues(alpha: 0.1))),
-            Padding(
-              padding: const EdgeInsets.all(24.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-                    decoration: BoxDecoration(color: Colors.white.withValues(alpha: 0.2), borderRadius: BorderRadius.circular(10)),
-                    child: Text(tag, style: const TextStyle(color: Colors.white, fontSize: 11, fontWeight: FontWeight.w900)),
-                  ),
-                  const SizedBox(height: 12),
-                  Text(title, style: const TextStyle(color: Colors.white, fontSize: 22, fontWeight: FontWeight.w900)),
-                  Text(sub, style: const TextStyle(color: Colors.white70, fontSize: 14)),
-                ],
-              ),
-            )
-          ],
-        ),
-      ),
-    );
-  }
-
   Widget _buildSectionHeader(BuildContext context, String title, VoidCallback onSeeAll) {
     return Padding(
       padding: const EdgeInsets.fromLTRB(20, 25, 20, 15),
@@ -212,7 +165,7 @@ class DashboardScreen extends StatelessWidget {
     return Consumer<CategoryViewModel>(
       builder: (context, viewModel, child) {
         return SizedBox(
-          height: 120,
+          height: 130,
           child: ListView.builder(
             padding: const EdgeInsets.symmetric(horizontal: 10),
             scrollDirection: Axis.horizontal,
@@ -225,22 +178,46 @@ class DashboardScreen extends StatelessWidget {
                   return GestureDetector(
                     onTap: () => productVM.filterByCategory(cat.id),
                     child: Container(
-                      width: 80,
-                      margin: const EdgeInsets.symmetric(horizontal: 10),
+                      width: 85,
+                      margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 5),
                       child: Column(
                         children: [
-                          Container(
+                          AnimatedContainer(
+                            duration: const Duration(milliseconds: 300),
                             height: 75,
                             width: 75,
                             decoration: BoxDecoration(
-                              color: isSelected ? cat.color : cat.color.withValues(alpha: 0.1),
-                              borderRadius: BorderRadius.circular(22),
-                              boxShadow: isSelected ? [BoxShadow(color: cat.color.withValues(alpha: 0.3), blurRadius: 10, offset: const Offset(0, 5))] : null,
+                              color: isSelected ? cat.color : Colors.white,
+                              borderRadius: BorderRadius.circular(24),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: isSelected 
+                                    ? cat.color.withValues(alpha: 0.3) 
+                                    : Colors.black.withValues(alpha: 0.05),
+                                  blurRadius: 15,
+                                  offset: const Offset(0, 8),
+                                )
+                              ],
+                              border: isSelected ? null : Border.all(color: Colors.grey[100]!),
                             ),
-                            child: Icon(cat.icon, color: isSelected ? Colors.white : cat.color, size: 32),
+                            child: Icon(
+                              cat.icon, 
+                              color: isSelected ? Colors.white : cat.color, 
+                              size: 32
+                            ),
                           ),
-                          const SizedBox(height: 8),
-                          Text(cat.name, style: TextStyle(fontSize: 12, fontWeight: isSelected ? FontWeight.w900 : FontWeight.bold, color: isSelected ? cat.color : Colors.grey[700]), maxLines: 1, overflow: TextOverflow.ellipsis),
+                          const SizedBox(height: 10),
+                          Text(
+                            cat.name, 
+                            style: TextStyle(
+                              fontSize: 12, 
+                              fontWeight: isSelected ? FontWeight.w900 : FontWeight.bold, 
+                              color: isSelected ? cat.color : Colors.grey[600],
+                              letterSpacing: -0.2,
+                            ), 
+                            maxLines: 1, 
+                            overflow: TextOverflow.ellipsis
+                          ),
                         ],
                       ),
                     ),
@@ -334,6 +311,10 @@ class DashboardScreen extends StatelessWidget {
                   Navigator.pop(context);
                   context.read<NavigationViewModel>().setIndex(1);
                 }),
+                _drawerItem(context, Icons.local_offer_rounded, "Special Offers", () {
+                  Navigator.pop(context);
+                  Navigator.pushNamed(context, AppRoutes.offers);
+                }),
                 _drawerItem(context, Icons.favorite_rounded, AppStrings.wishlistMenu.tr(), () {
                   Navigator.pop(context);
                   Navigator.pushNamed(context, AppRoutes.wishlist);
@@ -403,7 +384,18 @@ class DashboardScreen extends StatelessWidget {
           ListTile(
             leading: const Icon(Icons.logout_rounded, color: Colors.red),
             title: const Text("Logout", style: TextStyle(color: Colors.red, fontWeight: FontWeight.bold)),
-            onTap: () => auth.logout(),
+            onTap: () async {
+              // Clear Cart and Wishlist
+              context.read<CartViewModel>().clearCart();
+              context.read<WishlistViewModel>().clear();
+              
+              // Logout from Auth
+              await auth.logout();
+              
+              if (context.mounted) {
+                Navigator.pushNamedAndRemoveUntil(context, AppRoutes.login, (route) => false);
+              }
+            },
           ),
           const SizedBox(height: 20),
         ],
