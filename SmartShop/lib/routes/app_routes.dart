@@ -1,15 +1,15 @@
 import 'package:flutter/material.dart';
 import '../screens/auth/login_screen.dart';
 import '../screens/auth/register_screen.dart';
-import '../screens/main_screen.dart';
-import '../screens/dashboard_screen.dart';
-import '../screens/product_details_screen.dart';
-import '../screens/cart_screen.dart';
-import '../screens/profile_screen.dart';
-import '../screens/my_orders_screen.dart';
-import '../screens/wishlist_screen.dart';
-import '../screens/edit_profile_screen.dart';
-import '../screens/admin_verification_screen.dart';
+import '../screens/home/main_screen.dart';
+import '../screens/home/dashboard_screen.dart';
+import '../screens/product/product_details_screen.dart';
+import '../screens/cart/cart_screen.dart';
+import '../screens/profile/profile_screen.dart';
+import '../screens/order/my_orders_screen.dart';
+import '../screens/wishlist/wishlist_screen.dart';
+import '../screens/profile/edit_profile_screen.dart';
+import '../screens/profile/admin_verification_screen.dart';
 import '../models/product_model.dart';
 
 class AppRoutes {
