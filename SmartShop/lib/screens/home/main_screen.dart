@@ -2,12 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'dashboard_screen.dart';
-import 'cart_screen.dart';
-import 'wishlist_screen.dart';
-import 'profile_screen.dart';
-import '../view_models/cart_view_model.dart';
-import '../view_models/settings_view_model.dart';
-import '../utils/constants/app_strings.dart';
+import '../cart/cart_screen.dart';
+import '../wishlist/wishlist_screen.dart';
+import '../profile/profile_screen.dart';
+import '../../view_models/cart_view_model.dart';
+import '../../view_models/settings_view_model.dart';
+import '../../utils/constants/app_strings.dart';
 
 class MainScreen extends StatefulWidget {
   const MainScreen({super.key});
