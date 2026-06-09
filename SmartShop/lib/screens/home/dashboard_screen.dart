@@ -367,31 +367,38 @@ class DashboardScreen extends StatelessWidget {
               padding: EdgeInsets.zero,
               children: [
                 DrawerHeader(
+                  margin: EdgeInsets.zero,
+                  padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
                   decoration: BoxDecoration(color: settings.primaryColor),
                   child: Center(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        const CircleAvatar(
-                          radius: 35,
-                          backgroundColor: Colors.white,
-                          child: Icon(Icons.person, size: 45, color: Colors.grey),
-                        ),
-                        const SizedBox(height: 10),
-                        Text(
-                          authViewModel.user?.displayName ?? "User",
-                          style: const TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold),
-                        ),
-                        if (authViewModel.user?.phoneNumber != null && authViewModel.user!.phoneNumber.isNotEmpty)
-                          Text(
-                            authViewModel.user!.phoneNumber,
-                            style: const TextStyle(color: Colors.white70, fontSize: 14),
+                    child: SingleChildScrollView(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          const CircleAvatar(
+                            radius: 35,
+                            backgroundColor: Colors.white,
+                            child: Icon(Icons.person, size: 45, color: Colors.grey),
                           ),
-                        Text(
-                          authViewModel.user?.email ?? "",
-                          style: const TextStyle(color: Colors.white70, fontSize: 14),
-                        ),
-                      ],
+                          const SizedBox(height: 8),
+                          Text(
+                            authViewModel.user?.displayName ?? "User",
+                            style: const TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold),
+                            textAlign: TextAlign.center,
+                          ),
+                          if (authViewModel.user?.phoneNumber != null && authViewModel.user!.phoneNumber.isNotEmpty)
+                            Text(
+                              authViewModel.user!.phoneNumber,
+                              style: const TextStyle(color: Colors.white70, fontSize: 13),
+                              textAlign: TextAlign.center,
+                            ),
+                          Text(
+                            authViewModel.user?.email ?? "",
+                            style: const TextStyle(color: Colors.white70, fontSize: 13),
+                            textAlign: TextAlign.center,
+                          ),
+                        ],
+                      ),
                     ),
                   ),
                 ),
