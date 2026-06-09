@@ -32,17 +32,27 @@ class _LoginScreenState extends State<LoginScreen> {
     final prefs = await SharedPreferences.getInstance();
     final savedEmail = prefs.getString('saved_email');
     final savedPassword = prefs.getString('saved_password');
-    if (savedEmail != null && savedPassword != null) {
+    final remember = prefs.getBool('remember_me') ?? false;
+
+    if (remember) {
       setState(() {
-        _emailController.text = savedEmail;
-        _passwordController.text = savedPassword;
+        _emailController.text = savedEmail ?? '';
+        _passwordController.text = savedPassword ?? '';
         _rememberMe = true;
+      });
+    } else {
+      // Ensure fields are clear if not remembered
+      setState(() {
+        _emailController.clear();
+        _passwordController.clear();
+        _rememberMe = false;
       });
     }
   }
 
   Future<void> _saveCredentials() async {
     final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool('remember_me', _rememberMe);
     if (_rememberMe) {
       await prefs.setString('saved_email', _emailController.text.trim());
       await prefs.setString('saved_password', _passwordController.text);
@@ -50,6 +60,13 @@ class _LoginScreenState extends State<LoginScreen> {
       await prefs.remove('saved_email');
       await prefs.remove('saved_password');
     }
+  }
+
+  @override
+  void dispose() {
+    _emailController.dispose();
+    _passwordController.dispose();
+    super.dispose();
   }
 
   @override
@@ -146,6 +163,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           icon: Icons.alternate_email_rounded,
                           keyboardType: TextInputType.emailAddress,
                           action: TextInputAction.next,
+                          autofillHints: [AutofillHints.email],
                         ),
                         const SizedBox(height: 24),
                         _buildTextField(
@@ -155,6 +173,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           icon: Icons.lock_outline_rounded,
                           obscure: !_isPasswordVisible,
                           action: TextInputAction.done,
+                          autofillHints: [AutofillHints.password],
                           suffix: IconButton(
                             icon: Icon(
                               _isPasswordVisible
@@ -287,6 +306,7 @@ class _LoginScreenState extends State<LoginScreen> {
     TextInputAction? action,
     Widget? suffix,
     Function(String)? onSubmitted,
+    Iterable<String>? autofillHints,
   }) {
     return Container(
       decoration: BoxDecoration(
@@ -306,6 +326,7 @@ class _LoginScreenState extends State<LoginScreen> {
         keyboardType: keyboardType,
         textInputAction: action,
         onSubmitted: onSubmitted,
+        autofillHints: autofillHints,
         style: const TextStyle(fontWeight: FontWeight.w500),
         decoration: InputDecoration(
           labelText: label,

@@ -63,6 +63,27 @@ class CartViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
+  /// Sum of all products' original prices (before any discounts)
+  double get totalOriginalPrice {
+    var total = 0.0;
+    _items.forEach((key, cartItem) {
+      total += cartItem.product.originalPrice * cartItem.quantity;
+    });
+    return total;
+  }
+
+  /// Sum of all savings from product-specific offers
+  double get totalProductDiscount {
+    var total = 0.0;
+    _items.forEach((key, cartItem) {
+      if (cartItem.product.hasDiscount) {
+        total += (cartItem.product.originalPrice - cartItem.product.price) * cartItem.quantity;
+      }
+    });
+    return total;
+  }
+
+  /// Subtotal after product discounts, but before coupon
   double get subtotal {
     var total = 0.0;
     _items.forEach((key, cartItem) {
@@ -76,8 +97,25 @@ class CartViewModel extends ChangeNotifier {
     if (_appliedCoupon?.type == CouponType.freeDelivery) return 0;
     return _isInsideDhaka ? _deliveryFeeDhaka : _deliveryFeeOutside;
   }
+  
+  /// Discount amount from the applied coupon ONLY
+  double get couponDiscount => _discountAmount;
+  
+  // Keep this for compatibility if needed elsewhere
   double get discountAmount => _discountAmount;
 
+  String get appliedCouponDetails {
+    if (_appliedCoupon == null) return "";
+    if (_appliedCoupon!.type == CouponType.percentage) {
+      return "${_appliedCoupon!.discountValue.toInt()}% OFF";
+    } else if (_appliedCoupon!.type == CouponType.fixedAmount) {
+      return "৳${_appliedCoupon!.discountValue.toInt()} OFF";
+    } else {
+      return "Free Delivery";
+    }
+  }
+
+  /// Final amount user has to pay
   double get totalAmount {
     return subtotal + deliveryFee - _discountAmount;
   }
@@ -184,6 +222,8 @@ class CartViewModel extends ChangeNotifier {
 
   void clearCart() {
     _items.clear();
+    _appliedCoupon = null;
+    _discountAmount = 0.0;
     notifyListeners();
   }
 }

@@ -99,6 +99,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           hint: "Your Full Name",
                           icon: Icons.person_outline_rounded,
                           action: TextInputAction.next,
+                          autofillHints: [AutofillHints.name],
                         ),
                         const SizedBox(height: 20),
                         
@@ -109,6 +110,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           icon: Icons.phone_android_rounded,
                           keyboardType: TextInputType.phone,
                           action: TextInputAction.next,
+                          autofillHints: [AutofillHints.telephoneNumber],
                         ),
                         const SizedBox(height: 20),
                         
@@ -118,6 +120,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           hint: "House, Road, Area...",
                           icon: Icons.location_on_outlined,
                           action: TextInputAction.next,
+                          autofillHints: [AutofillHints.fullStreetAddress],
                         ),
                         const SizedBox(height: 20),
                         
@@ -128,6 +131,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           icon: Icons.alternate_email_rounded,
                           keyboardType: TextInputType.emailAddress,
                           action: TextInputAction.next,
+                          autofillHints: [AutofillHints.email],
                         ),
                         const SizedBox(height: 20),
                         
@@ -138,6 +142,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           icon: Icons.lock_outline_rounded,
                           obscure: !_isPasswordVisible,
                           action: TextInputAction.next,
+                          autofillHints: [AutofillHints.newPassword],
                           suffix: IconButton(
                             icon: Icon(
                               _isPasswordVisible
@@ -157,6 +162,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           icon: Icons.verified_user_outlined,
                           obscure: !_isPasswordVisible,
                           action: TextInputAction.done,
+                          autofillHints: [AutofillHints.password],
                           onSubmitted: (_) => _handleRegister(authViewModel),
                         ),
                         
@@ -243,6 +249,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
     TextInputAction? action,
     Widget? suffix,
     Function(String)? onSubmitted,
+    Iterable<String>? autofillHints,
   }) {
     return Container(
       decoration: BoxDecoration(
@@ -262,6 +269,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
         keyboardType: keyboardType,
         textInputAction: action,
         onSubmitted: onSubmitted,
+        autofillHints: autofillHints,
         style: const TextStyle(fontWeight: FontWeight.w500),
         decoration: InputDecoration(
           labelText: label,
@@ -281,6 +289,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
   }
 
   Future<void> _handleRegister(AuthViewModel authViewModel) async {
+    FocusManager.instance.primaryFocus?.unfocus();
     if (_nameController.text.isEmpty || _phoneController.text.isEmpty || _emailController.text.isEmpty || _addressController.text.isEmpty || _passwordController.text.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Please fill all fields")));
       return;
@@ -302,6 +311,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
     loading.hide();
 
     if (success && mounted) {
+      TextInput.finishAutofillContext();
       await authViewModel.logout();
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Registration Successful! Please login.")));

@@ -7,12 +7,11 @@ import '../../view_models/order_view_model.dart';
 import '../../view_models/auth_view_model.dart';
 import '../../view_models/navigation_view_model.dart';
 import '../../models/order_model.dart';
+import '../../models/coupon_model.dart';
 import '../../utils/constants/app_strings.dart';
 import '../../routes/app_routes.dart';
 import '../../widgets/custom_app_bar.dart';
 import '../../widgets/empty_state_widget.dart';
-import 'package:intl/intl.dart';
-import '../../widgets/app_card.dart';
 import '../../widgets/product_list_item.dart';
 
 import '../../view_models/loading_view_model.dart';
@@ -347,8 +346,9 @@ class _CartScreenState extends State<CartScreen> {
   }
 
   Widget _buildOrderSummary(BuildContext context, CartViewModel cart, SettingsViewModel settings) {
+    final currency = AppStrings.currency.tr();
     return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 16),
+      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
         color: Colors.white,
@@ -363,12 +363,24 @@ class _CartScreenState extends State<CartScreen> {
       ),
       child: Column(
         children: [
-          _summaryRow("Subtotal", "${AppStrings.currency.tr()} ${NumberFormat('#,##,###').format(cart.subtotal.toInt())}"),
+          _summaryRow("Price (${cart.itemCount} items)", "$currency ${NumberFormat('#,##,###').format(cart.totalOriginalPrice.toInt())}"),
           const SizedBox(height: 12),
-          _summaryRow("Delivery Fee", "${AppStrings.currency.tr()} ${NumberFormat('#,##,###').format(cart.deliveryFee.toInt())}"),
+          if (cart.totalProductDiscount > 0) ...[
+            _summaryRow("Product Discount", "-$currency ${NumberFormat('#,##,###').format(cart.totalProductDiscount.toInt())}", color: Colors.green),
+            const SizedBox(height: 12),
+          ],
+          _summaryRow("Subtotal", "$currency ${NumberFormat('#,##,###').format(cart.subtotal.toInt())}"),
           const SizedBox(height: 12),
-          if (cart.discountAmount > 0) ...[
-            _summaryRow("Discount", "-${AppStrings.currency.tr()} ${NumberFormat('#,##,###').format(cart.discountAmount.toInt())}", color: Colors.green),
+          _summaryRow("Delivery Fee", "$currency ${NumberFormat('#,##,###').format(cart.deliveryFee.toInt())}"),
+          const SizedBox(height: 12),
+          if (cart.couponDiscount > 0 || cart.appliedCoupon?.type == CouponType.freeDelivery) ...[
+            _summaryRow(
+              "Coupon Discount ${cart.appliedCouponDetails.isNotEmpty ? '(${cart.appliedCouponDetails})' : ''}", 
+              cart.appliedCoupon?.type == CouponType.freeDelivery 
+                  ? "FREE" 
+                  : "-$currency ${NumberFormat('#,##,###').format(cart.couponDiscount.toInt())}", 
+              color: Colors.green
+            ),
             const SizedBox(height: 12),
           ],
           const Divider(),
@@ -384,7 +396,7 @@ class _CartScreenState extends State<CartScreen> {
                 TextSpan(
                   children: [
                     TextSpan(
-                      text: "${AppStrings.currency.tr()} ",
+                      text: "$currency ",
                       style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: settings.primaryColor),
                     ),
                     TextSpan(

@@ -10,6 +10,7 @@ import 'package:smart_shop/routes/app_routes.dart';
 import 'package:smart_shop/view_models/navigation_view_model.dart';
 import '../../view_models/cart_view_model.dart';
 import '../../view_models/wishlist_view_model.dart';
+import '../../view_models/notification_view_model.dart';
 import '../../widgets/product_card.dart';
 import '../../widgets/empty_state_widget.dart';
 import '../../widgets/custom_app_bar.dart';
@@ -86,12 +87,16 @@ class DashboardScreen extends StatelessWidget {
                       children: [
                         IconButton(
                           icon: const Icon(Icons.notifications_none_rounded, size: 28),
-                          onPressed: () {},
+                          onPressed: () => Navigator.pushNamed(context, AppRoutes.notifications),
                         ),
                         Positioned(
                           right: 12,
                           top: 12,
-                          child: Container(width: 8, height: 8, decoration: const BoxDecoration(color: Colors.red, shape: BoxShape.circle)),
+                          child: Consumer<NotificationViewModel>(
+                            builder: (context, vm, _) => vm.notifications.isNotEmpty 
+                              ? Container(width: 8, height: 8, decoration: const BoxDecoration(color: Colors.red, shape: BoxShape.circle))
+                              : const SizedBox.shrink(),
+                          ),
                         )
                       ],
                     ),

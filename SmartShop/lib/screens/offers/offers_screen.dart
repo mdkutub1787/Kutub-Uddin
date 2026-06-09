@@ -141,7 +141,24 @@ class OffersScreen extends StatelessWidget {
                     ElevatedButton(
                       onPressed: isApplied 
                         ? () => cart.removeCoupon() 
-                        : (canApply ? () => cart.applyCoupon(coupon.code) : null),
+                        : (canApply ? () {
+                            String result = cart.applyCoupon(coupon.code);
+                            if (result == 'Success') {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                  content: Text("Coupon Applied Successfully!"),
+                                  backgroundColor: Colors.green,
+                                  duration: Duration(seconds: 1),
+                                ),
+                              );
+                              // Auto navigate back to cart
+                              Navigator.pop(context);
+                            } else {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(content: Text(result), backgroundColor: Colors.red),
+                              );
+                            }
+                          } : null),
                       style: ElevatedButton.styleFrom(
                         backgroundColor: isApplied ? Colors.red : settings.primaryColor,
                         foregroundColor: Colors.white,

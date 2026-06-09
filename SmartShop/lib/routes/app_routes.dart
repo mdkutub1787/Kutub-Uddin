@@ -13,6 +13,8 @@ import '../screens/profile/edit_profile_screen.dart';
 import '../screens/profile/admin_verification_screen.dart';
 import '../screens/admin/admin_dashboard_screen.dart';
 import '../screens/offers/offers_screen.dart';
+import '../screens/notification/notification_screen.dart';
+import '../screens/support/support_screen.dart';
 import '../models/product_model.dart';
 import '../models/order_model.dart';
 
@@ -34,6 +36,8 @@ class AppRoutes {
   static const String adminVerification = '/admin-verification';
   static const String adminDashboard = '/admin-dashboard';
   static const String offers = '/offers';
+  static const String notifications = '/notifications';
+  static const String support = '/support';
 
   static Route<dynamic> generateRoute(RouteSettings settings) {
     switch (settings.name) {
@@ -63,6 +67,10 @@ class AppRoutes {
         return MaterialPageRoute(builder: (_) => const AdminDashboardScreen());
       case offers:
         return MaterialPageRoute(builder: (_) => const OffersScreen());
+      case notifications:
+        return MaterialPageRoute(builder: (_) => const NotificationScreen());
+      case support:
+        return MaterialPageRoute(builder: (_) => const SupportScreen());
       case productDetails:
         if (settings.arguments is ProductModel) {
           final product = settings.arguments as ProductModel;

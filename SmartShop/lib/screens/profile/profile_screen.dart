@@ -48,6 +48,9 @@ class ProfileScreen extends StatelessWidget {
             _buildProfileItem(Icons.favorite_outline, AppStrings.wishlistMenu.tr(), () {
               Navigator.pushNamed(context, AppRoutes.wishlist);
             }),
+            _buildProfileItem(Icons.help_outline_rounded, "Help & Support", () {
+              Navigator.pushNamed(context, AppRoutes.support);
+            }),
             
             const Divider(indent: 20, endIndent: 20),
             
@@ -184,18 +187,21 @@ class ProfileScreen extends StatelessWidget {
             TextField(
               controller: oldController,
               obscureText: true,
+              autofillHints: const [AutofillHints.password],
               decoration: const InputDecoration(labelText: "Old Password", prefixIcon: Icon(Icons.lock_outline)),
             ),
             const SizedBox(height: 10),
             TextField(
               controller: newController,
               obscureText: true,
+              autofillHints: const [AutofillHints.newPassword],
               decoration: const InputDecoration(labelText: "New Password", prefixIcon: Icon(Icons.password)),
             ),
             const SizedBox(height: 10),
             TextField(
               controller: confirmController,
               obscureText: true,
+              autofillHints: const [AutofillHints.password],
               decoration: const InputDecoration(labelText: "Confirm New Password", prefixIcon: Icon(Icons.check_circle_outline)),
             ),
           ],
@@ -204,6 +210,7 @@ class ProfileScreen extends StatelessWidget {
           TextButton(onPressed: () => Navigator.pop(ctx), child: const Text("Cancel")),
           ElevatedButton(
             onPressed: () async {
+              FocusManager.instance.primaryFocus?.unfocus();
               if (newController.text.length < 6) {
                 ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Password must be at least 6 chars")));
                 return;

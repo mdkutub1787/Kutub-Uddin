@@ -24,6 +24,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   }
 
   Future<void> _updateProfile() async {
+    FocusManager.instance.primaryFocus?.unfocus();
     setState(() => _isSaving = true);
     try {
       final authVM = context.read<AuthViewModel>();
@@ -85,11 +86,11 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                   child: Column(
                     children: [
                       const SizedBox(height: 20),
-                      _field(_nameController, "Full Name", Icons.person_outline_rounded),
+                      _field(_nameController, "Full Name", Icons.person_outline_rounded, autofillHints: [AutofillHints.name]),
                       const SizedBox(height: 24),
-                      _field(_phoneController, "Phone Number", Icons.phone_android_rounded, keyboardType: TextInputType.phone),
+                      _field(_phoneController, "Phone Number", Icons.phone_android_rounded, keyboardType: TextInputType.phone, autofillHints: [AutofillHints.telephoneNumber]),
                       const SizedBox(height: 24),
-                      _field(_addressController, "Full Address", Icons.location_on_outlined, lines: 3),
+                      _field(_addressController, "Full Address", Icons.location_on_outlined, lines: 3, autofillHints: [AutofillHints.fullStreetAddress]),
                       const SizedBox(height: 40),
                       
                       SizedBox(
@@ -125,7 +126,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     );
   }
 
-  Widget _field(TextEditingController controller, String label, IconData icon, {int lines = 1, TextInputType? keyboardType}) {
+  Widget _field(TextEditingController controller, String label, IconData icon, {int lines = 1, TextInputType? keyboardType, Iterable<String>? autofillHints}) {
     return Container(
       decoration: BoxDecoration(
         color: Theme.of(context).cardColor,
@@ -142,6 +143,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         controller: controller,
         maxLines: lines,
         keyboardType: keyboardType,
+        autofillHints: autofillHints,
         style: const TextStyle(fontWeight: FontWeight.w500),
         decoration: InputDecoration(
           labelText: label,
