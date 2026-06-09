@@ -1,17 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:easy_localization/easy_localization.dart';
-import '../view_models/category_view_model.dart';
-import '../view_models/auth_view_model.dart';
-import '../view_models/product_view_model.dart';
-import '../view_models/settings_view_model.dart';
-import '../view_models/cart_view_model.dart';
-import '../view_models/wishlist_view_model.dart';
-import '../utils/constants/app_strings.dart';
-import '../routes/app_routes.dart';
-import 'admin/admin_dashboard_screen.dart';
+import '../../view_models/category_view_model.dart';
+import '../../view_models/auth_view_model.dart';
+import '../../view_models/product_view_model.dart';
+import '../../view_models/settings_view_model.dart';
+import '../../view_models/cart_view_model.dart';
+import '../../view_models/wishlist_view_model.dart';
+import '../../utils/constants/app_strings.dart';
+import '../../routes/app_routes.dart';
+import '../admin/admin_dashboard_screen.dart';
 
-import '../widgets/custom_app_bar.dart';
+import '../../widgets/custom_app_bar.dart';
 
 class DashboardScreen extends StatelessWidget {
   const DashboardScreen({super.key});

@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:easy_localization/easy_localization.dart';
-import '../models/product_model.dart';
-import '../view_models/cart_view_model.dart';
-import '../view_models/wishlist_view_model.dart';
-import '../view_models/auth_view_model.dart';
-import '../utils/constants/app_strings.dart';
+import '../../models/product_model.dart';
+import '../../view_models/cart_view_model.dart';
+import '../../view_models/wishlist_view_model.dart';
+import '../../view_models/auth_view_model.dart';
+import '../../utils/constants/app_strings.dart';
 
-import '../widgets/custom_app_bar.dart';
+import '../../widgets/custom_app_bar.dart';
 
 class ProductDetailsScreen extends StatelessWidget {
   final ProductModel product;

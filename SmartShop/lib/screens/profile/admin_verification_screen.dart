@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../view_models/auth_view_model.dart';
-import '../view_models/settings_view_model.dart';
+import '../../view_models/auth_view_model.dart';
+import '../../view_models/settings_view_model.dart';
 
 class AdminVerificationScreen extends StatefulWidget {
   const AdminVerificationScreen({super.key});
