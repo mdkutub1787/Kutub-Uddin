@@ -5,7 +5,6 @@ import 'package:easy_localization/easy_localization.dart';
 import '../../view_models/auth_view_model.dart';
 import '../../routes/app_routes.dart';
 import '../../utils/constants/app_strings.dart';
-
 import '../../view_models/loading_view_model.dart';
 
 class RegisterScreen extends StatefulWidget {
@@ -22,143 +21,261 @@ class _RegisterScreenState extends State<RegisterScreen> {
   final _addressController = TextEditingController();
   final _passwordController = TextEditingController();
   final _confirmPasswordController = TextEditingController();
-
   bool _isPasswordVisible = false;
-
-  @override
-  void dispose() {
-    _nameController.dispose();
-    _emailController.dispose();
-    _phoneController.dispose();
-    _addressController.dispose();
-    _passwordController.dispose();
-    _confirmPasswordController.dispose();
-    super.dispose();
-  }
 
   @override
   Widget build(BuildContext context) {
     final authViewModel = context.watch<AuthViewModel>();
+    final primaryColor = Theme.of(context).primaryColor;
+    final size = MediaQuery.of(context).size;
 
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-      appBar: AppBar(
-        elevation: 0,
-        backgroundColor: Colors.transparent,
-        iconTheme: IconThemeData(color: Theme.of(context).primaryColor),
-      ),
-      body: SafeArea(
-        child: SingleChildScrollView(
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 30),
-            child: AutofillGroup(
+      body: Stack(
+        children: [
+          // Decorative Background Elements
+          Positioned(
+            top: -size.height * 0.1,
+            right: -size.width * 0.2,
+            child: CircleAvatar(
+              radius: size.width * 0.4,
+              backgroundColor: primaryColor.withValues(alpha: 0.05),
+            ),
+          ),
+          Positioned(
+            bottom: -size.height * 0.1,
+            left: -size.width * 0.2,
+            child: CircleAvatar(
+              radius: size.width * 0.3,
+              backgroundColor: primaryColor.withValues(alpha: 0.05),
+            ),
+          ),
+          
+          SafeArea(
+            child: SingleChildScrollView(
+              padding: const EdgeInsets.symmetric(horizontal: 28),
               child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
+                  const SizedBox(height: 10),
+                  Align(
+                    alignment: Alignment.topLeft,
+                    child: IconButton(
+                      icon: const Icon(Icons.arrow_back_ios_new_rounded),
+                      onPressed: () => Navigator.pop(context),
+                    ),
+                  ),
+                  
+                  const SizedBox(height: 10),
+                  // App Title
                   Text(
                     AppStrings.registerTitle.tr(),
+                    style: Theme.of(context).textTheme.displayLarge?.copyWith(
+                      fontSize: 42,
+                      fontWeight: FontWeight.w900,
+                      color: primaryColor,
+                      letterSpacing: -1,
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    "Create your account to start shopping",
                     style: TextStyle(
-                      fontSize: 32,
-                      fontWeight: FontWeight.bold,
-                      color: Theme.of(context).textTheme.displayLarge?.color,
+                      fontSize: 16,
+                      color: Colors.grey[600],
+                      fontWeight: FontWeight.w500,
                     ),
                   ),
-                  const SizedBox(height: 10),
-                  const Text(
-                    "Join us to start shopping!",
-                    style: TextStyle(color: Colors.grey, fontSize: 16),
-                  ),
-                  const SizedBox(height: 30),
                   
-                  // Full Name
-                  _buildTextField(_nameController, AppStrings.nameLabel.tr(), Icons.person_outline, TextInputType.name),
-                  const SizedBox(height: 15),
-
-                  // Phone Number
-                  _buildTextField(_phoneController, AppStrings.phoneLabel.tr(), Icons.phone_android_outlined, TextInputType.phone),
-                  const SizedBox(height: 15),
-
-                  // Full Address
-                  _buildTextField(_addressController, "Full Address", Icons.location_on_outlined, TextInputType.streetAddress),
-                  const SizedBox(height: 15),
-
-                  // Email
-                  _buildTextField(_emailController, AppStrings.emailLabel.tr(), Icons.email_outlined, TextInputType.emailAddress),
-                  const SizedBox(height: 15),
-
-                  // Password
-                  TextField(
-                    controller: _passwordController,
-                    obscureText: !_isPasswordVisible,
-                    decoration: InputDecoration(
-                      labelText: AppStrings.passwordLabel.tr(),
-                      prefixIcon: const Icon(Icons.lock_outline_rounded),
-                      suffixIcon: IconButton(
-                        icon: Icon(_isPasswordVisible ? Icons.visibility : Icons.visibility_off),
-                        onPressed: () => setState(() => _isPasswordVisible = !_isPasswordVisible),
-                      ),
-                      border: OutlineInputBorder(borderRadius: BorderRadius.circular(15)),
-                    ),
-                  ),
-                  const SizedBox(height: 15),
-
-                  // Confirm Password
-                  TextField(
-                    controller: _confirmPasswordController,
-                    obscureText: !_isPasswordVisible,
-                    decoration: InputDecoration(
-                      labelText: AppStrings.confirmPasswordLabel.tr(),
-                      prefixIcon: const Icon(Icons.check_circle_outline_rounded),
-                      border: OutlineInputBorder(borderRadius: BorderRadius.circular(15)),
-                    ),
-                  ),
-                  const SizedBox(height: 30),
-
-                  // Register Button
-                  SizedBox(
-                    width: double.infinity,
-                    height: 55,
-                    child: ElevatedButton(
-                      onPressed: authViewModel.isLoading ? null : () => _handleRegister(authViewModel),
-                      style: ElevatedButton.styleFrom(
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
-                      ),
-                      child: authViewModel.isLoading
-                          ? const CircularProgressIndicator(color: Colors.white)
-                          : const Text("REGISTER NOW", style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
-                    ),
-                  ),
-                  const SizedBox(height: 20),
+                  const SizedBox(height: 40),
                   
+                  // Form Fields
+                  AutofillGroup(
+                    child: Column(
+                      children: [
+                        _buildTextField(
+                          controller: _nameController,
+                          label: AppStrings.nameLabel.tr(),
+                          hint: "Your Full Name",
+                          icon: Icons.person_outline_rounded,
+                          action: TextInputAction.next,
+                        ),
+                        const SizedBox(height: 20),
+                        
+                        _buildTextField(
+                          controller: _phoneController,
+                          label: AppStrings.phoneLabel.tr(),
+                          hint: "01XXXXXXXXX",
+                          icon: Icons.phone_android_rounded,
+                          keyboardType: TextInputType.phone,
+                          action: TextInputAction.next,
+                        ),
+                        const SizedBox(height: 20),
+                        
+                        _buildTextField(
+                          controller: _addressController,
+                          label: "Delivery Address",
+                          hint: "House, Road, Area...",
+                          icon: Icons.location_on_outlined,
+                          action: TextInputAction.next,
+                        ),
+                        const SizedBox(height: 20),
+                        
+                        _buildTextField(
+                          controller: _emailController,
+                          label: AppStrings.emailLabel.tr(),
+                          hint: "example@mail.com",
+                          icon: Icons.alternate_email_rounded,
+                          keyboardType: TextInputType.emailAddress,
+                          action: TextInputAction.next,
+                        ),
+                        const SizedBox(height: 20),
+                        
+                        _buildTextField(
+                          controller: _passwordController,
+                          label: AppStrings.passwordLabel.tr(),
+                          hint: "••••••••",
+                          icon: Icons.lock_outline_rounded,
+                          obscure: !_isPasswordVisible,
+                          action: TextInputAction.next,
+                          suffix: IconButton(
+                            icon: Icon(
+                              _isPasswordVisible
+                                  ? Icons.visibility_off_rounded
+                                  : Icons.visibility_rounded,
+                              color: Colors.grey,
+                            ),
+                            onPressed: () => setState(() => _isPasswordVisible = !_isPasswordVisible),
+                          ),
+                        ),
+                        const SizedBox(height: 20),
+                        
+                        _buildTextField(
+                          controller: _confirmPasswordController,
+                          label: AppStrings.confirmPasswordLabel.tr(),
+                          hint: "••••••••",
+                          icon: Icons.verified_user_outlined,
+                          obscure: !_isPasswordVisible,
+                          action: TextInputAction.done,
+                          onSubmitted: (_) => _handleRegister(authViewModel),
+                        ),
+                        
+                        const SizedBox(height: 40),
+                        
+                        // REGISTER BUTTON
+                        SizedBox(
+                          width: double.infinity,
+                          height: 60,
+                          child: ElevatedButton(
+                            onPressed: authViewModel.isLoading
+                                ? null
+                                : () => _handleRegister(authViewModel),
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: primaryColor,
+                              foregroundColor: Colors.white,
+                              elevation: 8,
+                              shadowColor: primaryColor.withValues(alpha: 0.4),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(20),
+                              ),
+                            ),
+                            child: authViewModel.isLoading
+                                ? const SizedBox(
+                                    height: 24,
+                                    width: 24,
+                                    child: CircularProgressIndicator(
+                                      color: Colors.white,
+                                      strokeWidth: 3,
+                                    ),
+                                  )
+                                : Text(
+                                    AppStrings.registerTitle.tr().toUpperCase(),
+                                    style: const TextStyle(
+                                      fontSize: 18, 
+                                      fontWeight: FontWeight.w900,
+                                      letterSpacing: 1.2
+                                    ),
+                                  ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  
+                  const SizedBox(height: 30),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Text(AppStrings.noAccount.tr()),
+                      Text(
+                        "Already have an account?",
+                        style: TextStyle(color: Colors.grey[600], fontSize: 15),
+                      ),
                       TextButton(
                         onPressed: () => Navigator.pop(context),
-                        child: Text(AppStrings.loginTitle.tr(), style: const TextStyle(fontWeight: FontWeight.bold)),
+                        child: Text(
+                          AppStrings.loginTitle.tr(),
+                          style: TextStyle(
+                            color: primaryColor,
+                            fontWeight: FontWeight.w900,
+                            fontSize: 16,
+                          ),
+                        ),
                       ),
                     ],
                   ),
-                  const SizedBox(height: 30),
+                  const SizedBox(height: 40),
                 ],
               ),
             ),
           ),
-        ),
+        ],
       ),
     );
   }
 
-  Widget _buildTextField(TextEditingController controller, String label, IconData icon, TextInputType type) {
-    return TextField(
-      controller: controller,
-      keyboardType: type,
-      textInputAction: TextInputAction.next,
-      decoration: InputDecoration(
-        labelText: label,
-        prefixIcon: Icon(icon),
-        border: OutlineInputBorder(borderRadius: BorderRadius.circular(15)),
+  Widget _buildTextField({
+    required TextEditingController controller,
+    required String label,
+    required String hint,
+    required IconData icon,
+    bool obscure = false,
+    TextInputType? keyboardType,
+    TextInputAction? action,
+    Widget? suffix,
+    Function(String)? onSubmitted,
+  }) {
+    return Container(
+      decoration: BoxDecoration(
+        color: Theme.of(context).cardColor,
+        borderRadius: BorderRadius.circular(20),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.03),
+            blurRadius: 15,
+            offset: const Offset(0, 5),
+          )
+        ],
+      ),
+      child: TextField(
+        controller: controller,
+        obscureText: obscure,
+        keyboardType: keyboardType,
+        textInputAction: action,
+        onSubmitted: onSubmitted,
+        style: const TextStyle(fontWeight: FontWeight.w500),
+        decoration: InputDecoration(
+          labelText: label,
+          hintText: hint,
+          prefixIcon: Icon(icon, color: Theme.of(context).primaryColor),
+          suffixIcon: suffix,
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(20),
+            borderSide: BorderSide.none,
+          ),
+          filled: true,
+          fillColor: Colors.transparent,
+          contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
+        ),
       ),
     );
   }
@@ -168,7 +285,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
       ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Please fill all fields")));
       return;
     }
-
     if (_passwordController.text != _confirmPasswordController.text) {
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(AppStrings.passwordMismatch.tr())));
       return;
@@ -176,7 +292,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
     final loading = context.read<LoadingViewModel>();
     loading.show(message: "Creating your account...");
-
     bool success = await authViewModel.register(
       _emailController.text.trim(),
       _passwordController.text,
@@ -184,7 +299,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
       phoneNumber: _phoneController.text.trim(),
       address: _addressController.text.trim(),
     );
-
     loading.hide();
 
     if (success && mounted) {

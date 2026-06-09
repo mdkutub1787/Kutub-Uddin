@@ -10,6 +10,7 @@ import 'view_models/cart_view_model.dart';
 import 'view_models/order_view_model.dart';
 import 'view_models/wishlist_view_model.dart';
 import 'view_models/loading_view_model.dart';
+import 'view_models/navigation_view_model.dart';
 import 'screens/auth/login_screen.dart';
 import 'screens/splash/splash_screen.dart';
 import 'services/auth_service.dart';
@@ -37,6 +38,7 @@ void main() async {
           ChangeNotifierProvider(create: (_) => OrderViewModel()),
           ChangeNotifierProvider(create: (_) => WishlistViewModel()),
           ChangeNotifierProvider(create: (_) => LoadingViewModel()),
+          ChangeNotifierProvider(create: (_) => NavigationViewModel()),
         ],
         child: const MyApp(),
       ),

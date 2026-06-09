@@ -78,83 +78,176 @@ class _AdminAddEditProductScreenState extends State<AdminAddEditProductScreen> {
   @override
   Widget build(BuildContext context) {
     final categoryViewModel = context.watch<CategoryViewModel>();
+    final primaryColor = Theme.of(context).primaryColor;
+    final size = MediaQuery.of(context).size;
+
     return Scaffold(
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: CustomAppBar(title: widget.product == null ? "Add Product" : "Edit Product"),
-      body: _isSaving ? const Center(child: CircularProgressIndicator()) : SingleChildScrollView(
-        padding: const EdgeInsets.all(20),
-        child: Form(
-          key: _formKey,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              _field(_nameController, "Product Name", Icons.shopping_bag),
-              const SizedBox(height: 15),
-              _field(_descController, "Description", Icons.description, lines: 3),
-              const SizedBox(height: 15),
-              Row(
-                children: [
-                  Expanded(child: _field(_priceController, "Regular Price", Icons.attach_money, type: TextInputType.number)),
-                  const SizedBox(width: 15),
-                  Expanded(child: _field(_stockController, "Stock", Icons.inventory, type: TextInputType.number)),
-                ],
-              ),
-              const SizedBox(height: 15),
-              const Text("Discount System", style: TextStyle(fontWeight: FontWeight.bold, color: Colors.blue)),
-              Row(
-                children: [
-                  Expanded(
-                    child: DropdownButtonFormField<String>(
-                      value: _discountType,
-                      decoration: const InputDecoration(labelText: "Type"),
-                      items: ['none', 'flat', 'percentage'].map((e) => DropdownMenuItem(value: e, child: Text(e.toUpperCase()))).toList(),
-                      onChanged: (val) => setState(() {
-                        _discountType = val!;
-                        if (_discountType == 'none') {
-                          _discountController.text = '0';
-                        }
-                      }),
-                    ),
-                  ),
-                  const SizedBox(width: 15),
-                  Expanded(child: _field(_discountController, "Value (Tk/%)", Icons.discount, type: TextInputType.number, enabled: _discountType != 'none')),
-                ],
-              ),
-              const SizedBox(height: 10),
-              Text("Final Price: ৳${_calculateFinalPrice().toStringAsFixed(2)}", style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.green)),
-              const SizedBox(height: 20),
-              _field(_imageController, "Image URL", Icons.link),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  IconButton(onPressed: () => _pickImage(ImageSource.camera), icon: const Icon(Icons.camera_alt, color: Colors.blue)),
-                  IconButton(onPressed: () => _pickImage(ImageSource.gallery), icon: const Icon(Icons.image, color: Colors.blue)),
-                  const Text("Helper (Camera/Gallery)"),
-                ],
-              ),
-              const SizedBox(height: 15),
-              DropdownButtonFormField<String>(
-                value: _selectedCategoryId,
-                decoration: InputDecoration(
-                  labelText: "Category", 
-                  prefixIcon: const Icon(Icons.category), 
-                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(15))
-                ),
-                items: categoryViewModel.categories.map((cat) => DropdownMenuItem(value: cat.id, child: Text(cat.name))).toList(),
-                onChanged: (val) => setState(() => _selectedCategoryId = val),
-              ),
-              const SizedBox(height: 30),
-              SizedBox(
-                width: double.infinity, 
-                height: 55, 
-                child: ElevatedButton(
-                  onPressed: _saveForm, 
-                  child: const Text("SAVE PRODUCT", style: TextStyle(fontWeight: FontWeight.bold))
-                )
-              ),
-            ],
+      body: Stack(
+        children: [
+          // Decorative Background Elements
+          Positioned(
+            top: -size.height * 0.1,
+            right: -size.width * 0.2,
+            child: CircleAvatar(
+              radius: size.width * 0.4,
+              backgroundColor: primaryColor.withValues(alpha: 0.05),
+            ),
           ),
-        ),
+          Positioned(
+            bottom: -size.height * 0.1,
+            left: -size.width * 0.2,
+            child: CircleAvatar(
+              radius: size.width * 0.3,
+              backgroundColor: primaryColor.withValues(alpha: 0.05),
+            ),
+          ),
+          
+          _isSaving 
+            ? const Center(child: CircularProgressIndicator()) 
+            : SingleChildScrollView(
+                padding: const EdgeInsets.all(28),
+                child: Form(
+                  key: _formKey,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      _field(_nameController, "Product Name", Icons.shopping_bag_outlined),
+                      const SizedBox(height: 20),
+                      _field(_descController, "Description", Icons.description_outlined, lines: 3),
+                      const SizedBox(height: 20),
+                      Row(
+                        children: [
+                          Expanded(child: _field(_priceController, "Price", Icons.attach_money_rounded, type: TextInputType.number)),
+                          const SizedBox(width: 15),
+                          Expanded(child: _field(_stockController, "Stock", Icons.inventory_2_outlined, type: TextInputType.number)),
+                        ],
+                      ),
+                      const SizedBox(height: 30),
+                      const Text(
+                        "Discount Settings", 
+                        style: TextStyle(fontWeight: FontWeight.w900, fontSize: 18, letterSpacing: -0.5)
+                      ),
+                      const SizedBox(height: 15),
+                      Container(
+                        decoration: _fieldDecoration(),
+                        child: DropdownButtonFormField<String>(
+                          value: _discountType,
+                          decoration: InputDecoration(
+                            labelText: "Type",
+                            prefixIcon: Icon(Icons.style_outlined, color: primaryColor),
+                            border: InputBorder.none,
+                            contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 15),
+                          ),
+                          items: ['none', 'flat', 'percentage']
+                              .map((e) => DropdownMenuItem(value: e, child: Text(e.toUpperCase(), style: const TextStyle(fontWeight: FontWeight.w500))))
+                              .toList(),
+                          onChanged: (val) => setState(() {
+                            _discountType = val!;
+                            if (_discountType == 'none') {
+                              _discountController.text = '0';
+                            }
+                          }),
+                        ),
+                      ),
+                      const SizedBox(height: 20),
+                      _field(_discountController, "Discount Value", Icons.discount_outlined, type: TextInputType.number, enabled: _discountType != 'none'),
+                      const SizedBox(height: 12),
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                        decoration: BoxDecoration(
+                          color: Colors.green.withValues(alpha: 0.1),
+                          borderRadius: BorderRadius.circular(15),
+                        ),
+                        child: Text(
+                          "Final Price: ৳${_calculateFinalPrice().toStringAsFixed(2)}", 
+                          style: const TextStyle(fontWeight: FontWeight.w900, color: Colors.green, fontSize: 16)
+                        ),
+                      ),
+                      const SizedBox(height: 30),
+                      _field(_imageController, "Image URL", Icons.link_rounded),
+                      const SizedBox(height: 10),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          _imagePickerBtn(Icons.camera_alt_rounded, "Camera", () => _pickImage(ImageSource.camera)),
+                          const SizedBox(width: 20),
+                          _imagePickerBtn(Icons.image_rounded, "Gallery", () => _pickImage(ImageSource.gallery)),
+                        ],
+                      ),
+                      const SizedBox(height: 30),
+                      Container(
+                        decoration: _fieldDecoration(),
+                        child: DropdownButtonFormField<String>(
+                          value: _selectedCategoryId,
+                          decoration: InputDecoration(
+                            labelText: "Category", 
+                            prefixIcon: Icon(Icons.category_outlined, color: primaryColor), 
+                            border: InputBorder.none,
+                            contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 15),
+                          ),
+                          items: categoryViewModel.categories.map((cat) => DropdownMenuItem(value: cat.id, child: Text(cat.name, style: const TextStyle(fontWeight: FontWeight.w500)))).toList(),
+                          onChanged: (val) => setState(() => _selectedCategoryId = val),
+                          validator: (v) => v == null ? "Required" : null,
+                        ),
+                      ),
+                      const SizedBox(height: 50),
+                      SizedBox(
+                        width: double.infinity, 
+                        height: 60, 
+                        child: ElevatedButton(
+                          onPressed: _saveForm,
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: primaryColor,
+                            foregroundColor: Colors.white,
+                            elevation: 8,
+                            shadowColor: primaryColor.withValues(alpha: 0.4),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(20),
+                            ),
+                          ),
+                          child: const Text(
+                            "SAVE PRODUCT", 
+                            style: TextStyle(fontSize: 18, fontWeight: FontWeight.w900, letterSpacing: 1.2)
+                          )
+                        )
+                      ),
+                      const SizedBox(height: 50),
+                    ],
+                  ),
+                ),
+              ),
+        ],
       ),
+    );
+  }
+
+  Widget _imagePickerBtn(IconData icon, String label, VoidCallback onTap) {
+    return TextButton.icon(
+      onPressed: onTap, 
+      icon: Icon(icon, size: 20), 
+      label: Text(label),
+      style: TextButton.styleFrom(
+        foregroundColor: Theme.of(context).primaryColor,
+        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+        backgroundColor: Theme.of(context).primaryColor.withValues(alpha: 0.05),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
+      ),
+    );
+  }
+
+  BoxDecoration _fieldDecoration({bool enabled = true}) {
+    return BoxDecoration(
+      color: enabled ? Theme.of(context).cardColor : Colors.grey[100],
+      borderRadius: BorderRadius.circular(20),
+      boxShadow: [
+        BoxShadow(
+          color: Colors.black.withValues(alpha: 0.03),
+          blurRadius: 15,
+          offset: const Offset(0, 5),
+        )
+      ],
     );
   }
 
@@ -191,19 +284,23 @@ class _AdminAddEditProductScreenState extends State<AdminAddEditProductScreen> {
   }
 
   Widget _field(TextEditingController controller, String label, IconData icon, {int lines = 1, TextInputType type = TextInputType.text, bool enabled = true}) {
-    return TextFormField(
-      controller: controller,
-      maxLines: lines,
-      keyboardType: type,
-      enabled: enabled,
-      decoration: InputDecoration(
-        labelText: label, 
-        prefixIcon: Icon(icon), 
-        border: OutlineInputBorder(borderRadius: BorderRadius.circular(15)),
-        filled: !enabled,
-        fillColor: enabled ? null : Colors.grey[200],
+    return Container(
+      decoration: _fieldDecoration(enabled: enabled),
+      child: TextFormField(
+        controller: controller,
+        maxLines: lines,
+        keyboardType: type,
+        enabled: enabled,
+        style: const TextStyle(fontWeight: FontWeight.w500),
+        decoration: InputDecoration(
+          labelText: label, 
+          prefixIcon: Icon(icon, color: Theme.of(context).primaryColor), 
+          border: InputBorder.none,
+          filled: false,
+          contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 15),
+        ),
+        validator: (v) => v!.isEmpty && enabled ? "Required" : null,
       ),
-      validator: (v) => v!.isEmpty && enabled ? "Required" : null,
     );
   }
 }

@@ -45,30 +45,116 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final primaryColor = Theme.of(context).primaryColor;
+    final size = MediaQuery.of(context).size;
+
     return Scaffold(
-      appBar: AppBar(title: const Text("Update Profile")),
-      body: _isSaving ? const Center(child: CircularProgressIndicator()) : SingleChildScrollView(
-        padding: const EdgeInsets.all(20.0),
-        child: Column(
-          children: [
-            _field(_nameController, "Full Name", Icons.person),
-            const SizedBox(height: 15),
-            _field(_phoneController, "Phone Number", Icons.phone),
-            const SizedBox(height: 15),
-            _field(_addressController, "Full Address", Icons.location_on, lines: 2),
-            const SizedBox(height: 30),
-            SizedBox(width: double.infinity, height: 50, child: ElevatedButton(onPressed: _updateProfile, child: const Text("SAVE CHANGES"))),
-          ],
-        ),
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+      appBar: AppBar(
+        title: const Text("Edit Profile"),
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        foregroundColor: Colors.black87,
+      ),
+      extendBodyBehindAppBar: true,
+      body: Stack(
+        children: [
+          // Decorative Background Elements
+          Positioned(
+            top: -size.height * 0.1,
+            right: -size.width * 0.2,
+            child: CircleAvatar(
+              radius: size.width * 0.4,
+              backgroundColor: primaryColor.withValues(alpha: 0.05),
+            ),
+          ),
+          Positioned(
+            bottom: -size.height * 0.1,
+            left: -size.width * 0.2,
+            child: CircleAvatar(
+              radius: size.width * 0.3,
+              backgroundColor: primaryColor.withValues(alpha: 0.05),
+            ),
+          ),
+          
+          _isSaving 
+            ? const Center(child: CircularProgressIndicator()) 
+            : SafeArea(
+                child: SingleChildScrollView(
+                  padding: const EdgeInsets.symmetric(horizontal: 28, vertical: 20),
+                  child: Column(
+                    children: [
+                      const SizedBox(height: 20),
+                      _field(_nameController, "Full Name", Icons.person_outline_rounded),
+                      const SizedBox(height: 24),
+                      _field(_phoneController, "Phone Number", Icons.phone_android_rounded, keyboardType: TextInputType.phone),
+                      const SizedBox(height: 24),
+                      _field(_addressController, "Full Address", Icons.location_on_outlined, lines: 3),
+                      const SizedBox(height: 40),
+                      
+                      SizedBox(
+                        width: double.infinity,
+                        height: 60,
+                        child: ElevatedButton(
+                          onPressed: _updateProfile,
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: primaryColor,
+                            foregroundColor: Colors.white,
+                            elevation: 8,
+                            shadowColor: primaryColor.withValues(alpha: 0.4),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(20),
+                            ),
+                          ),
+                          child: const Text(
+                            "SAVE CHANGES",
+                            style: TextStyle(
+                              fontSize: 18, 
+                              fontWeight: FontWeight.w900,
+                              letterSpacing: 1.2
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+        ],
       ),
     );
   }
 
-  Widget _field(TextEditingController controller, String label, IconData icon, {int lines = 1}) {
-    return TextField(
-      controller: controller,
-      maxLines: lines,
-      decoration: InputDecoration(labelText: label, prefixIcon: Icon(icon), border: OutlineInputBorder(borderRadius: BorderRadius.circular(15))),
+  Widget _field(TextEditingController controller, String label, IconData icon, {int lines = 1, TextInputType? keyboardType}) {
+    return Container(
+      decoration: BoxDecoration(
+        color: Theme.of(context).cardColor,
+        borderRadius: BorderRadius.circular(20),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.03),
+            blurRadius: 15,
+            offset: const Offset(0, 5),
+          )
+        ],
+      ),
+      child: TextField(
+        controller: controller,
+        maxLines: lines,
+        keyboardType: keyboardType,
+        style: const TextStyle(fontWeight: FontWeight.w500),
+        decoration: InputDecoration(
+          labelText: label,
+          prefixIcon: Icon(icon, color: Theme.of(context).primaryColor),
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(20),
+            borderSide: BorderSide.none,
+          ),
+          filled: true,
+          fillColor: Colors.transparent,
+          contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
+        ),
+      ),
     );
   }
 }

@@ -24,108 +24,118 @@ class _LoginScreenState extends State<LoginScreen> {
   Widget build(BuildContext context) {
     final authViewModel = context.watch<AuthViewModel>();
     final size = MediaQuery.of(context).size;
+    final primaryColor = Theme.of(context).primaryColor;
 
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: Stack(
         children: [
+          // Decorative Background Elements
           Positioned(
-            top: -100,
-            right: -50,
-            child: Container(
-              width: 300,
-              height: 300,
-              decoration: BoxDecoration(
-                color: Theme.of(context).primaryColor.withValues(alpha: 0.05),
-                shape: BoxShape.circle,
-              ),
+            top: -size.height * 0.1,
+            right: -size.width * 0.2,
+            child: CircleAvatar(
+              radius: size.width * 0.4,
+              backgroundColor: primaryColor.withValues(alpha: 0.05),
             ),
           ),
+          Positioned(
+            bottom: -size.height * 0.1,
+            left: -size.width * 0.2,
+            child: CircleAvatar(
+              radius: size.width * 0.3,
+              backgroundColor: primaryColor.withValues(alpha: 0.05),
+            ),
+          ),
+          
           SafeArea(
             child: SingleChildScrollView(
-              padding: const EdgeInsets.symmetric(horizontal: 24),
+              padding: const EdgeInsets.symmetric(horizontal: 28),
               child: Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  SizedBox(height: size.height * 0.1),
+                  SizedBox(height: size.height * 0.08),
+                  
+                  // App Logo
                   Hero(
                     tag: 'app_logo',
                     child: Container(
-                      padding: const EdgeInsets.all(30),
+                      padding: const EdgeInsets.all(25),
                       decoration: BoxDecoration(
                         color: Theme.of(context).cardColor,
-                        borderRadius: BorderRadius.circular(35),
+                        borderRadius: BorderRadius.circular(40),
                         boxShadow: [
                           BoxShadow(
-                            color: Theme.of(context).primaryColor.withValues(alpha: 0.15),
-                            blurRadius: 40,
-                            offset: const Offset(0, 15),
+                            color: primaryColor.withValues(alpha: 0.1),
+                            blurRadius: 30,
+                            offset: const Offset(0, 10),
                           )
                         ],
                       ),
                       child: Image.asset(
                         'assets/images/app_icon.png',
-                        height: 100,
-                        width: 100,
+                        height: 90,
+                        width: 90,
                       ),
                     ),
                   ),
                   const SizedBox(height: 32),
+                  
+                  // App Title
                   Text(
                     AppStrings.appName.tr(),
                     style: Theme.of(context).textTheme.displayLarge?.copyWith(
                       fontSize: 42,
-                      color: Theme.of(context).primaryColor,
+                      fontWeight: FontWeight.w900,
+                      color: primaryColor,
                       letterSpacing: -1,
                     ),
                   ),
                   const SizedBox(height: 8),
                   Text(
                     AppStrings.welcomeMessage.tr(),
-                    style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                      color: Theme.of(context).textTheme.bodyMedium?.color,
+                    style: TextStyle(
+                      fontSize: 16,
+                      color: Colors.grey[600],
                       fontWeight: FontWeight.w500,
                     ),
                   ),
-                  const SizedBox(height: 48),
+                  
+                  const SizedBox(height: 50),
+                  
+                  // Form Fields
                   AutofillGroup(
                     child: Column(
                       children: [
-                        TextField(
+                        _buildTextField(
                           controller: _emailController,
+                          label: AppStrings.emailLabel.tr(),
+                          hint: "example@mail.com",
+                          icon: Icons.alternate_email_rounded,
                           keyboardType: TextInputType.emailAddress,
-                          autofillHints: const [AutofillHints.email],
-                          textInputAction: TextInputAction.next,
-                          decoration: InputDecoration(
-                            labelText: AppStrings.emailLabel.tr(),
-                            hintText: "example@mail.com",
-                            prefixIcon: const Icon(Icons.alternate_email_rounded),
-                          ),
+                          action: TextInputAction.next,
                         ),
-                        const SizedBox(height: 20),
-                        TextField(
+                        const SizedBox(height: 24),
+                        _buildTextField(
                           controller: _passwordController,
-                          obscureText: !_isPasswordVisible,
-                          autofillHints: const [AutofillHints.password],
-                          textInputAction: TextInputAction.done,
-                          onSubmitted: (_) => _handleLogin(authViewModel),
-                          decoration: InputDecoration(
-                            labelText: AppStrings.passwordLabel.tr(),
-                            prefixIcon: const Icon(Icons.lock_person_rounded),
-                            suffixIcon: IconButton(
-                              icon: Icon(
-                                _isPasswordVisible
-                                    ? Icons.visibility_off_rounded
-                                    : Icons.visibility_rounded,
-                              ),
-                              onPressed: () {
-                                setState(() {
-                                  _isPasswordVisible = !_isPasswordVisible;
-                                });
-                              },
+                          label: AppStrings.passwordLabel.tr(),
+                          hint: "••••••••",
+                          icon: Icons.lock_outline_rounded,
+                          obscure: !_isPasswordVisible,
+                          action: TextInputAction.done,
+                          suffix: IconButton(
+                            icon: Icon(
+                              _isPasswordVisible
+                                  ? Icons.visibility_off_rounded
+                                  : Icons.visibility_rounded,
+                              color: Colors.grey,
                             ),
+                            onPressed: () => setState(() => _isPasswordVisible = !_isPasswordVisible),
                           ),
+                          onSubmitted: (_) => _handleLogin(authViewModel),
                         ),
-                        const SizedBox(height: 12),
+                        
+                        // Forgot Password
                         Align(
                           alignment: Alignment.centerRight,
                           child: TextButton(
@@ -140,46 +150,71 @@ class _LoginScreenState extends State<LoginScreen> {
                             child: Text(
                               AppStrings.forgotPassword.tr(),
                               style: TextStyle(
-                                  color: Theme.of(context).primaryColor,
-                                  fontWeight: FontWeight.w600),
+                                  color: primaryColor,
+                                  fontWeight: FontWeight.bold),
                             ),
                           ),
                         ),
-                        const SizedBox(height: 24),
-                        ElevatedButton(
-                          onPressed: authViewModel.isLoading
-                              ? null
-                              : () => _handleLogin(authViewModel),
-                          child: authViewModel.isLoading
-                              ? const SizedBox(
-                                  height: 24,
-                                  width: 24,
-                                  child: CircularProgressIndicator(
-                                    color: Colors.white,
-                                    strokeWidth: 3,
+                        
+                        const SizedBox(height: 32),
+                        
+                        // LOGIN BUTTON (Now Big and Awesome)
+                        SizedBox(
+                          width: double.infinity,
+                          height: 60,
+                          child: ElevatedButton(
+                            onPressed: authViewModel.isLoading
+                                ? null
+                                : () => _handleLogin(authViewModel),
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: primaryColor,
+                              foregroundColor: Colors.white,
+                              elevation: 8,
+                              shadowColor: primaryColor.withValues(alpha: 0.4),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(20),
+                              ),
+                            ),
+                            child: authViewModel.isLoading
+                                ? const SizedBox(
+                                    height: 24,
+                                    width: 24,
+                                    child: CircularProgressIndicator(
+                                      color: Colors.white,
+                                      strokeWidth: 3,
+                                    ),
+                                  )
+                                : Text(
+                                    AppStrings.loginTitle.tr().toUpperCase(),
+                                    style: const TextStyle(
+                                      fontSize: 18, 
+                                      fontWeight: FontWeight.w900,
+                                      letterSpacing: 1.2
+                                    ),
                                   ),
-                                )
-                              : Text(AppStrings.loginTitle.tr()),
+                          ),
                         ),
                       ],
                     ),
                   ),
-                  const SizedBox(height: 32),
+                  
+                  const SizedBox(height: 40),
+                  
+                  // Register Section
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Text(
                         AppStrings.noAccount.tr(),
-                        style: TextStyle(color: Theme.of(context).textTheme.bodyMedium?.color),
+                        style: TextStyle(color: Colors.grey[600], fontSize: 15),
                       ),
                       TextButton(
-                        onPressed: () {
-                          Navigator.pushNamed(context, AppRoutes.register);
-                        },
-                        child: Text(AppStrings.registerNow.tr(),
+                        onPressed: () => Navigator.pushNamed(context, AppRoutes.register),
+                        child: Text(
+                          AppStrings.registerNow.tr(),
                           style: TextStyle(
-                            color: Theme.of(context).primaryColor,
-                            fontWeight: FontWeight.bold,
+                            color: primaryColor,
+                            fontWeight: FontWeight.w900,
                             fontSize: 16,
                           ),
                         ),
@@ -196,6 +231,53 @@ class _LoginScreenState extends State<LoginScreen> {
     );
   }
 
+  Widget _buildTextField({
+    required TextEditingController controller,
+    required String label,
+    required String hint,
+    required IconData icon,
+    bool obscure = false,
+    TextInputType? keyboardType,
+    TextInputAction? action,
+    Widget? suffix,
+    Function(String)? onSubmitted,
+  }) {
+    return Container(
+      decoration: BoxDecoration(
+        color: Theme.of(context).cardColor,
+        borderRadius: BorderRadius.circular(20),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.03),
+            blurRadius: 15,
+            offset: const Offset(0, 5),
+          )
+        ],
+      ),
+      child: TextField(
+        controller: controller,
+        obscureText: obscure,
+        keyboardType: keyboardType,
+        textInputAction: action,
+        onSubmitted: onSubmitted,
+        style: const TextStyle(fontWeight: FontWeight.w500),
+        decoration: InputDecoration(
+          labelText: label,
+          hintText: hint,
+          prefixIcon: Icon(icon, color: Theme.of(context).primaryColor),
+          suffixIcon: suffix,
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(20),
+            borderSide: BorderSide.none,
+          ),
+          filled: true,
+          fillColor: Colors.transparent,
+          contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
+        ),
+      ),
+    );
+  }
+
   Future<void> _handleLogin(AuthViewModel authViewModel) async {
     FocusScope.of(context).unfocus();
     if (_emailController.text.isEmpty || _passwordController.text.isEmpty) {
@@ -206,7 +288,7 @@ class _LoginScreenState extends State<LoginScreen> {
     }
 
     final loading = context.read<LoadingViewModel>();
-    loading.show(message: "Logging you in...");
+    loading.show(message: "Authenticating...");
 
     bool success = await authViewModel.login(
       _emailController.text.trim(),

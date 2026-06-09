@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:smart_shop/view_models/order_view_model.dart';
 import 'package:smart_shop/view_models/auth_view_model.dart';
+import 'package:smart_shop/view_models/navigation_view_model.dart';
 import 'package:smart_shop/utils/constants/app_strings.dart';
 import 'package:smart_shop/repositories/order_repository.dart';
 import 'package:smart_shop/routes/app_routes.dart';
@@ -32,109 +33,134 @@ class _MyOrdersScreenState extends State<MyOrdersScreen> {
   @override
   Widget build(BuildContext context) {
     final orderViewModel = context.watch<OrderViewModel>();
+    final primaryColor = Theme.of(context).primaryColor;
+    final size = MediaQuery.of(context).size;
 
     return Scaffold(
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: CustomAppBar(
         title: AppStrings.myOrdersMenu.tr(),
       ),
-      body: RefreshIndicator(
-        onRefresh: () async {
-          final auth = context.read<AuthViewModel>();
-          if (auth.user != null) {
-            await context.read<OrderViewModel>().refreshUserOrders(auth.user!.uid);
-          }
-        },
-        child: orderViewModel.isLoading && orderViewModel.userOrders.isEmpty
-            ? const Center(child: CircularProgressIndicator())
-            : orderViewModel.userOrders.isEmpty
-                ? EmptyStateWidget(
-                    icon: Icons.receipt_long_outlined,
-                    title: "No Orders Yet",
-                    subtitle: "Looks like you haven't placed any orders yet. Start shopping now!",
-                    actionText: "Browse Products",
-                    onAction: () => Navigator.pushNamedAndRemoveUntil(context, AppRoutes.main, (route) => false),
-                  )
-                : ListView.builder(
-                    padding: const EdgeInsets.only(top: 8, bottom: 20),
-                    physics: const AlwaysScrollableScrollPhysics(),
-                    itemCount: orderViewModel.userOrders.length,
-                    itemBuilder: (context, index) {
-                      final order = orderViewModel.userOrders[index];
-                      return AppCard(
-                        margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                        onTap: () {
-                          Navigator.pushNamed(
-                            context,
-                            AppRoutes.orderDetails,
-                            arguments: order,
+      body: Stack(
+        children: [
+          // Decorative Background Elements
+          Positioned(
+            top: -size.height * 0.1,
+            right: -size.width * 0.2,
+            child: CircleAvatar(
+              radius: size.width * 0.4,
+              backgroundColor: primaryColor.withValues(alpha: 0.05),
+            ),
+          ),
+          Positioned(
+            bottom: -size.height * 0.1,
+            left: -size.width * 0.2,
+            child: CircleAvatar(
+              radius: size.width * 0.3,
+              backgroundColor: primaryColor.withValues(alpha: 0.05),
+            ),
+          ),
+          
+          RefreshIndicator(
+            onRefresh: () async {
+              final auth = context.read<AuthViewModel>();
+              if (auth.user != null) {
+                await context.read<OrderViewModel>().refreshUserOrders(auth.user!.uid);
+              }
+            },
+            child: orderViewModel.isLoading && orderViewModel.userOrders.isEmpty
+                ? const Center(child: CircularProgressIndicator())
+                : orderViewModel.userOrders.isEmpty
+                    ? EmptyStateWidget(
+                        icon: Icons.receipt_long_outlined,
+                        title: "No Orders Yet",
+                        subtitle: "Looks like you haven't placed any orders yet. Start shopping now!",
+                        actionText: "Browse Products",
+                        onAction: () => context.read<NavigationViewModel>().setIndex(0),
+                      )
+                    : ListView.builder(
+                        padding: const EdgeInsets.only(top: 8, bottom: 20),
+                        physics: const AlwaysScrollableScrollPhysics(),
+                        itemCount: orderViewModel.userOrders.length,
+                        itemBuilder: (context, index) {
+                          final order = orderViewModel.userOrders[index];
+                          return AppCard(
+                            margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                            onTap: () {
+                              Navigator.pushNamed(
+                                context,
+                                AppRoutes.orderDetails,
+                                arguments: order,
+                              );
+                            },
+                            child: Padding(
+                              padding: const EdgeInsets.all(16.0),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Row(
+                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      Expanded(
+                                        child: Column(
+                                          crossAxisAlignment: CrossAxisAlignment.start,
+                                          children: [
+                                            Text(
+                                              "Order ID: ${order.id}",
+                                              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
+                                              maxLines: 1,
+                                              overflow: TextOverflow.ellipsis,
+                                            ),
+                                            const SizedBox(height: 4),
+                                            Text(
+                                              DateFormat('dd MMM yyyy, hh:mm a').format(order.date),
+                                              style: const TextStyle(color: Colors.grey, fontSize: 12),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                      _buildStatusBadge(order.status),
+                                    ],
+                                  ),
+                                  const Divider(height: 24),
+                                  Row(
+                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      Text(
+                                        "${order.items.length} Items",
+                                        style: const TextStyle(fontWeight: FontWeight.w500),
+                                      ),
+                                      Text(
+                                        "Total: ৳${order.totalAmount}",
+                                        style: TextStyle(
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 16,
+                                          color: Theme.of(context).primaryColor,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                  const SizedBox(height: 12),
+                                  Row(
+                                    children: [
+                                      const Icon(Icons.info_outline, size: 16, color: Colors.blueGrey),
+                                      const SizedBox(width: 4),
+                                      const Text(
+                                        "Tap to view details & items",
+                                        style: TextStyle(fontSize: 12, color: Colors.blueGrey),
+                                      ),
+                                      const Spacer(),
+                                      Icon(Icons.arrow_forward_ios, size: 14, color: Colors.grey[400]),
+                                    ],
+                                  ),
+                                ],
+                              ),
+                            ),
                           );
                         },
-                        child: Padding(
-                          padding: const EdgeInsets.all(16.0),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                children: [
-                                  Expanded(
-                                    child: Column(
-                                      crossAxisAlignment: CrossAxisAlignment.start,
-                                      children: [
-                                        Text(
-                                          "Order ID: ${order.id}",
-                                          style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
-                                          maxLines: 1,
-                                          overflow: TextOverflow.ellipsis,
-                                        ),
-                                        const SizedBox(height: 4),
-                                        Text(
-                                          DateFormat('dd MMM yyyy, hh:mm a').format(order.date),
-                                          style: const TextStyle(color: Colors.grey, fontSize: 12),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                  _buildStatusBadge(order.status),
-                                ],
-                              ),
-                              const Divider(height: 24),
-                              Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                children: [
-                                  Text(
-                                    "${order.items.length} Items",
-                                    style: const TextStyle(fontWeight: FontWeight.w500),
-                                  ),
-                                  Text(
-                                    "Total: ৳${order.totalAmount}",
-                                    style: TextStyle(
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 16,
-                                      color: Theme.of(context).primaryColor,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                              const SizedBox(height: 12),
-                              Row(
-                                children: [
-                                  const Icon(Icons.info_outline, size: 16, color: Colors.blueGrey),
-                                  const SizedBox(width: 4),
-                                  const Text(
-                                    "Tap to view details & items",
-                                    style: TextStyle(fontSize: 12, color: Colors.blueGrey),
-                                  ),
-                                  const Spacer(),
-                                  Icon(Icons.arrow_forward_ios, size: 14, color: Colors.grey[400]),
-                                ],
-                              ),
-                            ],
-                          ),
-                        ),
-                      );
-                    },
-                  ),
+                      ),
+          ),
+        ],
       ),
     );
   }

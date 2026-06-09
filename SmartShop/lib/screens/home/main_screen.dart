@@ -7,6 +7,7 @@ import '../order/my_orders_screen.dart';
 import '../profile/profile_screen.dart';
 import '../../view_models/cart_view_model.dart';
 import '../../view_models/settings_view_model.dart';
+import '../../view_models/navigation_view_model.dart';
 import '../../utils/constants/app_strings.dart';
 
 class MainScreen extends StatefulWidget {
@@ -17,8 +18,6 @@ class MainScreen extends StatefulWidget {
 }
 
 class _MainScreenState extends State<MainScreen> {
-  int _selectedIndex = 0;
-
   final List<Widget> _screens = [
     const DashboardScreen(),
     const MyOrdersScreen(),
@@ -30,10 +29,11 @@ class _MainScreenState extends State<MainScreen> {
   Widget build(BuildContext context) {
     final settings = context.watch<SettingsViewModel>();
     final cart = context.watch<CartViewModel>();
+    final nav = context.watch<NavigationViewModel>();
 
     return Scaffold(
       body: IndexedStack(
-        index: _selectedIndex,
+        index: nav.selectedIndex,
         children: _screens,
       ),
       bottomNavigationBar: NavigationBarTheme(
@@ -57,12 +57,8 @@ class _MainScreenState extends State<MainScreen> {
           }),
         ),
         child: NavigationBar(
-          selectedIndex: _selectedIndex,
-          onDestinationSelected: (index) {
-            setState(() {
-              _selectedIndex = index;
-            });
-          },
+          selectedIndex: nav.selectedIndex,
+          onDestinationSelected: (index) => nav.setIndex(index),
           backgroundColor: Theme.of(context).cardColor,
           elevation: 10,
           height: 70,

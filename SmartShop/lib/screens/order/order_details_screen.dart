@@ -18,31 +18,57 @@ class OrderDetailsScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final settings = context.watch<SettingsViewModel>();
+    final primaryColor = settings.primaryColor;
+    final size = MediaQuery.of(context).size;
     
     return Scaffold(
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: const CustomAppBar(
         title: "Order Details",
       ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            _buildOrderInfoCard(context, settings),
-            const SizedBox(height: 20),
-            const Text(
-              "Ordered Items",
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+      body: Stack(
+        children: [
+          // Decorative Background Elements
+          Positioned(
+            top: -size.height * 0.1,
+            right: -size.width * 0.2,
+            child: CircleAvatar(
+              radius: size.width * 0.4,
+              backgroundColor: primaryColor.withValues(alpha: 0.05),
             ),
-            const SizedBox(height: 10),
-            _buildItemsList(context, settings),
-            const SizedBox(height: 20),
-            _buildPriceSummary(context, settings),
-            const SizedBox(height: 30),
-            if (order.status == 'Pending')
-              _buildCancelButton(context),
-          ],
-        ),
+          ),
+          Positioned(
+            bottom: -size.height * 0.1,
+            left: -size.width * 0.2,
+            child: CircleAvatar(
+              radius: size.width * 0.3,
+              backgroundColor: primaryColor.withValues(alpha: 0.05),
+            ),
+          ),
+          
+          SingleChildScrollView(
+            padding: const EdgeInsets.all(24.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                _buildOrderInfoCard(context, settings),
+                const SizedBox(height: 30),
+                const Text(
+                  "Ordered Items",
+                  style: TextStyle(fontSize: 22, fontWeight: FontWeight.w900, letterSpacing: -0.5),
+                ),
+                const SizedBox(height: 15),
+                _buildItemsList(context, settings),
+                const SizedBox(height: 30),
+                _buildPriceSummary(context, settings),
+                const SizedBox(height: 40),
+                if (order.status == 'Pending')
+                  _buildCancelButton(context),
+                const SizedBox(height: 50),
+              ],
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -247,17 +273,19 @@ class OrderDetailsScreen extends StatelessWidget {
   Widget _buildCancelButton(BuildContext context) {
     return SizedBox(
       width: double.infinity,
-      height: 55,
+      height: 60,
       child: ElevatedButton(
         onPressed: () => _showCancelDialog(context),
         style: ElevatedButton.styleFrom(
-          backgroundColor: Colors.red,
-          foregroundColor: Colors.white,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+          backgroundColor: Colors.white,
+          foregroundColor: Colors.red,
+          elevation: 0,
+          side: const BorderSide(color: Colors.red, width: 1.5),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
         ),
         child: const Text(
           "CANCEL ORDER",
-          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+          style: TextStyle(fontWeight: FontWeight.w900, fontSize: 18, letterSpacing: 1.2),
         ),
       ),
     );

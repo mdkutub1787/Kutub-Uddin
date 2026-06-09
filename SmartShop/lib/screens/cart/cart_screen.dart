@@ -5,6 +5,7 @@ import '../../view_models/cart_view_model.dart';
 import '../../view_models/settings_view_model.dart';
 import '../../view_models/order_view_model.dart';
 import '../../view_models/auth_view_model.dart';
+import '../../view_models/navigation_view_model.dart';
 import '../../models/order_model.dart';
 import '../../utils/constants/app_strings.dart';
 import '../../widgets/custom_app_bar.dart';
@@ -30,30 +31,53 @@ class _CartScreenState extends State<CartScreen> {
     final cart = context.watch<CartViewModel>();
     final settings = context.watch<SettingsViewModel>();
     final auth = context.watch<AuthViewModel>();
+    final size = MediaQuery.of(context).size;
 
     return Scaffold(
-      backgroundColor: Colors.grey[50],
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: CustomAppBar(title: AppStrings.myCart.tr()),
-      body: cart.items.isEmpty
-          ? EmptyStateWidget(
-              icon: Icons.shopping_cart_outlined,
-              title: AppStrings.cartEmpty.tr(),
-              subtitle: "Add some products to your cart and start shopping!",
-              actionText: "Browse Products",
-              onAction: () => Navigator.pop(context),
-            )
-          : SingleChildScrollView(
-              child: Column(
-                children: [
-                  _buildAddressSection(context, auth, settings),
-                  _buildDeliveryMethodSection(context, cart, settings),
-                  _buildItemsList(context, cart, settings),
-                  _buildCouponSection(context, cart, settings),
-                  _buildOrderSummary(context, cart, settings),
-                  const SizedBox(height: 100),
-                ],
-              ),
+      body: Stack(
+        children: [
+          // Decorative Background Elements
+          Positioned(
+            top: -size.height * 0.1,
+            right: -size.width * 0.2,
+            child: CircleAvatar(
+              radius: size.width * 0.4,
+              backgroundColor: settings.primaryColor.withValues(alpha: 0.05),
             ),
+          ),
+          Positioned(
+            bottom: -size.height * 0.1,
+            left: -size.width * 0.2,
+            child: CircleAvatar(
+              radius: size.width * 0.3,
+              backgroundColor: settings.primaryColor.withValues(alpha: 0.05),
+            ),
+          ),
+          
+          cart.items.isEmpty
+              ? EmptyStateWidget(
+                  icon: Icons.shopping_cart_outlined,
+                  title: AppStrings.cartEmpty.tr(),
+                  subtitle: "Add some products to your cart and start shopping!",
+                  actionText: "Browse Products",
+                  onAction: () => context.read<NavigationViewModel>().setIndex(0),
+                )
+              : SingleChildScrollView(
+                  child: Column(
+                    children: [
+                      _buildAddressSection(context, auth, settings),
+                      _buildDeliveryMethodSection(context, cart, settings),
+                      _buildItemsList(context, cart, settings),
+                      _buildCouponSection(context, cart, settings),
+                      _buildOrderSummary(context, cart, settings),
+                      const SizedBox(height: 120),
+                    ],
+                  ),
+                ),
+        ],
+      ),
       bottomSheet: cart.items.isEmpty ? null : _buildCheckoutButton(context, cart, settings),
     );
   }
@@ -349,9 +373,9 @@ class _CartScreenState extends State<CartScreen> {
 
   Widget _buildCheckoutButton(BuildContext context, CartViewModel cart, SettingsViewModel settings) {
     return Container(
-      padding: const EdgeInsets.all(20),
+      padding: const EdgeInsets.fromLTRB(20, 10, 20, 20),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: Theme.of(context).scaffoldBackgroundColor,
         boxShadow: [
           BoxShadow(
             color: Colors.black.withValues(alpha: 0.05),
@@ -360,18 +384,29 @@ class _CartScreenState extends State<CartScreen> {
           )
         ],
       ),
-      child: SizedBox(
-        width: double.infinity,
-        height: 55,
-        child: ElevatedButton(
-          onPressed: () => _handleCheckout(context, cart),
-          style: ElevatedButton.styleFrom(
-            backgroundColor: settings.primaryColor,
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
-          ),
-          child: const Text(
-            "PLACE ORDER",
-            style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.white),
+      child: SafeArea(
+        child: SizedBox(
+          width: double.infinity,
+          height: 60,
+          child: ElevatedButton(
+            onPressed: () => _handleCheckout(context, cart),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: settings.primaryColor,
+              foregroundColor: Colors.white,
+              elevation: 8,
+              shadowColor: settings.primaryColor.withValues(alpha: 0.4),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(20),
+              ),
+            ),
+            child: Text(
+              AppStrings.checkout.tr().toUpperCase(),
+              style: const TextStyle(
+                fontSize: 18, 
+                fontWeight: FontWeight.w900,
+                letterSpacing: 1.2
+              ),
+            ),
           ),
         ),
       ),
