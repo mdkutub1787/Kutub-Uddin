@@ -5,7 +5,13 @@ import '../view_models/category_view_model.dart';
 import '../view_models/auth_view_model.dart';
 import '../view_models/product_view_model.dart';
 import '../view_models/settings_view_model.dart';
+import '../view_models/cart_view_model.dart';
+import '../view_models/wishlist_view_model.dart';
 import '../utils/constants/app_strings.dart';
+import '../routes/app_routes.dart';
+import 'admin/admin_dashboard_screen.dart';
+
+import '../widgets/custom_app_bar.dart';
 
 class DashboardScreen extends StatelessWidget {
   const DashboardScreen({super.key});
@@ -19,7 +25,23 @@ class DashboardScreen extends StatelessWidget {
       body: CustomScrollView(
         physics: const BouncingScrollPhysics(),
         slivers: [
-          _buildAppBar(context, settings.primaryColor),
+          CustomSliverAppBar(
+            title: AppStrings.appName.tr(),
+            showCart: true,
+            backgroundColor: settings.primaryColor,
+            leading: Builder(
+              builder: (context) => IconButton(
+                icon: const Icon(Icons.menu_open_rounded, size: 28),
+                onPressed: () => Scaffold.of(context).openDrawer(),
+              ),
+            ),
+            actions: [
+              IconButton(
+                icon: const Icon(Icons.notifications_none_rounded, size: 28, color: Colors.white),
+                onPressed: () {},
+              ),
+            ],
+          ),
           SliverToBoxAdapter(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -48,33 +70,6 @@ class DashboardScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildAppBar(BuildContext context, Color primaryColor) {
-    return SliverAppBar(
-      expandedHeight: 100.0,
-      floating: true,
-      pinned: true,
-      elevation: 0,
-      backgroundColor: primaryColor,
-      centerTitle: true,
-      leading: Builder(
-        builder: (context) => IconButton(
-          icon: const Icon(Icons.menu_open_rounded, size: 28),
-          onPressed: () => Scaffold.of(context).openDrawer(),
-        ),
-      ),
-      title: Text(
-        AppStrings.appName.tr(),
-        style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Colors.white),
-      ),
-      actions: [
-        IconButton(
-          icon: const Icon(Icons.notifications_none_rounded, size: 28, color: Colors.white),
-          onPressed: () {},
-        ),
-      ],
-    );
-  }
-
   Widget _buildSearchBar(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.fromLTRB(16, 20, 16, 16),
@@ -93,6 +88,7 @@ class DashboardScreen extends StatelessWidget {
         ),
         child: TextField(
           textAlignVertical: TextAlignVertical.center,
+          onChanged: (query) => context.read<ProductViewModel>().searchProducts(query),
           decoration: InputDecoration(
             hintText: AppStrings.searchHint.tr(),
             border: InputBorder.none,
@@ -186,23 +182,39 @@ class DashboardScreen extends StatelessWidget {
             itemCount: viewModel.categories.length,
             itemBuilder: (context, index) {
               final cat = viewModel.categories[index];
-              return Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 10),
-                child: Column(
-                  children: [
-                    Container(
-                      height: 70,
-                      width: 70,
-                      decoration: BoxDecoration(
-                        color: cat.color.withOpacity(0.1),
-                        borderRadius: BorderRadius.circular(20),
+              return Consumer<ProductViewModel>(
+                builder: (context, productVM, child) {
+                  bool isSelected = productVM.selectedCategoryId == cat.id;
+                  return GestureDetector(
+                    onTap: () => productVM.filterByCategory(cat.id),
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 10),
+                      child: Column(
+                        children: [
+                          Container(
+                            height: 70,
+                            width: 70,
+                            decoration: BoxDecoration(
+                              color: isSelected ? cat.color : cat.color.withOpacity(0.1),
+                              borderRadius: BorderRadius.circular(20),
+                              border: isSelected ? Border.all(color: Colors.white, width: 2) : null,
+                            ),
+                            child: Icon(cat.icon, color: isSelected ? Colors.white : cat.color, size: 30),
+                          ),
+                          const SizedBox(height: 8),
+                          Text(
+                            cat.name,
+                            style: TextStyle(
+                              fontSize: 14,
+                              fontWeight: isSelected ? FontWeight.w900 : FontWeight.bold,
+                              color: isSelected ? cat.color : null,
+                            ),
+                          ),
+                        ],
                       ),
-                      child: Icon(cat.icon, color: cat.color, size: 30),
                     ),
-                    const SizedBox(height: 8),
-                    Text(cat.name, style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold)),
-                  ],
-                ),
+                  );
+                },
               );
             },
           ),
@@ -228,47 +240,97 @@ class DashboardScreen extends StatelessWidget {
             itemCount: viewModel.featuredProducts.length,
             itemBuilder: (context, index) {
               final product = viewModel.featuredProducts[index];
-              return Container(
-                width: 190,
-                margin: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
-                decoration: BoxDecoration(
-                  color: Theme.of(context).cardColor,
-                  borderRadius: BorderRadius.circular(24),
-                  boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 10)],
+              return GestureDetector(
+                onTap: () => Navigator.pushNamed(
+                  context,
+                  AppRoutes.productDetails,
+                  arguments: product,
                 ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Expanded(
-                      child: ClipRRect(
-                        borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
-                        child: Image.network(product.imageUrl, width: double.infinity, fit: BoxFit.cover),
-                      ),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.all(16.0),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(product.name, maxLines: 1, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
-                          const SizedBox(height: 8),
-                          Text(AppStrings.bestQuality.tr(), style: const TextStyle(color: Colors.grey, fontSize: 12)),
-                          const SizedBox(height: 8),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Text("৳${product.price}", style: TextStyle(color: Theme.of(context).primaryColor, fontWeight: FontWeight.w900, fontSize: 18)),
-                              Container(
-                                padding: const EdgeInsets.all(8),
-                                decoration: BoxDecoration(color: Theme.of(context).primaryColor, borderRadius: BorderRadius.circular(12)),
-                                child: const Icon(Icons.add, color: Colors.white, size: 20),
+                child: Container(
+                  width: 190,
+                  margin: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+                  decoration: BoxDecoration(
+                    color: Theme.of(context).cardColor,
+                    borderRadius: BorderRadius.circular(24),
+                    boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 10)],
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Expanded(
+                        child: Stack(
+                          children: [
+                            ClipRRect(
+                              borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
+                              child: Hero(
+                                tag: product.id,
+                                child: Image.network(product.imageUrl, width: double.infinity, height: double.infinity, fit: BoxFit.cover),
                               ),
-                            ],
-                          ),
-                        ],
+                            ),
+                            Positioned(
+                              top: 10,
+                              right: 10,
+                              child: Consumer<WishlistViewModel>(
+                                builder: (context, wishlistVM, child) {
+                                  final isFav = wishlistVM.isFavorite(product.id);
+                                  return GestureDetector(
+                                    onTap: () {
+                                      final auth = context.read<AuthViewModel>();
+                                      if (auth.user != null) {
+                                        wishlistVM.toggleWishlist(auth.user!.uid, product.id);
+                                      }
+                                    },
+                                    child: CircleAvatar(
+                                      backgroundColor: Colors.white.withOpacity(0.8),
+                                      radius: 15,
+                                      child: Icon(
+                                        isFav ? Icons.favorite : Icons.favorite_border,
+                                        color: isFav ? Colors.red : Colors.grey,
+                                        size: 18,
+                                      ),
+                                    ),
+                                  );
+                                },
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
-                    ),
-                  ],
+                      Padding(
+                        padding: const EdgeInsets.all(16.0),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(product.name, maxLines: 1, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+                            const SizedBox(height: 8),
+                            Text(AppStrings.bestQuality.tr(), style: const TextStyle(color: Colors.grey, fontSize: 12)),
+                            const SizedBox(height: 8),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Text("৳${product.price}", style: TextStyle(color: Theme.of(context).primaryColor, fontWeight: FontWeight.w900, fontSize: 18)),
+                                Consumer<CartViewModel>(
+                                  builder: (context, cart, child) => GestureDetector(
+                                    onTap: () {
+                                      cart.addItem(product);
+                                      ScaffoldMessenger.of(context).showSnackBar(
+                                        SnackBar(content: Text(AppStrings.addedToCart.tr()), duration: const Duration(seconds: 1)),
+                                      );
+                                    },
+                                    child: Container(
+                                      padding: const EdgeInsets.all(8),
+                                      decoration: BoxDecoration(color: Theme.of(context).primaryColor, borderRadius: BorderRadius.circular(12)),
+                                      child: const Icon(Icons.add, color: Colors.white, size: 20),
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
               );
             },
@@ -293,9 +355,24 @@ class DashboardScreen extends StatelessWidget {
           ),
           
           _buildDrawerItem(context, Icons.dashboard_rounded, AppStrings.homeMenu.tr(), () => Navigator.pop(context), isSelected: true),
-          _buildDrawerItem(context, Icons.shopping_bag_rounded, AppStrings.myOrdersMenu.tr(), () {}),
-          _buildDrawerItem(context, Icons.favorite_rounded, AppStrings.wishlistMenu.tr(), () {}),
-          _buildDrawerItem(context, Icons.person_rounded, AppStrings.profileMenu.tr(), () {}),
+          _buildDrawerItem(context, Icons.shopping_bag_rounded, AppStrings.myOrdersMenu.tr(), () {
+            Navigator.pop(context);
+            Navigator.pushNamed(context, AppRoutes.myOrders);
+          }),
+          _buildDrawerItem(context, Icons.favorite_rounded, AppStrings.wishlistMenu.tr(), () {
+            Navigator.pop(context);
+            Navigator.pushNamed(context, AppRoutes.wishlist);
+          }),
+          _buildDrawerItem(context, Icons.person_rounded, AppStrings.profileMenu.tr(), () {
+            Navigator.pop(context);
+            Navigator.pushNamed(context, AppRoutes.profile);
+          }),
+          
+          if (authViewModel.isAdmin)
+            _buildDrawerItem(context, Icons.admin_panel_settings, "Admin Panel", () {
+              Navigator.pop(context);
+              Navigator.push(context, MaterialPageRoute(builder: (_) => const AdminDashboardScreen()));
+            }),
           
           const Divider(),
           

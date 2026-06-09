@@ -6,8 +6,11 @@ import 'view_models/category_view_model.dart';
 import 'view_models/auth_view_model.dart';
 import 'view_models/product_view_model.dart';
 import 'view_models/settings_view_model.dart';
-import 'views/auth/login_screen.dart';
-import 'views/dashboard_screen.dart';
+import 'view_models/cart_view_model.dart';
+import 'view_models/order_view_model.dart';
+import 'view_models/wishlist_view_model.dart';
+import 'screens/auth/login_screen.dart';
+import 'screens/dashboard_screen.dart';
 import 'services/auth_service.dart';
 import 'routes/app_routes.dart';
 import 'utils/theme/app_theme.dart';
@@ -28,6 +31,9 @@ void main() async {
           ChangeNotifierProvider(create: (_) => CategoryViewModel()),
           ChangeNotifierProvider(create: (_) => ProductViewModel()),
           ChangeNotifierProvider(create: (_) => SettingsViewModel()),
+          ChangeNotifierProvider(create: (_) => CartViewModel()),
+          ChangeNotifierProvider(create: (_) => OrderViewModel()),
+          ChangeNotifierProvider(create: (_) => WishlistViewModel()),
         ],
         child: const MyApp(),
       ),
@@ -60,6 +66,8 @@ class MyApp extends StatelessWidget {
   }
 }
 
+import 'screens/main_screen.dart';
+
 class AuthWrapper extends StatelessWidget {
   const AuthWrapper({super.key});
 
@@ -73,7 +81,10 @@ class AuthWrapper extends StatelessWidget {
           return const Scaffold(body: Center(child: CircularProgressIndicator()));
         }
         if (snapshot.hasData) {
-          return const DashboardScreen();
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            context.read<WishlistViewModel>().init(snapshot.data!.uid);
+          });
+          return const MainScreen();
         } else {
           return const LoginScreen();
         }

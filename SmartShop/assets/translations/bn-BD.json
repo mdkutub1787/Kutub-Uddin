@@ -16,6 +16,8 @@
   "language": "ভাষা",
   "theme_color": "থিম কালার",
   "email_label": "ইমেইল",
+  "name_label": "পুরো নাম",
+  "phone_label": "ফোন নম্বর",
   "password_label": "পাসওয়ার্ড",
   "confirm_password_label": "পাসওয়ার্ড নিশ্চিত করুন",
   "forgot_password": "পাসওয়ার্ড ভুলে গেছেন?",
@@ -33,5 +35,14 @@
   "loading": "লোড হচ্ছে...",
   "no_products": "কোনো পণ্য পাওয়া যায়নি",
   "best_quality": "সেরা গুণমান",
-  "limited_offer": "সীমিত সময়ের অফার"
+  "limited_offer": "সীমিত সময়ের অফার",
+  "my_cart": "আমার কার্ট",
+  "add_to_cart": "কার্টে যোগ করুন",
+  "checkout": "চেকআউট",
+  "total": "মোট",
+  "description": "বিস্তারিত",
+  "cart_empty": "আপনার কার্ট খালি!",
+  "added_to_cart": "কার্টে যোগ করা হয়েছে",
+  "shipping_address": "শিপিং ঠিকানা",
+  "payment_methods": "পেমেন্ট পদ্ধতি"
 }

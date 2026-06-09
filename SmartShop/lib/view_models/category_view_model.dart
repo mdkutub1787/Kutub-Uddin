@@ -32,4 +32,16 @@ class CategoryViewModel extends ChangeNotifier {
       notifyListeners();
     });
   }
+
+  Future<void> addCategory(CategoryModel category) async {
+    await _repository.addCategory(category);
+  }
+
+  Future<void> updateCategory(CategoryModel category) async {
+    await _repository.updateCategory(category);
+  }
+
+  Future<void> deleteCategory(String categoryId) async {
+    await _repository.deleteCategory(categoryId);
+  }
 }

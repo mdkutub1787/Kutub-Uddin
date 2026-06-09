@@ -16,6 +16,8 @@ class AppStrings {
   static const String language = 'language';
   static const String themeColor = 'theme_color';
   static const String emailLabel = 'email_label';
+  static const String nameLabel = 'name_label';
+  static const String phoneLabel = 'phone_label';
   static String get passwordLabel => 'password_label'; // Testing mix
   static const String confirmPasswordLabel = 'confirm_password_label';
   static const String forgotPassword = 'forgot_password';
@@ -34,4 +36,13 @@ class AppStrings {
   static const String noProducts = 'no_products';
   static const String bestQuality = 'best_quality';
   static const String limitedOffer = 'limited_offer';
+  static const String myCart = 'my_cart';
+  static const String addToCart = 'add_to_cart';
+  static const String checkout = 'checkout';
+  static const String total = 'total';
+  static const String description = 'description';
+  static const String cartEmpty = 'cart_empty';
+  static const String addedToCart = 'added_to_cart';
+  static const String shippingAddress = 'shipping_address';
+  static const String paymentMethods = 'payment_methods';
 }

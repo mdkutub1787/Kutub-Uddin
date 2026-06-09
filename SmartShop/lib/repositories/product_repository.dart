@@ -19,4 +19,30 @@ class ProductRepository {
       return snapshot.docs.map((doc) => ProductModel.fromFirestore(doc)).toList();
     });
   }
+
+  Future<void> addProduct(ProductModel product) async {
+    await _productsRef.add({
+      'name': product.name,
+      'description': product.description,
+      'price': product.price,
+      'imageUrl': product.imageUrl,
+      'categoryId': product.categoryId,
+      'rating': product.rating,
+    });
+  }
+
+  Future<void> updateProduct(ProductModel product) async {
+    await _productsRef.doc(product.id).update({
+      'name': product.name,
+      'description': product.description,
+      'price': product.price,
+      'imageUrl': product.imageUrl,
+      'categoryId': product.categoryId,
+      'rating': product.rating,
+    });
+  }
+
+  Future<void> deleteProduct(String productId) async {
+    await _productsRef.doc(productId).delete();
+  }
 }

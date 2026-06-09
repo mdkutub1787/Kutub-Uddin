@@ -16,6 +16,8 @@
   "language": "Language",
   "theme_color": "Theme Color",
   "email_label": "Email",
+  "name_label": "Full Name",
+  "phone_label": "Phone Number",
   "password_label": "Password",
   "confirm_password_label": "Confirm Password",
   "forgot_password": "Forgot Password?",
@@ -33,5 +35,14 @@
   "loading": "Loading...",
   "no_products": "No products found",
   "best_quality": "Best Quality",
-  "limited_offer": "Limited Time Offer"
+  "limited_offer": "Limited Time Offer",
+  "my_cart": "My Cart",
+  "add_to_cart": "Add to Cart",
+  "checkout": "Checkout",
+  "total": "Total",
+  "description": "Description",
+  "cart_empty": "Your cart is empty!",
+  "added_to_cart": "Added to cart",
+  "shipping_address": "Shipping Address",
+  "payment_methods": "Payment Methods"
 }
