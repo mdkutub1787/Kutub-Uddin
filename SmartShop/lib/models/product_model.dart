@@ -1,4 +1,4 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_database/firebase_database.dart';
 
 class ProductModel {
   final String id;
@@ -19,10 +19,10 @@ class ProductModel {
     required this.rating,
   });
 
-  factory ProductModel.fromFirestore(DocumentSnapshot doc) {
-    Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
+  factory ProductModel.fromSnapshot(DataSnapshot snapshot) {
+    Map<dynamic, dynamic> data = snapshot.value as Map<dynamic, dynamic>;
     return ProductModel(
-      id: doc.id,
+      id: snapshot.key ?? '',
       name: data['name'] ?? '',
       description: data['description'] ?? '',
       price: (data['price'] ?? 0).toDouble(),
@@ -30,5 +30,16 @@ class ProductModel {
       categoryId: data['categoryId'] ?? '',
       rating: (data['rating'] ?? 0).toDouble(),
     );
+  }
+
+  Map<String, dynamic> toMap() {
+    return {
+      'name': name,
+      'description': description,
+      'price': price,
+      'imageUrl': imageUrl,
+      'categoryId': categoryId,
+      'rating': rating,
+    };
   }
 }

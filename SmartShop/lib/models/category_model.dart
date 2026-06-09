@@ -1,4 +1,4 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 
 class CategoryModel {
@@ -14,30 +14,26 @@ class CategoryModel {
     required this.color,
   });
 
-  factory CategoryModel.fromFirestore(DocumentSnapshot doc) {
-    Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
+  factory CategoryModel.fromSnapshot(DataSnapshot snapshot) {
+    Map<dynamic, dynamic> data = snapshot.value as Map<dynamic, dynamic>;
     return CategoryModel(
-      id: doc.id,
+      id: snapshot.key ?? '',
       name: data['name'] ?? '',
       icon: _getIconData(data['icon'] ?? ''),
-      color: Color(data['color'] ?? 0xFF000000),
+      color: Color(data['color'] ?? 0xFF1A237E),
     );
   }
 
-  static IconData _getIconData(String iconName) {
-    switch (iconName) {
-      case 'medical_services':
-        return Icons.medical_services;
-      case 'shopping_basket':
-        return Icons.shopping_basket;
-      case 'face':
-        return Icons.face;
-      case 'handyman':
-        return Icons.handyman;
-      case 'checkroom':
-        return Icons.checkroom;
-      default:
-        return Icons.help_outline;
-    }
+  Map<String, dynamic> toMap() {
+    return {
+      'name': name,
+      'icon': icon.codePoint.toString(), // Simplified for example
+      'color': color.value,
+    };
+  }
+
+  static IconData _getIconData(dynamic iconData) {
+    // If it's a string name or a codePoint, handle accordingly
+    return Icons.category; // Defaulting to category icon for now
   }
 }

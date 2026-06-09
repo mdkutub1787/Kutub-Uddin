@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
-import '../models/product_model.dart';
+import 'package:firebase_database/firebase_database.dart';
 
 class WishlistViewModel extends ChangeNotifier {
-  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  final DatabaseReference _dbRef = FirebaseDatabase.instance.ref();
   List<String> _wishlistProductIds = [];
   bool _isLoading = false;
 
@@ -12,9 +11,10 @@ class WishlistViewModel extends ChangeNotifier {
 
   void init(String userId) {
     _isLoading = true;
-    _firestore.collection('users').doc(userId).snapshots().listen((doc) {
-      if (doc.exists && doc.data()!.containsKey('wishlist')) {
-        _wishlistProductIds = List<String>.from(doc.data()!['wishlist']);
+    _dbRef.child('users').child(userId).onValue.listen((event) {
+      final data = event.snapshot.value as Map?;
+      if (data != null && data.containsKey('wishlist')) {
+        _wishlistProductIds = List<String>.from(data['wishlist']);
       } else {
         _wishlistProductIds = [];
       }
@@ -31,7 +31,7 @@ class WishlistViewModel extends ChangeNotifier {
     }
     notifyListeners();
 
-    await _firestore.collection('users').doc(userId).update({
+    await _dbRef.child('users').child(userId).update({
       'wishlist': _wishlistProductIds,
     });
   }

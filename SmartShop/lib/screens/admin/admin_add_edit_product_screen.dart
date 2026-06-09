@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:easy_localization/easy_localization.dart';
 import '../../models/product_model.dart';
+import '../../utils/constants/app_colors.dart';
 import '../../view_models/product_view_model.dart';
 import '../../view_models/category_view_model.dart';
 import '../../utils/constants/app_strings.dart';
@@ -204,7 +205,7 @@ class _AdminAddEditProductScreenState extends State<AdminAddEditProductScreen> {
       border: OutlineInputBorder(borderRadius: BorderRadius.circular(15)),
       enabledBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(15),
-        borderSide: BorderSide(color: Colors.grey.withValues(alpha: 0.3)),
+        borderSide: BorderSide(color: AppColors.slate200),
       ),
     );
   }

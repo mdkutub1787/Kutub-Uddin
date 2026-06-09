@@ -1,32 +1,39 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_database/firebase_database.dart';
 import '../models/order_model.dart';
 
 class OrderRepository {
-  final CollectionReference _ordersRef =
-      FirebaseFirestore.instance.collection('orders');
+  final DatabaseReference _dbRef = FirebaseDatabase.instance.ref().child('orders');
 
   Future<void> placeOrder(OrderModel order) async {
-    await _ordersRef.add(order.toMap());
+    await _dbRef.push().set(order.toMap());
   }
 
   Stream<List<OrderModel>> getUserOrders(String userId) {
-    return _ordersRef
-        .where('userId', isEqualTo: userId)
-        .orderBy('date', descending: true)
-        .snapshots()
-        .map((snapshot) {
-      return snapshot.docs.map((doc) => OrderModel.fromFirestore(doc)).toList();
+    return _dbRef.onValue.map((event) {
+      final Map<dynamic, dynamic>? data = event.snapshot.value as Map<dynamic, dynamic>?;
+      if (data == null) return [];
+
+      return data.entries
+          .map((entry) => OrderModel.fromSnapshot(event.snapshot.child(entry.key)))
+          .where((order) => order.userId == userId)
+          .toList()
+        ..sort((a, b) => b.date.compareTo(a.date));
     });
   }
 
-  // Admin: Get all orders
   Stream<List<OrderModel>> getAllOrders() {
-    return _ordersRef.orderBy('date', descending: true).snapshots().map((snapshot) {
-      return snapshot.docs.map((doc) => OrderModel.fromFirestore(doc)).toList();
+    return _dbRef.onValue.map((event) {
+      final Map<dynamic, dynamic>? data = event.snapshot.value as Map<dynamic, dynamic>?;
+      if (data == null) return [];
+
+      return data.entries
+          .map((entry) => OrderModel.fromSnapshot(event.snapshot.child(entry.key)))
+          .toList()
+        ..sort((a, b) => b.date.compareTo(a.date));
     });
   }
 
   Future<void> updateOrderStatus(String orderId, String status) async {
-    await _ordersRef.doc(orderId).update({'status': status});
+    await _dbRef.child(orderId).update({'status': status});
   }
 }

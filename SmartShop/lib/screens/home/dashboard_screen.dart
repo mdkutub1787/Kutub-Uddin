@@ -11,6 +11,7 @@ import 'package:smart_shop/utils/constants/app_strings.dart';
 import 'package:smart_shop/routes/app_routes.dart';
 import 'package:smart_shop/screens/admin/admin_dashboard_screen.dart';
 import 'package:smart_shop/widgets/custom_app_bar.dart';
+import 'package:smart_shop/utils/constants/app_colors.dart';
 
 class DashboardScreen extends StatelessWidget {
   const DashboardScreen({super.key});
@@ -127,7 +128,7 @@ class DashboardScreen extends StatelessWidget {
         gradient: const LinearGradient(
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
-          colors: [Color(0xFFFF8F00), Color(0xFFFF6D00)],
+          colors: [AppColors.promoStart, AppColors.promoEnd],
         ),
       ),
       child: ClipRRect(

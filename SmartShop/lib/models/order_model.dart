@@ -1,5 +1,6 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_database/firebase_database.dart';
 import 'cart_model.dart';
+import 'product_model.dart';
 
 class OrderModel {
   final String id;
@@ -7,7 +8,7 @@ class OrderModel {
   final List<CartItem> items;
   final double totalAmount;
   final DateTime date;
-  final String status; // 'Pending', 'Processing', 'Shipped', 'Delivered', 'Cancelled'
+  final String status;
   final String shippingAddress;
 
   OrderModel({
@@ -31,20 +32,20 @@ class OrderModel {
         'imageUrl': item.product.imageUrl,
       }).toList(),
       'totalAmount': totalAmount,
-      'date': Timestamp.fromDate(date),
+      'date': date.toIso8601String(),
       'status': status,
       'shippingAddress': shippingAddress,
     };
   }
 
-  factory OrderModel.fromFirestore(DocumentSnapshot doc) {
-    Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
+  factory OrderModel.fromSnapshot(DataSnapshot snapshot) {
+    Map<dynamic, dynamic> data = snapshot.value as Map<dynamic, dynamic>;
     return OrderModel(
-      id: doc.id,
+      id: snapshot.key ?? '',
       userId: data['userId'] ?? '',
-      items: [], // Simplified for now as we usually don't need full ProductModel in history
+      items: [], // Simplified
       totalAmount: (data['totalAmount'] ?? 0).toDouble(),
-      date: (data['date'] as Timestamp).toDate(),
+      date: DateTime.parse(data['date']),
       status: data['status'] ?? 'Pending',
       shippingAddress: data['shippingAddress'] ?? '',
     );

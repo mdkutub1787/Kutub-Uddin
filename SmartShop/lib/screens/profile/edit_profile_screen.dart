@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_database/firebase_database.dart';
 import '../../view_models/auth_view_model.dart';
 
 class EditProfileScreen extends StatefulWidget {
@@ -32,7 +32,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     try {
       final authVM = context.read<AuthViewModel>();
       if (authVM.user != null) {
-        await FirebaseFirestore.instance.collection('users').doc(authVM.user!.uid).update({
+        await FirebaseDatabase.instance.ref().child('users').child(authVM.user!.uid).update({
           'displayName': _nameController.text.trim(),
         });
         await authVM.refreshUserData();

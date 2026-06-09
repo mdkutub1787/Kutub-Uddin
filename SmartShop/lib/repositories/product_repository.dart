@@ -1,48 +1,40 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_database/firebase_database.dart';
 import '../models/product_model.dart';
 
 class ProductRepository {
-  final CollectionReference _productsRef =
-      FirebaseFirestore.instance.collection('products');
+  final DatabaseReference _dbRef = FirebaseDatabase.instance.ref().child('products');
 
   Stream<List<ProductModel>> getFeaturedProducts() {
-    return _productsRef.limit(10).snapshots().map((snapshot) {
-      return snapshot.docs.map((doc) => ProductModel.fromFirestore(doc)).toList();
-    });
-  }
-
-  Stream<List<ProductModel>> getProductsByCategory(String categoryId) {
-    return _productsRef
-        .where('categoryId', isEqualTo: categoryId)
-        .snapshots()
-        .map((snapshot) {
-      return snapshot.docs.map((doc) => ProductModel.fromFirestore(doc)).toList();
+    return _dbRef.onValue.map((event) {
+      final Map<dynamic, dynamic>? data = event.snapshot.value as Map<dynamic, dynamic>?;
+      if (data == null) return [];
+      
+      return data.entries.map((entry) {
+        // Since we don't have entry as DataSnapshot directly here in map
+        // We'll simulate it for our model factory or use a different approach
+        final value = Map<String, dynamic>.from(entry.value);
+        return ProductModel(
+          id: entry.key,
+          name: value['name'] ?? '',
+          description: value['description'] ?? '',
+          price: (value['price'] ?? 0).toDouble(),
+          imageUrl: value['imageUrl'] ?? '',
+          categoryId: value['categoryId'] ?? '',
+          rating: (value['rating'] ?? 0).toDouble(),
+        );
+      }).toList();
     });
   }
 
   Future<void> addProduct(ProductModel product) async {
-    await _productsRef.add({
-      'name': product.name,
-      'description': product.description,
-      'price': product.price,
-      'imageUrl': product.imageUrl,
-      'categoryId': product.categoryId,
-      'rating': product.rating,
-    });
+    await _dbRef.push().set(product.toMap());
   }
 
   Future<void> updateProduct(ProductModel product) async {
-    await _productsRef.doc(product.id).update({
-      'name': product.name,
-      'description': product.description,
-      'price': product.price,
-      'imageUrl': product.imageUrl,
-      'categoryId': product.categoryId,
-      'rating': product.rating,
-    });
+    await _dbRef.child(product.id).update(product.toMap());
   }
 
   Future<void> deleteProduct(String productId) async {
-    await _productsRef.doc(productId).delete();
+    await _dbRef.child(productId).remove();
   }
 }

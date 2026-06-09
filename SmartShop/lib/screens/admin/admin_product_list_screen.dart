@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import '../../view_models/product_view_model.dart';
 import '../../models/product_model.dart';
 import 'admin_add_edit_product_screen.dart';
+import 'package:smart_shop/utils/constants/app_colors.dart';
 
 class AdminProductListScreen extends StatelessWidget {
   const AdminProductListScreen({super.key});
@@ -55,10 +56,10 @@ class AdminProductListScreen extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               const Text("Inventory", style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold)),
-              Text("Total $count items in shop", style: const TextStyle(color: Colors.grey)),
+              Text("Total $count items in shop", style: const TextStyle(color: AppColors.slate500)),
             ],
           ),
-          const Icon(Icons.inventory_2_outlined, size: 40, color: Colors.grey),
+          const Icon(Icons.inventory_2_outlined, size: 40, color: AppColors.slate400),
         ],
       ),
     );
@@ -70,7 +71,7 @@ class AdminProductListScreen extends StatelessWidget {
       margin: const EdgeInsets.only(bottom: 12),
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(15),
-        side: BorderSide(color: Colors.grey.withValues(alpha: 0.2)),
+        side: const BorderSide(color: AppColors.slate200),
       ),
       child: Padding(
         padding: const EdgeInsets.all(12),
@@ -84,7 +85,7 @@ class AdminProductListScreen extends StatelessWidget {
                 height: 70,
                 fit: BoxFit.cover,
                 errorBuilder: (_, __, ___) => Container(
-                  width: 70, height: 70, color: Colors.grey[200],
+                  width: 70, height: 70, color: AppColors.slate100,
                   child: const Icon(Icons.image_not_supported),
                 ),
               ),
@@ -112,7 +113,7 @@ class AdminProductListScreen extends StatelessWidget {
                   Container(
                     padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
                     decoration: BoxDecoration(
-                      color: Colors.grey[200],
+                      color: AppColors.slate100,
                       borderRadius: BorderRadius.circular(5),
                     ),
                     child: Text(
@@ -126,14 +127,14 @@ class AdminProductListScreen extends StatelessWidget {
             Column(
               children: [
                 IconButton(
-                  icon: const Icon(Icons.edit_note_rounded, color: Colors.blue),
+                  icon: const Icon(Icons.edit_note_rounded, color: AppColors.info),
                   onPressed: () => Navigator.push(
                     context,
                     MaterialPageRoute(builder: (_) => AdminAddEditProductScreen(product: product)),
                   ),
                 ),
                 IconButton(
-                  icon: const Icon(Icons.delete_sweep_rounded, color: Colors.red),
+                  icon: const Icon(Icons.delete_sweep_rounded, color: AppColors.error),
                   onPressed: () => _showDeleteConfirm(context, product, vm),
                 ),
               ],
@@ -161,7 +162,7 @@ class AdminProductListScreen extends StatelessWidget {
                 const SnackBar(content: Text("Product deleted")),
               );
             },
-            style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
+            style: ElevatedButton.styleFrom(backgroundColor: AppColors.error),
             child: const Text("DELETE", style: TextStyle(color: Colors.white)),
           ),
         ],
