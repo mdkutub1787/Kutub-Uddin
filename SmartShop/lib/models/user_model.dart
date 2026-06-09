@@ -1,15 +1,17 @@
 class UserModel {
   final String uid;
   final String email;
-  final String displayName;
+  final String name; // Renamed from displayName
   final String phoneNumber;
-  final String role; // 'admin' or 'user'
+  final String address;
+  final String role;
 
   UserModel({
     required this.uid,
     required this.email,
-    required this.displayName,
+    required this.name,
     required this.phoneNumber,
+    required this.address,
     required this.role,
   });
 
@@ -17,8 +19,9 @@ class UserModel {
     return UserModel(
       uid: uid,
       email: data['email'] ?? '',
-      displayName: data['displayName'] ?? '',
+      name: data['name'] ?? (data['displayName'] ?? ''), // Support both for migration
       phoneNumber: data['phoneNumber'] ?? '',
+      address: data['address'] ?? '',
       role: data['role'] ?? 'user',
     );
   }
@@ -26,8 +29,9 @@ class UserModel {
   Map<String, dynamic> toMap() {
     return {
       'email': email,
-      'displayName': displayName,
+      'name': name,
       'phoneNumber': phoneNumber,
+      'address': address,
       'role': role,
     };
   }

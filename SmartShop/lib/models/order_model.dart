@@ -5,25 +5,32 @@ import 'product_model.dart';
 class OrderModel {
   final String id;
   final String userId;
+  final String userName;
+  final String userPhone;
+  final String userAddress;
   final List<CartItem> items;
   final double totalAmount;
   final DateTime date;
   final String status;
-  final String shippingAddress;
 
   OrderModel({
     required this.id,
     required this.userId,
+    required this.userName,
+    required this.userPhone,
+    required this.userAddress,
     required this.items,
     required this.totalAmount,
     required this.date,
     required this.status,
-    required this.shippingAddress,
   });
 
   Map<String, dynamic> toMap() {
     return {
       'userId': userId,
+      'userName': userName,
+      'userPhone': userPhone,
+      'userAddress': userAddress,
       'items': items.map((item) => {
         'productId': item.product.id,
         'productName': item.product.name,
@@ -34,20 +41,44 @@ class OrderModel {
       'totalAmount': totalAmount,
       'date': date.toIso8601String(),
       'status': status,
-      'shippingAddress': shippingAddress,
     };
   }
 
   factory OrderModel.fromSnapshot(DataSnapshot snapshot) {
-    Map<dynamic, dynamic> data = snapshot.value as Map<dynamic, dynamic>;
+    final Map<dynamic, dynamic> data = snapshot.value as Map<dynamic, dynamic>;
+    
+    List<CartItem> orderItems = [];
+    if (data['items'] != null) {
+      final itemsList = data['items'] as List<dynamic>;
+      orderItems = itemsList.map((item) {
+        final itemMap = Map<String, dynamic>.from(item as Map);
+        return CartItem(
+          product: ProductModel(
+            id: itemMap['productId'] ?? '',
+            name: itemMap['productName'] ?? 'Product',
+            description: '',
+            price: (itemMap['price'] ?? 0).toDouble(),
+            originalPrice: (itemMap['price'] ?? 0).toDouble(),
+            imageUrl: itemMap['imageUrl'] ?? '',
+            categoryId: '',
+            rating: 0,
+            stock: 0,
+          ),
+          quantity: itemMap['quantity'] ?? 1,
+        );
+      }).toList();
+    }
+
     return OrderModel(
       id: snapshot.key ?? '',
       userId: data['userId'] ?? '',
-      items: [], // Simplified
+      userName: data['userName'] ?? 'User',
+      userPhone: data['userPhone'] ?? '',
+      userAddress: data['userAddress'] ?? '',
+      items: orderItems,
       totalAmount: (data['totalAmount'] ?? 0).toDouble(),
-      date: DateTime.parse(data['date']),
+      date: data['date'] != null ? DateTime.parse(data['date']) : DateTime.now(),
       status: data['status'] ?? 'Pending',
-      shippingAddress: data['shippingAddress'] ?? '',
     );
   }
 }

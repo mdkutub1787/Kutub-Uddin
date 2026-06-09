@@ -5,6 +5,9 @@ import 'package:intl/intl.dart';
 import '../../view_models/order_view_model.dart';
 import '../../view_models/auth_view_model.dart';
 import '../../utils/constants/app_strings.dart';
+import '../../repositories/order_repository.dart';
+
+import '../../routes/app_routes.dart';
 
 class MyOrdersScreen extends StatefulWidget {
   const MyOrdersScreen({super.key});
@@ -31,46 +34,136 @@ class _MyOrdersScreenState extends State<MyOrdersScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(AppStrings.myOrdersMenu.tr()),
+        title: Text(AppStrings.myOrdersMenu.tr(), style: const TextStyle(fontWeight: FontWeight.bold)),
         centerTitle: true,
       ),
-      body: orderViewModel.isLoading
-          ? const Center(child: CircularProgressIndicator())
-          : orderViewModel.userOrders.isEmpty
-              ? const Center(child: Text("No orders yet!"))
-              : ListView.builder(
-                  itemCount: orderViewModel.userOrders.length,
-                  itemBuilder: (context, index) {
-                    final order = orderViewModel.userOrders[index];
-                    return Card(
-                      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                      child: ListTile(
-                        title: Text("Order ID: ${order.id.substring(0, 8)}..."),
-                        subtitle: Text("Total: ৳${order.totalAmount} - ${DateFormat('dd MMM yyyy').format(order.date)}"),
-                        trailing: Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                          decoration: BoxDecoration(
-                            color: _getStatusColor(order.status).withValues(alpha: 0.1),
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                          child: Text(
-                            order.status,
-                            style: TextStyle(color: _getStatusColor(order.status), fontWeight: FontWeight.bold),
+      body: RefreshIndicator(
+        onRefresh: () async {
+          final auth = context.read<AuthViewModel>();
+          if (auth.user != null) {
+            await context.read<OrderViewModel>().refreshUserOrders(auth.user!.uid);
+          }
+        },
+        child: orderViewModel.isLoading && orderViewModel.userOrders.isEmpty
+            ? const Center(child: CircularProgressIndicator())
+            : orderViewModel.userOrders.isEmpty
+                ? Center(
+                    child: ListView(
+                      physics: const AlwaysScrollableScrollPhysics(),
+                      children: const [
+                        SizedBox(height: 200),
+                        Center(child: Text("No orders yet!")),
+                      ],
+                    ),
+                  )
+                : ListView.builder(
+                    padding: const EdgeInsets.only(top: 8, bottom: 20),
+                    physics: const AlwaysScrollableScrollPhysics(),
+                    itemCount: orderViewModel.userOrders.length,
+                    itemBuilder: (context, index) {
+                      final order = orderViewModel.userOrders[index];
+                      return Card(
+                        margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                        elevation: 2,
+                        shadowColor: Colors.black12,
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
+                        child: InkWell(
+                          borderRadius: BorderRadius.circular(15),
+                          onTap: () {
+                            Navigator.pushNamed(
+                              context,
+                              AppRoutes.orderDetails,
+                              arguments: order,
+                            );
+                          },
+                          child: Padding(
+                            padding: const EdgeInsets.all(16.0),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Expanded(
+                                      child: Column(
+                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        children: [
+                                          Text(
+                                            "Order ID: ${order.id}",
+                                            style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
+                                            maxLines: 1,
+                                            overflow: TextOverflow.ellipsis,
+                                          ),
+                                          const SizedBox(height: 4),
+                                          Text(
+                                            DateFormat('dd MMM yyyy, hh:mm a').format(order.date),
+                                            style: const TextStyle(color: Colors.grey, fontSize: 12),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                    _buildStatusBadge(order.status),
+                                  ],
+                                ),
+                                const Divider(height: 24),
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Text(
+                                      "${order.items.length} Items",
+                                      style: const TextStyle(fontWeight: FontWeight.w500),
+                                    ),
+                                    Text(
+                                      "Total: ৳${order.totalAmount}",
+                                      style: TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 16,
+                                        color: Theme.of(context).primaryColor,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                const SizedBox(height: 12),
+                                Row(
+                                  children: [
+                                    const Icon(Icons.info_outline, size: 16, color: Colors.blueGrey),
+                                    const SizedBox(width: 4),
+                                    const Text(
+                                      "Tap to view details & items",
+                                      style: TextStyle(fontSize: 12, color: Colors.blueGrey),
+                                    ),
+                                    const Spacer(),
+                                    Icon(Icons.arrow_forward_ios, size: 14, color: Colors.grey[400]),
+                                  ],
+                                ),
+                              ],
+                            ),
                           ),
                         ),
-                      ),
-                    );
-                  },
-                ),
+                      );
+                    },
+                  ),
+      ),
     );
   }
 
-  Color _getStatusColor(String status) {
-    switch (status) {
-      case 'Pending': return Colors.orange;
-      case 'Delivered': return Colors.green;
-      case 'Cancelled': return Colors.red;
-      default: return Colors.blue;
-    }
+  Widget _buildStatusBadge(String status) {
+    Color color = Colors.blue;
+    if (status == 'Pending') color = Colors.orange;
+    if (status == 'Delivered') color = Colors.green;
+    if (status == 'Cancelled') color = Colors.red;
+    if (status == 'Shipped') color = Colors.purple;
+
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+      decoration: BoxDecoration(
+        color: color.withValues(alpha: 0.1),
+        borderRadius: BorderRadius.circular(10),
+      ),
+      child: Text(
+        status,
+        style: TextStyle(color: color, fontWeight: FontWeight.bold, fontSize: 12),
+      ),
+    );
   }
 }

@@ -24,107 +24,155 @@ class ProfileScreen extends StatelessWidget {
         child: Column(
           children: [
             const SizedBox(height: 20),
-            Center(
-              child: Stack(
-                children: [
-                  CircleAvatar(
-                    radius: 60,
-                    backgroundColor: settings.primaryColor.withValues(alpha: 0.1),
-                    child: Icon(Icons.person, size: 80, color: settings.primaryColor),
-                  ),
-                  Positioned(
-                    bottom: 0,
-                    right: 0,
-                    child: GestureDetector(
-                      onTap: () => Navigator.pushNamed(context, AppRoutes.editProfile),
-                      child: CircleAvatar(
-                        backgroundColor: settings.primaryColor,
-                        radius: 20,
-                        child: const Icon(Icons.edit, color: Colors.white, size: 20),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            const SizedBox(height: 20),
-            Text(
-              user?.displayName ?? "User Name",
-              style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-            ),
-            const SizedBox(height: 5),
-            Text(
-              user?.email ?? "email@example.com",
-              style: const TextStyle(fontSize: 16, color: Colors.grey),
-            ),
-            if (user?.phoneNumber != null && user!.phoneNumber.isNotEmpty)
-              Padding(
-                padding: const EdgeInsets.only(top: 5),
-                child: Text(
-                  user.phoneNumber,
-                  style: const TextStyle(fontSize: 16, color: Colors.grey),
-                ),
-              ),
-            // Show admin badge if user is admin
-            if (authViewModel.isAdmin)
-              Padding(
-                padding: const EdgeInsets.only(top: 10),
-                child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                  decoration: BoxDecoration(
-                    color: Colors.amber.withValues(alpha: 0.2),
-                    border: Border.all(color: Colors.amber),
-                    borderRadius: BorderRadius.circular(20),
-                  ),
-                  child: const Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Icon(Icons.admin_panel_settings, size: 16, color: Colors.amber),
-                      SizedBox(width: 4),
-                      Text(
-                        'Admin',
-                        style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Colors.amber),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
+            _buildProfileHeader(context, user, settings, authViewModel.isAdmin),
             const SizedBox(height: 30),
+            
             _buildProfileItem(Icons.shopping_bag_outlined, AppStrings.myOrdersMenu.tr(), () {
               Navigator.pushNamed(context, AppRoutes.myOrders);
             }),
             _buildProfileItem(Icons.favorite_outline, AppStrings.wishlistMenu.tr(), () {
               Navigator.pushNamed(context, AppRoutes.wishlist);
             }),
-            _buildProfileItem(Icons.location_on_outlined, AppStrings.shippingAddress.tr(), () {}),
-            _buildProfileItem(Icons.payment_outlined, AppStrings.paymentMethods.tr(), () {}),
-            _buildProfileItem(Icons.settings_outlined, AppStrings.settings.tr(), () {}),
-            // Show admin access request only if not admin
+            
+            const Divider(indent: 20, endIndent: 20),
+            
+            // Password Management
+            _buildProfileItem(Icons.lock_reset_rounded, "Change Password", () => _showChangePasswordDialog(context)),
+            _buildProfileItem(Icons.mail_lock_rounded, "Reset via Email", () async {
+              if (user?.email != null) {
+                await authViewModel.forgotPassword(user!.email);
+                if (context.mounted) ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Reset email sent!")));
+              }
+            }),
+
+            const Divider(indent: 20, endIndent: 20),
+            
             if (!authViewModel.isAdmin)
               _buildProfileItem(Icons.admin_panel_settings, 'Request Admin Access', () {
                 Navigator.pushNamed(context, AppRoutes.adminVerification);
               }),
-            const Divider(height: 40),
+              
             _buildProfileItem(Icons.logout, AppStrings.logout.tr(), () => authViewModel.logout(), isExit: true),
+            const SizedBox(height: 40),
           ],
         ),
       ),
     );
   }
 
+  Widget _buildProfileHeader(BuildContext context, dynamic user, SettingsViewModel settings, bool isAdmin) {
+    return Column(
+      children: [
+        Stack(
+          children: [
+            CircleAvatar(
+              radius: 60,
+              backgroundColor: settings.primaryColor.withValues(alpha: 0.1),
+              child: Icon(Icons.person, size: 80, color: settings.primaryColor),
+            ),
+            Positioned(
+              bottom: 0,
+              right: 0,
+              child: GestureDetector(
+                onTap: () => Navigator.pushNamed(context, AppRoutes.editProfile),
+                child: CircleAvatar(
+                  backgroundColor: settings.primaryColor,
+                  radius: 20,
+                  child: const Icon(Icons.edit, color: Colors.white, size: 20),
+                ),
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 15),
+        Text(user?.name ?? "User Name", style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold)),
+        Text(user?.email ?? "", style: const TextStyle(color: Colors.grey)),
+        if (isAdmin)
+          Container(
+            margin: const EdgeInsets.only(top: 8),
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+            decoration: BoxDecoration(color: Colors.amber.withValues(alpha: 0.2), borderRadius: BorderRadius.circular(20)),
+            child: const Text("ADMIN", style: TextStyle(fontSize: 10, fontWeight: FontWeight.bold, color: Colors.orange)),
+          ),
+      ],
+    );
+  }
+
   Widget _buildProfileItem(IconData icon, String title, VoidCallback onTap, {bool isExit = false}) {
     return ListTile(
       leading: Icon(icon, color: isExit ? Colors.red : null),
-      title: Text(
-        title,
-        style: TextStyle(
-          fontSize: 18,
-          fontWeight: FontWeight.w500,
-          color: isExit ? Colors.red : null,
-        ),
-      ),
-      trailing: isExit ? null : const Icon(Icons.arrow_forward_ios, size: 18),
+      title: Text(title, style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500, color: isExit ? Colors.red : null)),
+      trailing: isExit ? null : const Icon(Icons.arrow_forward_ios, size: 16),
       onTap: onTap,
+    );
+  }
+
+  void _showChangePasswordDialog(BuildContext context) {
+    final oldController = TextEditingController();
+    final newController = TextEditingController();
+    final confirmController = TextEditingController();
+    
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        title: const Text("Change Password", style: TextStyle(fontWeight: FontWeight.bold)),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            TextField(
+              controller: oldController,
+              obscureText: true,
+              decoration: const InputDecoration(labelText: "Old Password", prefixIcon: Icon(Icons.lock_outline)),
+            ),
+            const SizedBox(height: 10),
+            TextField(
+              controller: newController,
+              obscureText: true,
+              decoration: const InputDecoration(labelText: "New Password", prefixIcon: Icon(Icons.password)),
+            ),
+            const SizedBox(height: 10),
+            TextField(
+              controller: confirmController,
+              obscureText: true,
+              decoration: const InputDecoration(labelText: "Confirm New Password", prefixIcon: Icon(Icons.check_circle_outline)),
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(onPressed: () => Navigator.pop(ctx), child: const Text("Cancel")),
+          ElevatedButton(
+            onPressed: () async {
+              if (newController.text.length < 6) {
+                ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Password must be at least 6 chars")));
+                return;
+              }
+              if (newController.text != confirmController.text) {
+                ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Passwords do not match")));
+                return;
+              }
+              
+              final success = await context.read<AuthViewModel>().changePassword(
+                oldController.text, 
+                newController.text
+              );
+              
+              if (context.mounted) {
+                if (success) {
+                  Navigator.pop(ctx);
+                  ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Password updated successfully!")));
+                } else {
+                  ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                    content: Text(context.read<AuthViewModel>().error ?? "Failed to update password"),
+                    backgroundColor: Colors.red,
+                  ));
+                }
+              }
+            },
+            child: const Text("Update"),
+          )
+        ],
+      ),
     );
   }
 }

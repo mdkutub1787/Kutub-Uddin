@@ -22,7 +22,7 @@ class ProductViewModel extends ChangeNotifier {
   String get selectedCategoryId => _selectedCategoryId;
 
   ProductViewModel() {
-    fetchFeaturedProducts();
+    initStream();
   }
 
   void filterByCategory(String categoryId) {
@@ -45,10 +45,22 @@ class ProductViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
-  void fetchFeaturedProducts() {
+  Future<void> fetchFeaturedProducts() async {
     _isLoading = true;
     notifyListeners();
 
+    // In a real app with streams, the first value might take a moment
+    // For manual refresh, we can convert the stream logic or just wait for the first emission
+    final stream = _repository.getFeaturedProducts();
+    await for (final products in stream) {
+      _featuredProducts = products;
+      _isLoading = false;
+      notifyListeners();
+      break; // For manual refresh/future, we just need the latest once
+    }
+  }
+
+  void initStream() {
     _repository.getFeaturedProducts().listen((products) {
       _featuredProducts = products;
       _isLoading = false;

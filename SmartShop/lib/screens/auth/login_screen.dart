@@ -128,7 +128,14 @@ class _LoginScreenState extends State<LoginScreen> {
                         Align(
                           alignment: Alignment.centerRight,
                           child: TextButton(
-                            onPressed: () {},
+                            onPressed: () {
+                              if (_emailController.text.isEmpty) {
+                                ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Please enter your email first")));
+                                return;
+                              }
+                              authViewModel.forgotPassword(_emailController.text.trim());
+                              ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Password reset email sent!")));
+                            },
                             child: Text(
                               AppStrings.forgotPassword.tr(),
                               style: TextStyle(

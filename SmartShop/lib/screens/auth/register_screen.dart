@@ -17,6 +17,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
   final _nameController = TextEditingController();
   final _emailController = TextEditingController();
   final _phoneController = TextEditingController();
+  final _addressController = TextEditingController();
   final _passwordController = TextEditingController();
   final _confirmPasswordController = TextEditingController();
 
@@ -27,6 +28,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
     _nameController.dispose();
     _emailController.dispose();
     _phoneController.dispose();
+    _addressController.dispose();
     _passwordController.dispose();
     _confirmPasswordController.dispose();
     super.dispose();
@@ -60,60 +62,32 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     ),
                   ),
                   const SizedBox(height: 10),
-                  Text(
-                    AppStrings.registrationSubtitle.tr(),
-                    style: const TextStyle(color: Colors.grey, fontSize: 16),
+                  const Text(
+                    "Join us to start shopping!",
+                    style: TextStyle(color: Colors.grey, fontSize: 16),
                   ),
-                  const SizedBox(height: 40),
+                  const SizedBox(height: 30),
                   
-                  // Full Name Field
-                  TextField(
-                    controller: _nameController,
-                    keyboardType: TextInputType.name,
-                    autofillHints: const [AutofillHints.name],
-                    textInputAction: TextInputAction.next,
-                    decoration: InputDecoration(
-                      labelText: AppStrings.nameLabel.tr(),
-                      prefixIcon: const Icon(Icons.person_outline),
-                      border: OutlineInputBorder(borderRadius: BorderRadius.circular(15)),
-                    ),
-                  ),
-                  const SizedBox(height: 20),
+                  // Full Name
+                  _buildTextField(_nameController, AppStrings.nameLabel.tr(), Icons.person_outline, TextInputType.name),
+                  const SizedBox(height: 15),
 
-                  // Phone Number Field
-                  TextField(
-                    controller: _phoneController,
-                    keyboardType: TextInputType.phone,
-                    autofillHints: const [AutofillHints.telephoneNumber],
-                    textInputAction: TextInputAction.next,
-                    decoration: InputDecoration(
-                      labelText: AppStrings.phoneLabel.tr(),
-                      prefixIcon: const Icon(Icons.phone_android_outlined),
-                      border: OutlineInputBorder(borderRadius: BorderRadius.circular(15)),
-                    ),
-                  ),
-                  const SizedBox(height: 20),
+                  // Phone Number
+                  _buildTextField(_phoneController, AppStrings.phoneLabel.tr(), Icons.phone_android_outlined, TextInputType.phone),
+                  const SizedBox(height: 15),
 
-                  // Email Field
-                  TextField(
-                    controller: _emailController,
-                    keyboardType: TextInputType.emailAddress,
-                    autofillHints: const [AutofillHints.email],
-                    textInputAction: TextInputAction.next,
-                    decoration: InputDecoration(
-                      labelText: AppStrings.emailLabel.tr(),
-                      prefixIcon: const Icon(Icons.email_outlined),
-                      border: OutlineInputBorder(borderRadius: BorderRadius.circular(15)),
-                    ),
-                  ),
-                  const SizedBox(height: 20),
+                  // Full Address
+                  _buildTextField(_addressController, "Full Address", Icons.location_on_outlined, TextInputType.streetAddress),
+                  const SizedBox(height: 15),
 
-                  // Password Field
+                  // Email
+                  _buildTextField(_emailController, AppStrings.emailLabel.tr(), Icons.email_outlined, TextInputType.emailAddress),
+                  const SizedBox(height: 15),
+
+                  // Password
                   TextField(
                     controller: _passwordController,
                     obscureText: !_isPasswordVisible,
-                    autofillHints: const [AutofillHints.newPassword],
-                    textInputAction: TextInputAction.next,
                     decoration: InputDecoration(
                       labelText: AppStrings.passwordLabel.tr(),
                       prefixIcon: const Icon(Icons.lock_outline_rounded),
@@ -124,42 +98,36 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       border: OutlineInputBorder(borderRadius: BorderRadius.circular(15)),
                     ),
                   ),
-                  const SizedBox(height: 20),
+                  const SizedBox(height: 15),
 
-                  // Confirm Password Field
+                  // Confirm Password
                   TextField(
                     controller: _confirmPasswordController,
                     obscureText: !_isPasswordVisible,
-                    textInputAction: TextInputAction.done,
-                    onSubmitted: (_) => _handleRegister(authViewModel),
                     decoration: InputDecoration(
                       labelText: AppStrings.confirmPasswordLabel.tr(),
                       prefixIcon: const Icon(Icons.check_circle_outline_rounded),
                       border: OutlineInputBorder(borderRadius: BorderRadius.circular(15)),
                     ),
                   ),
-                  const SizedBox(height: 40),
+                  const SizedBox(height: 30),
 
                   // Register Button
                   SizedBox(
                     width: double.infinity,
+                    height: 55,
                     child: ElevatedButton(
                       onPressed: authViewModel.isLoading ? null : () => _handleRegister(authViewModel),
                       style: ElevatedButton.styleFrom(
-                        padding: const EdgeInsets.symmetric(vertical: 15),
                         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
                       ),
                       child: authViewModel.isLoading
                           ? const CircularProgressIndicator(color: Colors.white)
-                          : Text(
-                              AppStrings.registerTitle.tr(),
-                              style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.white),
-                            ),
+                          : const Text("REGISTER NOW", style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
                     ),
                   ),
                   const SizedBox(height: 20),
                   
-                  // Login Navigation
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
@@ -170,6 +138,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       ),
                     ],
                   ),
+                  const SizedBox(height: 30),
                 ],
               ),
             ),
@@ -179,10 +148,21 @@ class _RegisterScreenState extends State<RegisterScreen> {
     );
   }
 
+  Widget _buildTextField(TextEditingController controller, String label, IconData icon, TextInputType type) {
+    return TextField(
+      controller: controller,
+      keyboardType: type,
+      textInputAction: TextInputAction.next,
+      decoration: InputDecoration(
+        labelText: label,
+        prefixIcon: Icon(icon),
+        border: OutlineInputBorder(borderRadius: BorderRadius.circular(15)),
+      ),
+    );
+  }
+
   Future<void> _handleRegister(AuthViewModel authViewModel) async {
-    FocusScope.of(context).unfocus();
-    
-    if (_nameController.text.isEmpty || _phoneController.text.isEmpty || _emailController.text.isEmpty || _passwordController.text.isEmpty) {
+    if (_nameController.text.isEmpty || _phoneController.text.isEmpty || _emailController.text.isEmpty || _addressController.text.isEmpty || _passwordController.text.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Please fill all fields")));
       return;
     }
@@ -195,30 +175,17 @@ class _RegisterScreenState extends State<RegisterScreen> {
     bool success = await authViewModel.register(
       _emailController.text.trim(),
       _passwordController.text,
-      displayName: _nameController.text.trim(),
+      name: _nameController.text.trim(),
       phoneNumber: _phoneController.text.trim(),
+      address: _addressController.text.trim(),
     );
 
     if (success && mounted) {
-      TextInput.finishAutofillContext();
-      // Logout immediately so the user has to login
       await authViewModel.logout();
-      
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text("Registration Successful! Please login to continue."),
-            backgroundColor: Colors.green,
-            behavior: SnackBarBehavior.floating,
-          ),
-        );
-        // Go back to login screen
+        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Registration Successful! Please login.")));
         Navigator.pushReplacementNamed(context, AppRoutes.login);
       }
-    } else if (authViewModel.error != null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(authViewModel.error!), backgroundColor: Colors.red),
-      );
     }
   }
 }

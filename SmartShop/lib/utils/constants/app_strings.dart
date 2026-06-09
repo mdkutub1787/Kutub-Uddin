@@ -45,4 +45,9 @@ class AppStrings {
   static const String addedToCart = 'added_to_cart';
   static const String shippingAddress = 'shipping_address';
   static const String paymentMethods = 'payment_methods';
+  static const String analyticsTitle = 'analytics_title';
+  static const String totalRevenue = 'total_revenue';
+  static const String successfulOrders = 'successful_orders';
+  static const String lowStockAlert = 'low_stock_alert';
+  static const String recentPerformance = 'recent_performance';
 }

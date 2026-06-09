@@ -44,5 +44,10 @@
   "cart_empty": "Your cart is empty!",
   "added_to_cart": "Added to cart",
   "shipping_address": "Shipping Address",
-  "payment_methods": "Payment Methods"
+  "payment_methods": "Payment Methods",
+  "analytics_title": "Business Analytics",
+  "total_revenue": "Total Revenue",
+  "successful_orders": "Successful Orders",
+  "low_stock_alert": "Low Stock Alert",
+  "recent_performance": "Recent Performance"
 }

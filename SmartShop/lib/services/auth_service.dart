@@ -28,14 +28,15 @@ class AuthService {
     return await _auth.signInWithEmailAndPassword(email: email, password: password);
   }
 
-  Future<UserCredential> register(String email, String password, {String displayName = "", String phoneNumber = "", String role = 'user'}) async {
+  Future<UserCredential> register(String email, String password, {String name = "", String phoneNumber = "", String address = ""}) async {
     UserCredential credential = await _auth.createUserWithEmailAndPassword(email: email, password: password);
     
     if (credential.user != null) {
       await _dbRef.child('users').child(credential.user!.uid).set({
         'email': email,
-        'displayName': displayName,
+        'name': name,
         'phoneNumber': phoneNumber,
+        'address': address,
         'role': 'user',
         'createdAt': ServerValue.timestamp,
       });
@@ -49,7 +50,12 @@ class AuthService {
 
       if (adminDoc.exists) {
         final data = Map<dynamic, dynamic>.from(adminDoc.value as Map);
-        List<dynamic> validCodes = data['codes'] ?? [];
+        List<dynamic> validCodes = [];
+        if (data['codes'] is List) {
+          validCodes = data['codes'];
+        } else if (data['codes'] is Map) {
+          validCodes = (data['codes'] as Map).values.toList();
+        }
 
         if (validCodes.contains(adminCode)) {
           await _dbRef.child('users').child(uid).update({
@@ -64,6 +70,29 @@ class AuthService {
       print("Error verifying admin credentials: $e");
       return false;
     }
+  }
+
+  Future<bool> reauthenticate(String email, String oldPassword) async {
+    try {
+      User? user = _auth.currentUser;
+      if (user != null && user.email != null) {
+        AuthCredential credential = EmailAuthProvider.credential(email: email, password: oldPassword);
+        await user.reauthenticateWithCredential(credential);
+        return true;
+      }
+      return false;
+    } catch (e) {
+      print("Re-authentication error: $e");
+      return false;
+    }
+  }
+
+  Future<void> sendPasswordResetEmail(String email) async {
+    await _auth.sendPasswordResetEmail(email: email);
+  }
+
+  Future<void> updatePassword(String newPassword) async {
+    await _auth.currentUser?.updatePassword(newPassword);
   }
 
   Future<void> signOut() async {

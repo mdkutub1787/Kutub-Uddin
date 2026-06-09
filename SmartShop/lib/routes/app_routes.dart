@@ -7,10 +7,12 @@ import '../screens/product/product_details_screen.dart';
 import '../screens/cart/cart_screen.dart';
 import '../screens/profile/profile_screen.dart';
 import '../screens/order/my_orders_screen.dart';
+import '../screens/order/order_details_screen.dart';
 import '../screens/wishlist/wishlist_screen.dart';
 import '../screens/profile/edit_profile_screen.dart';
 import '../screens/profile/admin_verification_screen.dart';
 import '../models/product_model.dart';
+import '../models/order_model.dart';
 
 class AppRoutes {
   static const String login = '/login';
@@ -18,6 +20,7 @@ class AppRoutes {
   static const String main = '/main';
   static const String dashboard = '/dashboard';
   static const String productDetails = '/product-details';
+  static const String orderDetails = '/order-details';
   static const String cart = '/cart';
   static const String profile = '/profile';
   static const String myOrders = '/my-orders';
@@ -51,6 +54,11 @@ class AppRoutes {
         final product = settings.arguments as ProductModel;
         return MaterialPageRoute(
           builder: (_) => ProductDetailsScreen(product: product),
+        );
+      case orderDetails:
+        final order = settings.arguments as OrderModel;
+        return MaterialPageRoute(
+          builder: (_) => OrderDetailsScreen(order: order),
         );
       default:
         return MaterialPageRoute(

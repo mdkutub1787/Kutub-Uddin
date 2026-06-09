@@ -23,7 +23,11 @@ class ProductDetailsScreen extends StatelessWidget {
             flexibleSpace: FlexibleSpaceBar(
               background: Hero(
                 tag: product.id,
-                child: Image.network(product.imageUrl, fit: BoxFit.cover),
+                child: Image.network(
+                  product.imageUrl, 
+                  fit: BoxFit.cover,
+                  errorBuilder: (_, __, ___) => Container(color: Colors.grey[200], child: const Icon(Icons.image_not_supported, size: 50)),
+                ),
               ),
             ),
             leading: Padding(
@@ -43,20 +47,49 @@ class ProductDetailsScreen extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
+                  if (product.hasDiscount)
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                      margin: const EdgeInsets.only(bottom: 10),
+                      decoration: BoxDecoration(color: Colors.red, borderRadius: BorderRadius.circular(10)),
+                      child: Text(
+                        product.discountType == 'percentage' 
+                            ? "${product.discountValue.toInt()}% DISCOUNT" 
+                            : "৳${product.discountValue.toInt()} DISCOUNT",
+                        style: const TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.bold),
+                      ),
+                    ),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(
-                        product.name,
-                        style: const TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
-                      ),
-                      Text(
-                        "৳${product.price}",
-                        style: TextStyle(
-                          fontSize: 24,
-                          fontWeight: FontWeight.w900,
-                          color: Theme.of(context).primaryColor,
+                      Expanded(
+                        child: Text(
+                          product.name,
+                          style: const TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
                         ),
+                      ),
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.end,
+                        children: [
+                          Text(
+                            "৳${product.price}",
+                            style: TextStyle(
+                              fontSize: 24,
+                              fontWeight: FontWeight.w900,
+                              color: Theme.of(context).primaryColor,
+                            ),
+                          ),
+                          if (product.hasDiscount)
+                            Text(
+                              "৳${product.originalPrice}",
+                              style: const TextStyle(
+                                fontSize: 16,
+                                color: Colors.grey,
+                                decoration: TextDecoration.lineThrough,
+                              ),
+                            ),
+                        ],
                       ),
                     ],
                   ),
@@ -68,6 +101,11 @@ class ProductDetailsScreen extends StatelessWidget {
                       Text(
                         "${product.rating} (120 reviews)",
                         style: const TextStyle(color: Colors.grey, fontWeight: FontWeight.bold),
+                      ),
+                      const Spacer(),
+                      Text(
+                        product.stock > 0 ? "In Stock: ${product.stock}" : "Out of Stock",
+                        style: TextStyle(color: product.stock > 0 ? Colors.green : Colors.red, fontWeight: FontWeight.bold),
                       ),
                     ],
                   ),
@@ -81,6 +119,7 @@ class ProductDetailsScreen extends StatelessWidget {
                     product.description,
                     style: const TextStyle(fontSize: 16, color: Colors.grey, height: 1.5),
                   ),
+                  const SizedBox(height: 100),
                 ],
               ),
             ),
@@ -136,18 +175,25 @@ class ProductDetailsScreen extends StatelessWidget {
           const SizedBox(width: 20),
           Expanded(
             child: ElevatedButton(
-              onPressed: () {
-                cart.addItem(product);
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(content: Text(AppStrings.addedToCart.tr()), duration: const Duration(seconds: 1)),
-                );
-              },
+              onPressed: product.stock > 0 ? () {
+                bool added = cart.addItem(product);
+                if (added) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text(AppStrings.addedToCart.tr()), duration: const Duration(seconds: 1), behavior: SnackBarBehavior.floating),
+                  );
+                } else {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text("Out of stock!"), backgroundColor: Colors.red, behavior: SnackBarBehavior.floating),
+                  );
+                }
+              } : null,
               style: ElevatedButton.styleFrom(
                 padding: const EdgeInsets.symmetric(vertical: 15),
+                backgroundColor: product.stock > 0 ? Theme.of(context).primaryColor : Colors.grey,
                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
               ),
               child: Text(
-                AppStrings.addToCart.tr(),
+                product.stock > 0 ? AppStrings.addToCart.tr() : "Out of Stock",
                 style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
               ),
             ),

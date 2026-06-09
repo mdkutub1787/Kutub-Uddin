@@ -17,8 +17,14 @@ class CartViewModel extends ChangeNotifier {
     return total;
   }
 
-  void addItem(ProductModel product) {
+  /// Adds an item to the cart if stock allows.
+  /// Returns [true] if successfully added, [false] if out of stock.
+  bool addItem(ProductModel product) {
     if (_items.containsKey(product.id)) {
+      int currentQty = _items[product.id]!.quantity;
+      if (currentQty + 1 > product.stock) {
+        return false; // Not enough stock
+      }
       _items.update(
         product.id,
         (existingItem) => CartItem(
@@ -27,12 +33,16 @@ class CartViewModel extends ChangeNotifier {
         ),
       );
     } else {
+      if (product.stock < 1) {
+        return false; // Out of stock
+      }
       _items.putIfAbsent(
         product.id,
         () => CartItem(product: product),
       );
     }
     notifyListeners();
+    return true;
   }
 
   void removeItem(String productId) {

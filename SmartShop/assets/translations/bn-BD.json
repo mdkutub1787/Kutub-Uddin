@@ -44,5 +44,10 @@
   "cart_empty": "আপনার কার্ট খালি!",
   "added_to_cart": "কার্টে যোগ করা হয়েছে",
   "shipping_address": "শিপিং ঠিকানা",
-  "payment_methods": "পেমেন্ট পদ্ধতি"
+  "payment_methods": "পেমেন্ট পদ্ধতি",
+  "analytics_title": "ব্যবসায়িক বিশ্লেষণ",
+  "total_revenue": "মোট আয়",
+  "successful_orders": "সফল অর্ডার",
+  "low_stock_alert": "স্টক কম সতর্কতা",
+  "recent_performance": "সাম্প্রতিক পারফরম্যান্স"
 }

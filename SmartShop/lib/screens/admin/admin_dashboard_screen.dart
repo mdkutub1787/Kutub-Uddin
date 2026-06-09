@@ -4,6 +4,7 @@ import '../../view_models/settings_view_model.dart';
 import 'admin_product_list_screen.dart';
 import 'admin_category_list_screen.dart';
 import 'admin_order_list_screen.dart';
+import 'admin_analytics_screen.dart';
 
 class AdminDashboardScreen extends StatelessWidget {
   const AdminDashboardScreen({super.key});
@@ -16,12 +17,6 @@ class AdminDashboardScreen extends StatelessWidget {
       appBar: AppBar(
         title: const Text("Control Panel"),
         centerTitle: true,
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.settings_outlined),
-            onPressed: () {},
-          )
-        ],
       ),
       body: SingleChildScrollView(
         child: Column(
@@ -66,7 +61,7 @@ class AdminDashboardScreen extends StatelessWidget {
                     Icons.analytics_rounded,
                     Colors.purple,
                     "View reports",
-                    () {},
+                    () => Navigator.push(context, MaterialPageRoute(builder: (_) => const AdminAnalyticsScreen())),
                   ),
                 ],
               ),

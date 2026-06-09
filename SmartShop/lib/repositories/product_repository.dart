@@ -10,24 +10,15 @@ class ProductRepository {
       if (data == null) return [];
       
       return data.entries.map((entry) {
-        // Since we don't have entry as DataSnapshot directly here in map
-        // We'll simulate it for our model factory or use a different approach
-        final value = Map<String, dynamic>.from(entry.value);
-        return ProductModel(
-          id: entry.key,
-          name: value['name'] ?? '',
-          description: value['description'] ?? '',
-          price: (value['price'] ?? 0).toDouble(),
-          imageUrl: value['imageUrl'] ?? '',
-          categoryId: value['categoryId'] ?? '',
-          rating: (value['rating'] ?? 0).toDouble(),
-        );
+        return ProductModel.fromSnapshot(event.snapshot.child(entry.key));
       }).toList();
     });
   }
 
   Future<void> addProduct(ProductModel product) async {
-    await _dbRef.push().set(product.toMap());
+    // Generate numeric ID based on timestamp
+    String numericId = DateTime.now().millisecondsSinceEpoch.toString();
+    await _dbRef.child(numericId).set(product.toMap());
   }
 
   Future<void> updateProduct(ProductModel product) async {

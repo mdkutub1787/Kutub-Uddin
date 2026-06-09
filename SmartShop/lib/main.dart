@@ -10,7 +10,6 @@ import 'view_models/cart_view_model.dart';
 import 'view_models/order_view_model.dart';
 import 'view_models/wishlist_view_model.dart';
 import 'screens/auth/login_screen.dart';
-import 'screens/home/dashboard_screen.dart';
 import 'services/auth_service.dart';
 import 'routes/app_routes.dart';
 import 'utils/theme/app_theme.dart';

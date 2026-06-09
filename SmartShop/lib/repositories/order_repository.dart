@@ -2,14 +2,35 @@ import 'package:firebase_database/firebase_database.dart';
 import '../models/order_model.dart';
 
 class OrderRepository {
-  final DatabaseReference _dbRef = FirebaseDatabase.instance.ref().child('orders');
+  final DatabaseReference _dbRef = FirebaseDatabase.instance.ref();
 
-  Future<void> placeOrder(OrderModel order) async {
-    await _dbRef.push().set(order.toMap());
+  Future<bool> placeOrder(OrderModel order) async {
+    try {
+      // Generate numeric ID for Order
+      String orderId = DateTime.now().millisecondsSinceEpoch.toString();
+      await _dbRef.child('orders').child(orderId).set(order.toMap());
+
+      // Adjust stock
+      for (var item in order.items) {
+        final productRef = _dbRef.child('products').child(item.product.id);
+        await productRef.runTransaction((Object? post) {
+          if (post == null) return Transaction.abort();
+          Map<String, dynamic> product = Map<String, dynamic>.from(post as Map);
+          int currentStock = product['stock'] ?? 0;
+          if (currentStock < item.quantity) return Transaction.abort();
+          product['stock'] = currentStock - item.quantity;
+          return Transaction.success(product);
+        });
+      }
+      return true;
+    } catch (e) {
+      print("Error placing order: $e");
+      return false;
+    }
   }
 
   Stream<List<OrderModel>> getUserOrders(String userId) {
-    return _dbRef.onValue.map((event) {
+    return _dbRef.child('orders').onValue.map((event) {
       final Map<dynamic, dynamic>? data = event.snapshot.value as Map<dynamic, dynamic>?;
       if (data == null) return [];
 
@@ -22,7 +43,7 @@ class OrderRepository {
   }
 
   Stream<List<OrderModel>> getAllOrders() {
-    return _dbRef.onValue.map((event) {
+    return _dbRef.child('orders').onValue.map((event) {
       final Map<dynamic, dynamic>? data = event.snapshot.value as Map<dynamic, dynamic>?;
       if (data == null) return [];
 
@@ -34,6 +55,36 @@ class OrderRepository {
   }
 
   Future<void> updateOrderStatus(String orderId, String status) async {
-    await _dbRef.child(orderId).update({'status': status});
+    await _dbRef.child('orders').child(orderId).update({'status': status});
+  }
+
+  Future<bool> cancelOrder(OrderModel order) async {
+    try {
+      // 1. Double check status is still Pending in DB
+      final snapshot = await _dbRef.child('orders').child(order.id).get();
+      if (!snapshot.exists) return false;
+      
+      final data = snapshot.value as Map<dynamic, dynamic>;
+      if (data['status'] != 'Pending') return false;
+
+      // 2. Update status to Cancelled
+      await _dbRef.child('orders').child(order.id).update({'status': 'Cancelled'});
+
+      // 3. Restore stock
+      for (var item in order.items) {
+        final productRef = _dbRef.child('products').child(item.product.id);
+        await productRef.runTransaction((Object? post) {
+          if (post == null) return Transaction.abort();
+          Map<String, dynamic> product = Map<String, dynamic>.from(post as Map);
+          int currentStock = product['stock'] ?? 0;
+          product['stock'] = currentStock + item.quantity;
+          return Transaction.success(product);
+        });
+      }
+      return true;
+    } catch (e) {
+      print("Error cancelling order: $e");
+      return false;
+    }
   }
 }

@@ -25,6 +25,18 @@ class OrderViewModel extends ChangeNotifier {
     }
   }
 
+  Future<void> refreshUserOrders(String userId) async {
+    _isLoading = true;
+    notifyListeners();
+    final stream = _repository.getUserOrders(userId);
+    await for (final orders in stream) {
+      _userOrders = orders;
+      _isLoading = false;
+      notifyListeners();
+      break;
+    }
+  }
+
   void fetchUserOrders(String userId) {
     _isLoading = true;
     _repository.getUserOrders(userId).listen((orders) {

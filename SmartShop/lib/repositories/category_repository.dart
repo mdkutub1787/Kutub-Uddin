@@ -13,9 +13,9 @@ class CategoryRepository {
       return data.entries.map((entry) {
         final value = Map<String, dynamic>.from(entry.value);
         return CategoryModel(
-          id: entry.key,
+          id: entry.key.toString(), // ID will be numeric string
           name: value['name'] ?? '',
-          icon: Icons.category, // Simplified
+          icon: Icons.category,
           color: Color(value['color'] ?? 0xFF1A237E),
         );
       }).toList();
@@ -23,7 +23,9 @@ class CategoryRepository {
   }
 
   Future<void> addCategory(CategoryModel category) async {
-    await _dbRef.push().set({
+    // Generate numeric ID based on timestamp
+    String numericId = DateTime.now().millisecondsSinceEpoch.toString();
+    await _dbRef.child(numericId).set({
       'name': category.name,
       'icon': 'category',
       'color': category.color.value,
