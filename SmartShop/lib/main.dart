@@ -1,3 +1,4 @@
+import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:provider/provider.dart';
@@ -13,12 +14,11 @@ import 'view_models/loading_view_model.dart';
 import 'view_models/navigation_view_model.dart';
 import 'view_models/notification_view_model.dart';
 import 'view_models/support_view_model.dart';
-import 'screens/auth/login_screen.dart';
+import 'view_models/user_view_model.dart';
+import 'view_models/activity_log_view_model.dart';
 import 'screens/splash/splash_screen.dart';
-import 'services/auth_service.dart';
 import 'routes/app_routes.dart';
 import 'utils/theme/app_theme.dart';
-import 'screens/home/main_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -43,6 +43,8 @@ void main() async {
           ChangeNotifierProvider(create: (_) => NavigationViewModel()),
           ChangeNotifierProvider(create: (_) => NotificationViewModel()),
           ChangeNotifierProvider(create: (_) => SupportViewModel()),
+          ChangeNotifierProvider(create: (_) => UserViewModel()),
+          ChangeNotifierProvider(create: (_) => ActivityLogViewModel()),
         ],
         child: const MyApp(),
       ),
@@ -77,37 +79,46 @@ class MyApp extends StatelessWidget {
           children: [
             child!,
             if (loading.isLoading)
-              Container(
-                color: Colors.black54,
-                child: Center(
-                  child: Container(
-                    padding: const EdgeInsets.all(32),
-                    decoration: BoxDecoration(
-                      color: Theme.of(context).cardColor,
-                      borderRadius: BorderRadius.circular(20),
-                    ),
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        CircularProgressIndicator(
-                          color: settings.primaryColor,
-                          strokeWidth: 4,
-                        ),
-                        if (loading.message.isNotEmpty) ...[
-                          const SizedBox(height: 16),
-                          Material(
-                            color: Colors.transparent,
-                            child: Text(
-                              loading.message,
-                              style: TextStyle(
-                                color: Theme.of(context).textTheme.bodyLarge?.color,
-                                fontWeight: FontWeight.bold,
-                                fontSize: 16,
+              BackdropFilter(
+                filter: ImageFilter.blur(sigmaX: 4, sigmaY: 4),
+                child: Container(
+                  color: Colors.black26,
+                  child: Center(
+                    child: Container(
+                      padding: const EdgeInsets.all(32),
+                      decoration: BoxDecoration(
+                        color: Theme.of(context).cardColor,
+                        borderRadius: BorderRadius.circular(20),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withValues(alpha: 0.1),
+                            blurRadius: 20,
+                          )
+                        ],
+                      ),
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          CircularProgressIndicator(
+                            color: settings.primaryColor,
+                            strokeWidth: 4,
+                          ),
+                          if (loading.message.isNotEmpty) ...[
+                            const SizedBox(height: 20),
+                            Material(
+                              color: Colors.transparent,
+                              child: Text(
+                                loading.message,
+                                style: TextStyle(
+                                  color: Theme.of(context).textTheme.bodyLarge?.color,
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 16,
+                                ),
                               ),
                             ),
-                          ),
+                          ],
                         ],
-                      ],
+                      ),
                     ),
                   ),
                 ),

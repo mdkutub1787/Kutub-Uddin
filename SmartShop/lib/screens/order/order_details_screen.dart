@@ -3,7 +3,6 @@ import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import '../../models/order_model.dart';
 import '../../view_models/settings_view_model.dart';
-import '../../view_models/order_view_model.dart';
 import '../../repositories/order_repository.dart';
 
 import 'package:smart_shop/utils/constants/app_strings.dart';
@@ -20,7 +19,7 @@ class OrderDetailsScreen extends StatelessWidget {
     final settings = context.watch<SettingsViewModel>();
     final primaryColor = settings.primaryColor;
     final size = MediaQuery.of(context).size;
-    
+
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: CustomAppBar(
@@ -45,26 +44,26 @@ class OrderDetailsScreen extends StatelessWidget {
               backgroundColor: primaryColor.withValues(alpha: 0.05),
             ),
           ),
-          
+
           SingleChildScrollView(
-            padding: const EdgeInsets.all(24.0),
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 _buildOrderInfoCard(context, settings),
-                const SizedBox(height: 30),
+                const SizedBox(height: 20),
                 Text(
                   AppStrings.orderedItems.tr(),
-                  style: const TextStyle(fontSize: 22, fontWeight: FontWeight.w900, letterSpacing: -0.5),
+                  style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w900, letterSpacing: -0.5),
                 ),
-                const SizedBox(height: 15),
+                const SizedBox(height: 10),
                 _buildItemsList(context, settings),
-                const SizedBox(height: 30),
+                const SizedBox(height: 20),
                 _buildPriceSummary(context, settings),
-                const SizedBox(height: 40),
+                const SizedBox(height: 30),
                 if (order.status == 'Pending')
                   _buildCancelButton(context),
-                const SizedBox(height: 50),
+                const SizedBox(height: 40),
               ],
             ),
           ),
@@ -76,41 +75,42 @@ class OrderDetailsScreen extends StatelessWidget {
   Widget _buildOrderInfoCard(BuildContext context, SettingsViewModel settings) {
     return Card(
       elevation: 0,
+      margin: EdgeInsets.zero,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(15),
-        side: BorderSide(color: Colors.grey.withValues(alpha: 0.2)),
+        side: BorderSide(color: Colors.grey.withValues(alpha: 0.1)),
       ),
       child: Padding(
-        padding: const EdgeInsets.all(16.0),
+        padding: const EdgeInsets.all(12.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text(AppStrings.status.tr(), style: const TextStyle(color: Colors.grey)),
+                Text(AppStrings.status.tr(), style: const TextStyle(color: Colors.grey, fontSize: 13)),
                 _buildStatusBadge(order.status),
               ],
             ),
-            const Divider(height: 24),
-            Text(AppStrings.orderId.tr(), style: const TextStyle(color: Colors.grey)),
-            const SizedBox(height: 4),
+            const Divider(height: 16),
+            Text(AppStrings.orderId.tr(), style: const TextStyle(color: Colors.grey, fontSize: 13)),
+            const SizedBox(height: 2),
             SelectableText(
               order.id,
-              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
             ),
-            const SizedBox(height: 16),
+            const SizedBox(height: 12),
             Row(
               children: [
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(AppStrings.date.tr(), style: const TextStyle(color: Colors.grey)),
-                      const SizedBox(height: 4),
+                      Text(AppStrings.date.tr(), style: const TextStyle(color: Colors.grey, fontSize: 13)),
+                      const SizedBox(height: 2),
                       Text(
                         DateFormat('dd MMM yyyy, hh:mm a').format(order.date),
-                        style: const TextStyle(fontWeight: FontWeight.w600),
+                        style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 14),
                       ),
                     ],
                   ),
@@ -119,26 +119,26 @@ class OrderDetailsScreen extends StatelessWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(AppStrings.paymentMethod.tr(), style: const TextStyle(color: Colors.grey)),
-                      const SizedBox(height: 4),
-                      Text(AppStrings.cashOnDelivery.tr(), style: const TextStyle(fontWeight: FontWeight.w600)),
+                      Text(AppStrings.paymentMethod.tr(), style: const TextStyle(color: Colors.grey, fontSize: 13)),
+                      const SizedBox(height: 2),
+                      Text(AppStrings.cashOnDelivery.tr(), style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 14)),
                     ],
                   ),
                 ),
               ],
             ),
-            const Divider(height: 32),
-            Text(AppStrings.shippingAddress.tr(), style: const TextStyle(color: Colors.grey)),
-            const SizedBox(height: 8),
+            const Divider(height: 24),
+            Text(AppStrings.shippingAddress.tr(), style: const TextStyle(color: Colors.grey, fontSize: 13)),
+            const SizedBox(height: 4),
             Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Icon(Icons.location_on_outlined, size: 20, color: settings.primaryColor),
+                Icon(Icons.location_on_outlined, size: 18, color: settings.primaryColor),
                 const SizedBox(width: 8),
                 Expanded(
                   child: Text(
                     order.userAddress,
-                    style: const TextStyle(fontWeight: FontWeight.w500),
+                    style: const TextStyle(fontWeight: FontWeight.w500, fontSize: 14),
                   ),
                 ),
               ],
@@ -157,8 +157,8 @@ class OrderDetailsScreen extends StatelessWidget {
       itemBuilder: (context, index) {
         final item = order.items[index];
         return Container(
-          margin: const EdgeInsets.only(bottom: 12),
-          padding: const EdgeInsets.all(12),
+          margin: const EdgeInsets.only(bottom: 8),
+          padding: const EdgeInsets.all(10),
           decoration: BoxDecoration(
             color: Theme.of(context).cardColor,
             borderRadius: BorderRadius.circular(12),
@@ -170,14 +170,14 @@ class OrderDetailsScreen extends StatelessWidget {
                 borderRadius: BorderRadius.circular(8),
                 child: Image.network(
                   item.product.imageUrl,
-                  width: 60,
-                  height: 60,
+                  width: 50,
+                  height: 50,
                   fit: BoxFit.cover,
                   errorBuilder: (context, error, stackTrace) => Container(
-                    width: 60,
-                    height: 60,
+                    width: 50,
+                    height: 50,
                     color: Colors.grey[200],
-                    child: const Icon(Icons.image_not_supported),
+                    child: const Icon(Icons.image_not_supported, size: 20),
                   ),
                 ),
               ),
@@ -188,21 +188,21 @@ class OrderDetailsScreen extends StatelessWidget {
                   children: [
                     Text(
                       item.product.name,
-                      style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
+                      style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                     ),
-                    const SizedBox(height: 4),
+                    const SizedBox(height: 2),
                     Text(
                       "${AppStrings.currency.tr()} ${NumberFormat('#,##,###').format(item.product.price.toInt())} x ${item.quantity}",
-                      style: const TextStyle(color: Colors.grey, fontWeight: FontWeight.w500),
+                      style: const TextStyle(color: Colors.grey, fontWeight: FontWeight.w500, fontSize: 12),
                     ),
                   ],
                 ),
               ),
               Text(
                 "${AppStrings.currency.tr()} ${NumberFormat('#,##,###').format((item.product.price * item.quantity).toInt())}",
-                style: TextStyle(fontWeight: FontWeight.w900, fontSize: 16, color: settings.primaryColor),
+                style: TextStyle(fontWeight: FontWeight.w900, fontSize: 15, color: settings.primaryColor),
               ),
             ],
           ),
@@ -213,9 +213,9 @@ class OrderDetailsScreen extends StatelessWidget {
 
   Widget _buildPriceSummary(BuildContext context, SettingsViewModel settings) {
     final double subtotal = order.totalAmount - order.deliveryFee;
-    
+
     return Container(
-      padding: const EdgeInsets.all(20),
+      padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: settings.primaryColor.withValues(alpha: 0.05),
         borderRadius: BorderRadius.circular(15),
@@ -225,37 +225,37 @@ class OrderDetailsScreen extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text(AppStrings.subtotal.tr(), style: const TextStyle(fontSize: 16)),
-              Text("${AppStrings.currency.tr()} ${NumberFormat('#,##,###').format(subtotal.toInt())}", style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+              Text(AppStrings.subtotal.tr(), style: const TextStyle(fontSize: 14)),
+              Text("${AppStrings.currency.tr()} ${NumberFormat('#,##,###').format(subtotal.toInt())}", style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold)),
             ],
           ),
-          const SizedBox(height: 12),
+          const SizedBox(height: 8),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text(AppStrings.deliveryFee.tr(), style: const TextStyle(fontSize: 16)),
-              Text("${AppStrings.currency.tr()} ${NumberFormat('#,##,###').format(order.deliveryFee.toInt())}", style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+              Text(AppStrings.deliveryFee.tr(), style: const TextStyle(fontSize: 14)),
+              Text("${AppStrings.currency.tr()} ${NumberFormat('#,##,###').format(order.deliveryFee.toInt())}", style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold)),
             ],
           ),
-          const Divider(height: 32),
+          const Divider(height: 24),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
                 AppStrings.totalAmount.tr(),
-                style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
               ),
               Text.rich(
                 TextSpan(
                   children: [
                     TextSpan(
                       text: "${AppStrings.currency.tr()} ",
-                      style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: settings.primaryColor),
+                      style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: settings.primaryColor),
                     ),
                     TextSpan(
                       text: NumberFormat('#,##,###').format(order.totalAmount.toInt()),
                       style: TextStyle(
-                        fontSize: 24,
+                        fontSize: 20,
                         fontWeight: FontWeight.w900,
                         color: settings.primaryColor,
                       ),
@@ -273,19 +273,19 @@ class OrderDetailsScreen extends StatelessWidget {
   Widget _buildCancelButton(BuildContext context) {
     return SizedBox(
       width: double.infinity,
-      height: 60,
+      height: 55,
       child: ElevatedButton(
         onPressed: () => _showCancelDialog(context),
         style: ElevatedButton.styleFrom(
           backgroundColor: Colors.white,
           foregroundColor: Colors.red,
           elevation: 0,
-          side: const BorderSide(color: Colors.red, width: 1.5),
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+          side: const BorderSide(color: Colors.red, width: 1.2),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
         ),
         child: Text(
           AppStrings.cancelOrder.tr(),
-          style: const TextStyle(fontWeight: FontWeight.w900, fontSize: 18, letterSpacing: 1.2),
+          style: const TextStyle(fontWeight: FontWeight.w900, fontSize: 16, letterSpacing: 1.1),
         ),
       ),
     );

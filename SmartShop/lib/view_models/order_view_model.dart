@@ -5,10 +5,21 @@ import '../repositories/order_repository.dart';
 class OrderViewModel extends ChangeNotifier {
   final OrderRepository _repository = OrderRepository();
   List<OrderModel> _userOrders = [];
+  List<OrderModel> _allOrders = [];
   bool _isLoading = false;
 
   List<OrderModel> get userOrders => _userOrders;
+  List<OrderModel> get allOrders => _allOrders;
   bool get isLoading => _isLoading;
+
+  void fetchAllOrders() {
+    _isLoading = true;
+    _repository.getAllOrders().listen((orders) {
+      _allOrders = orders;
+      _isLoading = false;
+      notifyListeners();
+    });
+  }
 
   Future<bool> placeOrder(OrderModel order) async {
     _isLoading = true;

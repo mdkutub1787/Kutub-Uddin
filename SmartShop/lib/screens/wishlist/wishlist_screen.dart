@@ -6,11 +6,9 @@ import 'package:smart_shop/view_models/product_view_model.dart';
 import 'package:smart_shop/view_models/cart_view_model.dart';
 import 'package:smart_shop/view_models/auth_view_model.dart';
 import 'package:smart_shop/utils/constants/app_strings.dart';
-import 'package:smart_shop/routes/app_routes.dart';
 import 'package:smart_shop/widgets/custom_app_bar.dart';
 import 'package:smart_shop/widgets/empty_state_widget.dart';
 import 'package:smart_shop/widgets/product_list_item.dart';
-import 'package:smart_shop/widgets/app_card.dart';
 
 class WishlistScreen extends StatelessWidget {
   const WishlistScreen({super.key});

@@ -13,6 +13,7 @@ import '../../routes/app_routes.dart';
 import '../../widgets/custom_app_bar.dart';
 import '../../widgets/empty_state_widget.dart';
 import '../../widgets/product_list_item.dart';
+import 'package:intl/intl.dart';
 
 import '../../view_models/loading_view_model.dart';
 
@@ -60,15 +61,15 @@ class _CartScreenState extends State<CartScreen> {
               ? EmptyStateWidget(
                   icon: Icons.shopping_cart_outlined,
                   title: AppStrings.cartEmpty.tr(),
-                  subtitle: "Add some products to your cart and start shopping!",
-                  actionText: "Browse Products",
+                  subtitle: AppStrings.cartEmptySubtitle.tr(),
+                  actionText: AppStrings.browseProducts.tr(),
                   onAction: () => context.read<NavigationViewModel>().setIndex(0),
                 )
               : SingleChildScrollView(
                   child: Column(
                     children: [
                       _buildAddressSection(context, auth, settings),
-                      _buildDeliveryMethodSection(context, cart, settings),
+                      _buildDeliverySection(context, cart, settings),
                       _buildItemsList(context, cart, settings),
                       _buildCouponSection(context, cart, settings),
                       _buildOrderSummary(context, cart, settings),
@@ -82,83 +83,154 @@ class _CartScreenState extends State<CartScreen> {
     );
   }
 
-  Widget _buildDeliveryMethodSection(BuildContext context, CartViewModel cart, SettingsViewModel settings) {
+  Widget _buildDeliverySection(BuildContext context, CartViewModel cart, SettingsViewModel settings) {
     return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: Theme.of(context).cardColor,
         borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: Colors.grey.withValues(alpha: 0.1)),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.02),
+            blurRadius: 15,
+            offset: const Offset(0, 5),
+          )
+        ],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
-            AppStrings.deliveryArea.tr(),
-            style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+          Row(
+            children: [
+              Icon(Icons.local_shipping_outlined, color: settings.primaryColor, size: 20),
+              const SizedBox(width: 8),
+              Text(
+                AppStrings.deliveryArea.tr(),
+                style: const TextStyle(fontWeight: FontWeight.w900, fontSize: 16),
+              ),
+            ],
           ),
           const SizedBox(height: 12),
           Row(
             children: [
               Expanded(
-                child: _deliveryOption(
-                  context, 
-                  AppStrings.insideDhaka.tr(), 
-                  "60", 
-                  cart.isInsideDhaka, 
-                  () => cart.setInsideDhaka(true),
-                  settings
+                child: _selectableChip(
+                  label: AppStrings.insideDhaka.tr(),
+                  isSelected: cart.isInsideDhaka,
+                  onTap: () => cart.setInsideDhaka(true),
+                  settings: settings,
                 ),
               ),
-              const SizedBox(width: 12),
+              const SizedBox(width: 10),
               Expanded(
-                child: _deliveryOption(
-                  context, 
-                  AppStrings.outsideDhaka.tr(),
-                  "150", 
-                  !cart.isInsideDhaka, 
-                  () => cart.setInsideDhaka(false),
-                  settings
+                child: _selectableChip(
+                  label: AppStrings.outsideDhaka.tr(),
+                  isSelected: !cart.isInsideDhaka,
+                  onTap: () => cart.setInsideDhaka(false),
+                  settings: settings,
                 ),
               ),
             ],
+          ),
+          const SizedBox(height: 20),
+          Text(
+            AppStrings.deliveryMethod.tr(),
+            style: const TextStyle(fontWeight: FontWeight.w900, fontSize: 16),
+          ),
+          const SizedBox(height: 12),
+          _deliveryMethodCard(
+            context,
+            method: DeliveryMethod.standard,
+            title: AppStrings.standardDelivery.tr(),
+            subtitle: "3-5 Business Days",
+            price: cart.isInsideDhaka ? "60" : "150",
+            cart: cart,
+            settings: settings,
+          ),
+          const SizedBox(height: 10),
+          _deliveryMethodCard(
+            context,
+            method: DeliveryMethod.express,
+            title: AppStrings.expressDelivery.tr(),
+            subtitle: "1-2 Business Days",
+            price: cart.isInsideDhaka ? "100" : "250",
+            cart: cart,
+            settings: settings,
           ),
         ],
       ),
     );
   }
 
-  Widget _deliveryOption(BuildContext context, String title, String price, bool isSelected, VoidCallback onTap, SettingsViewModel settings) {
-    return GestureDetector(
+  Widget _selectableChip({required String label, required bool isSelected, required VoidCallback onTap, required SettingsViewModel settings}) {
+    return InkWell(
       onTap: onTap,
-      child: Container(
-        padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 8),
+      borderRadius: BorderRadius.circular(12),
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 200),
+        padding: const EdgeInsets.symmetric(vertical: 12),
+        alignment: Alignment.center,
         decoration: BoxDecoration(
-          color: isSelected ? settings.primaryColor.withValues(alpha: 0.05) : Colors.grey[50],
-          borderRadius: BorderRadius.circular(15),
-          border: Border.all(
-            color: isSelected ? settings.primaryColor : Colors.grey.withValues(alpha: 0.2),
-            width: 1.5,
+          color: isSelected ? settings.primaryColor : Colors.grey[100],
+          borderRadius: BorderRadius.circular(12),
+        ),
+        child: Text(
+          label,
+          style: TextStyle(
+            color: isSelected ? Colors.white : Colors.black87,
+            fontWeight: isSelected ? FontWeight.bold : FontWeight.w500,
           ),
         ),
-        child: Column(
+      ),
+    );
+  }
+
+  Widget _deliveryMethodCard(BuildContext context, {required DeliveryMethod method, required String title, required String subtitle, required String price, required CartViewModel cart, required SettingsViewModel settings}) {
+    bool isSelected = cart.deliveryMethod == method;
+    return InkWell(
+      onTap: () => cart.setDeliveryMethod(method),
+      borderRadius: BorderRadius.circular(16),
+      child: Container(
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(
+            color: isSelected ? settings.primaryColor : Colors.grey.withValues(alpha: 0.2),
+            width: 2,
+          ),
+          color: isSelected ? settings.primaryColor.withValues(alpha: 0.05) : Colors.transparent,
+        ),
+        child: Row(
           children: [
-            Text(
-              title,
-              style: TextStyle(
-                fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
-                color: isSelected ? settings.primaryColor : Colors.black54,
-                fontSize: 13,
+            Container(
+              padding: const EdgeInsets.all(8),
+              decoration: BoxDecoration(
+                color: isSelected ? settings.primaryColor : Colors.grey[100],
+                shape: BoxShape.circle,
+              ),
+              child: Icon(
+                method == DeliveryMethod.express ? Icons.bolt_rounded : Icons.local_shipping_rounded,
+                color: isSelected ? Colors.white : Colors.grey[600],
+                size: 20,
               ),
             ),
-            const SizedBox(height: 4),
+            const SizedBox(width: 16),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(title, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 15)),
+                  Text(subtitle, style: TextStyle(color: Colors.grey[600], fontSize: 12)),
+                ],
+              ),
+            ),
             Text(
               "৳$price",
               style: TextStyle(
                 fontWeight: FontWeight.w900,
-                color: isSelected ? settings.primaryColor : Colors.black87,
                 fontSize: 16,
+                color: isSelected ? settings.primaryColor : Colors.black87,
               ),
             ),
           ],
@@ -169,10 +241,10 @@ class _CartScreenState extends State<CartScreen> {
 
   Widget _buildAddressSection(BuildContext context, AuthViewModel auth, SettingsViewModel settings) {
     return Container(
-      margin: const EdgeInsets.all(16),
+      margin: const EdgeInsets.fromLTRB(12, 12, 12, 6),
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: Theme.of(context).cardColor,
         borderRadius: BorderRadius.circular(20),
         border: Border.all(color: Colors.grey.withValues(alpha: 0.1)),
       ),
@@ -184,23 +256,24 @@ class _CartScreenState extends State<CartScreen> {
             children: [
               Text(
                 AppStrings.shippingAddress.tr(),
-                style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
               ),
               TextButton(
                 onPressed: () => Navigator.pushNamed(context, AppRoutes.editProfile),
-                child: Text(AppStrings.change.tr()),
+                style: TextButton.styleFrom(padding: EdgeInsets.zero, minimumSize: const Size(50, 30), tapTargetSize: MaterialTapTargetSize.shrinkWrap),
+                child: Text(AppStrings.change.tr(), style: const TextStyle(fontSize: 13)),
               )
             ],
           ),
-          const SizedBox(height: 8),
+          const SizedBox(height: 6),
           Row(
             children: [
-              Icon(Icons.location_on_rounded, color: settings.primaryColor, size: 20),
+              Icon(Icons.location_on_rounded, color: settings.primaryColor, size: 18),
               const SizedBox(width: 8),
               Expanded(
                 child: Text(
                   auth.user?.address ?? AppStrings.noAddress.tr(),
-                  style: const TextStyle(color: Colors.black87),
+                  style: TextStyle(color: Colors.grey[800], fontSize: 13),
                 ),
               ),
             ],
@@ -215,7 +288,7 @@ class _CartScreenState extends State<CartScreen> {
     return ListView.builder(
       shrinkWrap: true,
       physics: const NeverScrollableScrollPhysics(),
-      padding: const EdgeInsets.symmetric(horizontal: 16),
+      padding: const EdgeInsets.symmetric(horizontal: 12),
       itemCount: items.length,
       itemBuilder: (context, index) {
         final item = items[index];
@@ -272,10 +345,10 @@ class _CartScreenState extends State<CartScreen> {
           ),
         ),
         Container(
-          margin: const EdgeInsets.symmetric(horizontal: 16),
+          margin: const EdgeInsets.symmetric(horizontal: 12),
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
           decoration: BoxDecoration(
-            color: Colors.white,
+            color: Theme.of(context).cardColor,
             borderRadius: BorderRadius.circular(15),
             border: Border.all(color: Colors.grey.withValues(alpha: 0.1)),
           ),
@@ -348,10 +421,10 @@ class _CartScreenState extends State<CartScreen> {
   Widget _buildOrderSummary(BuildContext context, CartViewModel cart, SettingsViewModel settings) {
     final currency = AppStrings.currency.tr();
     return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
+      margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 15),
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: Theme.of(context).cardColor,
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
@@ -479,7 +552,7 @@ class _CartScreenState extends State<CartScreen> {
   void _handleCheckout(BuildContext context, CartViewModel cart) async {
     final auth = context.read<AuthViewModel>();
     if (auth.user == null) {
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Please login to order")));
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(AppStrings.pleaseLogin.tr())));
       return;
     }
 
@@ -497,7 +570,7 @@ class _CartScreenState extends State<CartScreen> {
     );
 
     final loading = context.read<LoadingViewModel>();
-    loading.show(message: "Placing your order...");
+    loading.show(message: AppStrings.loading.tr());
 
     bool success = await context.read<OrderViewModel>().placeOrder(newOrder);
     
@@ -505,18 +578,25 @@ class _CartScreenState extends State<CartScreen> {
     if (success) {
       cart.clearCart();
       if (context.mounted) {
+        // Switch to "My Orders" tab (Index 1)
+        context.read<NavigationViewModel>().setIndex(1);
+        
         showDialog(
           context: context,
           builder: (ctx) => AlertDialog(
-            title: const Text("Order Successful!"),
-            content: const Text("Thank you for shopping with us. Your order has been placed successfully."),
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(25)),
+            title: Row(
+              children: [
+                const Icon(Icons.check_circle_rounded, color: Colors.green, size: 28),
+                const SizedBox(width: 12),
+                Text(AppStrings.orderSuccessful.tr()),
+              ],
+            ),
+            content: Text(AppStrings.orderSuccessMsg.tr()),
             actions: [
               TextButton(
-                onPressed: () {
-                  Navigator.pop(ctx);
-                  Navigator.pop(context);
-                },
-                child: const Text("OK"),
+                onPressed: () => Navigator.pop(ctx),
+                child: Text(AppStrings.ok.tr()),
               )
             ],
           ),

@@ -3,6 +3,8 @@ import '../models/cart_model.dart';
 import '../models/product_model.dart';
 import '../models/coupon_model.dart';
 
+enum DeliveryMethod { standard, express }
+
 class CartViewModel extends ChangeNotifier {
   final Map<String, CartItem> _items = {};
   double _discountAmount = 0.0;
@@ -10,12 +12,17 @@ class CartViewModel extends ChangeNotifier {
   
   // Delivery related
   bool _isInsideDhaka = true;
+  DeliveryMethod _deliveryMethod = DeliveryMethod.standard;
+  
   final double _deliveryFeeDhaka = 60.0;
   final double _deliveryFeeOutside = 150.0;
+  final double _expressSurchargeDhaka = 40.0;
+  final double _expressSurchargeOutside = 100.0;
 
   Map<String, CartItem> get items => {..._items};
   int get itemCount => _items.length;
   bool get isInsideDhaka => _isInsideDhaka;
+  DeliveryMethod get deliveryMethod => _deliveryMethod;
   CouponModel? get appliedCoupon => _appliedCoupon;
 
   // Mock available coupons
@@ -63,6 +70,11 @@ class CartViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
+  void setDeliveryMethod(DeliveryMethod method) {
+    _deliveryMethod = method;
+    notifyListeners();
+  }
+
   /// Sum of all products' original prices (before any discounts)
   double get totalOriginalPrice {
     var total = 0.0;
@@ -95,7 +107,15 @@ class CartViewModel extends ChangeNotifier {
   double get deliveryFee {
     if (_items.isEmpty) return 0;
     if (_appliedCoupon?.type == CouponType.freeDelivery) return 0;
-    return _isInsideDhaka ? _deliveryFeeDhaka : _deliveryFeeOutside;
+    
+    double baseFee = _isInsideDhaka ? _deliveryFeeDhaka : _deliveryFeeOutside;
+    double surcharge = 0;
+    
+    if (_deliveryMethod == DeliveryMethod.express) {
+      surcharge = _isInsideDhaka ? _expressSurchargeDhaka : _expressSurchargeOutside;
+    }
+    
+    return baseFee + surcharge;
   }
   
   /// Discount amount from the applied coupon ONLY

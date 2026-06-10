@@ -1,5 +1,3 @@
-import 'package:flutter/material.dart';
-
 enum CouponType { percentage, fixedAmount, freeDelivery }
 
 class CouponModel {

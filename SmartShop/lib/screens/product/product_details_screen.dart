@@ -7,7 +7,6 @@ import 'package:smart_shop/view_models/cart_view_model.dart';
 import 'package:smart_shop/view_models/wishlist_view_model.dart';
 import 'package:smart_shop/view_models/auth_view_model.dart';
 import 'package:smart_shop/utils/constants/app_strings.dart';
-import 'package:smart_shop/widgets/custom_app_bar.dart';
 import 'package:intl/intl.dart';
 
 class ProductDetailsScreen extends StatelessWidget {

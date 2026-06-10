@@ -5,6 +5,7 @@ class UserModel {
   final String phoneNumber;
   final String address;
   final String role;
+  final bool isActive;
 
   UserModel({
     required this.uid,
@@ -13,6 +14,7 @@ class UserModel {
     required this.phoneNumber,
     required this.address,
     required this.role,
+    this.isActive = true,
   });
 
   factory UserModel.fromMap(Map<String, dynamic> data, String uid) {
@@ -23,6 +25,7 @@ class UserModel {
       phoneNumber: data['phoneNumber'] ?? '',
       address: data['address'] ?? '',
       role: data['role'] ?? 'user',
+      isActive: data['isActive'] ?? true,
     );
   }
 
@@ -33,6 +36,7 @@ class UserModel {
       'phoneNumber': phoneNumber,
       'address': address,
       'role': role,
+      'isActive': isActive,
     };
   }
 }

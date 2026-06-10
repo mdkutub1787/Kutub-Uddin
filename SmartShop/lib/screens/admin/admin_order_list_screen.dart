@@ -2,10 +2,8 @@ import 'package:flutter/material.dart';
 import '../../models/order_model.dart';
 import '../../repositories/order_repository.dart';
 import '../../widgets/app_card.dart';
-import '../../widgets/custom_app_bar.dart';
 import '../../view_models/settings_view_model.dart';
 import 'package:provider/provider.dart';
-import '../../utils/constants/app_strings.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:intl/intl.dart';
 

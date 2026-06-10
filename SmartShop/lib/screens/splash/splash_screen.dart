@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import '../../view_models/auth_view_model.dart';
 import '../../view_models/settings_view_model.dart';
 import '../../view_models/wishlist_view_model.dart';
+import '../../view_models/navigation_view_model.dart';
 import '../../routes/app_routes.dart';
 
 class SplashScreen extends StatefulWidget {
@@ -30,15 +31,24 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
   }
 
   Future<void> _navigateToNext() async {
-    await Future.delayed(const Duration(seconds: 3));
+    await Future.delayed(const Duration(seconds: 2));
     if (!mounted) return;
 
     final authVM = context.read<AuthViewModel>();
     
-    // Check if user is logged in
+    // Wait for auth initialization if not already done
+    if (!authVM.isInitialized) {
+      await Future.doWhile(() async {
+        await Future.delayed(const Duration(milliseconds: 100));
+        return !authVM.isInitialized;
+      });
+    }
+
     if (authVM.user != null) {
       // Initialize wishlist for the user
       context.read<WishlistViewModel>().init(authVM.user!.uid);
+      // Ensure home tab is selected
+      context.read<NavigationViewModel>().setIndex(0);
       Navigator.pushReplacementNamed(context, AppRoutes.main);
     } else {
       Navigator.pushReplacementNamed(context, AppRoutes.login);

@@ -13,7 +13,6 @@ import '../../view_models/wishlist_view_model.dart';
 import '../../view_models/notification_view_model.dart';
 import '../../view_models/support_view_model.dart';
 import '../../widgets/product_card.dart';
-import '../../widgets/empty_state_widget.dart';
 import '../../widgets/custom_app_bar.dart';
 import '../../widgets/app_card.dart';
 import '../../utils/constants/app_colors.dart';
@@ -124,7 +123,7 @@ class DashboardScreen extends StatelessWidget {
                       _buildCategoryList(context),
                       _buildSectionHeader(context, AppStrings.featuredProductsTitle.tr(), () {}),
                       _buildFeaturedProducts(context, settings),
-                      const SizedBox(height: 20),
+                      const SizedBox(height: 12),
                       _buildCategorySections(context, settings),
                       const SizedBox(height: 100),
                     ],
@@ -140,25 +139,25 @@ class DashboardScreen extends StatelessWidget {
 
   Widget _buildSearchBar(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.fromLTRB(16, 20, 16, 16),
+      padding: const EdgeInsets.fromLTRB(12, 12, 12, 12),
       child: Hero(
         tag: 'search_bar',
         child: AppCard(
-          elevation: 10,
-          borderRadius: 25,
+          elevation: 5,
+          borderRadius: 20,
           child: TextField(
             onChanged: (query) => context.read<ProductViewModel>().searchProducts(query),
             decoration: InputDecoration(
               hintText: AppStrings.searchHint.tr(),
-              prefixIcon: Icon(Icons.search_rounded, color: Theme.of(context).primaryColor),
+              prefixIcon: Icon(Icons.search_rounded, color: Theme.of(context).primaryColor, size: 22),
               suffixIcon: Container(
-                margin: const EdgeInsets.all(8),
+                margin: const EdgeInsets.all(6),
                 padding: const EdgeInsets.all(8),
-                decoration: BoxDecoration(color: Theme.of(context).primaryColor, borderRadius: BorderRadius.circular(15)),
-                child: const Icon(Icons.tune_rounded, color: Colors.white, size: 20),
+                decoration: BoxDecoration(color: Theme.of(context).primaryColor, borderRadius: BorderRadius.circular(12)),
+                child: const Icon(Icons.tune_rounded, color: Colors.white, size: 18),
               ),
               border: InputBorder.none,
-              contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 15),
+              contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
             ),
           ),
         ),
@@ -168,12 +167,16 @@ class DashboardScreen extends StatelessWidget {
 
   Widget _buildSectionHeader(BuildContext context, String title, VoidCallback onSeeAll) {
     return Padding(
-      padding: const EdgeInsets.fromLTRB(20, 25, 20, 15),
+      padding: const EdgeInsets.fromLTRB(16, 12, 12, 8),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Text(title, style: const TextStyle(fontSize: 22, fontWeight: FontWeight.w900)),
-          TextButton(onPressed: onSeeAll, child: Text(AppStrings.seeAll.tr(), style: const TextStyle(fontWeight: FontWeight.bold))),
+          Text(title, style: const TextStyle(fontSize: 19, fontWeight: FontWeight.w900)),
+          TextButton(
+            onPressed: onSeeAll, 
+            style: TextButton.styleFrom(padding: EdgeInsets.zero, minimumSize: const Size(50, 30), tapTargetSize: MaterialTapTargetSize.shrinkWrap),
+            child: Text(AppStrings.seeAll.tr(), style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13))
+          ),
         ],
       ),
     );
@@ -183,9 +186,9 @@ class DashboardScreen extends StatelessWidget {
     return Consumer<CategoryViewModel>(
       builder: (context, viewModel, child) {
         return SizedBox(
-          height: 130,
+          height: 115,
           child: ListView.builder(
-            padding: const EdgeInsets.symmetric(horizontal: 10),
+            padding: const EdgeInsets.symmetric(horizontal: 8),
             scrollDirection: Axis.horizontal,
             itemCount: viewModel.categories.length,
             itemBuilder: (context, index) {
@@ -196,24 +199,24 @@ class DashboardScreen extends StatelessWidget {
                   return GestureDetector(
                     onTap: () => productVM.filterByCategory(cat.id),
                     child: Container(
-                      width: 85,
-                      margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 5),
+                      width: 75,
+                      margin: const EdgeInsets.symmetric(horizontal: 6, vertical: 4),
                       child: Column(
                         children: [
                           AnimatedContainer(
                             duration: const Duration(milliseconds: 300),
-                            height: 75,
-                            width: 75,
+                            height: 65,
+                            width: 65,
                             decoration: BoxDecoration(
                               color: isSelected ? cat.color : Colors.white,
-                              borderRadius: BorderRadius.circular(24),
+                              borderRadius: BorderRadius.circular(18),
                               boxShadow: [
                                 BoxShadow(
                                   color: isSelected 
-                                    ? cat.color.withValues(alpha: 0.3) 
-                                    : Colors.black.withValues(alpha: 0.05),
-                                  blurRadius: 15,
-                                  offset: const Offset(0, 8),
+                                    ? cat.color.withValues(alpha: 0.2) 
+                                    : Colors.black.withValues(alpha: 0.03),
+                                  blurRadius: 10,
+                                  offset: const Offset(0, 5),
                                 )
                               ],
                               border: isSelected ? null : Border.all(color: Colors.grey[100]!),
@@ -221,14 +224,14 @@ class DashboardScreen extends StatelessWidget {
                             child: Icon(
                               cat.icon, 
                               color: isSelected ? Colors.white : cat.color, 
-                              size: 32
+                              size: 28
                             ),
                           ),
-                          const SizedBox(height: 10),
+                          const SizedBox(height: 6),
                           Text(
-                            cat.name.tr(),
+                            cat.name.tr(), 
                             style: TextStyle(
-                              fontSize: 12, 
+                              fontSize: 11, 
                               fontWeight: isSelected ? FontWeight.w900 : FontWeight.bold, 
                               color: isSelected ? cat.color : Colors.grey[600],
                               letterSpacing: -0.2,
@@ -252,16 +255,16 @@ class DashboardScreen extends StatelessWidget {
   Widget _buildFeaturedProducts(BuildContext context, SettingsViewModel settings) {
     return Consumer<ProductViewModel>(
       builder: (context, viewModel, child) {
-        if (viewModel.isLoading && viewModel.featuredProducts.isEmpty) return const SizedBox(height: 280, child: Center(child: CircularProgressIndicator()));
+        if (viewModel.isLoading && viewModel.featuredProducts.isEmpty) return const SizedBox(height: 250, child: Center(child: CircularProgressIndicator()));
         return SizedBox(
-          height: 320,
+          height: 290,
           child: ListView.builder(
-            padding: const EdgeInsets.symmetric(horizontal: 12),
+            padding: const EdgeInsets.symmetric(horizontal: 8),
             scrollDirection: Axis.horizontal,
             itemCount: viewModel.featuredProducts.length,
             itemBuilder: (context, index) {
               final product = viewModel.featuredProducts[index];
-              return ProductCard(product: product, heroTag: 'featured-${product.id}');
+              return ProductCard(product: product, heroTag: 'featured-${product.id}', width: 160);
             },
           ),
         );
@@ -280,12 +283,12 @@ class DashboardScreen extends StatelessWidget {
               children: [
                 _buildSectionHeader(context, category.name, () => prodVM.filterByCategory(category.id)),
                 SizedBox(
-                  height: 320,
+                  height: 290,
                   child: ListView.builder(
-                    padding: const EdgeInsets.symmetric(horizontal: 12),
+                    padding: const EdgeInsets.symmetric(horizontal: 8),
                     scrollDirection: Axis.horizontal,
                     itemCount: categoryProducts.length,
-                    itemBuilder: (context, index) => ProductCard(product: categoryProducts[index], heroTag: 'cat-${category.id}-${categoryProducts[index].id}'),
+                    itemBuilder: (context, index) => ProductCard(product: categoryProducts[index], heroTag: 'cat-${category.id}-${categoryProducts[index].id}', width: 160),
                   ),
                 ),
               ],
@@ -315,7 +318,7 @@ class DashboardScreen extends StatelessWidget {
               child: Icon(Icons.person, size: 40, color: Colors.grey),
             ),
             accountName: Text(
-              auth.user?.name ?? "Guest User",
+              auth.user?.name ?? AppStrings.guest.tr(),
               style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
             ),
             accountEmail: Text(auth.user?.email ?? ""),
@@ -429,20 +432,46 @@ class DashboardScreen extends StatelessWidget {
           ListTile(
             leading: const Icon(Icons.logout_rounded, color: Colors.red),
             title: Text(AppStrings.logout.tr(), style: const TextStyle(color: Colors.red, fontWeight: FontWeight.bold)),
-            onTap: () async {
-              // Clear Cart and Wishlist
+            onTap: () {
+              Navigator.pop(context); // Close drawer
+              _showLogoutConfirmation(context, auth);
+            },
+          ),
+          const SizedBox(height: 20),
+        ],
+      ),
+    );
+  }
+
+  void _showLogoutConfirmation(BuildContext context, AuthViewModel authViewModel) {
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        title: Text(AppStrings.logout.tr(), style: const TextStyle(fontWeight: FontWeight.bold)),
+        content: Text(AppStrings.logoutConfirm.tr()),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx),
+            child: Text(AppStrings.cancel.tr()),
+          ),
+          ElevatedButton(
+            onPressed: () async {
+              Navigator.pop(ctx);
               context.read<CartViewModel>().clearCart();
               context.read<WishlistViewModel>().clear();
-              
-              // Logout from Auth
-              await auth.logout();
-              
+              await authViewModel.logout();
               if (context.mounted) {
                 Navigator.pushNamedAndRemoveUntil(context, AppRoutes.login, (route) => false);
               }
             },
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.red,
+              foregroundColor: Colors.white,
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+            ),
+            child: Text(AppStrings.logout.tr()),
           ),
-          const SizedBox(height: 20),
         ],
       ),
     );

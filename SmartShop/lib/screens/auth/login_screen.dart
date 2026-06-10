@@ -6,6 +6,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../../view_models/auth_view_model.dart';
 import '../../routes/app_routes.dart';
 import '../../view_models/loading_view_model.dart';
+import '../../view_models/navigation_view_model.dart';
 import '../../utils/constants/app_colors.dart';
 import '../../utils/constants/app_strings.dart';
 
@@ -96,61 +97,61 @@ class _LoginScreenState extends State<LoginScreen> {
               backgroundColor: primaryColor.withValues(alpha: 0.05),
             ),
           ),
-          
+
           SafeArea(
             child: SingleChildScrollView(
-              padding: const EdgeInsets.symmetric(horizontal: 28),
+              padding: const EdgeInsets.symmetric(horizontal: 24),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  SizedBox(height: size.height * 0.08),
+                  SizedBox(height: size.height * 0.05),
                   
                   // App Logo
                   Hero(
                     tag: 'app_logo',
                     child: Container(
-                      padding: const EdgeInsets.all(25),
+                      padding: const EdgeInsets.all(20),
                       decoration: BoxDecoration(
                         color: Theme.of(context).cardColor,
-                        borderRadius: BorderRadius.circular(40),
+                        borderRadius: BorderRadius.circular(30),
                         boxShadow: [
                           BoxShadow(
                             color: primaryColor.withValues(alpha: 0.1),
-                            blurRadius: 30,
-                            offset: const Offset(0, 10),
+                            blurRadius: 20,
+                            offset: const Offset(0, 8),
                           )
                         ],
                       ),
                       child: Image.asset(
                         'assets/images/app_icon.png',
-                        height: 90,
-                        width: 90,
+                        height: 70,
+                        width: 70,
                       ),
                     ),
                   ),
-                  const SizedBox(height: 32),
+                  const SizedBox(height: 24),
                   
                   // App Title
                   Text(
                     AppStrings.appName.tr(),
                     style: Theme.of(context).textTheme.displayLarge?.copyWith(
-                      fontSize: 42,
+                      fontSize: 34,
                       fontWeight: FontWeight.w900,
                       color: primaryColor,
                       letterSpacing: -1,
                     ),
                   ),
-                  const SizedBox(height: 8),
+                  const SizedBox(height: 4),
                   Text(
                     AppStrings.welcomeMessage.tr(),
                     style: TextStyle(
-                      fontSize: 16,
+                      fontSize: 14,
                       color: Colors.grey[600],
                       fontWeight: FontWeight.w500,
                     ),
                   ),
                   
-                  const SizedBox(height: 50),
+                  const SizedBox(height: 35),
                   
                   // Form Fields
                   AutofillGroup(
@@ -165,7 +166,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           action: TextInputAction.next,
                           autofillHints: [AutofillHints.email],
                         ),
-                        const SizedBox(height: 24),
+                        const SizedBox(height: 16),
                         _buildTextField(
                           controller: _passwordController,
                           label: AppStrings.passwordLabel.tr(),
@@ -180,6 +181,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                   ? Icons.visibility_off_rounded
                                   : Icons.visibility_rounded,
                               color: Colors.grey,
+                              size: 20,
                             ),
                             onPressed: () => setState(() => _isPasswordVisible = !_isPasswordVisible),
                           ),
@@ -190,8 +192,8 @@ class _LoginScreenState extends State<LoginScreen> {
                         Row(
                           children: [
                             SizedBox(
-                              height: 24,
-                              width: 24,
+                              height: 20,
+                              width: 20,
                               child: Checkbox(
                                 value: _rememberMe,
                                 activeColor: primaryColor,
@@ -200,7 +202,7 @@ class _LoginScreenState extends State<LoginScreen> {
                               ),
                             ),
                             const SizedBox(width: 8),
-                            Text(AppStrings.rememberMe.tr(), style: TextStyle(color: Colors.grey[700], fontWeight: FontWeight.w500)),
+                            Text(AppStrings.rememberMe.tr(), style: TextStyle(color: Colors.grey[700], fontWeight: FontWeight.w500, fontSize: 13)),
                             const Spacer(),
                             TextButton(
                               onPressed: () {
@@ -215,18 +217,19 @@ class _LoginScreenState extends State<LoginScreen> {
                                 AppStrings.forgotPassword.tr(),
                                 style: TextStyle(
                                     color: primaryColor,
-                                    fontWeight: FontWeight.bold),
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 13),
                               ),
                             ),
                           ],
                         ),
                         
-                        const SizedBox(height: 32),
+                        const SizedBox(height: 24),
                         
-                        // LOGIN BUTTON (Now Big and Awesome)
+                        // LOGIN BUTTON
                         SizedBox(
                           width: double.infinity,
-                          height: 60,
+                          height: 55,
                           child: ElevatedButton(
                             onPressed: authViewModel.isLoading
                                 ? null
@@ -234,27 +237,27 @@ class _LoginScreenState extends State<LoginScreen> {
                             style: ElevatedButton.styleFrom(
                               backgroundColor: primaryColor,
                               foregroundColor: Colors.white,
-                              elevation: 8,
-                              shadowColor: primaryColor.withValues(alpha: 0.4),
+                              elevation: 6,
+                              shadowColor: primaryColor.withValues(alpha: 0.3),
                               shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(20),
+                                borderRadius: BorderRadius.circular(16),
                               ),
                             ),
                             child: authViewModel.isLoading
                                 ? const SizedBox(
-                                    height: 24,
-                                    width: 24,
+                                    height: 20,
+                                    width: 20,
                                     child: CircularProgressIndicator(
                                       color: Colors.white,
-                                      strokeWidth: 3,
+                                      strokeWidth: 2,
                                     ),
                                   )
                                 : Text(
                                     AppStrings.loginTitle.tr().toUpperCase(),
                                     style: const TextStyle(
-                                      fontSize: 18, 
+                                      fontSize: 16, 
                                       fontWeight: FontWeight.w900,
-                                      letterSpacing: 1.2
+                                      letterSpacing: 1
                                     ),
                                   ),
                           ),
@@ -263,7 +266,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     ),
                   ),
                   
-                  const SizedBox(height: 40),
+                  const SizedBox(height: 32),
                   
                   // Register Section
                   Row(
@@ -271,7 +274,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     children: [
                       Text(
                         AppStrings.noAccount.tr(),
-                        style: TextStyle(color: Colors.grey[600], fontSize: 15),
+                        style: TextStyle(color: Colors.grey[600], fontSize: 14),
                       ),
                       TextButton(
                         onPressed: () => Navigator.pushNamed(context, AppRoutes.register),
@@ -280,13 +283,13 @@ class _LoginScreenState extends State<LoginScreen> {
                           style: TextStyle(
                             color: primaryColor,
                             fontWeight: FontWeight.w900,
-                            fontSize: 16,
+                            fontSize: 15,
                           ),
                         ),
                       ),
                     ],
                   ),
-                  SizedBox(height: size.height * 0.05),
+                  SizedBox(height: 20),
                 ],
               ),
             ),
@@ -311,12 +314,12 @@ class _LoginScreenState extends State<LoginScreen> {
     return Container(
       decoration: BoxDecoration(
         color: Theme.of(context).cardColor,
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.03),
-            blurRadius: 15,
-            offset: const Offset(0, 5),
+            color: Colors.black.withValues(alpha: 0.02),
+            blurRadius: 10,
+            offset: const Offset(0, 4),
           )
         ],
       ),
@@ -327,19 +330,19 @@ class _LoginScreenState extends State<LoginScreen> {
         textInputAction: action,
         onSubmitted: onSubmitted,
         autofillHints: autofillHints,
-        style: const TextStyle(fontWeight: FontWeight.w500),
+        style: const TextStyle(fontWeight: FontWeight.w500, fontSize: 14),
         decoration: InputDecoration(
           labelText: label,
           hintText: hint,
-          prefixIcon: Icon(icon, color: Theme.of(context).primaryColor),
+          prefixIcon: Icon(icon, color: Theme.of(context).primaryColor, size: 20),
           suffixIcon: suffix,
           border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(20),
+            borderRadius: BorderRadius.circular(16),
             borderSide: BorderSide.none,
           ),
           filled: true,
           fillColor: Colors.transparent,
-          contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
+          contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
         ),
       ),
     );
@@ -361,12 +364,14 @@ class _LoginScreenState extends State<LoginScreen> {
       _emailController.text.trim(),
       _passwordController.text,
     );
-    
+
     loading.hide();
 
     if (success && mounted) {
       await _saveCredentials();
       TextInput.finishAutofillContext();
+      // Ensure home tab is selected
+      context.read<NavigationViewModel>().setIndex(0);
       Navigator.pushReplacementNamed(context, AppRoutes.main);
     } else if (authViewModel.error != null) {
       ScaffoldMessenger.of(context).showSnackBar(

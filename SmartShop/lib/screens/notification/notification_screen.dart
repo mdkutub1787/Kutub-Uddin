@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:intl/intl.dart';
 import '../../view_models/notification_view_model.dart';
 import '../../view_models/support_view_model.dart';
 import '../../view_models/auth_view_model.dart';
-import '../../view_models/settings_view_model.dart';
+import '../../utils/constants/app_strings.dart';
 import '../../routes/app_routes.dart';
 import '../support/support_screen.dart';
 
@@ -139,7 +140,7 @@ class _NotificationScreenState extends State<NotificationScreen> with SingleTick
         children: [
           Icon(Icons.notifications_off_outlined, size: 80, color: Colors.grey[300]),
           const SizedBox(height: 16),
-          Text("No notifications yet", style: TextStyle(color: Colors.grey[600], fontSize: 16)),
+          Text(AppStrings.noNotifications.tr(), style: TextStyle(color: Colors.grey[600], fontSize: 16)),
         ],
       ),
     );

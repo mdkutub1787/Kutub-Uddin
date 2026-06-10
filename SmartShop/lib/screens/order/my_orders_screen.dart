@@ -5,11 +5,11 @@ import 'package:smart_shop/view_models/order_view_model.dart';
 import 'package:smart_shop/view_models/auth_view_model.dart';
 import 'package:smart_shop/view_models/navigation_view_model.dart';
 import 'package:smart_shop/utils/constants/app_strings.dart';
-import 'package:smart_shop/repositories/order_repository.dart';
 import 'package:smart_shop/routes/app_routes.dart';
 import 'package:smart_shop/widgets/custom_app_bar.dart';
 import 'package:smart_shop/widgets/app_card.dart';
 import 'package:smart_shop/widgets/empty_state_widget.dart';
+import 'package:intl/intl.dart';
 
 class MyOrdersScreen extends StatefulWidget {
   const MyOrdersScreen({super.key});
@@ -52,14 +52,6 @@ class _MyOrdersScreenState extends State<MyOrdersScreen> {
               backgroundColor: primaryColor.withValues(alpha: 0.05),
             ),
           ),
-          Positioned(
-            bottom: -size.height * 0.1,
-            left: -size.width * 0.2,
-            child: CircleAvatar(
-              radius: size.width * 0.3,
-              backgroundColor: primaryColor.withValues(alpha: 0.05),
-            ),
-          ),
           
           RefreshIndicator(
             onRefresh: () async {
@@ -79,13 +71,14 @@ class _MyOrdersScreenState extends State<MyOrdersScreen> {
                         onAction: () => context.read<NavigationViewModel>().setIndex(0),
                       )
                     : ListView.builder(
-                        padding: const EdgeInsets.only(top: 8, bottom: 20),
+                        padding: const EdgeInsets.symmetric(vertical: 10),
                         physics: const AlwaysScrollableScrollPhysics(),
                         itemCount: orderViewModel.userOrders.length,
                         itemBuilder: (context, index) {
                           final order = orderViewModel.userOrders[index];
                           return AppCard(
-                            margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                            margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                            borderRadius: 16,
                             onTap: () {
                               Navigator.pushNamed(
                                 context,
@@ -94,7 +87,7 @@ class _MyOrdersScreenState extends State<MyOrdersScreen> {
                               );
                             },
                             child: Padding(
-                              padding: const EdgeInsets.all(16.0),
+                              padding: const EdgeInsets.all(12.0),
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
@@ -107,14 +100,13 @@ class _MyOrdersScreenState extends State<MyOrdersScreen> {
                                           children: [
                                             Text(
                                               "${AppStrings.orderId.tr()}: ${order.id}",
-                                              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
+                                              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13),
                                               maxLines: 1,
                                               overflow: TextOverflow.ellipsis,
                                             ),
-                                            const SizedBox(height: 4),
                                             Text(
                                               DateFormat('dd MMM yyyy, hh:mm a').format(order.date),
-                                              style: const TextStyle(color: Colors.grey, fontSize: 12),
+                                              style: const TextStyle(color: Colors.grey, fontSize: 11),
                                             ),
                                           ],
                                         ),
@@ -122,35 +114,22 @@ class _MyOrdersScreenState extends State<MyOrdersScreen> {
                                       _buildStatusBadge(order.status),
                                     ],
                                   ),
-                                  const Divider(height: 24),
+                                  const Divider(height: 20),
                                   Row(
                                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                     children: [
                                       Text(
                                         AppStrings.itemsCount.tr(args: [order.items.length.toString()]),
-                                        style: const TextStyle(fontWeight: FontWeight.w500),
+                                        style: const TextStyle(fontWeight: FontWeight.w500, fontSize: 14),
                                       ),
                                       Text(
                                         "${AppStrings.total.tr()}: ${AppStrings.currency.tr()}${order.totalAmount}",
                                         style: TextStyle(
                                           fontWeight: FontWeight.bold,
-                                          fontSize: 16,
+                                          fontSize: 15,
                                           color: Theme.of(context).primaryColor,
                                         ),
                                       ),
-                                    ],
-                                  ),
-                                  const SizedBox(height: 12),
-                                  Row(
-                                    children: [
-                                      const Icon(Icons.info_outline, size: 16, color: Colors.blueGrey),
-                                      const SizedBox(width: 4),
-                                      Text(
-                                        AppStrings.tapToViewDetails.tr(),
-                                        style: const TextStyle(fontSize: 12, color: Colors.blueGrey),
-                                      ),
-                                      const Spacer(),
-                                      Icon(Icons.arrow_forward_ios, size: 14, color: Colors.grey[400]),
                                     ],
                                   ),
                                 ],
@@ -183,14 +162,14 @@ class _MyOrdersScreenState extends State<MyOrdersScreen> {
     }
 
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
       decoration: BoxDecoration(
         color: color.withValues(alpha: 0.1),
-        borderRadius: BorderRadius.circular(10),
+        borderRadius: BorderRadius.circular(8),
       ),
       child: Text(
         statusText,
-        style: TextStyle(color: color, fontWeight: FontWeight.bold, fontSize: 12),
+        style: TextStyle(color: color, fontWeight: FontWeight.bold, fontSize: 11),
       ),
     );
   }

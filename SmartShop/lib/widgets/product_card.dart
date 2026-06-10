@@ -163,9 +163,9 @@ class ProductCard extends StatelessWidget {
             
             // DETAILS SECTION
             Expanded(
-              flex: 12,
+              flex: 13, // Increased flex to give more space
               child: Padding(
-                padding: const EdgeInsets.fromLTRB(16, 8, 16, 12),
+                padding: const EdgeInsets.fromLTRB(12, 6, 12, 10), // Slightly reduced padding
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -177,30 +177,30 @@ class ProductCard extends StatelessWidget {
                           product.name,
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
-                          style: const TextStyle(fontWeight: FontWeight.w900, fontSize: 15, letterSpacing: -0.5),
+                          style: const TextStyle(fontWeight: FontWeight.w900, fontSize: 14, letterSpacing: -0.5),
                         ),
                         const SizedBox(height: 2),
                         Row(
                           children: [
-                            Icon(Icons.star_rounded, size: 14, color: Colors.amber[700]),
+                            Icon(Icons.star_rounded, size: 12, color: Colors.amber[700]),
                             const SizedBox(width: 4),
                             Text(
                               "${product.rating}",
-                              style: TextStyle(fontSize: 11, fontWeight: FontWeight.w900, color: Colors.grey[700]),
+                              style: TextStyle(fontSize: 10, fontWeight: FontWeight.w900, color: Colors.grey[700]),
                             ),
                             const Spacer(),
                             if (product.stock > 0)
                               Container(
-                                padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                                padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 2),
                                 decoration: BoxDecoration(
                                   color: (product.stock <= 5) ? Colors.orange.withValues(alpha: 0.1) : Colors.blue.withValues(alpha: 0.1),
-                                  borderRadius: BorderRadius.circular(6),
+                                  borderRadius: BorderRadius.circular(4),
                                 ),
                                 child: Text(
                                   "${product.stock} ${AppStrings.pieces.tr()}",
                                   style: TextStyle(
                                     color: (product.stock <= 5) ? Colors.orange : Colors.blue,
-                                    fontSize: 9, 
+                                    fontSize: 8, 
                                     fontWeight: FontWeight.w900
                                   ),
                                 ),
@@ -217,36 +217,29 @@ class ProductCard extends StatelessWidget {
                           Row(
                             children: [
                               Text(
-                                "৳${NumberFormat('#,##,###').format(product.originalPrice.toInt())}",
+                                "৳${product.originalPrice.toInt()}",
                                 style: TextStyle(
                                   color: Colors.grey[400],
                                   decoration: TextDecoration.lineThrough,
-                                  fontSize: 12,
+                                  fontSize: 10,
                                   fontWeight: FontWeight.bold,
                                 ),
                               ),
-                              const SizedBox(width: 6),
-                              Container(
-                                padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                                decoration: BoxDecoration(
-                                  color: Colors.red.withValues(alpha: 0.1),
-                                  borderRadius: BorderRadius.circular(6),
-                                ),
-                                child: Text(
-                                  product.discountType == 'percentage' 
+                              const SizedBox(width: 4),
+                              Text(
+                                product.discountType == 'percentage' 
                                     ? "-${product.discountValue.toInt()}%" 
                                     : "-৳${product.discountValue.toInt()}",
-                                  style: const TextStyle(color: Colors.red, fontSize: 10, fontWeight: FontWeight.w900),
-                                ),
+                                style: const TextStyle(color: Colors.red, fontSize: 9, fontWeight: FontWeight.w900),
                               ),
                             ],
                           ),
                         Text(
-                          "৳${NumberFormat('#,##,###').format(product.price.toInt())}",
+                          "৳${product.price.toInt()}",
                           style: TextStyle(
                             color: primaryColor,
                             fontWeight: FontWeight.w900,
-                            fontSize: 20,
+                            fontSize: 18,
                           ),
                         ),
                       ],
@@ -255,25 +248,18 @@ class ProductCard extends StatelessWidget {
                     // ADD TO CART BUTTON
                     SizedBox(
                       width: double.infinity,
-                      height: 42,
+                      height: 38, // Slightly reduced height
                       child: ElevatedButton(
                         onPressed: product.stock > 0 ? () {
                           bool added = context.read<CartViewModel>().addItem(product);
                           if (added) {
                             ScaffoldMessenger.of(context).showSnackBar(
                               SnackBar(
-                                content: Row(
-                                  children: [
-                                    const Icon(Icons.check_circle_rounded, color: Colors.white, size: 20),
-                                    const SizedBox(width: 10),
-                                    Expanded(child: Text(AppStrings.addedToCart.tr(), style: const TextStyle(fontWeight: FontWeight.bold))),
-                                  ],
-                                ),
-                                duration: const Duration(seconds: 1), 
+                                content: Text(AppStrings.addedToCart.tr()),
+                                duration: const Duration(seconds: 1),
                                 behavior: SnackBarBehavior.floating,
-                                backgroundColor: primaryColor,
-                                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
-                                margin: const EdgeInsets.all(20),
+                                margin: const EdgeInsets.all(10),
+                                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
                               ),
                             );
                           }
@@ -282,19 +268,13 @@ class ProductCard extends StatelessWidget {
                           backgroundColor: product.stock > 0 ? primaryColor : Colors.grey[100],
                           foregroundColor: Colors.white,
                           elevation: 0,
-                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
+                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                           padding: EdgeInsets.zero,
                         ),
-                        child: product.stock > 0 
-                          ? Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                const Icon(Icons.add_shopping_cart_rounded, size: 16),
-                                const SizedBox(width: 8),
-                                Text(AppStrings.addToCart.tr().toUpperCase(), style: const TextStyle(fontSize: 10, fontWeight: FontWeight.w900, letterSpacing: 0.5)),
-                              ],
-                            )
-                          : Text(AppStrings.outOfStock.tr().toUpperCase(), style: TextStyle(fontSize: 10, color: Colors.grey[400], fontWeight: FontWeight.w900)),
+                        child: Text(
+                          product.stock > 0 ? AppStrings.addToCart.tr().toUpperCase() : AppStrings.outOfStock.tr().toUpperCase(), 
+                          style: const TextStyle(fontSize: 10, fontWeight: FontWeight.w900),
+                        ),
                       ),
                     ),
                   ],
@@ -308,9 +288,9 @@ class ProductCard extends StatelessWidget {
   }
 }
 
-// Add width support to AppCard or update AppCard to accept width
-extension on AppCard {
-  Widget withWidth(double? width) {
-    return SizedBox(width: width, child: this);
-  }
-}
+// Extension to add width support if needed, currently unused
+// extension on AppCard {
+//   Widget withWidth(double? width) {
+//     return SizedBox(width: width, child: this);
+//   }
+// }

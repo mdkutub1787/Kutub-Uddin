@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:intl/intl.dart';
 import '../../view_models/support_view_model.dart';
 import '../../view_models/auth_view_model.dart';
 import '../../view_models/settings_view_model.dart';
 import '../../models/support_ticket_model.dart';
-import '../../routes/app_routes.dart';
+import '../../utils/constants/app_strings.dart';
 
 class SupportScreen extends StatefulWidget {
   final bool isEmbedded;
@@ -52,7 +53,7 @@ class _SupportScreenState extends State<SupportScreen> {
 
   Widget _buildAdminTicketList(SupportViewModel vm) {
     if (vm.isLoading && vm.tickets.isEmpty) return const Center(child: CircularProgressIndicator());
-    if (vm.tickets.isEmpty) return const Center(child: Text("No support tickets yet."));
+    if (vm.tickets.isEmpty) return Center(child: Text(AppStrings.noSupportTickets.tr()));
 
     return ListView.builder(
       itemCount: vm.tickets.length,
@@ -121,7 +122,7 @@ class _SupportScreenState extends State<SupportScreen> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(settings.shopName, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
-                    const Text("Online Support", style: TextStyle(color: Colors.green, fontSize: 13, fontWeight: FontWeight.bold)),
+                    Text(AppStrings.onlineSupport.tr(), style: const TextStyle(color: Colors.green, fontSize: 13, fontWeight: FontWeight.bold)),
                   ],
                 ),
               ),
@@ -188,7 +189,7 @@ class _SupportScreenState extends State<SupportScreen> {
               child: TextField(
                 controller: _messageController,
                 decoration: InputDecoration(
-                  hintText: "Type a message...",
+                  hintText: AppStrings.typeMessage.tr(),
                   border: OutlineInputBorder(borderRadius: BorderRadius.circular(25), borderSide: BorderSide.none),
                   filled: true,
                   fillColor: Colors.grey[100],
@@ -291,8 +292,8 @@ class _AdminChatDetailState extends State<AdminChatDetail> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text("Customer: ${widget.ticket.userName}", style: const TextStyle(fontWeight: FontWeight.bold)),
-                      Text("Phone: ${_userPhone ?? 'Loading...'}", style: const TextStyle(fontSize: 12)),
+                      Text("${AppStrings.customerLabel.tr()}: ${widget.ticket.userName}", style: const TextStyle(fontWeight: FontWeight.bold)),
+                      Text("${AppStrings.phoneLabel.tr()}: ${_userPhone ?? '...'}", style: const TextStyle(fontSize: 12)),
                     ],
                   ),
                 ),
@@ -357,7 +358,7 @@ class _AdminChatDetailState extends State<AdminChatDetail> {
               child: TextField(
                 controller: _msgController,
                 decoration: InputDecoration(
-                  hintText: "Reply to customer...",
+                  hintText: AppStrings.replyToCustomer.tr(),
                   border: OutlineInputBorder(borderRadius: BorderRadius.circular(25), borderSide: BorderSide.none),
                   filled: true,
                   fillColor: Colors.grey[100],

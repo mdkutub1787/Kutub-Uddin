@@ -50,44 +50,44 @@ class _RegisterScreenState extends State<RegisterScreen> {
               backgroundColor: primaryColor.withValues(alpha: 0.05),
             ),
           ),
-          
+
           SafeArea(
             child: SingleChildScrollView(
-              padding: const EdgeInsets.symmetric(horizontal: 28),
+              padding: const EdgeInsets.symmetric(horizontal: 24),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  const SizedBox(height: 10),
+                  const SizedBox(height: 8),
                   Align(
                     alignment: Alignment.topLeft,
                     child: IconButton(
-                      icon: const Icon(Icons.arrow_back_ios_new_rounded),
+                      icon: const Icon(Icons.arrow_back_ios_new_rounded, size: 20),
                       onPressed: () => Navigator.pop(context),
                     ),
                   ),
                   
-                  const SizedBox(height: 10),
+                  const SizedBox(height: 4),
                   // App Title
                   Text(
                     AppStrings.registerTitle.tr(),
                     style: Theme.of(context).textTheme.displayLarge?.copyWith(
-                      fontSize: 42,
+                      fontSize: 34,
                       fontWeight: FontWeight.w900,
                       color: primaryColor,
                       letterSpacing: -1,
                     ),
                   ),
-                  const SizedBox(height: 8),
+                  const SizedBox(height: 4),
                   Text(
                     AppStrings.registrationSubtitle.tr(),
                     style: TextStyle(
-                      fontSize: 16,
+                      fontSize: 14,
                       color: Colors.grey[600],
                       fontWeight: FontWeight.w500,
                     ),
                   ),
                   
-                  const SizedBox(height: 40),
+                  const SizedBox(height: 32),
                   
                   // Form Fields
                   AutofillGroup(
@@ -101,7 +101,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           action: TextInputAction.next,
                           autofillHints: [AutofillHints.name],
                         ),
-                        const SizedBox(height: 20),
+                        const SizedBox(height: 16),
                         
                         _buildTextField(
                           controller: _phoneController,
@@ -112,7 +112,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           action: TextInputAction.next,
                           autofillHints: [AutofillHints.telephoneNumber],
                         ),
-                        const SizedBox(height: 20),
+                        const SizedBox(height: 16),
                         
                         _buildTextField(
                           controller: _addressController,
@@ -122,7 +122,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           action: TextInputAction.next,
                           autofillHints: [AutofillHints.fullStreetAddress],
                         ),
-                        const SizedBox(height: 20),
+                        const SizedBox(height: 16),
                         
                         _buildTextField(
                           controller: _emailController,
@@ -133,7 +133,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           action: TextInputAction.next,
                           autofillHints: [AutofillHints.email],
                         ),
-                        const SizedBox(height: 20),
+                        const SizedBox(height: 16),
                         
                         _buildTextField(
                           controller: _passwordController,
@@ -149,11 +149,12 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                   ? Icons.visibility_off_rounded
                                   : Icons.visibility_rounded,
                               color: Colors.grey,
+                              size: 20,
                             ),
                             onPressed: () => setState(() => _isPasswordVisible = !_isPasswordVisible),
                           ),
                         ),
-                        const SizedBox(height: 20),
+                        const SizedBox(height: 16),
                         
                         _buildTextField(
                           controller: _confirmPasswordController,
@@ -166,12 +167,12 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           onSubmitted: (_) => _handleRegister(authViewModel),
                         ),
                         
-                        const SizedBox(height: 40),
+                        const SizedBox(height: 32),
                         
                         // REGISTER BUTTON
                         SizedBox(
                           width: double.infinity,
-                          height: 60,
+                          height: 55,
                           child: ElevatedButton(
                             onPressed: authViewModel.isLoading
                                 ? null
@@ -179,27 +180,27 @@ class _RegisterScreenState extends State<RegisterScreen> {
                             style: ElevatedButton.styleFrom(
                               backgroundColor: primaryColor,
                               foregroundColor: Colors.white,
-                              elevation: 8,
-                              shadowColor: primaryColor.withValues(alpha: 0.4),
+                              elevation: 6,
+                              shadowColor: primaryColor.withValues(alpha: 0.3),
                               shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(20),
+                                borderRadius: BorderRadius.circular(16),
                               ),
                             ),
                             child: authViewModel.isLoading
                                 ? const SizedBox(
-                                    height: 24,
-                                    width: 24,
+                                    height: 20,
+                                    width: 20,
                                     child: CircularProgressIndicator(
                                       color: Colors.white,
-                                      strokeWidth: 3,
+                                      strokeWidth: 2,
                                     ),
                                   )
                                 : Text(
                                     AppStrings.registerTitle.tr().toUpperCase(),
                                     style: const TextStyle(
-                                      fontSize: 18, 
+                                      fontSize: 16, 
                                       fontWeight: FontWeight.w900,
-                                      letterSpacing: 1.2
+                                      letterSpacing: 1
                                     ),
                                   ),
                           ),
@@ -208,13 +209,13 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     ),
                   ),
                   
-                  const SizedBox(height: 30),
+                  const SizedBox(height: 24),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Text(
                         AppStrings.alreadyHaveAccount.tr(),
-                        style: TextStyle(color: Colors.grey[600], fontSize: 15),
+                        style: TextStyle(color: Colors.grey[600], fontSize: 14),
                       ),
                       TextButton(
                         onPressed: () => Navigator.pop(context),
@@ -223,13 +224,13 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           style: TextStyle(
                             color: primaryColor,
                             fontWeight: FontWeight.w900,
-                            fontSize: 16,
+                            fontSize: 15,
                           ),
                         ),
                       ),
                     ],
                   ),
-                  const SizedBox(height: 40),
+                  const SizedBox(height: 30),
                 ],
               ),
             ),
@@ -254,12 +255,12 @@ class _RegisterScreenState extends State<RegisterScreen> {
     return Container(
       decoration: BoxDecoration(
         color: Theme.of(context).cardColor,
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.03),
-            blurRadius: 15,
-            offset: const Offset(0, 5),
+            color: Colors.black.withValues(alpha: 0.02),
+            blurRadius: 10,
+            offset: const Offset(0, 4),
           )
         ],
       ),
@@ -270,19 +271,19 @@ class _RegisterScreenState extends State<RegisterScreen> {
         textInputAction: action,
         onSubmitted: onSubmitted,
         autofillHints: autofillHints,
-        style: const TextStyle(fontWeight: FontWeight.w500),
+        style: const TextStyle(fontWeight: FontWeight.w500, fontSize: 14),
         decoration: InputDecoration(
           labelText: label,
           hintText: hint,
-          prefixIcon: Icon(icon, color: Theme.of(context).primaryColor),
+          prefixIcon: Icon(icon, color: Theme.of(context).primaryColor, size: 20),
           suffixIcon: suffix,
           border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(20),
+            borderRadius: BorderRadius.circular(16),
             borderSide: BorderSide.none,
           ),
           filled: true,
           fillColor: Colors.transparent,
-          contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
+          contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
         ),
       ),
     );

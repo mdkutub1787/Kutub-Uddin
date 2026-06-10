@@ -10,7 +10,6 @@ import '../screens/order/my_orders_screen.dart';
 import '../screens/order/order_details_screen.dart';
 import '../screens/wishlist/wishlist_screen.dart';
 import '../screens/profile/edit_profile_screen.dart';
-import '../screens/profile/admin_verification_screen.dart';
 import '../screens/admin/admin_dashboard_screen.dart';
 import '../screens/offers/offers_screen.dart';
 import '../screens/notification/notification_screen.dart';
@@ -35,7 +34,6 @@ class AppRoutes {
   static const String myOrders = '/my-orders';
   static const String wishlist = '/wishlist';
   static const String editProfile = '/edit-profile';
-  static const String adminVerification = '/admin-verification';
   static const String adminDashboard = '/admin-dashboard';
   static const String offers = '/offers';
   static const String notifications = '/notifications';
@@ -64,8 +62,6 @@ class AppRoutes {
         return MaterialPageRoute(builder: (_) => const WishlistScreen());
       case editProfile:
         return MaterialPageRoute(builder: (_) => const EditProfileScreen());
-      case adminVerification:
-        return MaterialPageRoute(builder: (_) => const AdminVerificationScreen());
       case adminDashboard:
         return MaterialPageRoute(builder: (_) => const AdminDashboardScreen());
       case offers:

@@ -31,33 +31,33 @@ class ProfileScreen extends StatelessWidget {
         title: AppStrings.profileMenu.tr(),
       ),
       body: SingleChildScrollView(
+        padding: const EdgeInsets.symmetric(vertical: 12),
         child: Column(
           children: [
-            const SizedBox(height: 20),
             _buildProfileHeader(context, user, settings, authViewModel.isAdmin),
-            const SizedBox(height: 20),
-            
+            const SizedBox(height: 16),
+
             // Stats Row
             _buildStatsRow(context, cart, wishlist, orderVM),
             
             if (authViewModel.isAdmin) ...[
-              const SizedBox(height: 20),
+              const SizedBox(height: 16),
               _buildAdminCard(context, settings),
             ],
 
-            const SizedBox(height: 25),
-            
+            const SizedBox(height: 20),
+
             // User Info Section
             _buildSectionHeader(AppStrings.personalInfo.tr()),
             _buildUserInfoSection(context, user, settings),
-            
-            const SizedBox(height: 25),
-            
+
+            const SizedBox(height: 20),
+
             // App Preferences
             _buildSectionHeader(AppStrings.appPreferences.tr()),
             _buildSettingsCard(context, settings),
 
-            const SizedBox(height: 25),
+            const SizedBox(height: 20),
 
             // Main Menu
             _buildSectionHeader(AppStrings.shoppingActivity.tr()),
@@ -68,7 +68,7 @@ class ProfileScreen extends StatelessWidget {
               _menuItem(Icons.help_outline_rounded, AppStrings.support.tr(), () => Navigator.pushNamed(context, AppRoutes.support), badge: context.watch<SupportViewModel>().unreadCount),
             ]),
 
-            const SizedBox(height: 25),
+            const SizedBox(height: 20),
 
             _buildSectionHeader(AppStrings.accountSecurity.tr()),
             _buildMenuCard(context, [
@@ -76,54 +76,79 @@ class ProfileScreen extends StatelessWidget {
               _menuItem(Icons.mail_lock_rounded, AppStrings.resetViaEmail.tr(), () async {
                 if (user?.email != null) {
                   await authViewModel.forgotPassword(user!.email);
-                  if (context.mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(AppStrings.welcomeBack.tr()))); // Use a generic success key or add a new one
+                  if (context.mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(AppStrings.resetEmailSent.tr())));
                 }
               }),
-              if (!authViewModel.isAdmin)
-                _menuItem(Icons.admin_panel_settings, 'Request Admin Access', () => Navigator.pushNamed(context, AppRoutes.adminVerification)),
             ]),
 
-            const SizedBox(height: 30),
-            
+            const SizedBox(height: 24),
+
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20),
               child: SizedBox(
                 width: double.infinity,
                 child: OutlinedButton.icon(
-                  onPressed: () async {
-                    context.read<CartViewModel>().clearCart();
-                    context.read<WishlistViewModel>().clear();
-                    await authViewModel.logout();
-                    if (context.mounted) {
-                      Navigator.pushNamedAndRemoveUntil(context, AppRoutes.login, (route) => false);
-                    }
-                  },
-                  icon: const Icon(Icons.logout, color: Colors.red),
-                  label: Text(AppStrings.logout.tr(), style: const TextStyle(color: Colors.red, fontWeight: FontWeight.bold)),
+                  onPressed: () => _showLogoutConfirmation(context, authViewModel),
+                  icon: const Icon(Icons.logout, color: Colors.red, size: 20),
+                  label: Text(AppStrings.logout.tr(), style: const TextStyle(color: Colors.red, fontWeight: FontWeight.bold, fontSize: 14)),
                   style: OutlinedButton.styleFrom(
-                    padding: const EdgeInsets.symmetric(vertical: 15),
-                    side: const BorderSide(color: Colors.red, width: 1.5),
+                    padding: const EdgeInsets.symmetric(vertical: 12),
+                    side: const BorderSide(color: Colors.red, width: 1.2),
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
                   ),
                 ),
               ),
             ),
-            
-            const SizedBox(height: 20),
-            Text("${AppStrings.appVersion.tr()} 1.0.0", style: TextStyle(color: Colors.grey[400], fontSize: 12)),
-            const SizedBox(height: 40),
+
+            const SizedBox(height: 12),
+            Text("${AppStrings.appVersion.tr()} 1.0.0", style: TextStyle(color: Colors.grey[400], fontSize: 11)),
+            const SizedBox(height: 30),
           ],
         ),
       ),
     );
   }
 
+  void _showLogoutConfirmation(BuildContext context, AuthViewModel authViewModel) {
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        title: Text(AppStrings.logout.tr(), style: const TextStyle(fontWeight: FontWeight.bold)),
+        content: Text(AppStrings.logoutConfirm.tr()),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx),
+            child: Text(AppStrings.cancel.tr()),
+          ),
+          ElevatedButton(
+            onPressed: () async {
+              Navigator.pop(ctx);
+              context.read<CartViewModel>().clearCart();
+              context.read<WishlistViewModel>().clear();
+              await authViewModel.logout();
+              if (context.mounted) {
+                Navigator.pushNamedAndRemoveUntil(context, AppRoutes.login, (route) => false);
+              }
+            },
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.red,
+              foregroundColor: Colors.white,
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+            ),
+            child: Text(AppStrings.logout.tr()),
+          ),
+        ],
+      ),
+    );
+  }
+
   Widget _buildSectionHeader(String title) {
     return Padding(
-      padding: const EdgeInsets.fromLTRB(25, 0, 25, 12),
+      padding: const EdgeInsets.fromLTRB(25, 0, 25, 8),
       child: Align(
         alignment: Alignment.centerLeft,
-        child: Text(title.toUpperCase(), style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w900, color: Colors.grey, letterSpacing: 1.2)),
+        child: Text(title.toUpperCase(), style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w900, color: Colors.grey, letterSpacing: 1.1)),
       ),
     );
   }
@@ -134,9 +159,9 @@ class ProfileScreen extends StatelessWidget {
       child: Row(
         children: [
           _statItem(context, "${orderVM.userOrders.length}", AppStrings.ordersCountLabel.tr(), Colors.blue, () => Navigator.pushNamed(context, AppRoutes.myOrders)),
-          const SizedBox(width: 12),
+          const SizedBox(width: 10),
           _statItem(context, "${wishlist.wishlistProductIds.length}", AppStrings.wishlistCountLabel.tr(), Colors.pink, () => Navigator.pushNamed(context, AppRoutes.wishlist)),
-          const SizedBox(width: 12),
+          const SizedBox(width: 10),
           _statItem(context, "${cart.itemCount}", AppStrings.cartCountLabel.tr(), Colors.orange, () => Navigator.pushNamed(context, AppRoutes.cart)),
         ],
       ),
@@ -147,18 +172,18 @@ class ProfileScreen extends StatelessWidget {
     return Expanded(
       child: InkWell(
         onTap: onTap,
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: BorderRadius.circular(15),
         child: Container(
-          padding: const EdgeInsets.symmetric(vertical: 15),
+          padding: const EdgeInsets.symmetric(vertical: 12),
           decoration: BoxDecoration(
             color: color.withValues(alpha: 0.1),
-            borderRadius: BorderRadius.circular(20),
+            borderRadius: BorderRadius.circular(15),
             border: Border.all(color: color.withValues(alpha: 0.2)),
           ),
           child: Column(
             children: [
-              Text(value, style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: color)),
-              Text(label, style: TextStyle(fontSize: 12, color: color.withValues(alpha: 0.8), fontWeight: FontWeight.w600)),
+              Text(value, style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: color)),
+              Text(label, style: TextStyle(fontSize: 11, color: color.withValues(alpha: 0.8), fontWeight: FontWeight.w600)),
             ],
           ),
         ),
@@ -179,19 +204,20 @@ class ProfileScreen extends StatelessWidget {
 
   Widget _menuItem(IconData icon, String title, VoidCallback onTap, {int badge = 0}) {
     return ListTile(
-      leading: Icon(icon, size: 22),
-      title: Text(title, style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w500)),
+      dense: true,
+      leading: Icon(icon, size: 20),
+      title: Text(title, style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w500)),
       trailing: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
           if (badge > 0)
             Container(
-              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+              padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
               decoration: BoxDecoration(color: Colors.red, borderRadius: BorderRadius.circular(10)),
-              child: Text('$badge', style: const TextStyle(color: Colors.white, fontSize: 10, fontWeight: FontWeight.bold)),
+              child: Text('$badge', style: const TextStyle(color: Colors.white, fontSize: 9, fontWeight: FontWeight.bold)),
             ),
-          const SizedBox(width: 5),
-          const Icon(Icons.arrow_forward_ios, size: 14, color: Colors.grey),
+          const SizedBox(width: 4),
+          const Icon(Icons.arrow_forward_ios, size: 12, color: Colors.grey),
         ],
       ),
       onTap: onTap,
@@ -222,7 +248,7 @@ class ProfileScreen extends StatelessWidget {
               leading: const Icon(Icons.translate_rounded),
               title: Text(AppStrings.language.tr(), style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w500)),
               trailing: Text(
-                context.locale.languageCode == 'en' ? AppStrings.english.tr() : AppStrings.bengali.tr(), 
+                context.locale.languageCode == 'en' ? AppStrings.english.tr() : AppStrings.bengali.tr(),
                 style: TextStyle(color: settings.primaryColor, fontWeight: FontWeight.bold)
               ),
               onTap: () {
@@ -313,28 +339,28 @@ class ProfileScreen extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20),
       child: AppCard(
-        elevation: 2,
-        borderRadius: 20,
+        elevation: 1,
+        borderRadius: 16,
         child: Padding(
-          padding: const EdgeInsets.all(20),
+          padding: const EdgeInsets.all(16.0),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text(AppStrings.personalInfo.tr(), style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                  Text(AppStrings.personalInfo.tr(), style: const TextStyle(fontSize: 15, fontWeight: FontWeight.bold)),
                   GestureDetector(
                     onTap: () => Navigator.pushNamed(context, AppRoutes.editProfile),
-                    child: Text(AppStrings.update.tr(), style: TextStyle(color: settings.primaryColor, fontWeight: FontWeight.bold)),
+                    child: Text(AppStrings.update.tr(), style: TextStyle(color: settings.primaryColor, fontWeight: FontWeight.bold, fontSize: 13)),
                   ),
                 ],
               ),
-              const Divider(height: 30),
+              const Divider(height: 20),
               _buildInfoRow(Icons.phone_android_rounded, AppStrings.phoneLabel.tr(), user?.phoneNumber ?? "Not provided"),
-              const SizedBox(height: 15),
+              const SizedBox(height: 10),
               _buildInfoRow(Icons.email_outlined, AppStrings.emailLabel.tr(), user?.email ?? ""),
-              const SizedBox(height: 15),
+              const SizedBox(height: 10),
               _buildInfoRow(Icons.location_on_outlined, AppStrings.addressLabel.tr(), user?.address ?? "No address saved"),
             ],
           ),
@@ -347,17 +373,17 @@ class ProfileScreen extends StatelessWidget {
     return Row(
       children: [
         Container(
-          padding: const EdgeInsets.all(10),
-          decoration: BoxDecoration(color: Colors.grey[100], borderRadius: BorderRadius.circular(12)),
-          child: Icon(icon, size: 20, color: Colors.grey[700]),
+          padding: const EdgeInsets.all(8),
+          decoration: BoxDecoration(color: Colors.grey[100], borderRadius: BorderRadius.circular(10)),
+          child: Icon(icon, size: 18, color: Colors.grey[700]),
         ),
-        const SizedBox(width: 15),
+        const SizedBox(width: 12),
         Expanded(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(label, style: const TextStyle(fontSize: 12, color: Colors.grey)),
-              Text(value, style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w600)),
+              Text(label, style: const TextStyle(fontSize: 11, color: Colors.grey)),
+              Text(value, style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600)),
             ],
           ),
         ),
@@ -448,7 +474,7 @@ class ProfileScreen extends StatelessWidget {
     final oldController = TextEditingController();
     final newController = TextEditingController();
     final confirmController = TextEditingController();
-    
+
     showDialog(
       context: context,
       builder: (ctx) => AlertDialog(
@@ -492,12 +518,12 @@ class ProfileScreen extends StatelessWidget {
                 ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Passwords do not match")));
                 return;
               }
-              
+
               final success = await context.read<AuthViewModel>().changePassword(
-                oldController.text, 
+                oldController.text,
                 newController.text
               );
-              
+
               if (context.mounted) {
                 if (success) {
                   Navigator.pop(ctx);

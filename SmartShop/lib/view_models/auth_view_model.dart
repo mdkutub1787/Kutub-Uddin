@@ -6,27 +6,46 @@ import '../models/user_model.dart';
 class AuthViewModel extends ChangeNotifier {
   final AuthService _authService = AuthService();
   bool _isLoading = false;
+  bool _isInitialized = false;
   String? _error;
   UserModel? _userModel;
 
   bool get isLoading => _isLoading;
+  bool get isInitialized => _isInitialized;
   String? get error => _error;
   User? get firebaseUser => _authService.currentUser;
   UserModel? get user => _userModel;
-  bool get isAdmin => _userModel?.role == 'admin';
+  bool get isAdmin => _userModel?.role == 'admin' || _userModel?.role == 'super_admin';
 
   AuthViewModel() {
     _init();
   }
 
-  void _init() {
+  Future<void> _init() async {
+    // 1. Initial immediate check from Firebase cache
+    final currentUser = _authService.currentUser;
+    if (currentUser != null) {
+      _userModel = await _authService.getUserData(currentUser.uid);
+    }
+    _isInitialized = true;
+    notifyListeners();
+
+    // 2. Listen for future auth changes
     _authService.userStream.listen((user) async {
       if (user != null) {
-        _userModel = await _authService.getUserData(user.uid);
+        if (_userModel?.uid != user.uid) {
+          _userModel = await _authService.getUserData(user.uid);
+          
+          if (_userModel != null && !_userModel!.isActive) {
+            await logout();
+          }
+
+          notifyListeners();
+        }
       } else {
         _userModel = null;
+        notifyListeners();
       }
-      notifyListeners();
     });
   }
 
@@ -38,6 +57,15 @@ class AuthViewModel extends ChangeNotifier {
     try {
       UserCredential credential = await _authService.signIn(email, password);
       _userModel = await _authService.getUserData(credential.user!.uid);
+      
+      if (_userModel != null && !_userModel!.isActive) {
+        await logout();
+        _error = "Your account has been deactivated. Please contact support.";
+        _isLoading = false;
+        notifyListeners();
+        return false;
+      }
+
       _isLoading = false;
       notifyListeners();
       return true;

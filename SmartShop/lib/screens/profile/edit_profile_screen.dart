@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:firebase_database/firebase_database.dart';
 import '../../view_models/auth_view_model.dart';
-import '../../view_models/settings_view_model.dart';
 import '../../widgets/custom_app_bar.dart';
 
 class EditProfileScreen extends StatefulWidget {
