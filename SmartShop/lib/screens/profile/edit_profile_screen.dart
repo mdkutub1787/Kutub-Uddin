@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:firebase_database/firebase_database.dart';
 import '../../view_models/auth_view_model.dart';
+import '../../view_models/settings_view_model.dart';
+import '../../widgets/custom_app_bar.dart';
 
 class EditProfileScreen extends StatefulWidget {
   const EditProfileScreen({super.key});
@@ -51,13 +53,9 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
 
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-      appBar: AppBar(
-        title: const Text("Edit Profile"),
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-        foregroundColor: Colors.black87,
+      appBar: const CustomAppBar(
+        title: "Edit Profile",
       ),
-      extendBodyBehindAppBar: true,
       body: Stack(
         children: [
           // Decorative Background Elements
@@ -80,45 +78,43 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
           
           _isSaving 
             ? const Center(child: CircularProgressIndicator()) 
-            : SafeArea(
-                child: SingleChildScrollView(
-                  padding: const EdgeInsets.symmetric(horizontal: 28, vertical: 20),
-                  child: Column(
-                    children: [
-                      const SizedBox(height: 20),
-                      _field(_nameController, "Full Name", Icons.person_outline_rounded, autofillHints: [AutofillHints.name]),
-                      const SizedBox(height: 24),
-                      _field(_phoneController, "Phone Number", Icons.phone_android_rounded, keyboardType: TextInputType.phone, autofillHints: [AutofillHints.telephoneNumber]),
-                      const SizedBox(height: 24),
-                      _field(_addressController, "Full Address", Icons.location_on_outlined, lines: 3, autofillHints: [AutofillHints.fullStreetAddress]),
-                      const SizedBox(height: 40),
-                      
-                      SizedBox(
-                        width: double.infinity,
-                        height: 60,
-                        child: ElevatedButton(
-                          onPressed: _updateProfile,
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: primaryColor,
-                            foregroundColor: Colors.white,
-                            elevation: 8,
-                            shadowColor: primaryColor.withValues(alpha: 0.4),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(20),
-                            ),
+            : SingleChildScrollView(
+                padding: const EdgeInsets.symmetric(horizontal: 28, vertical: 20),
+                child: Column(
+                  children: [
+                    const SizedBox(height: 20),
+                    _field(_nameController, "Full Name", Icons.person_outline_rounded, autofillHints: [AutofillHints.name]),
+                    const SizedBox(height: 24),
+                    _field(_phoneController, "Phone Number", Icons.phone_android_rounded, keyboardType: TextInputType.phone, autofillHints: [AutofillHints.telephoneNumber]),
+                    const SizedBox(height: 24),
+                    _field(_addressController, "Full Address", Icons.location_on_outlined, lines: 3, autofillHints: [AutofillHints.fullStreetAddress]),
+                    const SizedBox(height: 40),
+                    
+                    SizedBox(
+                      width: double.infinity,
+                      height: 60,
+                      child: ElevatedButton(
+                        onPressed: _updateProfile,
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: primaryColor,
+                          foregroundColor: Colors.white,
+                          elevation: 8,
+                          shadowColor: primaryColor.withValues(alpha: 0.4),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(20),
                           ),
-                          child: const Text(
-                            "SAVE CHANGES",
-                            style: TextStyle(
-                              fontSize: 18, 
-                              fontWeight: FontWeight.w900,
-                              letterSpacing: 1.2
-                            ),
+                        ),
+                        child: const Text(
+                          "SAVE CHANGES",
+                          style: TextStyle(
+                            fontSize: 18, 
+                            fontWeight: FontWeight.w900,
+                            letterSpacing: 1.2
                           ),
                         ),
                       ),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
               ),
         ],

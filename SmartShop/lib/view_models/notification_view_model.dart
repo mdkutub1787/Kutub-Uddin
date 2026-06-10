@@ -1,17 +1,35 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_database/firebase_database.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../models/notification_model.dart';
 
 class NotificationViewModel extends ChangeNotifier {
   final DatabaseReference _dbRef = FirebaseDatabase.instance.ref().child('notifications');
   List<NotificationModel> _notifications = [];
   bool _isLoading = false;
+  int _lastReadTimestamp = 0;
 
   List<NotificationModel> get notifications => _notifications;
   bool get isLoading => _isLoading;
+  int get unreadCount => _notifications.where((n) => n.timestamp.millisecondsSinceEpoch > _lastReadTimestamp).length;
 
   NotificationViewModel() {
+    _loadLastRead();
     fetchNotifications();
+  }
+
+  Future<void> _loadLastRead() async {
+    final prefs = await SharedPreferences.getInstance();
+    _lastReadTimestamp = prefs.getInt('last_read_notifications') ?? 0;
+    notifyListeners();
+  }
+
+  Future<void> markAsRead() async {
+    if (_notifications.isEmpty) return;
+    _lastReadTimestamp = DateTime.now().millisecondsSinceEpoch;
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setInt('last_read_notifications', _lastReadTimestamp);
+    notifyListeners();
   }
 
   void fetchNotifications() {

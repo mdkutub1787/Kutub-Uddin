@@ -14,9 +14,11 @@ import '../screens/profile/admin_verification_screen.dart';
 import '../screens/admin/admin_dashboard_screen.dart';
 import '../screens/offers/offers_screen.dart';
 import '../screens/notification/notification_screen.dart';
+import '../screens/notification/notification_details_screen.dart';
 import '../screens/support/support_screen.dart';
 import '../models/product_model.dart';
 import '../models/order_model.dart';
+import '../models/notification_model.dart';
 
 import '../screens/splash/splash_screen.dart';
 
@@ -37,6 +39,7 @@ class AppRoutes {
   static const String adminDashboard = '/admin-dashboard';
   static const String offers = '/offers';
   static const String notifications = '/notifications';
+  static const String notificationDetails = '/notification-details';
   static const String support = '/support';
 
   static Route<dynamic> generateRoute(RouteSettings settings) {
@@ -69,6 +72,11 @@ class AppRoutes {
         return MaterialPageRoute(builder: (_) => const OffersScreen());
       case notifications:
         return MaterialPageRoute(builder: (_) => const NotificationScreen());
+      case notificationDetails:
+        final notification = settings.arguments as NotificationModel;
+        return MaterialPageRoute(
+          builder: (_) => NotificationDetailsScreen(notification: notification),
+        );
       case support:
         return MaterialPageRoute(builder: (_) => const SupportScreen());
       case productDetails:

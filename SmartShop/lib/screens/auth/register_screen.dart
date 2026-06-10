@@ -79,7 +79,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   ),
                   const SizedBox(height: 8),
                   Text(
-                    "Create your account to start shopping",
+                    AppStrings.registrationSubtitle.tr(),
                     style: TextStyle(
                       fontSize: 16,
                       color: Colors.grey[600],
@@ -96,7 +96,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         _buildTextField(
                           controller: _nameController,
                           label: AppStrings.nameLabel.tr(),
-                          hint: "Your Full Name",
+                          hint: AppStrings.fullNameHint.tr(),
                           icon: Icons.person_outline_rounded,
                           action: TextInputAction.next,
                           autofillHints: [AutofillHints.name],
@@ -116,8 +116,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         
                         _buildTextField(
                           controller: _addressController,
-                          label: "Delivery Address",
-                          hint: "House, Road, Area...",
+                          label: AppStrings.addressLabel.tr(),
+                          hint: AppStrings.addressHint.tr(),
                           icon: Icons.location_on_outlined,
                           action: TextInputAction.next,
                           autofillHints: [AutofillHints.fullStreetAddress],
@@ -213,7 +213,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Text(
-                        "Already have an account?",
+                        AppStrings.alreadyHaveAccount.tr(),
                         style: TextStyle(color: Colors.grey[600], fontSize: 15),
                       ),
                       TextButton(
@@ -291,7 +291,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
   Future<void> _handleRegister(AuthViewModel authViewModel) async {
     FocusManager.instance.primaryFocus?.unfocus();
     if (_nameController.text.isEmpty || _phoneController.text.isEmpty || _emailController.text.isEmpty || _addressController.text.isEmpty || _passwordController.text.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Please fill all fields")));
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(AppStrings.fillAllFields.tr())));
       return;
     }
     if (_passwordController.text != _confirmPasswordController.text) {
@@ -300,7 +300,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
     }
 
     final loading = context.read<LoadingViewModel>();
-    loading.show(message: "Creating your account...");
+    loading.show(message: AppStrings.creatingAccount.tr());
     bool success = await authViewModel.register(
       _emailController.text.trim(),
       _passwordController.text,
@@ -314,7 +314,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
       TextInput.finishAutofillContext();
       await authViewModel.logout();
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Registration Successful! Please login.")));
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(AppStrings.regSuccess.tr())));
         Navigator.pushReplacementNamed(context, AppRoutes.login);
       }
     }

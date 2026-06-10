@@ -8,6 +8,9 @@ import '../profile/profile_screen.dart';
 import '../../view_models/cart_view_model.dart';
 import '../../view_models/settings_view_model.dart';
 import '../../view_models/navigation_view_model.dart';
+import 'package:smart_shop/view_models/auth_view_model.dart';
+import 'package:smart_shop/view_models/support_view_model.dart';
+import 'package:smart_shop/view_models/notification_view_model.dart';
 import '../../utils/constants/app_strings.dart';
 
 class MainScreen extends StatefulWidget {
@@ -18,6 +21,16 @@ class MainScreen extends StatefulWidget {
 }
 
 class _MainScreenState extends State<MainScreen> {
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final auth = context.read<AuthViewModel>();
+      if (auth.user != null) {
+        context.read<SupportViewModel>().listenToMessages(auth.user!.uid);
+      }
+    });
+  }
   final List<Widget> _screens = [
     const DashboardScreen(),
     const MyOrdersScreen(),

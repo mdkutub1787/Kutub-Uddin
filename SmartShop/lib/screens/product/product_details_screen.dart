@@ -124,15 +124,32 @@ class ProductDetailsScreen extends StatelessWidget {
                             padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                             decoration: BoxDecoration(color: Colors.red, borderRadius: BorderRadius.circular(8)),
                             child: Text(
-                              product.discountType == 'percentage' ? "${product.discountValue.toInt()}% OFF" : "৳${product.discountValue.toInt()} OFF",
+                              AppStrings.offLabel.tr(args: [
+                                product.discountType == 'percentage' ? "${product.discountValue.toInt()}%" : "৳${product.discountValue.toInt()}"
+                              ]),
                               style: const TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.bold),
                             ),
                           ),
                         ],
                       ],
                     ),
+                    const SizedBox(height: 15),
+                    Row(
+                      children: [
+                        Icon(Icons.inventory_2_outlined, size: 18, color: Colors.grey[600]),
+                        const SizedBox(width: 8),
+                        Text(
+                          "${AppStrings.stock.tr()}: ${product.stock} ${AppStrings.pieces.tr()}",
+                          style: TextStyle(
+                            color: product.stock <= 5 ? Colors.orange[800] : Colors.grey[800],
+                            fontWeight: FontWeight.bold,
+                            fontSize: 14,
+                          ),
+                        ),
+                      ],
+                    ),
                     const SizedBox(height: 30),
-                    const Text("Description", style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+                    Text(AppStrings.description.tr(), style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
                     const SizedBox(height: 12),
                     Text(product.description, style: TextStyle(fontSize: 16, color: Colors.grey[700], height: 1.6)),
                     const SizedBox(height: 120),
@@ -211,7 +228,7 @@ class ProductDetailsScreen extends StatelessWidget {
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(22)),
                   ),
                   child: Text(
-                    product.stock > 0 ? "ADD TO CART" : "OUT OF STOCK", 
+                    product.stock > 0 ? AppStrings.addToCart.tr().toUpperCase() : AppStrings.outOfStock.tr().toUpperCase(),
                     style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w900, letterSpacing: 1.2)
                   ),
                 ),

@@ -23,8 +23,8 @@ class OrderDetailsScreen extends StatelessWidget {
     
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-      appBar: const CustomAppBar(
-        title: "Order Details",
+      appBar: CustomAppBar(
+        title: AppStrings.orderDetails.tr(),
       ),
       body: Stack(
         children: [
@@ -53,9 +53,9 @@ class OrderDetailsScreen extends StatelessWidget {
               children: [
                 _buildOrderInfoCard(context, settings),
                 const SizedBox(height: 30),
-                const Text(
-                  "Ordered Items",
-                  style: TextStyle(fontSize: 22, fontWeight: FontWeight.w900, letterSpacing: -0.5),
+                Text(
+                  AppStrings.orderedItems.tr(),
+                  style: const TextStyle(fontSize: 22, fontWeight: FontWeight.w900, letterSpacing: -0.5),
                 ),
                 const SizedBox(height: 15),
                 _buildItemsList(context, settings),
@@ -88,12 +88,12 @@ class OrderDetailsScreen extends StatelessWidget {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                const Text("Status", style: TextStyle(color: Colors.grey)),
+                Text(AppStrings.status.tr(), style: const TextStyle(color: Colors.grey)),
                 _buildStatusBadge(order.status),
               ],
             ),
             const Divider(height: 24),
-            const Text("Order ID", style: TextStyle(color: Colors.grey)),
+            Text(AppStrings.orderId.tr(), style: const TextStyle(color: Colors.grey)),
             const SizedBox(height: 4),
             SelectableText(
               order.id,
@@ -106,7 +106,7 @@ class OrderDetailsScreen extends StatelessWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Text("Date", style: TextStyle(color: Colors.grey)),
+                      Text(AppStrings.date.tr(), style: const TextStyle(color: Colors.grey)),
                       const SizedBox(height: 4),
                       Text(
                         DateFormat('dd MMM yyyy, hh:mm a').format(order.date),
@@ -119,16 +119,16 @@ class OrderDetailsScreen extends StatelessWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Text("Payment Method", style: TextStyle(color: Colors.grey)),
+                      Text(AppStrings.paymentMethod.tr(), style: const TextStyle(color: Colors.grey)),
                       const SizedBox(height: 4),
-                      const Text("Cash on Delivery", style: TextStyle(fontWeight: FontWeight.w600)),
+                      Text(AppStrings.cashOnDelivery.tr(), style: const TextStyle(fontWeight: FontWeight.w600)),
                     ],
                   ),
                 ),
               ],
             ),
             const Divider(height: 32),
-            const Text("Shipping Address", style: TextStyle(color: Colors.grey)),
+            Text(AppStrings.shippingAddress.tr(), style: const TextStyle(color: Colors.grey)),
             const SizedBox(height: 8),
             Row(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -225,7 +225,7 @@ class OrderDetailsScreen extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              const Text("Subtotal", style: TextStyle(fontSize: 16)),
+              Text(AppStrings.subtotal.tr(), style: const TextStyle(fontSize: 16)),
               Text("${AppStrings.currency.tr()} ${NumberFormat('#,##,###').format(subtotal.toInt())}", style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
             ],
           ),
@@ -233,7 +233,7 @@ class OrderDetailsScreen extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              const Text("Delivery Fee", style: TextStyle(fontSize: 16)),
+              Text(AppStrings.deliveryFee.tr(), style: const TextStyle(fontSize: 16)),
               Text("${AppStrings.currency.tr()} ${NumberFormat('#,##,###').format(order.deliveryFee.toInt())}", style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
             ],
           ),
@@ -241,9 +241,9 @@ class OrderDetailsScreen extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              const Text(
-                "Total Amount",
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              Text(
+                AppStrings.totalAmount.tr(),
+                style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
               ),
               Text.rich(
                 TextSpan(
@@ -283,9 +283,9 @@ class OrderDetailsScreen extends StatelessWidget {
           side: const BorderSide(color: Colors.red, width: 1.5),
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
         ),
-        child: const Text(
-          "CANCEL ORDER",
-          style: TextStyle(fontWeight: FontWeight.w900, fontSize: 18, letterSpacing: 1.2),
+        child: Text(
+          AppStrings.cancelOrder.tr(),
+          style: const TextStyle(fontWeight: FontWeight.w900, fontSize: 18, letterSpacing: 1.2),
         ),
       ),
     );
@@ -293,10 +293,20 @@ class OrderDetailsScreen extends StatelessWidget {
 
   Widget _buildStatusBadge(String status) {
     Color color = Colors.blue;
-    if (status == 'Pending') color = Colors.orange;
-    if (status == 'Delivered') color = Colors.green;
-    if (status == 'Cancelled') color = Colors.red;
-    if (status == 'Shipped') color = Colors.purple;
+    String statusText = status;
+    if (status == 'Pending') {
+      color = Colors.orange;
+      statusText = AppStrings.statusPending.tr();
+    } else if (status == 'Delivered') {
+      color = Colors.green;
+      statusText = AppStrings.statusDelivered.tr();
+    } else if (status == 'Cancelled') {
+      color = Colors.red;
+      statusText = AppStrings.statusCancelled.tr();
+    } else if (status == 'Shipped') {
+      color = Colors.purple;
+      statusText = AppStrings.statusShipped.tr();
+    }
 
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
@@ -305,7 +315,7 @@ class OrderDetailsScreen extends StatelessWidget {
         borderRadius: BorderRadius.circular(8),
       ),
       child: Text(
-        status.toUpperCase(),
+        statusText.toUpperCase(),
         style: TextStyle(color: color, fontWeight: FontWeight.bold, fontSize: 12),
       ),
     );
@@ -315,10 +325,10 @@ class OrderDetailsScreen extends StatelessWidget {
     showDialog(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: const Text("Cancel Order?"),
-        content: const Text("Are you sure you want to cancel this order? The items will be returned to stock."),
+        title: Text(AppStrings.cancelConfirmTitle.tr()),
+        content: Text(AppStrings.cancelConfirmMsg.tr()),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(ctx), child: const Text("NO")),
+          TextButton(onPressed: () => Navigator.pop(ctx), child: Text(AppStrings.no.tr())),
           TextButton(
             onPressed: () async {
               final success = await OrderRepository().cancelOrder(order);
@@ -327,16 +337,16 @@ class OrderDetailsScreen extends StatelessWidget {
                 if (success) {
                   Navigator.pop(context); // Go back to orders list
                   ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text("Order cancelled and stock updated")),
+                    SnackBar(content: Text(AppStrings.cancelSuccess.tr())),
                   );
                 } else {
                   ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text("Failed to cancel order. It might already be processed."), backgroundColor: Colors.red),
+                    SnackBar(content: Text(AppStrings.cancelFailed.tr()), backgroundColor: Colors.red),
                   );
                 }
               }
             },
-            child: const Text("YES, CANCEL", style: TextStyle(color: Colors.red)),
+            child: Text(AppStrings.yesCancel.tr(), style: const TextStyle(color: Colors.red)),
           ),
         ],
       ),

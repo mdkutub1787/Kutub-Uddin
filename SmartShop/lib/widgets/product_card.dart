@@ -104,9 +104,11 @@ class ProductCard extends StatelessWidget {
                           ],
                         ),
                         child: Text(
-                          product.discountType == 'percentage' 
-                              ? "${product.discountValue.toInt()}% OFF" 
-                              : "৳${product.discountValue.toInt()} OFF",
+                          AppStrings.offLabel.tr(args: [
+                            product.discountType == 'percentage' 
+                                ? "${product.discountValue.toInt()}%" 
+                                : "৳${product.discountValue.toInt()}"
+                          ]),
                           style: const TextStyle(
                             color: Colors.white, 
                             fontSize: 10, 
@@ -187,17 +189,17 @@ class ProductCard extends StatelessWidget {
                               style: TextStyle(fontSize: 11, fontWeight: FontWeight.w900, color: Colors.grey[700]),
                             ),
                             const Spacer(),
-                            if (product.stock <= 5 && product.stock > 0)
+                            if (product.stock > 0)
                               Container(
                                 padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
                                 decoration: BoxDecoration(
-                                  color: Colors.orange.withValues(alpha: 0.1),
+                                  color: (product.stock <= 5) ? Colors.orange.withValues(alpha: 0.1) : Colors.blue.withValues(alpha: 0.1),
                                   borderRadius: BorderRadius.circular(6),
                                 ),
                                 child: Text(
-                                  "Only ${product.stock} left",
-                                  style: const TextStyle(
-                                    color: Colors.orange, 
+                                  "${product.stock} ${AppStrings.pieces.tr()}",
+                                  style: TextStyle(
+                                    color: (product.stock <= 5) ? Colors.orange : Colors.blue,
                                     fontSize: 9, 
                                     fontWeight: FontWeight.w900
                                   ),
@@ -284,15 +286,15 @@ class ProductCard extends StatelessWidget {
                           padding: EdgeInsets.zero,
                         ),
                         child: product.stock > 0 
-                          ? const Row(
+                          ? Row(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
-                                Icon(Icons.add_shopping_cart_rounded, size: 16),
-                                SizedBox(width: 8),
-                                Text("ADD TO CART", style: TextStyle(fontSize: 11, fontWeight: FontWeight.w900, letterSpacing: 0.5)),
+                                const Icon(Icons.add_shopping_cart_rounded, size: 16),
+                                const SizedBox(width: 8),
+                                Text(AppStrings.addToCart.tr().toUpperCase(), style: const TextStyle(fontSize: 10, fontWeight: FontWeight.w900, letterSpacing: 0.5)),
                               ],
                             )
-                          : Text("OUT OF STOCK", style: TextStyle(fontSize: 10, color: Colors.grey[400], fontWeight: FontWeight.w900)),
+                          : Text(AppStrings.outOfStock.tr().toUpperCase(), style: TextStyle(fontSize: 10, color: Colors.grey[400], fontWeight: FontWeight.w900)),
                       ),
                     ),
                   ],

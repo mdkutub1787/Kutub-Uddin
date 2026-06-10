@@ -200,16 +200,16 @@ class _LoginScreenState extends State<LoginScreen> {
                               ),
                             ),
                             const SizedBox(width: 8),
-                            Text("Remember Me", style: TextStyle(color: Colors.grey[700], fontWeight: FontWeight.w500)),
+                            Text(AppStrings.rememberMe.tr(), style: TextStyle(color: Colors.grey[700], fontWeight: FontWeight.w500)),
                             const Spacer(),
                             TextButton(
                               onPressed: () {
                                 if (_emailController.text.isEmpty) {
-                                  ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Please enter your email first")));
+                                  ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(AppStrings.enterEmailFirst.tr())));
                                   return;
                                 }
                                 authViewModel.forgotPassword(_emailController.text.trim());
-                                ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Password reset email sent!")));
+                                ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(AppStrings.resetEmailSent.tr())));
                               },
                               child: Text(
                                 AppStrings.forgotPassword.tr(),
@@ -355,7 +355,7 @@ class _LoginScreenState extends State<LoginScreen> {
     }
 
     final loading = context.read<LoadingViewModel>();
-    loading.show(message: "Authenticating...");
+    loading.show(message: AppStrings.authenticating.tr());
 
     bool success = await authViewModel.login(
       _emailController.text.trim(),

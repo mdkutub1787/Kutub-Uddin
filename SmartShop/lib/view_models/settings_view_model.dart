@@ -7,9 +7,11 @@ class SettingsViewModel extends ChangeNotifier {
 
   ThemeMode _themeMode = ThemeMode.system;
   Color _primaryColor = const Color(0xFF1A237E); // Default
+  String _shopName = "Smart Shop Support";
 
   ThemeMode get themeMode => _themeMode;
   Color get primaryColor => _primaryColor;
+  String get shopName => _shopName;
 
   SettingsViewModel() {
     _loadSettings();

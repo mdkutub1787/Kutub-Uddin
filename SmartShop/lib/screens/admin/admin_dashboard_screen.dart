@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../view_models/settings_view_model.dart';
+import '../../routes/app_routes.dart';
+import '../../utils/constants/app_strings.dart';
+import 'package:easy_localization/easy_localization.dart';
 import '../../widgets/custom_app_bar.dart';
 import 'admin_product_list_screen.dart';
 import 'admin_category_list_screen.dart';
@@ -15,8 +18,8 @@ class AdminDashboardScreen extends StatelessWidget {
     final settings = context.watch<SettingsViewModel>();
     
     return Scaffold(
-      appBar: const CustomAppBar(
-        title: "Control Panel",
+      appBar: CustomAppBar(
+        title: AppStrings.adminControlPanel.tr(),
       ),
       body: SingleChildScrollView(
         child: Column(
@@ -33,35 +36,51 @@ class AdminDashboardScreen extends StatelessWidget {
                 children: [
                   _buildAdminCard(
                     context,
-                    "Products",
+                    AppStrings.products.tr(),
                     Icons.shopping_bag_rounded,
                     Colors.blue,
-                    "Manage inventory",
+                    AppStrings.manageInventory.tr(),
                     () => Navigator.push(context, MaterialPageRoute(builder: (_) => const AdminProductListScreen())),
                   ),
                   _buildAdminCard(
                     context,
-                    "Categories",
+                    AppStrings.categoriesTitle.tr(),
                     Icons.category_rounded,
                     Colors.orange,
-                    "Organize items",
+                    AppStrings.organizeItems.tr(),
                     () => Navigator.push(context, MaterialPageRoute(builder: (_) => const AdminCategoryListScreen())),
                   ),
                   _buildAdminCard(
                     context,
-                    "Orders",
+                    AppStrings.orders.tr(),
                     Icons.receipt_long_rounded,
                     Colors.green,
-                    "Track sales",
+                    AppStrings.trackSales.tr(),
                     () => Navigator.push(context, MaterialPageRoute(builder: (_) => const AdminOrderListScreen())),
                   ),
                   _buildAdminCard(
                     context,
-                    "Analytics",
+                    AppStrings.analytics.tr(),
                     Icons.analytics_rounded,
                     Colors.purple,
-                    "View reports",
+                    AppStrings.viewReports.tr(),
                     () => Navigator.push(context, MaterialPageRoute(builder: (_) => const AdminAnalyticsScreen())),
+                  ),
+                  _buildAdminCard(
+                    context,
+                    AppStrings.notices.tr(),
+                    Icons.notification_add_rounded,
+                    Colors.red,
+                    AppStrings.pushNotifications.tr(),
+                    () => Navigator.pushNamed(context, AppRoutes.notifications),
+                  ),
+                  _buildAdminCard(
+                    context,
+                    AppStrings.support.tr(),
+                    Icons.support_agent_rounded,
+                    Colors.teal,
+                    AppStrings.customerChat.tr(),
+                    () => Navigator.pushNamed(context, AppRoutes.support),
                   ),
                 ],
               ),
@@ -89,12 +108,12 @@ class AdminDashboardScreen extends StatelessWidget {
             child: Icon(Icons.admin_panel_settings_rounded, size: 45, color: Colors.white),
           ),
           const SizedBox(height: 20),
-          const Text(
-            "Hello, Admin!",
-            style: TextStyle(color: Colors.white, fontSize: 28, fontWeight: FontWeight.bold),
+          Text(
+            AppStrings.helloAdmin.tr(),
+            style: const TextStyle(color: Colors.white, fontSize: 28, fontWeight: FontWeight.bold),
           ),
           Text(
-            "Welcome back to your shop manager.",
+            AppStrings.adminWelcomeMsg.tr(),
             style: TextStyle(color: Colors.white.withValues(alpha: 0.8), fontSize: 16),
           ),
         ],

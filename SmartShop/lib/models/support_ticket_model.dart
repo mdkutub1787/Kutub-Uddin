@@ -34,6 +34,7 @@ class SupportTicket {
   final String id;
   final String userId;
   final String userName;
+  final String userPhone;
   final String lastMessage;
   final DateTime lastUpdate;
   final String status; // 'open', 'closed'
@@ -42,6 +43,7 @@ class SupportTicket {
     required this.id,
     required this.userId,
     required this.userName,
+    required this.userPhone,
     required this.lastMessage,
     required this.lastUpdate,
     this.status = 'open',
@@ -52,6 +54,7 @@ class SupportTicket {
       id: id,
       userId: map['userId'] ?? '',
       userName: map['userName'] ?? '',
+      userPhone: map['userPhone'] ?? '',
       lastMessage: map['lastMessage'] ?? '',
       lastUpdate: DateTime.fromMillisecondsSinceEpoch(map['lastUpdate'] ?? DateTime.now().millisecondsSinceEpoch),
       status: map['status'] ?? 'open',
@@ -62,6 +65,7 @@ class SupportTicket {
     return {
       'userId': userId,
       'userName': userName,
+      'userPhone': userPhone,
       'lastMessage': lastMessage,
       'lastUpdate': lastUpdate.millisecondsSinceEpoch,
       'status': status,

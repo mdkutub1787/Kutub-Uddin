@@ -94,9 +94,9 @@ class _CartScreenState extends State<CartScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text(
-            "Delivery Area",
-            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+          Text(
+            AppStrings.deliveryArea.tr(),
+            style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
           ),
           const SizedBox(height: 12),
           Row(
@@ -104,7 +104,7 @@ class _CartScreenState extends State<CartScreen> {
               Expanded(
                 child: _deliveryOption(
                   context, 
-                  "Inside Dhaka", 
+                  AppStrings.insideDhaka.tr(), 
                   "60", 
                   cart.isInsideDhaka, 
                   () => cart.setInsideDhaka(true),
@@ -115,7 +115,7 @@ class _CartScreenState extends State<CartScreen> {
               Expanded(
                 child: _deliveryOption(
                   context, 
-                  "Outside Dhaka", 
+                  AppStrings.outsideDhaka.tr(),
                   "150", 
                   !cart.isInsideDhaka, 
                   () => cart.setInsideDhaka(false),
@@ -187,8 +187,8 @@ class _CartScreenState extends State<CartScreen> {
                 style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
               ),
               TextButton(
-                onPressed: () {},
-                child: const Text("Change"),
+                onPressed: () => Navigator.pushNamed(context, AppRoutes.editProfile),
+                child: Text(AppStrings.change.tr()),
               )
             ],
           ),
@@ -199,7 +199,7 @@ class _CartScreenState extends State<CartScreen> {
               const SizedBox(width: 8),
               Expanded(
                 child: Text(
-                  auth.user?.address ?? "No address set. Please update your profile.",
+                  auth.user?.address ?? AppStrings.noAddress.tr(),
                   style: const TextStyle(color: Colors.black87),
                 ),
               ),
@@ -263,10 +263,10 @@ class _CartScreenState extends State<CartScreen> {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              const Text("Have a coupon?", style: TextStyle(fontWeight: FontWeight.bold, color: Colors.black87)),
+              Text(AppStrings.haveCoupon.tr(), style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.black87)),
               TextButton(
                 onPressed: () => Navigator.pushNamed(context, AppRoutes.offers),
-                child: Text("View Offers", style: TextStyle(color: settings.primaryColor, fontWeight: FontWeight.bold)),
+                child: Text(AppStrings.viewOffers.tr(), style: TextStyle(color: settings.primaryColor, fontWeight: FontWeight.bold)),
               ),
             ],
           ),
@@ -286,8 +286,8 @@ class _CartScreenState extends State<CartScreen> {
               Expanded(
                 child: TextField(
                   controller: _couponController,
-                  decoration: const InputDecoration(
-                    hintText: "Enter Coupon Code",
+                  decoration: InputDecoration(
+                    hintText: AppStrings.enterCoupon.tr(),
                     border: InputBorder.none,
                   ),
                 ),
@@ -299,18 +299,18 @@ class _CartScreenState extends State<CartScreen> {
                     String result = cart.applyCoupon(_couponController.text);
                     ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(
-                        content: Text(result == 'Success' ? "Coupon Applied!" : result),
+                        content: Text(result == 'Success' ? AppStrings.couponApplied.tr() : result),
                         backgroundColor: result == 'Success' ? Colors.green : Colors.red,
                       ),
                     );
                     if (result == 'Success') _couponController.clear();
                   } catch (e) {
                     ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text("Invalid Coupon"), backgroundColor: Colors.red),
+                      SnackBar(content: Text(AppStrings.invalidCoupon.tr()), backgroundColor: Colors.red),
                     );
                   }
                 },
-                child: const Text("Apply", style: TextStyle(fontWeight: FontWeight.bold)),
+                child: Text(AppStrings.apply.tr(), style: const TextStyle(fontWeight: FontWeight.bold)),
               ),
             ],
           ),
@@ -330,7 +330,7 @@ class _CartScreenState extends State<CartScreen> {
                 const Icon(Icons.check_circle_outline, color: Colors.green, size: 16),
                 const SizedBox(width: 8),
                 Text(
-                  "Coupon '${cart.appliedCoupon!.code}' applied",
+                  "${AppStrings.couponApplied.tr()} '${cart.appliedCoupon!.code}'",
                   style: const TextStyle(color: Colors.green, fontWeight: FontWeight.bold, fontSize: 12),
                 ),
                 const SizedBox(width: 8),
@@ -363,19 +363,19 @@ class _CartScreenState extends State<CartScreen> {
       ),
       child: Column(
         children: [
-          _summaryRow("Price (${cart.itemCount} items)", "$currency ${NumberFormat('#,##,###').format(cart.totalOriginalPrice.toInt())}"),
+          _summaryRow(AppStrings.priceItems.tr(args: [cart.itemCount.toString()]), "$currency ${NumberFormat('#,##,###').format(cart.totalOriginalPrice.toInt())}"),
           const SizedBox(height: 12),
           if (cart.totalProductDiscount > 0) ...[
-            _summaryRow("Product Discount", "-$currency ${NumberFormat('#,##,###').format(cart.totalProductDiscount.toInt())}", color: Colors.green),
+            _summaryRow(AppStrings.productDiscount.tr(), "-$currency ${NumberFormat('#,##,###').format(cart.totalProductDiscount.toInt())}", color: Colors.green),
             const SizedBox(height: 12),
           ],
-          _summaryRow("Subtotal", "$currency ${NumberFormat('#,##,###').format(cart.subtotal.toInt())}"),
+          _summaryRow(AppStrings.subtotal.tr(), "$currency ${NumberFormat('#,##,###').format(cart.subtotal.toInt())}"),
           const SizedBox(height: 12),
-          _summaryRow("Delivery Fee", "$currency ${NumberFormat('#,##,###').format(cart.deliveryFee.toInt())}"),
+          _summaryRow(AppStrings.deliveryFee.tr(), "$currency ${NumberFormat('#,##,###').format(cart.deliveryFee.toInt())}"),
           const SizedBox(height: 12),
           if (cart.couponDiscount > 0 || cart.appliedCoupon?.type == CouponType.freeDelivery) ...[
             _summaryRow(
-              "Coupon Discount ${cart.appliedCouponDetails.isNotEmpty ? '(${cart.appliedCouponDetails})' : ''}", 
+              "${AppStrings.couponDiscount.tr()} ${cart.appliedCouponDetails.isNotEmpty ? '(${cart.appliedCouponDetails})' : ''}", 
               cart.appliedCoupon?.type == CouponType.freeDelivery 
                   ? "FREE" 
                   : "-$currency ${NumberFormat('#,##,###').format(cart.couponDiscount.toInt())}", 
@@ -388,9 +388,9 @@ class _CartScreenState extends State<CartScreen> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              const Text(
-                "Total Amount",
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              Text(
+                AppStrings.totalAmount.tr(),
+                style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
               ),
               Text.rich(
                 TextSpan(

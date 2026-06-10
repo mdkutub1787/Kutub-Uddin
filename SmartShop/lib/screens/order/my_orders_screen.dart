@@ -73,9 +73,9 @@ class _MyOrdersScreenState extends State<MyOrdersScreen> {
                 : orderViewModel.userOrders.isEmpty
                     ? EmptyStateWidget(
                         icon: Icons.receipt_long_outlined,
-                        title: "No Orders Yet",
-                        subtitle: "Looks like you haven't placed any orders yet. Start shopping now!",
-                        actionText: "Browse Products",
+                        title: AppStrings.noOrders.tr(),
+                        subtitle: AppStrings.noOrdersMsg.tr(),
+                        actionText: AppStrings.browseProducts.tr(),
                         onAction: () => context.read<NavigationViewModel>().setIndex(0),
                       )
                     : ListView.builder(
@@ -106,7 +106,7 @@ class _MyOrdersScreenState extends State<MyOrdersScreen> {
                                           crossAxisAlignment: CrossAxisAlignment.start,
                                           children: [
                                             Text(
-                                              "Order ID: ${order.id}",
+                                              "${AppStrings.orderId.tr()}: ${order.id}",
                                               style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
                                               maxLines: 1,
                                               overflow: TextOverflow.ellipsis,
@@ -127,11 +127,11 @@ class _MyOrdersScreenState extends State<MyOrdersScreen> {
                                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                     children: [
                                       Text(
-                                        "${order.items.length} Items",
+                                        AppStrings.itemsCount.tr(args: [order.items.length.toString()]),
                                         style: const TextStyle(fontWeight: FontWeight.w500),
                                       ),
                                       Text(
-                                        "Total: ৳${order.totalAmount}",
+                                        "${AppStrings.total.tr()}: ${AppStrings.currency.tr()}${order.totalAmount}",
                                         style: TextStyle(
                                           fontWeight: FontWeight.bold,
                                           fontSize: 16,
@@ -145,9 +145,9 @@ class _MyOrdersScreenState extends State<MyOrdersScreen> {
                                     children: [
                                       const Icon(Icons.info_outline, size: 16, color: Colors.blueGrey),
                                       const SizedBox(width: 4),
-                                      const Text(
-                                        "Tap to view details & items",
-                                        style: TextStyle(fontSize: 12, color: Colors.blueGrey),
+                                      Text(
+                                        AppStrings.tapToViewDetails.tr(),
+                                        style: const TextStyle(fontSize: 12, color: Colors.blueGrey),
                                       ),
                                       const Spacer(),
                                       Icon(Icons.arrow_forward_ios, size: 14, color: Colors.grey[400]),
@@ -167,10 +167,20 @@ class _MyOrdersScreenState extends State<MyOrdersScreen> {
 
   Widget _buildStatusBadge(String status) {
     Color color = Colors.blue;
-    if (status == 'Pending') color = Colors.orange;
-    if (status == 'Delivered') color = Colors.green;
-    if (status == 'Cancelled') color = Colors.red;
-    if (status == 'Shipped') color = Colors.purple;
+    String statusText = status;
+    if (status == 'Pending') {
+      color = Colors.orange;
+      statusText = AppStrings.statusPending.tr();
+    } else if (status == 'Delivered') {
+      color = Colors.green;
+      statusText = AppStrings.statusDelivered.tr();
+    } else if (status == 'Cancelled') {
+      color = Colors.red;
+      statusText = AppStrings.statusCancelled.tr();
+    } else if (status == 'Shipped') {
+      color = Colors.purple;
+      statusText = AppStrings.statusShipped.tr();
+    }
 
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
@@ -179,7 +189,7 @@ class _MyOrdersScreenState extends State<MyOrdersScreen> {
         borderRadius: BorderRadius.circular(10),
       ),
       child: Text(
-        status,
+        statusText,
         style: TextStyle(color: color, fontWeight: FontWeight.bold, fontSize: 12),
       ),
     );

@@ -8,7 +8,12 @@ class OrderRepository {
     try {
       // Generate numeric ID for Order
       String orderId = DateTime.now().millisecondsSinceEpoch.toString();
-      await _dbRef.child('orders').child(orderId).set(order.toMap());
+      
+      // Set order with timeout
+      await _dbRef.child('orders').child(orderId).set(order.toMap()).timeout(
+        const Duration(seconds: 15),
+        onTimeout: () => throw Exception("Order placement timed out"),
+      );
 
       // Adjust stock
       for (var item in order.items) {
@@ -20,7 +25,10 @@ class OrderRepository {
           if (currentStock < item.quantity) return Transaction.abort();
           product['stock'] = currentStock - item.quantity;
           return Transaction.success(product);
-        });
+        }).timeout(
+          const Duration(seconds: 10),
+          onTimeout: () => throw Exception("Stock adjustment timed out"),
+        );
       }
       return true;
     } catch (e) {

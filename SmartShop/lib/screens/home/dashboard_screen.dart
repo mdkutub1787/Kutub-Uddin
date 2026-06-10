@@ -11,10 +11,12 @@ import 'package:smart_shop/view_models/navigation_view_model.dart';
 import '../../view_models/cart_view_model.dart';
 import '../../view_models/wishlist_view_model.dart';
 import '../../view_models/notification_view_model.dart';
+import '../../view_models/support_view_model.dart';
 import '../../widgets/product_card.dart';
 import '../../widgets/empty_state_widget.dart';
 import '../../widgets/custom_app_bar.dart';
 import '../../widgets/app_card.dart';
+import '../../utils/constants/app_colors.dart';
 
 class DashboardScreen extends StatelessWidget {
   const DashboardScreen({super.key});
@@ -64,7 +66,7 @@ class DashboardScreen extends StatelessWidget {
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       Text(
-                        "Hello, ${auth.user?.name ?? 'Guest'}!",
+                        "Hello, ${auth.user?.name ?? AppStrings.guest.tr()}!",
                         style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w900, color: Colors.white),
                       ),
                       Text(
@@ -83,22 +85,33 @@ class DashboardScreen extends StatelessWidget {
                     ),
                   ),
                   actions: [
-                    Stack(
-                      children: [
-                        IconButton(
-                          icon: const Icon(Icons.notifications_none_rounded, size: 28),
-                          onPressed: () => Navigator.pushNamed(context, AppRoutes.notifications),
-                        ),
-                        Positioned(
-                          right: 12,
-                          top: 12,
-                          child: Consumer<NotificationViewModel>(
-                            builder: (context, vm, _) => vm.notifications.isNotEmpty 
-                              ? Container(width: 8, height: 8, decoration: const BoxDecoration(color: Colors.red, shape: BoxShape.circle))
-                              : const SizedBox.shrink(),
-                          ),
-                        )
-                      ],
+                    Consumer2<NotificationViewModel, SupportViewModel>(
+                      builder: (context, noticeVM, supportVM, _) {
+                        int totalUnread = noticeVM.unreadCount + supportVM.unreadCount;
+                        return Stack(
+                          children: [
+                            IconButton(
+                              icon: const Icon(Icons.notifications_none_rounded, size: 28),
+                              onPressed: () => Navigator.pushNamed(context, AppRoutes.notifications),
+                            ),
+                            if (totalUnread > 0)
+                              Positioned(
+                                right: 8,
+                                top: 8,
+                                child: Container(
+                                  padding: const EdgeInsets.all(4),
+                                  decoration: const BoxDecoration(color: Colors.red, shape: BoxShape.circle),
+                                  constraints: const BoxConstraints(minWidth: 16, minHeight: 16),
+                                  child: Text(
+                                    '$totalUnread',
+                                    style: const TextStyle(color: Colors.white, fontSize: 10, fontWeight: FontWeight.bold),
+                                    textAlign: TextAlign.center,
+                                  ),
+                                ),
+                              ),
+                          ],
+                        );
+                      },
                     ),
                   ],
                 ),
@@ -213,7 +226,7 @@ class DashboardScreen extends StatelessWidget {
                           ),
                           const SizedBox(height: 10),
                           Text(
-                            cat.name, 
+                            cat.name.tr(),
                             style: TextStyle(
                               fontSize: 12, 
                               fontWeight: isSelected ? FontWeight.w900 : FontWeight.bold, 
@@ -316,7 +329,7 @@ class DashboardScreen extends StatelessWidget {
                   Navigator.pop(context);
                   context.read<NavigationViewModel>().setIndex(1);
                 }),
-                _drawerItem(context, Icons.local_offer_rounded, "Special Offers", () {
+                _drawerItem(context, Icons.local_offer_rounded, AppStrings.specialOffers.tr(), () {
                   Navigator.pop(context);
                   Navigator.pushNamed(context, AppRoutes.offers);
                 }),
@@ -324,21 +337,43 @@ class DashboardScreen extends StatelessWidget {
                   Navigator.pop(context);
                   Navigator.pushNamed(context, AppRoutes.wishlist);
                 }),
+                _drawerItem(
+                  context, 
+                  Icons.notifications_active_rounded, 
+                  AppStrings.notices.tr(), 
+                  () {
+                    Navigator.pop(context);
+                    Navigator.pushNamed(context, AppRoutes.notifications);
+                  },
+                  false,
+                  context.watch<NotificationViewModel>().unreadCount
+                ),
+                _drawerItem(
+                  context, 
+                  Icons.support_agent_rounded, 
+                  AppStrings.support.tr(), 
+                  () {
+                    Navigator.pop(context);
+                    Navigator.pushNamed(context, AppRoutes.support);
+                  },
+                  false,
+                  context.watch<SupportViewModel>().unreadCount
+                ),
                 if (auth.isAdmin)
-                  _drawerItem(context, Icons.admin_panel_settings_rounded, "Admin Panel", () {
+                  _drawerItem(context, Icons.admin_panel_settings_rounded, AppStrings.adminPanel.tr(), () {
                     Navigator.pop(context);
                     Navigator.pushNamed(context, AppRoutes.adminDashboard);
                   }),
                 
-                const Padding(
-                  padding: EdgeInsets.fromLTRB(20, 20, 20, 10),
-                  child: Text("App Settings", style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Colors.grey)),
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(20, 20, 20, 10),
+                  child: Text(AppStrings.appSettings.tr(), style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Colors.grey)),
                 ),
 
                 // Language Toggle
                 ListTile(
                   leading: const Icon(Icons.translate_rounded),
-                  title: const Text("Language", style: TextStyle(fontWeight: FontWeight.w500)),
+                  title: Text(AppStrings.language.tr(), style: const TextStyle(fontWeight: FontWeight.w500)),
                   trailing: Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
@@ -352,7 +387,7 @@ class DashboardScreen extends StatelessWidget {
                 // Dark Mode Toggle
                 ListTile(
                   leading: Icon(settings.themeMode == ThemeMode.dark ? Icons.dark_mode_rounded : Icons.light_mode_rounded),
-                  title: const Text("Dark Mode", style: TextStyle(fontWeight: FontWeight.w500)),
+                  title: Text(AppStrings.darkMode.tr(), style: const TextStyle(fontWeight: FontWeight.w500)),
                   trailing: Switch.adaptive(
                     value: settings.themeMode == ThemeMode.dark,
                     activeColor: primaryColor,
@@ -365,19 +400,24 @@ class DashboardScreen extends StatelessWidget {
                 // Primary Color Picker
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-                  child: Row(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Icon(Icons.palette_outlined, color: Colors.grey),
-                      const SizedBox(width: 32),
-                      const Text("Theme Color", style: TextStyle(fontWeight: FontWeight.w500)),
-                      const Spacer(),
-                      Wrap(
-                        spacing: 8,
+                      Row(
                         children: [
-                          _colorDot(settings, const Color(0xFF1A237E)),
-                          _colorDot(settings, const Color(0xFFD32F2F)),
-                          _colorDot(settings, const Color(0xFF388E3C)),
+                          const Icon(Icons.palette_outlined, color: Colors.grey),
+                          const SizedBox(width: 32),
+                          Text(AppStrings.themeColor.tr(), style: const TextStyle(fontWeight: FontWeight.w500)),
                         ],
+                      ),
+                      const SizedBox(height: 12),
+                      Padding(
+                        padding: const EdgeInsets.only(left: 56),
+                        child: Wrap(
+                          spacing: 10,
+                          runSpacing: 10,
+                          children: AppColors.themePalette.map((color) => _colorDot(settings, color)).toList(),
+                        ),
                       )
                     ],
                   ),
@@ -388,7 +428,7 @@ class DashboardScreen extends StatelessWidget {
           const Divider(indent: 20, endIndent: 20),
           ListTile(
             leading: const Icon(Icons.logout_rounded, color: Colors.red),
-            title: const Text("Logout", style: TextStyle(color: Colors.red, fontWeight: FontWeight.bold)),
+            title: Text(AppStrings.logout.tr(), style: const TextStyle(color: Colors.red, fontWeight: FontWeight.bold)),
             onTap: () async {
               // Clear Cart and Wishlist
               context.read<CartViewModel>().clearCart();
@@ -442,10 +482,17 @@ class DashboardScreen extends StatelessWidget {
     );
   }
 
-  Widget _drawerItem(BuildContext context, IconData icon, String title, VoidCallback onTap, [bool selected = false]) {
+  Widget _drawerItem(BuildContext context, IconData icon, String title, VoidCallback onTap, [bool selected = false, int badgeCount = 0]) {
     return ListTile(
       leading: Icon(icon, color: selected ? Theme.of(context).primaryColor : Colors.grey[600]),
       title: Text(title, style: TextStyle(fontWeight: selected ? FontWeight.bold : FontWeight.w500, color: selected ? Theme.of(context).primaryColor : null)),
+      trailing: badgeCount > 0 
+        ? Container(
+            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+            decoration: BoxDecoration(color: Colors.red, borderRadius: BorderRadius.circular(10)),
+            child: Text('$badgeCount', style: const TextStyle(color: Colors.white, fontSize: 10, fontWeight: FontWeight.bold)),
+          )
+        : null,
       onTap: onTap,
       selected: selected,
       selectedTileColor: Theme.of(context).primaryColor.withValues(alpha: 0.1),

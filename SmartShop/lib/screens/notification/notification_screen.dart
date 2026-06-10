@@ -2,30 +2,123 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
 import '../../view_models/notification_view_model.dart';
+import '../../view_models/support_view_model.dart';
 import '../../view_models/auth_view_model.dart';
 import '../../view_models/settings_view_model.dart';
+import '../../routes/app_routes.dart';
+import '../support/support_screen.dart';
 
-class NotificationScreen extends StatelessWidget {
+class NotificationScreen extends StatefulWidget {
   const NotificationScreen({super.key});
 
   @override
+  State<NotificationScreen> createState() => _NotificationScreenState();
+}
+
+class _NotificationScreenState extends State<NotificationScreen> with SingleTickerProviderStateMixin {
+  late TabController _tabController;
+
+  @override
+  void initState() {
+    super.initState();
+    _tabController = TabController(length: 2, vsync: this);
+    
+    // Listen to tab changes to mark as read
+    _tabController.addListener(() {
+      if (_tabController.index == 0) {
+        context.read<NotificationViewModel>().markAsRead();
+      } else {
+        context.read<SupportViewModel>().markAsRead();
+      }
+    });
+
+    // Mark first tab as read initially
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      context.read<NotificationViewModel>().markAsRead();
+    });
+  }
+
+  @override
+  void dispose() {
+    _tabController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    final notificationVM = context.watch<NotificationViewModel>();
+    final noticeVM = context.watch<NotificationViewModel>();
+    final supportVM = context.watch<SupportViewModel>();
     final authVM = context.watch<AuthViewModel>();
-    final settings = context.watch<SettingsViewModel>();
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Notifications", style: TextStyle(fontWeight: FontWeight.bold)),
+        backgroundColor: Theme.of(context).primaryColor,
+        foregroundColor: Colors.white,
+        title: const Text("Notification Center", style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white)),
+        centerTitle: true,
+        bottom: TabBar(
+          controller: _tabController,
+          indicatorColor: Colors.white,
+          indicatorWeight: 3,
+          labelColor: Colors.white,
+          unselectedLabelColor: Colors.white70,
+          tabs: [
+            Tab(
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const Text("Notices"),
+                  if (noticeVM.unreadCount > 0)
+                    _buildTabBadge(noticeVM.unreadCount),
+                ],
+              ),
+            ),
+            Tab(
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const Text("Support"),
+                  if (supportVM.unreadCount > 0)
+                    _buildTabBadge(supportVM.unreadCount),
+                ],
+              ),
+            ),
+          ],
+        ),
         actions: [
-          if (authVM.isAdmin)
+          if (authVM.isAdmin && _tabController.index == 0)
             IconButton(
               icon: const Icon(Icons.add_circle_outline),
-              onPressed: () => _showAddEditDialog(context, notificationVM),
+              onPressed: () => _showAddEditDialog(context, noticeVM),
             ),
         ],
       ),
-      body: notificationVM.isLoading 
+      body: TabBarView(
+        controller: _tabController,
+        children: [
+          _buildNoticeTab(noticeVM, authVM),
+          const SupportScreen(isEmbedded: true), // Updated with isEmbedded
+        ],
+      ),
+    );
+  }
+
+  Widget _buildTabBadge(int count) {
+    return Container(
+      margin: const EdgeInsets.only(left: 8),
+      padding: const EdgeInsets.all(4),
+      decoration: const BoxDecoration(color: Colors.red, shape: BoxShape.circle),
+      constraints: const BoxConstraints(minWidth: 18, minHeight: 18),
+      child: Text(
+        '$count',
+        style: const TextStyle(color: Colors.white, fontSize: 10, fontWeight: FontWeight.bold),
+        textAlign: TextAlign.center,
+      ),
+    );
+  }
+
+  Widget _buildNoticeTab(NotificationViewModel notificationVM, AuthViewModel authVM) {
+    return notificationVM.isLoading 
         ? const Center(child: CircularProgressIndicator())
         : notificationVM.notifications.isEmpty
           ? _buildEmptyState()
@@ -34,10 +127,9 @@ class NotificationScreen extends StatelessWidget {
               itemCount: notificationVM.notifications.length,
               itemBuilder: (context, index) {
                 final notification = notificationVM.notifications[index];
-                return _buildNotificationCard(context, notification, authVM.isAdmin, notificationVM, settings);
+                return _buildNotificationCard(context, notification, authVM.isAdmin, notificationVM);
               },
-            ),
-    );
+            );
   }
 
   Widget _buildEmptyState() {
@@ -53,22 +145,23 @@ class NotificationScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildNotificationCard(BuildContext context, dynamic notification, bool isAdmin, NotificationViewModel vm, SettingsViewModel settings) {
+  Widget _buildNotificationCard(BuildContext context, dynamic notification, bool isAdmin, NotificationViewModel vm) {
     return Container(
       margin: const EdgeInsets.only(bottom: 16),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: Theme.of(context).cardColor,
         borderRadius: BorderRadius.circular(15),
         boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.05), blurRadius: 10, offset: const Offset(0, 4))],
       ),
       child: ListTile(
+        onTap: () => Navigator.pushNamed(context, AppRoutes.notificationDetails, arguments: notification),
         contentPadding: const EdgeInsets.all(16),
         title: Text(notification.title, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
         subtitle: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             const SizedBox(height: 8),
-            Text(notification.message),
+            Text(notification.message, maxLines: 2, overflow: TextOverflow.ellipsis),
             const SizedBox(height: 8),
             Text(
               DateFormat('dd MMM yyyy, hh:mm a').format(notification.timestamp),
@@ -82,7 +175,7 @@ class NotificationScreen extends StatelessWidget {
             IconButton(icon: const Icon(Icons.edit, color: Colors.blue), onPressed: () => _showAddEditDialog(context, vm, notification: notification)),
             IconButton(icon: const Icon(Icons.delete, color: Colors.red), onPressed: () => vm.deleteNotification(notification.id)),
           ],
-        ) : null,
+        ) : const Icon(Icons.arrow_forward_ios, size: 14, color: Colors.grey),
       ),
     );
   }

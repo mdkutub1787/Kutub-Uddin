@@ -33,4 +33,16 @@ class AppColors {
   
   static const Color surfaceLight = Colors.white;
   static const Color surfaceDark = Color(0xFF0F172A);
+
+  // Theme Selection Palette
+  static const List<Color> themePalette = [
+    Color(0xFF1A237E), // Indigo
+    Color(0xFFD32F2F), // Red
+    Color(0xFF388E3C), // Green
+    Color(0xFF00796B), // Teal
+    Color(0xFFFFA000), // Amber
+    Color(0xFF512DA8), // Deep Purple
+    Color(0xFFE64A19), // Deep Orange
+    Color(0xFFC2185B), // Pink
+  ];
 }

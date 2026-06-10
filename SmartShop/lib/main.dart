@@ -76,54 +76,42 @@ class MyApp extends StatelessWidget {
         return Stack(
           children: [
             child!,
-            if (loading.isLoading) ...[
-              const Positioned(
-                top: 0,
-                left: 0,
-                right: 0,
-                child: SafeArea(
-                  child: LinearProgressIndicator(
-                    minHeight: 3,
-                    backgroundColor: Colors.transparent,
-                  ),
-                ),
-              ),
+            if (loading.isLoading)
               Container(
-                color: Colors.black.withValues(alpha: 0.5),
+                color: Colors.black54,
                 child: Center(
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      CircularProgressIndicator(
-                        color: settings.primaryColor,
-                        strokeWidth: 4,
-                      ),
-                      if (loading.message.isNotEmpty) ...[
-                        const SizedBox(height: 16),
-                        Material(
-                          color: Colors.transparent,
-                          child: Text(
-                            loading.message,
-                            style: const TextStyle(
-                              color: Colors.white,
-                              fontWeight: FontWeight.bold,
-                              fontSize: 18,
-                              shadows: [
-                                Shadow(
-                                  blurRadius: 10.0,
-                                  color: Colors.black,
-                                  offset: Offset(2.0, 2.0),
-                                ),
-                              ],
+                  child: Container(
+                    padding: const EdgeInsets.all(32),
+                    decoration: BoxDecoration(
+                      color: Theme.of(context).cardColor,
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        CircularProgressIndicator(
+                          color: settings.primaryColor,
+                          strokeWidth: 4,
+                        ),
+                        if (loading.message.isNotEmpty) ...[
+                          const SizedBox(height: 16),
+                          Material(
+                            color: Colors.transparent,
+                            child: Text(
+                              loading.message,
+                              style: TextStyle(
+                                color: Theme.of(context).textTheme.bodyLarge?.color,
+                                fontWeight: FontWeight.bold,
+                                fontSize: 16,
+                              ),
                             ),
                           ),
-                        ),
+                        ],
                       ],
-                    ],
+                    ),
                   ),
                 ),
               ),
-            ],
           ],
         );
       },
