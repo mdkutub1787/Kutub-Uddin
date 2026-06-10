@@ -167,54 +167,67 @@ class _AdminOrderListScreenState extends State<AdminOrderListScreen> with Single
   Widget _buildOrderCard(BuildContext context, OrderModel order) {
     final settings = context.watch<SettingsViewModel>();
     final primaryColor = settings.primaryColor;
+    bool isPos = order.orderType == 'pos';
     
     return AppCard(
-      margin: const EdgeInsets.only(bottom: 20),
-      borderRadius: 25,
+      margin: const EdgeInsets.only(bottom: 16),
+      borderRadius: 20,
       child: ExpansionTile(
         shape: const RoundedRectangleBorder(side: BorderSide.none),
-        tilePadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
-        title: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+        tilePadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+        title: Row(
           children: [
-            Row(
-              children: [
-                Expanded(
-                  child: Text(
-                    order.userName,
-                    style: const TextStyle(fontWeight: FontWeight.w900, fontSize: 18),
-                  ),
-                ),
-                if (order.orderType == 'pos')
-                  Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-                    decoration: BoxDecoration(
-                      color: Colors.teal.withValues(alpha: 0.1),
-                      borderRadius: BorderRadius.circular(6),
-                      border: Border.all(color: Colors.teal.withValues(alpha: 0.3)),
-                    ),
-                    child: const Text("POS", style: TextStyle(color: Colors.teal, fontWeight: FontWeight.bold, fontSize: 10)),
-                  )
-                else
-                  Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-                    decoration: BoxDecoration(
-                      color: Colors.blue.withValues(alpha: 0.1),
-                      borderRadius: BorderRadius.circular(6),
-                      border: Border.all(color: Colors.blue.withValues(alpha: 0.3)),
-                    ),
-                    child: const Text("ONLINE", style: TextStyle(color: Colors.blue, fontWeight: FontWeight.bold, fontSize: 10)),
-                  ),
-              ],
+            Container(
+              padding: const EdgeInsets.all(8),
+              decoration: BoxDecoration(
+                color: (isPos ? Colors.teal : Colors.blue).withValues(alpha: 0.1),
+                shape: BoxShape.circle,
+              ),
+              child: Icon(
+                isPos ? Icons.storefront_rounded : Icons.language_rounded,
+                size: 20,
+                color: isPos ? Colors.teal : Colors.blue,
+              ),
             ),
-            const SizedBox(height: 2),
-            Text(
-              "# ${order.id.substring(0, 12).toUpperCase()}",
-              style: TextStyle(color: primaryColor, fontSize: 12, fontWeight: FontWeight.bold),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    order.userName,
+                    style: const TextStyle(fontWeight: FontWeight.w900, fontSize: 16, letterSpacing: -0.5),
+                  ),
+                  const SizedBox(height: 2),
+                  Row(
+                    children: [
+                      Text(
+                        "#${order.id.substring(order.id.length - 8)}",
+                        style: TextStyle(color: Colors.grey[500], fontSize: 11, fontWeight: FontWeight.bold),
+                      ),
+                      const SizedBox(width: 8),
+                      Text(
+                        DateFormat('hh:mm a').format(order.date),
+                        style: TextStyle(color: Colors.grey[400], fontSize: 10),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.end,
+              children: [
+                Text(
+                  "৳${NumberFormat('#,##,###').format(order.totalAmount.toInt())}",
+                  style: TextStyle(fontWeight: FontWeight.w900, fontSize: 16, color: primaryColor),
+                ),
+                const SizedBox(height: 4),
+                _statusChip(order.status),
+              ],
             ),
           ],
         ),
-        trailing: _statusChip(order.status),
         childrenPadding: const EdgeInsets.fromLTRB(20, 0, 20, 20),
         children: [
           const Divider(height: 20),

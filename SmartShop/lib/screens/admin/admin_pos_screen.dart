@@ -62,12 +62,16 @@ class _AdminPosScreenState extends State<AdminPosScreen> {
     });
   }
 
-  void _selectUser(UserModel user) {
+  void _selectUser(UserModel user, Function? setModalState) {
     setState(() {
       _customerPhoneController.text = user.phoneNumber;
       _customerNameController.text = user.name;
-      _suggestedUsers = [];
     });
+    if (setModalState != null) {
+      setModalState(() {
+        _suggestedUsers = [];
+      });
+    }
   }
 
   @override
@@ -103,7 +107,7 @@ class _AdminPosScreenState extends State<AdminPosScreen> {
                     padding: const EdgeInsets.symmetric(horizontal: 16),
                     gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                       crossAxisCount: 2,
-                      childAspectRatio: 0.8,
+                      childAspectRatio: 0.68,
                       crossAxisSpacing: 12,
                       mainAxisSpacing: 12,
                     ),
@@ -171,22 +175,22 @@ class _AdminPosScreenState extends State<AdminPosScreen> {
     bool hasStock = product.stock > 0;
     int cartQty = _posCart[product.id]?.quantity ?? 0;
 
-    return GestureDetector(
-      onTap: hasStock ? () => _addToCart(product) : null,
-      child: Container(
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: cartQty > 0 ? primaryColor : Colors.transparent, width: 2),
-          boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.03), blurRadius: 10, offset: const Offset(0, 4))],
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Expanded(
-              child: Stack(
-                children: [
-                  ClipRRect(
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: cartQty > 0 ? primaryColor : Colors.transparent, width: 2),
+        boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.03), blurRadius: 10, offset: const Offset(0, 4))],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Expanded(
+            child: Stack(
+              children: [
+                GestureDetector(
+                  onTap: hasStock ? () => _addToCart(product) : null,
+                  child: ClipRRect(
                     borderRadius: const BorderRadius.vertical(top: Radius.circular(14)),
                     child: Image.network(
                       product.imageUrl,
@@ -195,38 +199,81 @@ class _AdminPosScreenState extends State<AdminPosScreen> {
                       errorBuilder: (_, __, ___) => Container(color: Colors.grey[100], child: const Icon(Icons.image_outlined, color: Colors.grey)),
                     ),
                   ),
-                  if (!hasStock)
-                    Container(
-                      decoration: BoxDecoration(color: Colors.black45, borderRadius: const BorderRadius.vertical(top: Radius.circular(14))),
-                      child: const Center(child: Text("OUT OF STOCK", style: TextStyle(color: Colors.white, fontSize: 10, fontWeight: FontWeight.bold))),
-                    ),
-                  if (cartQty > 0)
-                    Positioned(
-                      top: 8, right: 8,
-                      child: CircleAvatar(radius: 12, backgroundColor: primaryColor, child: Text("$cartQty", style: const TextStyle(color: Colors.white, fontSize: 10, fontWeight: FontWeight.bold))),
-                    ),
-                ],
-              ),
+                ),
+                if (!hasStock)
+                  Container(
+                    decoration: BoxDecoration(color: Colors.black45, borderRadius: const BorderRadius.vertical(top: Radius.circular(14))),
+                    child: const Center(child: Text("OUT OF STOCK", style: TextStyle(color: Colors.white, fontSize: 10, fontWeight: FontWeight.bold))),
+                  ),
+                if (cartQty > 0)
+                  Positioned(
+                    top: 8, right: 8,
+                    child: CircleAvatar(radius: 12, backgroundColor: primaryColor, child: Text("$cartQty", style: const TextStyle(color: Colors.white, fontSize: 10, fontWeight: FontWeight.bold))),
+                  ),
+              ],
             ),
-            Padding(
-              padding: const EdgeInsets.all(8),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(product.name, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13), maxLines: 1, overflow: TextOverflow.ellipsis),
-                  const SizedBox(height: 4),
+          ),
+          Padding(
+            padding: const EdgeInsets.all(8),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(product.name, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13), maxLines: 1, overflow: TextOverflow.ellipsis),
+                const SizedBox(height: 4),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text("৳${product.price.toInt()}", style: TextStyle(color: primaryColor, fontWeight: FontWeight.w900, fontSize: 14)),
+                    Text("Stk: ${product.stock}", style: TextStyle(color: hasStock ? Colors.grey : Colors.red, fontSize: 10)),
+                  ],
+                ),
+                if (cartQty > 0) ...[
+                  const SizedBox(height: 8),
                   Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Text("৳${product.price.toInt()}", style: TextStyle(color: primaryColor, fontWeight: FontWeight.w900, fontSize: 14)),
-                      Text("Stk: ${product.stock}", style: TextStyle(color: hasStock ? Colors.grey : Colors.red, fontSize: 10)),
+                      _qtyCardBtn(Icons.remove, () => _removeFromCart(product.id), Colors.red),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 12),
+                        child: Text("$cartQty", style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
+                      ),
+                      _qtyCardBtn(Icons.add, () => _addToCart(product.id), Colors.green),
                     ],
                   ),
+                ] else if (hasStock) ...[
+                  const SizedBox(height: 8),
+                  SizedBox(
+                    width: double.infinity,
+                    height: 30,
+                    child: OutlinedButton(
+                      onPressed: () => _addToCart(product),
+                      style: OutlinedButton.styleFrom(
+                        side: BorderSide(color: primaryColor),
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                        padding: EdgeInsets.zero,
+                      ),
+                      child: Text("ADD", style: TextStyle(color: primaryColor, fontSize: 12, fontWeight: FontWeight.bold)),
+                    ),
+                  ),
                 ],
-              ),
+              ],
             ),
-          ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _qtyCardBtn(IconData icon, VoidCallback onTap, Color color) {
+    return InkWell(
+      onTap: onTap,
+      child: Container(
+        padding: const EdgeInsets.all(4),
+        decoration: BoxDecoration(
+          color: color.withValues(alpha: 0.1),
+          borderRadius: BorderRadius.circular(6),
         ),
+        child: Icon(icon, size: 16, color: color),
       ),
     );
   }
@@ -378,8 +425,7 @@ class _AdminPosScreenState extends State<AdminPosScreen> {
                   title: Text(u.name, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13)),
                   subtitle: Text(u.phoneNumber, style: const TextStyle(fontSize: 11)),
                   onTap: () {
-                    _selectUser(u);
-                    setModalState(() => _suggestedUsers = []);
+                    _selectUser(u, setModalState);
                   },
                 )).toList(),
               ),
@@ -429,7 +475,20 @@ class _AdminPosScreenState extends State<AdminPosScreen> {
     });
   }
 
+  void _removeFromCart(String productId) {
+    setState(() {
+      if (_posCart.containsKey(productId)) {
+        if (_posCart[productId]!.quantity > 1) {
+          _posCart.update(productId, (v) => CartItem(product: v.product, quantity: v.quantity - 1));
+        } else {
+          _posCart.remove(productId);
+        }
+      }
+    });
+  }
+
   void _processCheckout(AuthViewModel authVM) async {
+    FocusManager.instance.primaryFocus?.unfocus();
     final loading = context.read<LoadingViewModel>();
     loading.show(message: "Completing Sale...");
     final shopId = authVM.user?.shopId ?? '';

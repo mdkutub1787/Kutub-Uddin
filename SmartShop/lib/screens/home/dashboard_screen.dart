@@ -60,7 +60,7 @@ class DashboardScreen extends StatelessWidget {
               physics: const BouncingScrollPhysics(parent: AlwaysScrollableScrollPhysics()),
               slivers: [
                 CustomSliverAppBar(
-                  expandedHeight: 110,
+                  expandedHeight: 95,
                   titleWidget: Consumer<AuthViewModel>(
                     builder: (context, authVM, _) {
                       final shopId = authVM.user?.shopId;
@@ -70,11 +70,11 @@ class DashboardScreen extends StatelessWidget {
                         return Row(
                           children: [
                             CircleAvatar(
-                              radius: 22,
+                              radius: 20,
                               backgroundColor: Colors.white24,
-                              child: Text(userName[0].toUpperCase(), style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+                              child: Text(userName[0].toUpperCase(), style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 14)),
                             ),
-                            const SizedBox(width: 15),
+                            const SizedBox(width: 12),
                             Expanded(
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -82,12 +82,12 @@ class DashboardScreen extends StatelessWidget {
                                 children: [
                                   Text(
                                     "Hello, $userName",
-                                    style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w900, color: Colors.white, letterSpacing: -0.5),
+                                    style: const TextStyle(fontSize: 17, fontWeight: FontWeight.w900, color: Colors.white, letterSpacing: -0.5),
                                     maxLines: 1, overflow: TextOverflow.ellipsis,
                                   ),
                                   Text(
                                     "Ready to shop today?",
-                                    style: TextStyle(fontSize: 12, color: Colors.white.withValues(alpha: 0.7), fontWeight: FontWeight.w500),
+                                    style: TextStyle(fontSize: 11, color: Colors.white.withValues(alpha: 0.7), fontWeight: FontWeight.w500),
                                   ),
                                 ],
                               ),
@@ -107,15 +107,15 @@ class DashboardScreen extends StatelessWidget {
                           return Row(
                             children: [
                               Container(
-                                padding: const EdgeInsets.all(2),
-                                decoration: BoxDecoration(shape: BoxShape.circle, border: Border.all(color: Colors.white30, width: 2)),
+                                padding: const EdgeInsets.all(1.5),
+                                decoration: BoxDecoration(shape: BoxShape.circle, border: Border.all(color: Colors.white24, width: 1.5)),
                                 child: const CircleAvatar(
-                                  radius: 22,
+                                  radius: 20,
                                   backgroundColor: Colors.white,
-                                  child: Icon(Icons.storefront_rounded, color: Colors.indigo, size: 24),
+                                  child: Icon(Icons.storefront_rounded, color: Colors.indigo, size: 20),
                                 ),
                               ),
-                              const SizedBox(width: 15),
+                              const SizedBox(width: 12),
                               Expanded(
                                 child: Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -123,27 +123,27 @@ class DashboardScreen extends StatelessWidget {
                                   children: [
                                     Text(
                                       shopName,
-                                      style: const TextStyle(fontSize: 22, fontWeight: FontWeight.w900, color: Colors.white, letterSpacing: -0.8),
+                                      style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w900, color: Colors.white, letterSpacing: -0.7),
                                       maxLines: 1, overflow: TextOverflow.ellipsis,
                                     ),
                                     Row(
                                       children: [
                                         Container(
-                                          padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                                          padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 1.5),
                                           decoration: BoxDecoration(color: Colors.greenAccent.withValues(alpha: 0.2), borderRadius: BorderRadius.circular(4)),
                                           child: const Row(
                                             children: [
-                                              Icon(Icons.circle, size: 6, color: Colors.greenAccent),
-                                              SizedBox(width: 4),
-                                              Text("LIVE", style: TextStyle(color: Colors.greenAccent, fontSize: 8, fontWeight: FontWeight.w900, letterSpacing: 0.5)),
+                                              Icon(Icons.circle, size: 5, color: Colors.greenAccent),
+                                              SizedBox(width: 3),
+                                              Text("LIVE", style: TextStyle(color: Colors.greenAccent, fontSize: 7, fontWeight: FontWeight.w900, letterSpacing: 0.5)),
                                             ],
                                           ),
                                         ),
-                                        const SizedBox(width: 8),
+                                        const SizedBox(width: 6),
                                         Expanded(
                                           child: Text(
                                             "Manager: $userName",
-                                            style: TextStyle(fontSize: 11, color: Colors.white.withValues(alpha: 0.6), fontWeight: FontWeight.w500),
+                                            style: TextStyle(fontSize: 10, color: Colors.white.withValues(alpha: 0.6), fontWeight: FontWeight.w500),
                                             maxLines: 1,
                                             overflow: TextOverflow.ellipsis,
                                           ),
