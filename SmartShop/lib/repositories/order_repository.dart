@@ -66,6 +66,10 @@ class OrderRepository {
     await _dbRef.child('orders').child(orderId).update({'status': status});
   }
 
+  Future<void> deleteOrder(String orderId) async {
+    await _dbRef.child('orders').child(orderId).remove();
+  }
+
   Future<bool> cancelOrder(OrderModel order) async {
     try {
       // 1. Double check status is still Pending in DB

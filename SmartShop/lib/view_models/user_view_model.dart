@@ -31,4 +31,14 @@ class UserViewModel extends ChangeNotifier {
       'isActive': !currentStatus,
     });
   }
+
+  Future<void> updateUserProfile(String uid, Map<String, dynamic> data) async {
+    await _dbRef.child(uid).update(data);
+  }
+
+  Future<void> updateUserRole(String uid, String newRole) async {
+    await _dbRef.child(uid).update({
+      'role': newRole,
+    });
+  }
 }
