@@ -5,6 +5,7 @@ class UserModel {
   final String phoneNumber;
   final String address;
   final String role;
+  final String? shopId;
   final bool isActive;
 
   UserModel({
@@ -14,6 +15,7 @@ class UserModel {
     required this.phoneNumber,
     required this.address,
     required this.role,
+    this.shopId,
     this.isActive = true,
   });
 
@@ -25,6 +27,7 @@ class UserModel {
       phoneNumber: data['phoneNumber'] ?? '',
       address: data['address'] ?? '',
       role: data['role'] ?? 'user',
+      shopId: data['shopId'],
       isActive: data['isActive'] ?? true,
     );
   }
@@ -36,6 +39,7 @@ class UserModel {
       'phoneNumber': phoneNumber,
       'address': address,
       'role': role,
+      'shopId': shopId,
       'isActive': isActive,
     };
   }

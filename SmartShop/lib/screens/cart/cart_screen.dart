@@ -556,8 +556,12 @@ class _CartScreenState extends State<CartScreen> {
       return;
     }
 
+    final items = cart.items.values.toList();
+    final shopId = items.isNotEmpty ? items.first.product.shopId : '';
+
     final newOrder = OrderModel(
       id: '',
+      shopId: shopId,
       userId: auth.user!.uid,
       userName: auth.user!.name,
       userPhone: auth.user!.phoneNumber,

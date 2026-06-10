@@ -77,13 +77,20 @@ class AuthViewModel extends ChangeNotifier {
     }
   }
 
-  Future<bool> register(String email, String password, {String name = "", String phoneNumber = "", String address = ""}) async {
+  Future<bool> register(String email, String password, {String name = "", String phoneNumber = "", String address = "", String? shopName}) async {
     _isLoading = true;
     _error = null;
     notifyListeners();
 
     try {
-      UserCredential credential = await _authService.register(email, password, name: name, phoneNumber: phoneNumber, address: address);
+      UserCredential credential = await _authService.register(
+        email, 
+        password, 
+        name: name, 
+        phoneNumber: phoneNumber, 
+        address: address,
+        shopName: shopName,
+      );
       _userModel = await _authService.getUserData(credential.user!.uid);
       _isLoading = false;
       notifyListeners();

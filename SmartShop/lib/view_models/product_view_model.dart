@@ -51,23 +51,28 @@ class ProductViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> fetchFeaturedProducts() async {
+  Future<void> fetchFeaturedProducts({String? shopId}) async {
     _isLoading = true;
     notifyListeners();
 
-    // In a real app with streams, the first value might take a moment
-    // For manual refresh, we can convert the stream logic or just wait for the first emission
-    final stream = _repository.getFeaturedProducts();
+    final stream = shopId != null 
+        ? _repository.getProductsByShop(shopId)
+        : _repository.getAllProducts();
+        
     await for (final products in stream) {
       _featuredProducts = products;
       _isLoading = false;
       notifyListeners();
-      break; // For manual refresh/future, we just need the latest once
+      break; 
     }
   }
 
-  void initStream() {
-    _repository.getFeaturedProducts().listen((products) {
+  void initStream({String? shopId}) {
+    final stream = shopId != null 
+        ? _repository.getProductsByShop(shopId)
+        : _repository.getAllProducts();
+        
+    stream.listen((products) {
       _featuredProducts = products;
       _isLoading = false;
       notifyListeners();

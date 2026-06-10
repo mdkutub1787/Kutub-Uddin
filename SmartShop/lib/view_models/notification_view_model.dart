@@ -50,7 +50,8 @@ class NotificationViewModel extends ChangeNotifier {
   }
 
   Future<void> addNotification(String title, String message, {String? imageUrl}) async {
-    await _dbRef.push().set({
+    final String numericId = DateTime.now().millisecondsSinceEpoch.toString();
+    await _dbRef.child(numericId).set({
       'title': title,
       'message': message,
       'timestamp': ServerValue.timestamp,

@@ -1,18 +1,23 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:easy_localization/easy_localization.dart';
+import 'package:provider/provider.dart';
 import '../../models/order_model.dart';
 import '../../models/product_model.dart';
 import '../../repositories/order_repository.dart';
 import '../../repositories/product_repository.dart';
 import '../../utils/constants/app_strings.dart';
 import '../../widgets/custom_app_bar.dart';
+import '../../view_models/auth_view_model.dart';
 
 class AdminAnalyticsScreen extends StatelessWidget { 
   const AdminAnalyticsScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final authVM = context.watch<AuthViewModel>();
+    final shopId = authVM.user?.shopId;
+
     return Scaffold(
       backgroundColor: Colors.grey[50],
       appBar: CustomAppBar(
@@ -28,7 +33,7 @@ class AdminAnalyticsScreen extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              _buildSummarySection(context),
+              _buildSummarySection(context, shopId),
               Padding(
                 padding: const EdgeInsets.fromLTRB(20, 30, 20, 15),
                 child: Text(
@@ -36,7 +41,7 @@ class AdminAnalyticsScreen extends StatelessWidget {
                   style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                 ),
               ),
-              _buildDetailedList(context),
+              _buildDetailedList(context, shopId),
               const SizedBox(height: 50),
             ],
           ),
@@ -45,9 +50,11 @@ class AdminAnalyticsScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildSummarySection(BuildContext context) {
+  Widget _buildSummarySection(BuildContext context, String? shopId) {
     return StreamBuilder<List<OrderModel>>(
-      stream: OrderRepository().getAllOrders(),
+      stream: shopId != null 
+          ? OrderRepository().getOrdersByShop(shopId)
+          : OrderRepository().getAllOrders(),
       builder: (context, snapshot) {
         double totalRevenue = 0;
         int successfulOrders = 0;
@@ -90,7 +97,9 @@ class AdminAnalyticsScreen extends StatelessWidget {
                   const SizedBox(width: 16),
                   Expanded(
                     child: StreamBuilder<List<ProductModel>>(
-                      stream: ProductRepository().getFeaturedProducts(),
+                      stream: shopId != null 
+                          ? ProductRepository().getProductsByShop(shopId)
+                          : ProductRepository().getAllProducts(),
                       builder: (context, pSnapshot) {
                         int lowStock = pSnapshot.hasData 
                             ? pSnapshot.data!.where((p) => p.stock < 10).length 
@@ -114,78 +123,27 @@ class AdminAnalyticsScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildDetailedList(BuildContext context) {
+  Widget _buildDetailedList(BuildContext context, String? shopId) {
     return StreamBuilder<List<OrderModel>>(
-      stream: OrderRepository().getAllOrders(),
+      stream: shopId != null 
+          ? OrderRepository().getOrdersByShop(shopId)
+          : OrderRepository().getAllOrders(),
       builder: (context, snapshot) {
-        if (snapshot.connectionState == ConnectionState.waiting) {
-          return const Center(child: CircularProgressIndicator());
-        }
-        
-        // Group sales by date
-        Map<String, double> dateWise = {};
-        if (snapshot.hasData) {
-          for (var order in snapshot.data!) {
-            if (order.status != 'Cancelled') {
-              String d = DateFormat('dd MMM yyyy').format(order.date);
-              dateWise[d] = (dateWise[d] ?? 0) + order.totalAmount;
-            }
-          }
-        }
-
-        if (dateWise.isEmpty) {
-          return Center(
-            child: Padding(
-              padding: const EdgeInsets.all(40),
-              child: Text(AppStrings.noProducts.tr()),
-            ),
-          );
+        if (!snapshot.hasData) return const Center(child: CircularProgressIndicator());
+        if (snapshot.data!.isEmpty) {
+          return const Center(child: Padding(padding: EdgeInsets.all(20), child: Text("No data found")));
         }
 
         return ListView.builder(
           shrinkWrap: true,
           physics: const NeverScrollableScrollPhysics(),
-          padding: const EdgeInsets.symmetric(horizontal: 20),
-          itemCount: dateWise.length,
+          itemCount: snapshot.data!.length > 5 ? 5 : snapshot.data!.length,
           itemBuilder: (context, index) {
-            String date = dateWise.keys.elementAt(index);
-            double amount = dateWise[date]!;
-            
-            return Container(
-              margin: const EdgeInsets.only(bottom: 12),
-              padding: const EdgeInsets.all(16),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(15),
-                border: Border.all(color: Colors.grey.withValues(alpha: 0.1)),
-              ),
-              child: Row(
-                children: [
-                  Container(
-                    padding: const EdgeInsets.all(10),
-                    decoration: BoxDecoration(
-                      color: Colors.green.withValues(alpha: 0.1),
-                      shape: BoxShape.circle,
-                    ),
-                    child: const Icon(Icons.calendar_today_rounded, color: Colors.green, size: 20),
-                  ),
-                  const SizedBox(width: 15),
-                  Expanded(
-                    child: Text(
-                      date,
-                      style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
-                    ),
-                  ),
-                  Text(
-                    "৳${amount.toStringAsFixed(2)}",
-                    style: const TextStyle(
-                      fontWeight: FontWeight.w900,
-                      fontSize: 16,
-                      color: Colors.green,
-                    ),
-                  ),
-                ],
-              ),
+            final order = snapshot.data![index];
+            return ListTile(
+              title: Text(order.userName),
+              subtitle: Text(DateFormat('dd MMM yyyy').format(order.date)),
+              trailing: Text("৳${order.totalAmount}"),
             );
           },
         );
@@ -196,38 +154,20 @@ class AdminAnalyticsScreen extends StatelessWidget {
   Widget _bigStatCard(BuildContext context, String title, String value, IconData icon, Color color) {
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.all(24),
+      padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(24),
-        boxShadow: [
-          BoxShadow(
-            color: color.withValues(alpha: 0.08),
-            blurRadius: 20,
-            offset: const Offset(0, 8),
-          )
-        ],
+        color: color.withValues(alpha: 0.1),
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: color.withValues(alpha: 0.2)),
       ),
       child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Container(
-            padding: const EdgeInsets.all(12),
-            decoration: BoxDecoration(
-              color: color.withValues(alpha: 0.1),
-              shape: BoxShape.circle,
-            ),
-            child: Icon(icon, color: color, size: 32),
-          ),
-          const SizedBox(height: 16),
-          Text(
-            title,
-            style: TextStyle(color: Colors.grey[600], fontSize: 14, fontWeight: FontWeight.w500),
-          ),
-          const SizedBox(height: 8),
-          Text(
-            value,
-            style: const TextStyle(fontSize: 28, fontWeight: FontWeight.w900),
-          ),
+          Icon(icon, color: color, size: 30),
+          const SizedBox(height: 15),
+          Text(title, style: TextStyle(color: Colors.grey[600], fontSize: 14)),
+          const SizedBox(height: 5),
+          Text(value, style: TextStyle(color: color, fontSize: 28, fontWeight: FontWeight.bold)),
         ],
       ),
     );
@@ -235,32 +175,20 @@ class AdminAnalyticsScreen extends StatelessWidget {
 
   Widget _smallStatCard(BuildContext context, String title, String value, IconData icon, Color color) {
     return Container(
-      padding: const EdgeInsets.all(20),
+      padding: const EdgeInsets.all(15),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(24),
-        boxShadow: [
-          BoxShadow(
-            color: color.withValues(alpha: 0.08),
-            blurRadius: 20,
-            offset: const Offset(0, 8),
-          )
-        ],
+        borderRadius: BorderRadius.circular(20),
+        boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.05), blurRadius: 10)],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Icon(icon, color: color, size: 28),
-          const SizedBox(height: 16),
-          Text(
-            title,
-            style: TextStyle(color: Colors.grey[600], fontSize: 12, fontWeight: FontWeight.w500),
-          ),
-          const SizedBox(height: 4),
-          Text(
-            value,
-            style: const TextStyle(fontSize: 22, fontWeight: FontWeight.w900),
-          ),
+          Icon(icon, color: color, size: 24),
+          const SizedBox(height: 10),
+          Text(title, style: TextStyle(color: Colors.grey[600], fontSize: 12), maxLines: 1, overflow: TextOverflow.ellipsis),
+          const SizedBox(height: 5),
+          Text(value, style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
         ],
       ),
     );

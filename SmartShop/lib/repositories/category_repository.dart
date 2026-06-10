@@ -5,37 +5,43 @@ import '../models/category_model.dart';
 class CategoryRepository {
   final DatabaseReference _dbRef = FirebaseDatabase.instance.ref().child('categories');
 
-  Stream<List<CategoryModel>> getCategories() {
+  Stream<List<CategoryModel>> getCategoriesByShop(String shopId) {
+    return _dbRef.orderByChild('shopId').equalTo(shopId).onValue.map((event) {
+      final Map<dynamic, dynamic>? data = event.snapshot.value as Map<dynamic, dynamic>?;
+      if (data == null) return [];
+
+      return data.entries.map((entry) {
+        return CategoryModel.fromSnapshot(event.snapshot.child(entry.key));
+      }).toList();
+    });
+  }
+
+  Stream<List<CategoryModel>> getAllCategories() {
     return _dbRef.onValue.map((event) {
       final Map<dynamic, dynamic>? data = event.snapshot.value as Map<dynamic, dynamic>?;
       if (data == null) return [];
 
       return data.entries.map((entry) {
-        final value = Map<String, dynamic>.from(entry.value);
-        return CategoryModel(
-          id: entry.key.toString(), // ID will be numeric string
-          name: value['name'] ?? '',
-          icon: Icons.category,
-          color: Color(value['color'] ?? 0xFF1A237E),
-        );
+        return CategoryModel.fromSnapshot(event.snapshot.child(entry.key));
       }).toList();
     });
   }
 
   Future<void> addCategory(CategoryModel category) async {
-    // Generate numeric ID based on timestamp
     String numericId = DateTime.now().millisecondsSinceEpoch.toString();
     await _dbRef.child(numericId).set({
+      'shopId': category.shopId,
       'name': category.name,
-      'icon': 'category',
+      'icon': CategoryModel.getIconName(category.icon),
       'color': category.color.value,
     });
   }
 
   Future<void> updateCategory(CategoryModel category) async {
     await _dbRef.child(category.id).update({
+      'shopId': category.shopId,
       'name': category.name,
-      'icon': 'category',
+      'icon': CategoryModel.getIconName(category.icon),
       'color': category.color.value,
     });
   }

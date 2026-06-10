@@ -12,13 +12,16 @@ class CategoryViewModel extends ChangeNotifier {
   bool get isLoading => _isLoading;
 
   CategoryViewModel() {
-    _fetchCategories();
+    // Categories will be fetched when user login is detected or manually
   }
 
-  Future<void> refreshCategories() async {
+  Future<void> refreshCategories({String? shopId}) async {
     _isLoading = true;
     notifyListeners();
-    final stream = _repository.getCategories();
+    final stream = shopId != null 
+        ? _repository.getCategoriesByShop(shopId)
+        : _repository.getAllCategories();
+        
     await for (final list in stream) {
       _categories = list;
       _isLoading = false;
@@ -27,9 +30,13 @@ class CategoryViewModel extends ChangeNotifier {
     }
   }
 
-  void _fetchCategories() {
+  void fetchCategories({String? shopId}) {
     _isLoading = true;
-    _repository.getCategories().listen((categoryList) {
+    final stream = shopId != null 
+        ? _repository.getCategoriesByShop(shopId)
+        : _repository.getAllCategories();
+        
+    stream.listen((categoryList) {
       _categories = categoryList;
       _isLoading = false;
       notifyListeners();

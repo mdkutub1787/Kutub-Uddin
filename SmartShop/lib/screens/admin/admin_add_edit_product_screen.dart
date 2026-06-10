@@ -4,6 +4,7 @@ import 'package:image_picker/image_picker.dart';
 import '../../models/product_model.dart';
 import '../../view_models/product_view_model.dart';
 import '../../view_models/category_view_model.dart';
+import '../../view_models/auth_view_model.dart';
 import '../../widgets/custom_app_bar.dart';
 
 class AdminAddEditProductScreen extends StatefulWidget {
@@ -255,8 +256,12 @@ class _AdminAddEditProductScreenState extends State<AdminAddEditProductScreen> {
     if (_formKey.currentState!.validate()) {
       setState(() => _isSaving = true);
       try {
+        final authVM = context.read<AuthViewModel>();
+        final shopId = authVM.user?.shopId ?? '';
+        
         final newProduct = ProductModel(
           id: widget.product?.id ?? '',
+          shopId: shopId,
           name: _nameController.text.trim(),
           description: _descController.text.trim(),
           originalPrice: double.parse(_priceController.text.trim()),

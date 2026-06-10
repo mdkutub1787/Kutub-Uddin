@@ -18,7 +18,6 @@ class OrderDetailsScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final settings = context.watch<SettingsViewModel>();
     final authVM = context.read<AuthViewModel>();
-    final primaryColor = settings.primaryColor;
     
     bool isAdminView = authVM.isAdmin;
     bool isSuperAdmin = authVM.user?.role == 'super_admin';

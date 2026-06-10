@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../view_models/category_view_model.dart';
+import '../../view_models/auth_view_model.dart';
 import '../../models/category_model.dart';
 import '../../widgets/custom_app_bar.dart';
 
@@ -126,9 +127,12 @@ class _AdminCategoryListScreenState extends State<AdminCategoryListScreen> {
                 child: ElevatedButton(
                   onPressed: () async {
                     if (nameController.text.isEmpty) return;
+                    final authVM = context.read<AuthViewModel>();
+                    final shopId = authVM.user?.shopId ?? '';
                     final vm = context.read<CategoryViewModel>();
                     final newCat = CategoryModel(
                       id: category?.id ?? '',
+                      shopId: shopId,
                       name: nameController.text.trim(),
                       icon: selectedIcon,
                       color: category?.color ?? Colors.blue,

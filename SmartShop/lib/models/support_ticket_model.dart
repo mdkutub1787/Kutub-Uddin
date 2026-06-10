@@ -38,6 +38,7 @@ class SupportTicket {
   final String lastMessage;
   final DateTime lastUpdate;
   final String status; // 'open', 'closed'
+  final bool? adminRead;
 
   SupportTicket({
     required this.id,
@@ -47,6 +48,7 @@ class SupportTicket {
     required this.lastMessage,
     required this.lastUpdate,
     this.status = 'open',
+    this.adminRead,
   });
 
   factory SupportTicket.fromMap(Map<dynamic, dynamic> map, String id) {
@@ -58,6 +60,7 @@ class SupportTicket {
       lastMessage: map['lastMessage'] ?? '',
       lastUpdate: DateTime.fromMillisecondsSinceEpoch(map['lastUpdate'] ?? DateTime.now().millisecondsSinceEpoch),
       status: map['status'] ?? 'open',
+      adminRead: map['adminRead'],
     );
   }
 
@@ -69,6 +72,7 @@ class SupportTicket {
       'lastMessage': lastMessage,
       'lastUpdate': lastUpdate.millisecondsSinceEpoch,
       'status': status,
+      'adminRead': adminRead,
     };
   }
 }

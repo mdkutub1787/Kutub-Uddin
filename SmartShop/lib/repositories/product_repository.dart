@@ -4,7 +4,18 @@ import '../models/product_model.dart';
 class ProductRepository {
   final DatabaseReference _dbRef = FirebaseDatabase.instance.ref().child('products');
 
-  Stream<List<ProductModel>> getFeaturedProducts() {
+  Stream<List<ProductModel>> getProductsByShop(String shopId) {
+    return _dbRef.orderByChild('shopId').equalTo(shopId).onValue.map((event) {
+      final Map<dynamic, dynamic>? data = event.snapshot.value as Map<dynamic, dynamic>?;
+      if (data == null) return [];
+      
+      return data.entries.map((entry) {
+        return ProductModel.fromSnapshot(event.snapshot.child(entry.key));
+      }).toList();
+    });
+  }
+
+  Stream<List<ProductModel>> getAllProducts() {
     return _dbRef.onValue.map((event) {
       final Map<dynamic, dynamic>? data = event.snapshot.value as Map<dynamic, dynamic>?;
       if (data == null) return [];

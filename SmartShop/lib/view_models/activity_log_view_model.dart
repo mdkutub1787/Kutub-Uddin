@@ -43,6 +43,7 @@ class ActivityLogViewModel extends ChangeNotifier {
       details: details,
       timestamp: DateTime.now(),
     );
-    await _dbRef.push().set(newLog.toMap());
+    final String logId = DateTime.now().millisecondsSinceEpoch.toString();
+    await _dbRef.child(logId).set(newLog.toMap());
   }
 }

@@ -3,12 +3,14 @@ import 'package:flutter/material.dart';
 
 class CategoryModel {
   final String id;
+  final String shopId;
   final String name;
   final IconData icon;
   final Color color;
 
   CategoryModel({
     required this.id,
+    required this.shopId,
     required this.name,
     required this.icon,
     required this.color,
@@ -18,6 +20,7 @@ class CategoryModel {
     Map<dynamic, dynamic> data = snapshot.value as Map<dynamic, dynamic>;
     return CategoryModel(
       id: snapshot.key ?? '',
+      shopId: data['shopId'] ?? '',
       name: data['name'] ?? '',
       icon: _getIconData(data['icon'] ?? 'category'),
       color: Color(data['color'] ?? 0xFF1A237E),

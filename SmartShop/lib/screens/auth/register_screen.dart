@@ -19,9 +19,11 @@ class _RegisterScreenState extends State<RegisterScreen> {
   final _emailController = TextEditingController();
   final _phoneController = TextEditingController();
   final _addressController = TextEditingController();
+  final _shopNameController = TextEditingController();
   final _passwordController = TextEditingController();
   final _confirmPasswordController = TextEditingController();
   bool _isPasswordVisible = false;
+  bool _isCreatingShop = false;
 
   @override
   Widget build(BuildContext context) {
@@ -89,10 +91,73 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   
                   const SizedBox(height: 32),
                   
+                  // Account Type Toggle
+                  Container(
+                    padding: const EdgeInsets.all(4),
+                    decoration: BoxDecoration(
+                      color: primaryColor.withValues(alpha: 0.05),
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: Row(
+                      children: [
+                        Expanded(
+                          child: InkWell(
+                            onTap: () => setState(() => _isCreatingShop = false),
+                            child: Container(
+                              padding: const EdgeInsets.symmetric(vertical: 8),
+                              decoration: BoxDecoration(
+                                color: !_isCreatingShop ? Colors.white : Colors.transparent,
+                                borderRadius: BorderRadius.circular(8),
+                                boxShadow: !_isCreatingShop ? [BoxShadow(color: Colors.black12, blurRadius: 4)] : null,
+                              ),
+                              child: Center(
+                                child: Text("Customer", style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  color: !_isCreatingShop ? primaryColor : Colors.grey,
+                                )),
+                              ),
+                            ),
+                          ),
+                        ),
+                        Expanded(
+                          child: InkWell(
+                            onTap: () => setState(() => _isCreatingShop = true),
+                            child: Container(
+                              padding: const EdgeInsets.symmetric(vertical: 8),
+                              decoration: BoxDecoration(
+                                color: _isCreatingShop ? Colors.white : Colors.transparent,
+                                borderRadius: BorderRadius.circular(8),
+                                boxShadow: _isCreatingShop ? [BoxShadow(color: Colors.black12, blurRadius: 4)] : null,
+                              ),
+                              child: Center(
+                                child: Text("Shop Owner", style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  color: _isCreatingShop ? primaryColor : Colors.grey,
+                                )),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  
+                  const SizedBox(height: 24),
+                  
                   // Form Fields
                   AutofillGroup(
                     child: Column(
                       children: [
+                        if (_isCreatingShop) ...[
+                          _buildTextField(
+                            controller: _shopNameController,
+                            label: "Shop Name",
+                            hint: "Enter your business name",
+                            icon: Icons.store_rounded,
+                            action: TextInputAction.next,
+                          ),
+                          const SizedBox(height: 16),
+                        ],
                         _buildTextField(
                           controller: _nameController,
                           label: AppStrings.nameLabel.tr(),
@@ -308,6 +373,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
       name: _nameController.text.trim(),
       phoneNumber: _phoneController.text.trim(),
       address: _addressController.text.trim(),
+      shopName: _isCreatingShop ? _shopNameController.text.trim() : null,
     );
     loading.hide();
 

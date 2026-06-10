@@ -237,7 +237,9 @@ class _AdminChatDetailState extends State<AdminChatDetail> {
   @override
   void initState() {
     super.initState();
-    context.read<SupportViewModel>().listenToMessages(widget.ticket.id);
+    final supportVM = context.read<SupportViewModel>();
+    supportVM.listenToMessages(widget.ticket.id);
+    supportVM.markAsReadByAdmin(widget.ticket.id);
     _userPhone = widget.ticket.userPhone;
     if (_userPhone == null || _userPhone!.isEmpty) {
       _fetchUserPhone();

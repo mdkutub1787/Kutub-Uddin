@@ -95,6 +95,7 @@ class AppStrings {
   static const String orderSuccessMsg = 'order_success_msg';
   static const String ok = 'ok';
   static const String adminPanel = 'admin_panel';
+  static const String superAdmin = 'super_admin';
   static const String storeAdmin = 'store_admin';
   static const String users = 'users';
   static const String adminPanelDesc = 'admin_panel_desc';
@@ -170,6 +171,7 @@ class AppStrings {
   static const String pushNotifications = 'push_notifications';
   static const String customerChat = 'customer_chat';
   static const String helloAdmin = 'hello_admin';
+  static const String helloSuperAdmin = 'hello_super_admin';
   static const String adminWelcomeMsg = 'admin_welcome_msg';
   static const String products = 'products';
   static const String orders = 'orders';

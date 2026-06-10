@@ -12,9 +12,13 @@ class OrderViewModel extends ChangeNotifier {
   List<OrderModel> get allOrders => _allOrders;
   bool get isLoading => _isLoading;
 
-  void fetchAllOrders() {
+  void fetchAllOrders({String? shopId}) {
     _isLoading = true;
-    _repository.getAllOrders().listen((orders) {
+    final stream = shopId != null 
+        ? _repository.getOrdersByShop(shopId)
+        : _repository.getAllOrders();
+        
+    stream.listen((orders) {
       _allOrders = orders;
       _isLoading = false;
       notifyListeners();

@@ -8,7 +8,6 @@ import '../view_models/auth_view_model.dart';
 import '../view_models/settings_view_model.dart';
 import '../utils/constants/app_strings.dart';
 import '../routes/app_routes.dart';
-import 'app_card.dart';
 
 class ProductCard extends StatelessWidget {
   final ProductModel product;

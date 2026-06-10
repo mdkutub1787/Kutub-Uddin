@@ -28,16 +28,33 @@ class AuthService {
     return await _auth.signInWithEmailAndPassword(email: email, password: password);
   }
 
-  Future<UserCredential> register(String email, String password, {String name = "", String phoneNumber = "", String address = ""}) async {
+  Future<UserCredential> register(String email, String password, {String name = "", String phoneNumber = "", String address = "", String? shopName}) async {
     UserCredential credential = await _auth.createUserWithEmailAndPassword(email: email, password: password);
     
     if (credential.user != null) {
+      String? shopId;
+      
+      // If shopName is provided, create a new shop and make this user an admin
+      if (shopName != null && shopName.isNotEmpty) {
+        shopId = DateTime.now().millisecondsSinceEpoch.toString();
+        await _dbRef.child('shops').child(shopId).set({
+          'name': shopName,
+          'ownerId': credential.user!.uid,
+          'address': address,
+          'phone': phoneNumber,
+          'isOnlineOrderEnabled': true,
+          'isPosEnabled': true,
+          'createdAt': ServerValue.timestamp,
+        });
+      }
+
       await _dbRef.child('users').child(credential.user!.uid).set({
         'email': email,
         'name': name,
         'phoneNumber': phoneNumber,
         'address': address,
-        'role': 'user',
+        'role': shopName != null ? 'admin' : 'user',
+        'shopId': shopId,
         'createdAt': ServerValue.timestamp,
       });
     }

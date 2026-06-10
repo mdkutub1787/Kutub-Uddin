@@ -50,6 +50,18 @@ class OrderRepository {
     });
   }
 
+  Stream<List<OrderModel>> getOrdersByShop(String shopId) {
+    return _dbRef.child('orders').orderByChild('shopId').equalTo(shopId).onValue.map((event) {
+      final Map<dynamic, dynamic>? data = event.snapshot.value as Map<dynamic, dynamic>?;
+      if (data == null) return [];
+
+      return data.entries
+          .map((entry) => OrderModel.fromSnapshot(event.snapshot.child(entry.key)))
+          .toList()
+        ..sort((a, b) => b.date.compareTo(a.date));
+    });
+  }
+
   Stream<List<OrderModel>> getAllOrders() {
     return _dbRef.child('orders').onValue.map((event) {
       final Map<dynamic, dynamic>? data = event.snapshot.value as Map<dynamic, dynamic>?;

@@ -4,6 +4,7 @@ import 'product_model.dart';
 
 class OrderModel {
   final String id;
+  final String shopId;
   final String userId;
   final String userName;
   final String userPhone;
@@ -16,6 +17,7 @@ class OrderModel {
 
   OrderModel({
     required this.id,
+    required this.shopId,
     required this.userId,
     required this.userName,
     required this.userPhone,
@@ -29,6 +31,7 @@ class OrderModel {
 
   Map<String, dynamic> toMap() {
     return {
+      'shopId': shopId,
       'userId': userId,
       'userName': userName,
       'userPhone': userPhone,
@@ -58,6 +61,7 @@ class OrderModel {
         return CartItem(
           product: ProductModel(
             id: itemMap['productId'] ?? '',
+            shopId: data['shopId'] ?? '',
             name: itemMap['productName'] ?? 'Product',
             description: '',
             price: (itemMap['price'] ?? 0).toDouble(),
@@ -74,6 +78,7 @@ class OrderModel {
 
     return OrderModel(
       id: snapshot.key ?? '',
+      shopId: data['shopId'] ?? '',
       userId: data['userId'] ?? '',
       userName: data['userName'] ?? 'User',
       userPhone: data['userPhone'] ?? '',

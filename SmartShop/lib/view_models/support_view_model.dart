@@ -14,6 +14,7 @@ class SupportViewModel extends ChangeNotifier {
   List<SupportMessage> get messages => _messages;
   bool get isLoading => _isLoading;
   int get unreadCount => _messages.where((m) => m.isAdmin && m.timestamp.millisecondsSinceEpoch > _lastReadTimestamp).length;
+  int get adminUnreadCount => _tickets.where((t) => t.status == 'open' && !(t.adminRead ?? true)).length;
 
   SupportViewModel() {
     _loadLastRead();
@@ -93,7 +94,8 @@ class SupportViewModel extends ChangeNotifier {
     );
 
     // 1. Add Message
-    await _dbRef.child('support_messages').child(tId).push().set({
+    final String messageId = DateTime.now().millisecondsSinceEpoch.toString();
+    await _dbRef.child('support_messages').child(tId).child(messageId).set({
       ...messageData.toMap(),
       'timestamp': ServerValue.timestamp,
     });
@@ -105,6 +107,7 @@ class SupportViewModel extends ChangeNotifier {
       'lastMessage': message,
       'lastUpdate': ServerValue.timestamp,
       'status': 'open',
+      'adminRead': isAdmin, // If admin sends, it's read by admin. If user sends, it's unread.
     };
     
     // Ensure userPhone is updated if provided
@@ -113,6 +116,10 @@ class SupportViewModel extends ChangeNotifier {
     }
     
     await _dbRef.child('support_tickets').child(tId).update(updates);
+  }
+
+  Future<void> markAsReadByAdmin(String ticketId) async {
+    await _dbRef.child('support_tickets').child(ticketId).update({'adminRead': true});
   }
 
   Future<String?> getUserPhone(String userId) async {

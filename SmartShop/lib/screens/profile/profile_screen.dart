@@ -438,35 +438,14 @@ class ProfileScreen extends StatelessWidget {
               children: [
                 Icon(Icons.verified_user_rounded, size: 14, color: Colors.amber[900]),
                 const SizedBox(width: 6),
-                Text(AppStrings.storeAdmin.tr().toUpperCase(), style: TextStyle(fontSize: 10, fontWeight: FontWeight.w900, color: Colors.amber[900], letterSpacing: 1)),
+                Text(
+                  (user?.role == 'super_admin' ? AppStrings.superAdmin.tr() : AppStrings.storeAdmin.tr()).toUpperCase(), 
+                  style: TextStyle(fontSize: 10, fontWeight: FontWeight.w900, color: Colors.amber[900], letterSpacing: 1)
+                ),
               ],
             ),
           ),
       ],
-    );
-  }
-
-  Widget _buildProfileItem(IconData icon, String title, VoidCallback onTap, {bool isExit = false, int badgeCount = 0}) {
-    return ListTile(
-      leading: Icon(icon, color: isExit ? Colors.red : null),
-      title: Text(title, style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500, color: isExit ? Colors.red : null)),
-      trailing: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          if (badgeCount > 0)
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-              decoration: BoxDecoration(color: Colors.red, borderRadius: BorderRadius.circular(10)),
-              child: Text(
-                '$badgeCount',
-                style: const TextStyle(color: Colors.white, fontSize: 10, fontWeight: FontWeight.bold),
-              ),
-            ),
-          const SizedBox(width: 5),
-          if (!isExit) const Icon(Icons.arrow_forward_ios, size: 16),
-        ],
-      ),
-      onTap: onTap,
     );
   }
 

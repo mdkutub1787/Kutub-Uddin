@@ -2,6 +2,7 @@ import 'package:firebase_database/firebase_database.dart';
 
 class ProductModel {
   final String id;
+  final String shopId;
   final String name;
   final String description;
   final double originalPrice; // Regular price
@@ -15,6 +16,7 @@ class ProductModel {
 
   ProductModel({
     required this.id,
+    required this.shopId,
     required this.name,
     required this.description,
     required this.originalPrice,
@@ -31,6 +33,7 @@ class ProductModel {
     Map<dynamic, dynamic> data = snapshot.value as Map<dynamic, dynamic>;
     return ProductModel(
       id: snapshot.key ?? '',
+      shopId: data['shopId'] ?? '',
       name: data['name'] ?? '',
       description: data['description'] ?? '',
       originalPrice: (data['originalPrice'] ?? (data['price'] ?? 0)).toDouble(),
@@ -46,6 +49,7 @@ class ProductModel {
 
   Map<String, dynamic> toMap() {
     return {
+      'shopId': shopId,
       'name': name,
       'description': description,
       'originalPrice': originalPrice,
