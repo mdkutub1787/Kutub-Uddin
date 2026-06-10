@@ -15,7 +15,14 @@ class AuthViewModel extends ChangeNotifier {
   String? get error => _error;
   User? get firebaseUser => _authService.currentUser;
   UserModel? get user => _userModel;
-  bool get isAdmin => _userModel?.role == 'admin' || _userModel?.role == 'super_admin';
+  
+  bool get isSuperAdmin => _userModel?.role == 'super_admin';
+  bool get isOwner => _userModel?.role == 'owner' || isSuperAdmin;
+  bool get isManager => _userModel?.role == 'manager' || isOwner;
+  bool get isStaff => _userModel?.role == 'staff' || isManager;
+  
+  // Backward compatibility for existing UI
+  bool get isAdmin => isStaff;
 
   AuthViewModel() {
     _init();

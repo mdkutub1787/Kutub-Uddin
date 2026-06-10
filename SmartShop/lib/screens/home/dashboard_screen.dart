@@ -12,6 +12,7 @@ import '../../view_models/cart_view_model.dart';
 import '../../view_models/wishlist_view_model.dart';
 import '../../view_models/notification_view_model.dart';
 import '../../view_models/support_view_model.dart';
+import 'package:firebase_database/firebase_database.dart';
 import '../../widgets/product_card.dart';
 import '../../widgets/custom_app_bar.dart';
 import '../../widgets/app_card.dart';
@@ -59,20 +60,104 @@ class DashboardScreen extends StatelessWidget {
               physics: const BouncingScrollPhysics(parent: AlwaysScrollableScrollPhysics()),
               slivers: [
                 CustomSliverAppBar(
-                  expandedHeight: 70,
-                  titleWidget: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Text(
-                        "Hello, ${auth.user?.name ?? AppStrings.guest.tr()}!",
-                        style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w900, color: Colors.white),
-                      ),
-                      Text(
-                        AppStrings.welcomeMessage.tr(),
-                        style: const TextStyle(fontSize: 12, color: Colors.white70),
-                      ),
-                    ],
+                  expandedHeight: 110,
+                  titleWidget: Consumer<AuthViewModel>(
+                    builder: (context, authVM, _) {
+                      final shopId = authVM.user?.shopId;
+                      final userName = authVM.user?.name ?? AppStrings.guest.tr();
+                      
+                      if (shopId == null) {
+                        return Row(
+                          children: [
+                            CircleAvatar(
+                              radius: 22,
+                              backgroundColor: Colors.white24,
+                              child: Text(userName[0].toUpperCase(), style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+                            ),
+                            const SizedBox(width: 15),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Text(
+                                    "Hello, $userName",
+                                    style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w900, color: Colors.white, letterSpacing: -0.5),
+                                    maxLines: 1, overflow: TextOverflow.ellipsis,
+                                  ),
+                                  Text(
+                                    "Ready to shop today?",
+                                    style: TextStyle(fontSize: 12, color: Colors.white.withValues(alpha: 0.7), fontWeight: FontWeight.w500),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
+                        );
+                      }
+
+                      return StreamBuilder<DatabaseEvent>(
+                        stream: FirebaseDatabase.instance.ref().child('shops').child(shopId).onValue,
+                        builder: (context, snapshot) {
+                          String shopName = "Smart Shop";
+                          if (snapshot.hasData && snapshot.data!.snapshot.value != null) {
+                            final data = Map<dynamic, dynamic>.from(snapshot.data!.snapshot.value as Map);
+                            shopName = data['name'] ?? "Smart Shop";
+                          }
+                          return Row(
+                            children: [
+                              Container(
+                                padding: const EdgeInsets.all(2),
+                                decoration: BoxDecoration(shape: BoxShape.circle, border: Border.all(color: Colors.white30, width: 2)),
+                                child: const CircleAvatar(
+                                  radius: 22,
+                                  backgroundColor: Colors.white,
+                                  child: Icon(Icons.storefront_rounded, color: Colors.indigo, size: 24),
+                                ),
+                              ),
+                              const SizedBox(width: 15),
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    Text(
+                                      shopName,
+                                      style: const TextStyle(fontSize: 22, fontWeight: FontWeight.w900, color: Colors.white, letterSpacing: -0.8),
+                                      maxLines: 1, overflow: TextOverflow.ellipsis,
+                                    ),
+                                    Row(
+                                      children: [
+                                        Container(
+                                          padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                                          decoration: BoxDecoration(color: Colors.greenAccent.withValues(alpha: 0.2), borderRadius: BorderRadius.circular(4)),
+                                          child: const Row(
+                                            children: [
+                                              Icon(Icons.circle, size: 6, color: Colors.greenAccent),
+                                              SizedBox(width: 4),
+                                              Text("LIVE", style: TextStyle(color: Colors.greenAccent, fontSize: 8, fontWeight: FontWeight.w900, letterSpacing: 0.5)),
+                                            ],
+                                          ),
+                                        ),
+                                        const SizedBox(width: 8),
+                                        Expanded(
+                                          child: Text(
+                                            "Manager: $userName",
+                                            style: TextStyle(fontSize: 11, color: Colors.white.withValues(alpha: 0.6), fontWeight: FontWeight.w500),
+                                            maxLines: 1,
+                                            overflow: TextOverflow.ellipsis,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ],
+                          );
+                        },
+                      );
+                    },
                   ),
                   showCart: true,
                   backgroundColor: settings.primaryColor,

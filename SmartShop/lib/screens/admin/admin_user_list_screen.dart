@@ -23,7 +23,11 @@ class _AdminUserListScreenState extends State<AdminUserListScreen> {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      context.read<UserViewModel>().fetchAllUsers();
+      final user = context.read<AuthViewModel>().user;
+      context.read<UserViewModel>().fetchUsers(
+        shopId: user?.shopId, 
+        isSuperAdmin: user?.role == 'super_admin'
+      );
     });
   }
 

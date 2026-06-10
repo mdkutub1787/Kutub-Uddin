@@ -25,7 +25,7 @@ class AdminAnalyticsScreen extends StatelessWidget {
       ),
       body: RefreshIndicator(
         onRefresh: () async {
-          // StreamBuilder handles updates, but this allows manual trigger if needed
+          // StreamBuilder handles updates
         },
         child: SingleChildScrollView(
           physics: const AlwaysScrollableScrollPhysics(),
@@ -33,7 +33,7 @@ class AdminAnalyticsScreen extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              _buildSummarySection(context, shopId),
+              _buildDetailedSummary(context, shopId),
               Padding(
                 padding: const EdgeInsets.fromLTRB(20, 30, 20, 15),
                 child: Text(
@@ -50,74 +50,56 @@ class AdminAnalyticsScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildSummarySection(BuildContext context, String? shopId) {
+  Widget _buildDetailedSummary(BuildContext context, String? shopId) {
     return StreamBuilder<List<OrderModel>>(
       stream: shopId != null 
           ? OrderRepository().getOrdersByShop(shopId)
           : OrderRepository().getAllOrders(),
       builder: (context, snapshot) {
-        double totalRevenue = 0;
-        int successfulOrders = 0;
+        double totalRev = 0;
+        double onlineRev = 0;
+        double posRev = 0;
+        int onlineCount = 0;
+        int posCount = 0;
         
         if (snapshot.hasData) {
           for (var order in snapshot.data!) {
             if (order.status == 'Delivered' || order.status == 'Shipped') {
-              totalRevenue += order.totalAmount;
-              successfulOrders++;
+              totalRev += order.totalAmount;
+              if (order.orderType == 'pos') {
+                posRev += order.totalAmount;
+                posCount++;
+              } else {
+                onlineRev += order.totalAmount;
+                onlineCount++;
+              }
             }
           }
         }
 
-        return Column(
-          children: [
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20),
-              child: _bigStatCard(
-                context,
-                AppStrings.totalRevenue.tr(),
-                "৳${totalRevenue.toStringAsFixed(2)}",
-                Icons.account_balance_wallet_rounded,
-                Colors.green,
-              ),
-            ),
-            const SizedBox(height: 16),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20),
-              child: Row(
+        return Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 20),
+          child: Column(
+            children: [
+              _statCard(context, "Total Sales", "৳${totalRev.toStringAsFixed(0)}", Icons.account_balance_wallet_rounded, Colors.indigo, isLarge: true),
+              const SizedBox(height: 16),
+              Row(
                 children: [
-                  Expanded(
-                    child: _smallStatCard(
-                      context,
-                      AppStrings.successfulOrders.tr(),
-                      successfulOrders.toString(),
-                      Icons.check_circle_rounded,
-                      Colors.blue,
-                    ),
-                  ),
+                  Expanded(child: _statCard(context, "Online Sales", "৳${onlineRev.toStringAsFixed(0)}", Icons.language_rounded, Colors.blue)),
                   const SizedBox(width: 16),
-                  Expanded(
-                    child: StreamBuilder<List<ProductModel>>(
-                      stream: shopId != null 
-                          ? ProductRepository().getProductsByShop(shopId)
-                          : ProductRepository().getAllProducts(),
-                      builder: (context, pSnapshot) {
-                        int lowStock = pSnapshot.hasData 
-                            ? pSnapshot.data!.where((p) => p.stock < 10).length 
-                            : 0;
-                        return _smallStatCard(
-                          context,
-                          AppStrings.lowStockAlert.tr(),
-                          lowStock.toString(),
-                          Icons.report_problem_rounded,
-                          Colors.orange,
-                        );
-                      },
-                    ),
-                  ),
+                  Expanded(child: _statCard(context, "POS Sales", "৳${posRev.toStringAsFixed(0)}", Icons.point_of_sale_rounded, Colors.teal)),
                 ],
               ),
-            ),
-          ],
+              const SizedBox(height: 16),
+              Row(
+                children: [
+                  Expanded(child: _statCard(context, "Orders ($onlineCount)", "Online", Icons.shopping_bag_outlined, Colors.orange)),
+                  const SizedBox(width: 16),
+                  Expanded(child: _statCard(context, "Sales ($posCount)", "Store", Icons.storefront_rounded, Colors.purple)),
+                ],
+              ),
+            ],
+          ),
         );
       },
     );
@@ -130,20 +112,40 @@ class AdminAnalyticsScreen extends StatelessWidget {
           : OrderRepository().getAllOrders(),
       builder: (context, snapshot) {
         if (!snapshot.hasData) return const Center(child: CircularProgressIndicator());
-        if (snapshot.data!.isEmpty) {
-          return const Center(child: Padding(padding: EdgeInsets.all(20), child: Text("No data found")));
-        }
+        if (snapshot.data!.isEmpty) return const Center(child: Text("No transactions yet"));
+
+        final recentOrders = snapshot.data!.take(10).toList();
 
         return ListView.builder(
           shrinkWrap: true,
           physics: const NeverScrollableScrollPhysics(),
-          itemCount: snapshot.data!.length > 5 ? 5 : snapshot.data!.length,
+          itemCount: recentOrders.length,
           itemBuilder: (context, index) {
-            final order = snapshot.data![index];
-            return ListTile(
-              title: Text(order.userName),
-              subtitle: Text(DateFormat('dd MMM yyyy').format(order.date)),
-              trailing: Text("৳${order.totalAmount}"),
+            final order = recentOrders[index];
+            bool isPos = order.orderType == 'pos';
+            return Container(
+              margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 6),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(15),
+                border: Border.all(color: Colors.grey[200]!),
+              ),
+              child: ListTile(
+                leading: CircleAvatar(
+                  backgroundColor: isPos ? Colors.teal.withValues(alpha: 0.1) : Colors.blue.withValues(alpha: 0.1),
+                  child: Icon(isPos ? Icons.storefront_rounded : Icons.language_rounded, size: 18, color: isPos ? Colors.teal : Colors.blue),
+                ),
+                title: Text(order.userName, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
+                subtitle: Text(DateFormat('dd MMM, hh:mm a').format(order.date), style: const TextStyle(fontSize: 11)),
+                trailing: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  children: [
+                    Text("৳${order.totalAmount.toInt()}", style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 15)),
+                    Text(isPos ? "POS" : "ONLINE", style: TextStyle(fontSize: 9, fontWeight: FontWeight.w900, color: isPos ? Colors.teal : Colors.blue)),
+                  ],
+                ),
+              ),
             );
           },
         );
@@ -151,44 +153,33 @@ class AdminAnalyticsScreen extends StatelessWidget {
     );
   }
 
-  Widget _bigStatCard(BuildContext context, String title, String value, IconData icon, Color color) {
+  Widget _statCard(BuildContext context, String title, String value, IconData icon, Color color, {bool isLarge = false}) {
     return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        color: color.withValues(alpha: 0.1),
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: color.withValues(alpha: 0.2)),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Icon(icon, color: color, size: 30),
-          const SizedBox(height: 15),
-          Text(title, style: TextStyle(color: Colors.grey[600], fontSize: 14)),
-          const SizedBox(height: 5),
-          Text(value, style: TextStyle(color: color, fontSize: 28, fontWeight: FontWeight.bold)),
-        ],
-      ),
-    );
-  }
-
-  Widget _smallStatCard(BuildContext context, String title, String value, IconData icon, Color color) {
-    return Container(
-      padding: const EdgeInsets.all(15),
+      padding: EdgeInsets.all(isLarge ? 24 : 16),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(20),
-        boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.05), blurRadius: 10)],
+        boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.03), blurRadius: 10, offset: const Offset(0, 4))],
+        border: Border.all(color: color.withValues(alpha: 0.1), width: 2),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Icon(icon, color: color, size: 24),
-          const SizedBox(height: 10),
-          Text(title, style: TextStyle(color: Colors.grey[600], fontSize: 12), maxLines: 1, overflow: TextOverflow.ellipsis),
-          const SizedBox(height: 5),
-          Text(value, style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Container(
+                padding: const EdgeInsets.all(8),
+                decoration: BoxDecoration(color: color.withValues(alpha: 0.1), shape: BoxShape.circle),
+                child: Icon(icon, size: isLarge ? 28 : 20, color: color),
+              ),
+              if (isLarge) Icon(Icons.trending_up_rounded, color: Colors.green[400], size: 20),
+            ],
+          ),
+          SizedBox(height: isLarge ? 20 : 12),
+          Text(title, style: TextStyle(color: Colors.grey[600], fontSize: isLarge ? 14 : 11, fontWeight: FontWeight.bold)),
+          const SizedBox(height: 4),
+          Text(value, style: TextStyle(color: color, fontSize: isLarge ? 32 : 18, fontWeight: FontWeight.w900)),
         ],
       ),
     );

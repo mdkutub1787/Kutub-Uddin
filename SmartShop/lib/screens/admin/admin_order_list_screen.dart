@@ -177,9 +177,35 @@ class _AdminOrderListScreenState extends State<AdminOrderListScreen> with Single
         title: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              order.userName,
-              style: const TextStyle(fontWeight: FontWeight.w900, fontSize: 18),
+            Row(
+              children: [
+                Expanded(
+                  child: Text(
+                    order.userName,
+                    style: const TextStyle(fontWeight: FontWeight.w900, fontSize: 18),
+                  ),
+                ),
+                if (order.orderType == 'pos')
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                    decoration: BoxDecoration(
+                      color: Colors.teal.withValues(alpha: 0.1),
+                      borderRadius: BorderRadius.circular(6),
+                      border: Border.all(color: Colors.teal.withValues(alpha: 0.3)),
+                    ),
+                    child: const Text("POS", style: TextStyle(color: Colors.teal, fontWeight: FontWeight.bold, fontSize: 10)),
+                  )
+                else
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                    decoration: BoxDecoration(
+                      color: Colors.blue.withValues(alpha: 0.1),
+                      borderRadius: BorderRadius.circular(6),
+                      border: Border.all(color: Colors.blue.withValues(alpha: 0.3)),
+                    ),
+                    child: const Text("ONLINE", style: TextStyle(color: Colors.blue, fontWeight: FontWeight.bold, fontSize: 10)),
+                  ),
+              ],
             ),
             const SizedBox(height: 2),
             Text(
@@ -261,15 +287,37 @@ class _AdminOrderListScreenState extends State<AdminOrderListScreen> with Single
             ],
           ),
           const SizedBox(height: 24),
-          Row(
-            children: [
-              _actionBtn(context, order, "Shipped", Colors.indigo, Icons.local_shipping_rounded),
-              const SizedBox(width: 10),
-              _actionBtn(context, order, "Delivered", Colors.green[700]!, Icons.verified_rounded),
-              const SizedBox(width: 10),
-              _actionBtn(context, order, "Cancelled", Colors.red[700]!, Icons.cancel_rounded),
-            ],
-          )
+          if (order.orderType != 'pos')
+            Row(
+              children: [
+                _actionBtn(context, order, "Shipped", Colors.indigo, Icons.local_shipping_rounded),
+                const SizedBox(width: 10),
+                _actionBtn(context, order, "Delivered", Colors.green[700]!, Icons.verified_rounded),
+                const SizedBox(width: 10),
+                _actionBtn(context, order, "Cancelled", Colors.red[700]!, Icons.cancel_rounded),
+              ],
+            )
+          else
+            Container(
+              width: double.infinity,
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: Colors.green.withValues(alpha: 0.05),
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(color: Colors.green.withValues(alpha: 0.1)),
+              ),
+              child: const Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(Icons.check_circle_rounded, color: Colors.green, size: 16),
+                  const SizedBox(width: 8),
+                  Text(
+                    "DIRECT STORE SALE COMPLETED",
+                    style: TextStyle(color: Colors.green, fontWeight: FontWeight.bold, fontSize: 11, letterSpacing: 0.5),
+                  ),
+                ],
+              ),
+            ),
         ],
       ),
     );

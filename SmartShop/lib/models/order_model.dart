@@ -14,6 +14,7 @@ class OrderModel {
   final double deliveryFee;
   final DateTime date;
   final String status;
+  final String orderType; // 'online' or 'pos'
 
   OrderModel({
     required this.id,
@@ -27,6 +28,7 @@ class OrderModel {
     this.deliveryFee = 0.0,
     required this.date,
     required this.status,
+    this.orderType = 'online',
   });
 
   Map<String, dynamic> toMap() {
@@ -47,6 +49,7 @@ class OrderModel {
       'deliveryFee': deliveryFee,
       'date': date.toIso8601String(),
       'status': status,
+      'orderType': orderType,
     };
   }
 
@@ -88,6 +91,7 @@ class OrderModel {
       deliveryFee: (data['deliveryFee'] ?? 0).toDouble(),
       date: data['date'] != null ? DateTime.parse(data['date']) : DateTime.now(),
       status: data['status'] ?? 'Pending',
+      orderType: data['orderType'] ?? 'online',
     );
   }
 }

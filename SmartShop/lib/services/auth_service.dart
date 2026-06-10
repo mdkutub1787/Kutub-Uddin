@@ -53,7 +53,7 @@ class AuthService {
         'name': name,
         'phoneNumber': phoneNumber,
         'address': address,
-        'role': shopName != null ? 'admin' : 'user',
+        'role': shopName != null ? 'owner' : 'user',
         'shopId': shopId,
         'createdAt': ServerValue.timestamp,
       });
