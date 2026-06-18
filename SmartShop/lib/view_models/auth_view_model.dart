@@ -20,6 +20,7 @@ class AuthViewModel extends ChangeNotifier {
   bool get isOwner => _userModel?.role == 'owner' || isSuperAdmin;
   bool get isManager => _userModel?.role == 'manager' || isOwner;
   bool get isStaff => _userModel?.role == 'staff' || isManager;
+  bool get isDeliveryMan => _userModel?.role == 'delivery_man';
   
   // Backward compatibility for existing UI
   bool get isAdmin => isStaff;
@@ -190,6 +191,19 @@ class AuthViewModel extends ChangeNotifier {
     if (firebaseUser != null) {
       _userModel = await _authService.getUserData(firebaseUser!.uid);
       notifyListeners();
+    }
+  }
+
+  Future<void> updateDeliveryAvailability(bool available) async {
+    if (firebaseUser != null) {
+      await _authService.updateAvailability(firebaseUser!.uid, available);
+      await refreshUserData();
+    }
+  }
+
+  Future<void> updateDeliveryLocation(double lat, double lng) async {
+    if (firebaseUser != null) {
+      await _authService.updateLocation(firebaseUser!.uid, lat, lng);
     }
   }
 }

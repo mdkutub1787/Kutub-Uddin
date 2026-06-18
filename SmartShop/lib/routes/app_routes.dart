@@ -11,6 +11,7 @@ import '../screens/order/order_details_screen.dart';
 import '../screens/wishlist/wishlist_screen.dart';
 import '../screens/profile/edit_profile_screen.dart';
 import '../screens/admin/admin_dashboard_screen.dart';
+import '../screens/delivery/delivery_dashboard_screen.dart';
 import '../screens/offers/offers_screen.dart';
 import '../screens/notification/notification_screen.dart';
 import '../screens/notification/notification_details_screen.dart';
@@ -35,6 +36,7 @@ class AppRoutes {
   static const String wishlist = '/wishlist';
   static const String editProfile = '/edit-profile';
   static const String adminDashboard = '/admin-dashboard';
+  static const String deliveryDashboard = '/delivery-dashboard';
   static const String offers = '/offers';
   static const String notifications = '/notifications';
   static const String notificationDetails = '/notification-details';
@@ -64,6 +66,8 @@ class AppRoutes {
         return MaterialPageRoute(builder: (_) => const EditProfileScreen());
       case adminDashboard:
         return MaterialPageRoute(builder: (_) => const AdminDashboardScreen());
+      case deliveryDashboard:
+        return MaterialPageRoute(builder: (_) => const DeliveryDashboardScreen());
       case offers:
         return MaterialPageRoute(builder: (_) => const OffersScreen());
       case notifications:

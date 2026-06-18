@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import '../../models/order_model.dart';
 import '../../repositories/order_repository.dart';
+import '../../services/auth_service.dart';
+import '../../models/user_model.dart';
 import '../../widgets/app_card.dart';
 import '../../view_models/settings_view_model.dart';
 import 'package:provider/provider.dart';
@@ -147,6 +149,69 @@ class _AdminOrderListScreenState extends State<AdminOrderListScreen> with Single
             }),
           );
         },
+      ),
+    );
+  }
+
+  void _showAssignDeliverySheet(BuildContext context, OrderModel order) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (context) => Container(
+        height: MediaQuery.of(context).size.height * 0.7,
+        decoration: const BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.vertical(top: Radius.circular(30)),
+        ),
+        padding: const EdgeInsets.all(24),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Center(child: Container(width: 40, height: 4, decoration: BoxDecoration(color: Colors.grey[300], borderRadius: BorderRadius.circular(2)))),
+            const SizedBox(height: 24),
+            const Text("Assign Delivery Man", style: TextStyle(fontSize: 20, fontWeight: FontWeight.w900)),
+            const Text("Select an available delivery person for this order", style: TextStyle(color: Colors.grey)),
+            const SizedBox(height: 24),
+            Expanded(
+              child: FutureBuilder<List<UserModel>>(
+                future: AuthService().getAvailableDeliveryMen(),
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) return const Center(child: CircularProgressIndicator());
+                  if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                    return Center(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(Icons.person_off_rounded, size: 64, color: Colors.grey[300]),
+                          const SizedBox(height: 16),
+                          const Text("No delivery men available", style: TextStyle(fontWeight: FontWeight.bold, color: Colors.grey)),
+                        ],
+                      ),
+                    );
+                  }
+
+                  return ListView.builder(
+                    itemCount: snapshot.data!.length,
+                    itemBuilder: (context, index) {
+                      final dm = snapshot.data![index];
+                      return ListTile(
+                        leading: CircleAvatar(backgroundColor: Colors.blue.withValues(alpha: 0.1), child: const Icon(Icons.person, color: Colors.blue)),
+                        title: Text(dm.name, style: const TextStyle(fontWeight: FontWeight.bold)),
+                        subtitle: Text(dm.phoneNumber),
+                        trailing: const Icon(Icons.chevron_right_rounded),
+                        onTap: () async {
+                          await OrderRepository().assignDeliveryMan(order.id, dm);
+                          if (context.mounted) Navigator.pop(context);
+                        },
+                      );
+                    },
+                  );
+                },
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -301,13 +366,61 @@ class _AdminOrderListScreenState extends State<AdminOrderListScreen> with Single
           ),
           const SizedBox(height: 24),
           if (order.orderType != 'pos')
-            Row(
+            Column(
               children: [
-                _actionBtn(context, order, "Shipped", Colors.indigo, Icons.local_shipping_rounded),
-                const SizedBox(width: 10),
-                _actionBtn(context, order, "Delivered", Colors.green[700]!, Icons.verified_rounded),
-                const SizedBox(width: 10),
-                _actionBtn(context, order, "Cancelled", Colors.red[700]!, Icons.cancel_rounded),
+                Row(
+                  children: [
+                    _actionBtn(context, order, "Shipped", Colors.indigo, Icons.local_shipping_rounded),
+                    const SizedBox(width: 10),
+                    _actionBtn(context, order, "Delivered", Colors.green[700]!, Icons.verified_rounded),
+                    const SizedBox(width: 10),
+                    _actionBtn(context, order, "Cancelled", Colors.red[700]!, Icons.cancel_rounded),
+                  ],
+                ),
+                const SizedBox(height: 12),
+                if (order.status == 'Pending' || order.status == 'Confirmed')
+                  SizedBox(
+                    width: double.infinity,
+                    child: OutlinedButton.icon(
+                      onPressed: () => _showAssignDeliverySheet(context, order),
+                      icon: const Icon(Icons.person_add_alt_1_rounded),
+                      label: Text(order.deliveryManId == null ? "ASSIGN DELIVERY MAN" : "CHANGE DELIVERY MAN"),
+                      style: OutlinedButton.styleFrom(
+                        padding: const EdgeInsets.symmetric(vertical: 12),
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                        side: BorderSide(color: primaryColor),
+                        foregroundColor: primaryColor,
+                      ),
+                    ),
+                  ),
+                if (order.deliveryManName != null)
+                  Padding(
+                    padding: const EdgeInsets.only(top: 12),
+                    child: Container(
+                      padding: const EdgeInsets.all(12),
+                      decoration: BoxDecoration(
+                        color: Colors.blue.withValues(alpha: 0.05),
+                        borderRadius: BorderRadius.circular(12),
+                        border: Border.all(color: Colors.blue.withValues(alpha: 0.1)),
+                      ),
+                      child: Row(
+                        children: [
+                          const Icon(Icons.delivery_dining_rounded, color: Colors.blue),
+                          const SizedBox(width: 12),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                const Text("Assigned Delivery Man", style: TextStyle(fontSize: 10, color: Colors.grey, fontWeight: FontWeight.bold)),
+                                Text(order.deliveryManName!, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
+                              ],
+                            ),
+                          ),
+                          Text(order.deliveryManPhone ?? "", style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w500)),
+                        ],
+                      ),
+                    ),
+                  ),
               ],
             )
           else

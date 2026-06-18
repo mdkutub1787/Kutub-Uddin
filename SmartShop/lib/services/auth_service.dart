@@ -115,4 +115,35 @@ class AuthService {
   Future<void> signOut() async {
     await _auth.signOut();
   }
+
+  // --- Delivery System Methods ---
+
+  Future<void> updateLocation(String uid, double lat, double lng) async {
+    await _dbRef.child('users').child(uid).update({
+      'latitude': lat,
+      'longitude': lng,
+      'lastLocationUpdate': ServerValue.timestamp,
+    });
+  }
+
+  Future<void> updateAvailability(String uid, bool available) async {
+    await _dbRef.child('users').child(uid).update({
+      'isAvailable': available,
+    });
+  }
+
+  Future<List<UserModel>> getAvailableDeliveryMen() async {
+    try {
+      DataSnapshot snapshot = await _dbRef.child('users').orderByChild('role').equalTo('delivery_man').get();
+      if (snapshot.exists) {
+        Map<dynamic, dynamic> usersMap = snapshot.value as Map<dynamic, dynamic>;
+        return usersMap.entries.map((e) {
+          return UserModel.fromMap(Map<String, dynamic>.from(e.value), e.key);
+        }).where((user) => user.isAvailable == true).toList();
+      }
+    } catch (e) {
+      print("Error getting delivery men: $e");
+    }
+    return [];
+  }
 }

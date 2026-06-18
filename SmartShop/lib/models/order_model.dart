@@ -13,8 +13,15 @@ class OrderModel {
   final double totalAmount;
   final double deliveryFee;
   final DateTime date;
-  final String status;
+  final String status; // 'Pending', 'Confirmed', 'Assigned', 'PickedUp', 'OnTheWay', 'Delivered', 'Cancelled'
   final String orderType; // 'online' or 'pos'
+  
+  // Delivery related fields
+  final String? deliveryManId;
+  final String? deliveryManName;
+  final String? deliveryManPhone;
+  final double? deliveryLatitude;
+  final double? deliveryLongitude;
 
   OrderModel({
     required this.id,
@@ -29,6 +36,11 @@ class OrderModel {
     required this.date,
     required this.status,
     this.orderType = 'online',
+    this.deliveryManId,
+    this.deliveryManName,
+    this.deliveryManPhone,
+    this.deliveryLatitude,
+    this.deliveryLongitude,
   });
 
   Map<String, dynamic> toMap() {
@@ -50,6 +62,11 @@ class OrderModel {
       'date': date.toIso8601String(),
       'status': status,
       'orderType': orderType,
+      'deliveryManId': deliveryManId,
+      'deliveryManName': deliveryManName,
+      'deliveryManPhone': deliveryManPhone,
+      'deliveryLatitude': deliveryLatitude,
+      'deliveryLongitude': deliveryLongitude,
     };
   }
 
@@ -92,6 +109,11 @@ class OrderModel {
       date: data['date'] != null ? DateTime.parse(data['date']) : DateTime.now(),
       status: data['status'] ?? 'Pending',
       orderType: data['orderType'] ?? 'online',
+      deliveryManId: data['deliveryManId'],
+      deliveryManName: data['deliveryManName'],
+      deliveryManPhone: data['deliveryManPhone'],
+      deliveryLatitude: data['deliveryLatitude']?.toDouble(),
+      deliveryLongitude: data['deliveryLongitude']?.toDouble(),
     );
   }
 }

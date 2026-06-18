@@ -1,5 +1,6 @@
 import 'package:firebase_database/firebase_database.dart';
 import '../models/order_model.dart';
+import '../models/user_model.dart';
 
 class OrderRepository {
   final DatabaseReference _dbRef = FirebaseDatabase.instance.ref();
@@ -76,6 +77,22 @@ class OrderRepository {
 
   Future<void> updateOrderStatus(String orderId, String status) async {
     await _dbRef.child('orders').child(orderId).update({'status': status});
+  }
+
+  Future<void> assignDeliveryMan(String orderId, UserModel deliveryMan) async {
+    await _dbRef.child('orders').child(orderId).update({
+      'deliveryManId': deliveryMan.uid,
+      'deliveryManName': deliveryMan.name,
+      'deliveryManPhone': deliveryMan.phoneNumber,
+      'status': 'Assigned',
+    });
+  }
+
+  Future<void> updateDeliveryLocation(String orderId, double lat, double lng) async {
+    await _dbRef.child('orders').child(orderId).update({
+      'deliveryLatitude': lat,
+      'deliveryLongitude': lng,
+    });
   }
 
   Future<void> deleteOrder(String orderId) async {

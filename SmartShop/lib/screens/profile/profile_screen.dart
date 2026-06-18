@@ -45,6 +45,11 @@ class ProfileScreen extends StatelessWidget {
               _buildAdminCard(context, settings),
             ],
 
+            if (authViewModel.isDeliveryMan) ...[
+              const SizedBox(height: 16),
+              _buildDeliveryCard(context, settings),
+            ],
+
             const SizedBox(height: 20),
 
             // User Info Section
@@ -335,6 +340,45 @@ class ProfileScreen extends StatelessWidget {
     );
   }
 
+  Widget _buildDeliveryCard(BuildContext context, SettingsViewModel settings) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 20),
+      child: AppCard(
+        color: Colors.blueAccent,
+        borderRadius: 20,
+        onTap: () => Navigator.pushNamed(context, AppRoutes.deliveryDashboard),
+        child: Padding(
+          padding: const EdgeInsets.all(20),
+          child: Row(
+            children: [
+              const CircleAvatar(
+                backgroundColor: Colors.white24,
+                child: Icon(Icons.delivery_dining_rounded, color: Colors.white),
+              ),
+              const SizedBox(width: 15),
+              const Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      "Delivery Dashboard",
+                      style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold),
+                    ),
+                    Text(
+                      "Manage your deliveries and status",
+                      style: TextStyle(color: Colors.white70, fontSize: 12),
+                    ),
+                  ],
+                ),
+              ),
+              const Icon(Icons.arrow_forward_ios, color: Colors.white, size: 18),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
   Widget _buildUserInfoSection(BuildContext context, dynamic user, SettingsViewModel settings) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -441,6 +485,27 @@ class ProfileScreen extends StatelessWidget {
                 Text(
                   (user?.role == 'super_admin' ? AppStrings.superAdmin.tr() : AppStrings.storeAdmin.tr()).toUpperCase(), 
                   style: TextStyle(fontSize: 10, fontWeight: FontWeight.w900, color: Colors.amber[900], letterSpacing: 1)
+                ),
+              ],
+            ),
+          ),
+        if (user?.role == 'delivery_man')
+          Container(
+            margin: const EdgeInsets.only(top: 10),
+            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 5),
+            decoration: BoxDecoration(
+              color: Colors.blue[700]!.withValues(alpha: 0.15),
+              borderRadius: BorderRadius.circular(20),
+              border: Border.all(color: Colors.blue[700]!.withValues(alpha: 0.3)),
+            ),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const Icon(Icons.delivery_dining_rounded, size: 14, color: Colors.blue),
+                const SizedBox(width: 6),
+                Text(
+                  "DELIVERY PARTNER", 
+                  style: TextStyle(fontSize: 10, fontWeight: FontWeight.w900, color: Colors.blue[900], letterSpacing: 1)
                 ),
               ],
             ),
