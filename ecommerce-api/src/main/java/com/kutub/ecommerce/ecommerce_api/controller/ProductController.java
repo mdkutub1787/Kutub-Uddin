@@ -12,6 +12,11 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+import com.kutub.ecommerce.ecommerce_api.service.FileService;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.web.multipart.MultipartFile;
+import java.io.IOException;
+
 @RestController
 @RequestMapping("/api/products")
 public class ProductController {
@@ -22,10 +27,17 @@ public class ProductController {
     @Autowired
     private ProductMapper productMapper;
 
+    @Autowired
+    private FileService fileService;
+
+    @Value("${project.image}")
+    private String path;
+
     @PostMapping("/{categoryId}")
     public ResponseEntity<ApiResponse<ProductDTO>> createProduct(
             @PathVariable Long categoryId,
             @Valid @RequestBody Product product) {
+// ...
 
         Product savedProduct = productService.saveProduct(categoryId, product);
         return ResponseEntity.ok(ApiResponse.success("Product created successfully", productMapper.toDTO(savedProduct)));
@@ -53,5 +65,19 @@ public class ProductController {
     public ResponseEntity<ApiResponse<String>> deleteProduct(@PathVariable Long id) {
         productService.deleteProduct(id);
         return ResponseEntity.ok(ApiResponse.success("Product deleted successfully", null));
+    }
+
+    // ইমেজ আপলোড করার এন্ডপয়েন্ট
+    @PostMapping("/image/upload/{productId}")
+    public ResponseEntity<ApiResponse<ProductDTO>> uploadProductImage(
+            @PathVariable Long productId,
+            @RequestParam("image") MultipartFile image) throws IOException {
+
+        Product product = productService.getProductById(productId);
+        String fileName = fileService.uploadImage(path, image);
+        product.setImageName(fileName);
+        Product updatedProduct = productService.updateProduct(productId, product);
+        
+        return ResponseEntity.ok(ApiResponse.success("Image uploaded successfully", productMapper.toDTO(updatedProduct)));
     }
 }
