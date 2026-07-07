@@ -7,15 +7,11 @@ import com.kutub.ecommerce.ecommerce_api.mapper.ProductMapper;
 import com.kutub.ecommerce.ecommerce_api.service.ProductService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-
-import com.kutub.ecommerce.ecommerce_api.service.FileService;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.web.multipart.MultipartFile;
-import java.io.IOException;
 
 @RestController
 @RequestMapping("/api/products")
@@ -27,57 +23,33 @@ public class ProductController {
     @Autowired
     private ProductMapper productMapper;
 
-    @Autowired
-    private FileService fileService;
-
-    @Value("${project.image}")
-    private String path;
+    /**
+     * সব প্রোডাক্ট দেখার এপিআই (Readable URL: /api/products?page=0&size=10)
+     */
+    @GetMapping
+    public ResponseEntity<ApiResponse<List<ProductDTO>>> getAllProducts(
+            @RequestParam(value = "page", defaultValue = "0") int page,
+            @RequestParam(value = "size", defaultValue = "10") int size,
+            @RequestParam(value = "sortBy", defaultValue = "id") String sortBy,
+            @RequestParam(value = "keyword", required = false) String keyword
+    ) {
+        Page<Product> productPage = productService.getAllProducts(page, size, sortBy, keyword);
+        
+        // Entity থেকে DTO-তে কনভার্ট করছি
+        List<ProductDTO> dtos = productMapper.toDTOList(productPage.getContent());
+        
+        // ইউজারকে একটি সুন্দর মেসেজ দিচ্ছি
+        String message = String.format("Showing %d of %d total products", 
+                productPage.getNumberOfElements(), productPage.getTotalElements());
+        
+        return ResponseEntity.ok(ApiResponse.success(message, dtos));
+    }
 
     @PostMapping("/{categoryId}")
     public ResponseEntity<ApiResponse<ProductDTO>> createProduct(
             @PathVariable Long categoryId,
             @Valid @RequestBody Product product) {
-// ...
-
         Product savedProduct = productService.saveProduct(categoryId, product);
-        return ResponseEntity.ok(ApiResponse.success("Product created successfully", productMapper.toDTO(savedProduct)));
-    }
-
-    @GetMapping
-    public ResponseEntity<ApiResponse<List<ProductDTO>>> getAllProducts() {
-        List<Product> products = productService.getAllProducts();
-        return ResponseEntity.ok(ApiResponse.success("Products fetched successfully", productMapper.toDTOList(products)));
-    }
-
-    @GetMapping("/{id}")
-    public ResponseEntity<ApiResponse<ProductDTO>> getProductById(@PathVariable Long id) {
-        Product product = productService.getProductById(id);
-        return ResponseEntity.ok(ApiResponse.success("Product fetched successfully", productMapper.toDTO(product)));
-    }
-
-    @PutMapping("/{id}")
-    public ResponseEntity<ApiResponse<ProductDTO>> updateProduct(@PathVariable Long id, @RequestBody Product product) {
-        Product updatedProduct = productService.updateProduct(id, product);
-        return ResponseEntity.ok(ApiResponse.success("Product updated successfully", productMapper.toDTO(updatedProduct)));
-    }
-
-    @DeleteMapping("/{id}")
-    public ResponseEntity<ApiResponse<String>> deleteProduct(@PathVariable Long id) {
-        productService.deleteProduct(id);
-        return ResponseEntity.ok(ApiResponse.success("Product deleted successfully", null));
-    }
-
-    // ইমেজ আপলোড করার এন্ডপয়েন্ট
-    @PostMapping("/image/upload/{productId}")
-    public ResponseEntity<ApiResponse<ProductDTO>> uploadProductImage(
-            @PathVariable Long productId,
-            @RequestParam("image") MultipartFile image) throws IOException {
-
-        Product product = productService.getProductById(productId);
-        String fileName = fileService.uploadImage(path, image);
-        product.setImageName(fileName);
-        Product updatedProduct = productService.updateProduct(productId, product);
-        
-        return ResponseEntity.ok(ApiResponse.success("Image uploaded successfully", productMapper.toDTO(updatedProduct)));
+        return ResponseEntity.ok(ApiResponse.success("Product added successfully", productMapper.toDTO(savedProduct)));
     }
 }
