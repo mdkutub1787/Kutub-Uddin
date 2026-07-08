@@ -11,6 +11,7 @@ public class ProductDTO {
     private BigDecimal price;
     private Integer stock;
     private String imageName;
+    private String imageUrl; // এটি এপিআই থেকে সরাসরি ছবির লিঙ্ক দিবে
     private Long categoryId;
     private String categoryName;
 }
