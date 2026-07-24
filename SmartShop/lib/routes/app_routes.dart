@@ -1,26 +1,26 @@
 import 'package:flutter/material.dart';
-import '../screens/auth/login_screen.dart';
-import '../screens/auth/register_screen.dart';
-import '../screens/home/main_screen.dart';
-import '../screens/home/dashboard_screen.dart';
-import '../screens/product/product_details_screen.dart';
-import '../screens/cart/cart_screen.dart';
-import '../screens/profile/profile_screen.dart';
-import '../screens/order/my_orders_screen.dart';
-import '../screens/order/order_details_screen.dart';
-import '../screens/wishlist/wishlist_screen.dart';
-import '../screens/profile/edit_profile_screen.dart';
-import '../screens/admin/admin_dashboard_screen.dart';
-import '../screens/delivery/delivery_dashboard_screen.dart';
-import '../screens/offers/offers_screen.dart';
-import '../screens/notification/notification_screen.dart';
-import '../screens/notification/notification_details_screen.dart';
-import '../screens/support/support_screen.dart';
-import '../models/product_model.dart';
-import '../models/order_model.dart';
+import '../features/auth/screens/login_screen.dart';
+import '../features/auth/screens/register_screen.dart';
+import '../features/home/screens/main_screen.dart';
+import '../features/home/screens/dashboard_screen.dart';
+import '../features/product/screens/product_details_screen.dart';
+import '../features/cart/screens/cart_screen.dart';
+import '../features/profile/screens/profile_screen.dart';
+import '../features/order/screens/my_orders_screen.dart';
+import '../features/order/screens/order_details_screen.dart';
+import '../features/wishlist/screens/wishlist_screen.dart';
+import '../features/profile/screens/edit_profile_screen.dart';
+import '../features/admin/screens/admin_dashboard_screen.dart';
+import '../features/delivery/screens/delivery_dashboard_screen.dart';
+import '../features/offers/screens/offers_screen.dart';
+import '../features/notification/screens/notification_screen.dart';
+import '../features/notification/screens/notification_details_screen.dart';
+import '../features/support/screens/support_screen.dart';
+import '../features/product/models/product_model.dart';
+import '../features/order/models/order_model.dart';
 import '../models/notification_model.dart';
 
-import '../screens/splash/splash_screen.dart';
+import '../features/splash/screens/splash_screen.dart';
 
 class AppRoutes {
   static const String splash = '/';

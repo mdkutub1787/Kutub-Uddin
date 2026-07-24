@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:easy_localization/easy_localization.dart';
-import '../models/product_model.dart';
-import '../view_models/settings_view_model.dart';
+import '../features/product/models/product_model.dart';
+import '../core/riverpod/settings_notifier.dart';
 import '../utils/constants/app_strings.dart';
 import '../routes/app_routes.dart';
 import 'package:intl/intl.dart';
 import 'app_card.dart';
 
-class ProductListItem extends StatelessWidget {
+class ProductListItem extends ConsumerWidget {
   final ProductModel product;
   final Widget? trailing;
   final VoidCallback? onTap;
@@ -23,8 +23,8 @@ class ProductListItem extends StatelessWidget {
   });
 
   @override
-  Widget build(BuildContext context) {
-    final settings = context.watch<SettingsViewModel>();
+  Widget build(BuildContext context, WidgetRef ref) {
+    final settings = ref.watch(settingsProvider);
 
     void navigateToDetails() {
       Navigator.pushNamed(
@@ -82,7 +82,7 @@ class ProductListItem extends StatelessWidget {
                     Row(
                       children: [
                         Text(
-                          "৳${NumberFormat('#,##,###').format(product.originalPrice.toInt())}",
+                          "৳${NumberFormat('#,##,###').format(product.originalPrice?.toInt() ?? product.price.toInt())}",
                           style: const TextStyle(
                             color: Colors.grey,
                             decoration: TextDecoration.lineThrough,

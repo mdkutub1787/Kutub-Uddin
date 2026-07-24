@@ -1,64 +1,45 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
-import 'package:firebase_core/firebase_core.dart';
-import 'package:provider/provider.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:easy_localization/easy_localization.dart';
-import 'view_models/category_view_model.dart';
-import 'view_models/auth_view_model.dart';
-import 'view_models/product_view_model.dart';
-import 'view_models/settings_view_model.dart';
-import 'view_models/cart_view_model.dart';
-import 'view_models/order_view_model.dart';
-import 'view_models/wishlist_view_model.dart';
-import 'view_models/loading_view_model.dart';
-import 'view_models/navigation_view_model.dart';
-import 'view_models/notification_view_model.dart';
-import 'view_models/support_view_model.dart';
-import 'view_models/user_view_model.dart';
-import 'view_models/activity_log_view_model.dart';
-import 'screens/splash/splash_screen.dart';
+
+import 'core/riverpod/settings_notifier.dart';
+import 'core/riverpod/loading_notifier.dart';
+import 'features/splash/screens/splash_screen.dart';
 import 'routes/app_routes.dart';
 import 'utils/theme/app_theme.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp();
+  
+  // Initialize Supabase
+  await Supabase.initialize(
+    url: 'https://iqfmnjpxdeygpqsajuft.supabase.co',
+    anonKey: 'sb_publishable_KZD3lLvFUuAEQVF9we_GFg_wCm1Iyig',
+  );
+  
   await EasyLocalization.ensureInitialized();
   
   runApp(
-    EasyLocalization(
-      supportedLocales: const [Locale('en', 'US'), Locale('bn', 'BD')],
-      path: 'assets/translations',
-      fallbackLocale: const Locale('en', 'US'),
-      child: MultiProvider(
-        providers: [
-          ChangeNotifierProvider(create: (_) => AuthViewModel()),
-          ChangeNotifierProvider(create: (_) => CategoryViewModel()),
-          ChangeNotifierProvider(create: (_) => ProductViewModel()),
-          ChangeNotifierProvider(create: (_) => SettingsViewModel()),
-          ChangeNotifierProvider(create: (_) => CartViewModel()),
-          ChangeNotifierProvider(create: (_) => OrderViewModel()),
-          ChangeNotifierProvider(create: (_) => WishlistViewModel()),
-          ChangeNotifierProvider(create: (_) => LoadingViewModel()),
-          ChangeNotifierProvider(create: (_) => NavigationViewModel()),
-          ChangeNotifierProvider(create: (_) => NotificationViewModel()),
-          ChangeNotifierProvider(create: (_) => SupportViewModel()),
-          ChangeNotifierProvider(create: (_) => UserViewModel()),
-          ChangeNotifierProvider(create: (_) => ActivityLogViewModel()),
-        ],
+    ProviderScope(
+      child: EasyLocalization(
+        supportedLocales: const [Locale('en', 'US'), Locale('bn', 'BD')],
+        path: 'assets/translations',
+        fallbackLocale: const Locale('en', 'US'),
         child: const MyApp(),
       ),
     ),
   );
 }
 
-class MyApp extends StatelessWidget {
+class MyApp extends ConsumerWidget {
   const MyApp({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    final settings = context.watch<SettingsViewModel>();
-    final loading = context.watch<LoadingViewModel>();
+  Widget build(BuildContext context, WidgetRef ref) {
+    final settings = ref.watch(settingsProvider);
+    final loading = ref.watch(loadingProvider);
 
     return MaterialApp(
       debugShowCheckedModeBanner: false,
@@ -129,4 +110,3 @@ class MyApp extends StatelessWidget {
     );
   }
 }
-

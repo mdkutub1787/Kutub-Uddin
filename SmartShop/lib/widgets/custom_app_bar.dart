@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
-import '../view_models/cart_view_model.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../features/cart/riverpod/cart_notifier.dart';
 import '../routes/app_routes.dart';
 
-class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
+class CustomAppBar extends ConsumerWidget implements PreferredSizeWidget {
   final String? title;
   final Widget? titleWidget;
   final List<Widget>? actions;
@@ -30,7 +30,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
   });
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     return AppBar(
       title: titleWidget ??
           (title != null
@@ -46,14 +46,14 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
       backgroundColor: backgroundColor ?? Theme.of(context).primaryColor,
       elevation: elevation,
       leading: leading,
-      actions: _buildActions(context),
+      actions: _buildActions(context, ref),
       bottom: bottom,
       iconTheme: const IconThemeData(color: Colors.white),
       titleTextStyle: const TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold),
     );
   }
 
-  List<Widget> _buildActions(BuildContext context) {
+  List<Widget> _buildActions(BuildContext context, WidgetRef ref) {
     List<Widget> actionList = actions ?? [];
 
     if (showCart) {
@@ -67,28 +67,33 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
             Positioned(
               right: 8,
               top: 8,
-              child: Consumer<CartViewModel>(
-                builder: (context, cart, child) => cart.itemCount > 0
-                    ? Container(
-                        padding: const EdgeInsets.all(2),
-                        decoration: BoxDecoration(
-                          color: Colors.red,
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                        constraints: const BoxConstraints(
-                          minWidth: 16,
-                          minHeight: 16,
-                        ),
-                        child: Text(
-                          '${cart.itemCount}',
-                          style: const TextStyle(
-                            color: Colors.white,
-                            fontSize: 10,
+              child: Consumer(
+                builder: (context, ref, child) {
+                  final cartItems = ref.watch(cartNotifierProvider) ?? [];
+                  final itemCount = cartItems.fold(0, (sum, item) => sum + item.quantity);
+                  
+                  return itemCount > 0
+                      ? Container(
+                          padding: const EdgeInsets.all(2),
+                          decoration: BoxDecoration(
+                            color: Colors.red,
+                            borderRadius: BorderRadius.circular(10),
                           ),
-                          textAlign: TextAlign.center,
-                        ),
-                      )
-                    : const SizedBox.shrink(),
+                          constraints: const BoxConstraints(
+                            minWidth: 16,
+                            minHeight: 16,
+                          ),
+                          child: Text(
+                            '$itemCount',
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontSize: 10,
+                            ),
+                            textAlign: TextAlign.center,
+                          ),
+                        )
+                      : const SizedBox.shrink();
+                },
               ),
             ),
           ],
@@ -112,7 +117,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
   Size get preferredSize => Size.fromHeight(kToolbarHeight + (bottom?.preferredSize.height ?? 0.0));
 }
 
-class CustomSliverAppBar extends StatelessWidget {
+class CustomSliverAppBar extends ConsumerWidget {
   final String? title;
   final Widget? titleWidget;
   final List<Widget>? actions;
@@ -141,7 +146,7 @@ class CustomSliverAppBar extends StatelessWidget {
   });
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     return SliverAppBar(
       expandedHeight: expandedHeight,
       floating: floating,
@@ -162,12 +167,12 @@ class CustomSliverAppBar extends StatelessWidget {
                   ),
                 )
               : null),
-      actions: _buildActions(context),
+      actions: _buildActions(context, ref),
       iconTheme: const IconThemeData(color: Colors.white),
     );
   }
 
-  List<Widget> _buildActions(BuildContext context) {
+  List<Widget> _buildActions(BuildContext context, WidgetRef ref) {
     List<Widget> actionList = actions ?? [];
 
     if (showCart) {
@@ -181,28 +186,33 @@ class CustomSliverAppBar extends StatelessWidget {
             Positioned(
               right: 8,
               top: 8,
-              child: Consumer<CartViewModel>(
-                builder: (context, cart, child) => cart.itemCount > 0
-                    ? Container(
-                        padding: const EdgeInsets.all(2),
-                        decoration: BoxDecoration(
-                          color: Colors.red,
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                        constraints: const BoxConstraints(
-                          minWidth: 16,
-                          minHeight: 16,
-                        ),
-                        child: Text(
-                          '${cart.itemCount}',
-                          style: const TextStyle(
-                            color: Colors.white,
-                            fontSize: 10,
+              child: Consumer(
+                builder: (context, ref, child) {
+                  final cartItems = ref.watch(cartNotifierProvider) ?? [];
+                  final itemCount = cartItems.fold(0, (sum, item) => sum + item.quantity);
+                  
+                  return itemCount > 0
+                      ? Container(
+                          padding: const EdgeInsets.all(2),
+                          decoration: BoxDecoration(
+                            color: Colors.red,
+                            borderRadius: BorderRadius.circular(10),
                           ),
-                          textAlign: TextAlign.center,
-                        ),
-                      )
-                    : const SizedBox.shrink(),
+                          constraints: const BoxConstraints(
+                            minWidth: 16,
+                            minHeight: 16,
+                          ),
+                          child: Text(
+                            '$itemCount',
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontSize: 10,
+                            ),
+                            textAlign: TextAlign.center,
+                          ),
+                        )
+                      : const SizedBox.shrink();
+                },
               ),
             ),
           ],
