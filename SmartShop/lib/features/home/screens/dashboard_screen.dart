@@ -270,70 +270,87 @@ class DashboardScreen extends ConsumerWidget {
 
   Widget _buildCategoryList(BuildContext context, WidgetRef ref) {
     final categoryState = ref.watch(categoryNotifierProvider);
-    final categories = categoryState.value ?? [];
     
-    // For now we don't have selectedCategoryId in state, assume dummy
-    final String? selectedCategoryId = null; 
-    
-    return SizedBox(
-      height: 115,
-      child: ListView.builder(
-        padding: const EdgeInsets.symmetric(horizontal: 8),
-        scrollDirection: Axis.horizontal,
-        itemCount: categories.length,
-        itemBuilder: (context, index) {
-          final cat = categories[index];
-          bool isSelected = selectedCategoryId == cat.id;
-          return GestureDetector(
-            onTap: () {
-              // ref.read(productNotifierProvider.notifier).filterByCategory(cat.id);
+    return categoryState.when(
+      data: (categories) {
+        if (categories.isEmpty) return const SizedBox.shrink();
+        
+        // For now we don't have selectedCategoryId in state, assume dummy
+        const String? selectedCategoryId = null; 
+
+        return SizedBox(
+          height: 115,
+          child: ListView.builder(
+            padding: const EdgeInsets.symmetric(horizontal: 8),
+            scrollDirection: Axis.horizontal,
+            itemCount: categories.length,
+            itemBuilder: (context, index) {
+              final cat = categories[index];
+              bool isSelected = selectedCategoryId == cat.id;
+              return GestureDetector(
+                onTap: () {
+                  // ref.read(productNotifierProvider.notifier).filterByCategory(cat.id);
+                },
+                child: Container(
+                  width: 75,
+                  margin: const EdgeInsets.symmetric(horizontal: 6, vertical: 4),
+                  child: Column(
+                    children: [
+                      AnimatedContainer(
+                        duration: const Duration(milliseconds: 300),
+                        height: 65,
+                        width: 65,
+                        decoration: BoxDecoration(
+                          color: isSelected ? Colors.blue : Colors.white, // Dummy color
+                          borderRadius: BorderRadius.circular(18),
+                          boxShadow: [
+                            BoxShadow(
+                              color: isSelected 
+                                ? Colors.blue.withValues(alpha: 0.2) 
+                                : Colors.black.withValues(alpha: 0.03),
+                              blurRadius: 10,
+                              offset: const Offset(0, 5),
+                            )
+                          ],
+                          border: isSelected ? null : Border.all(color: Colors.grey[100]!),
+                        ),
+                        child: Icon(
+                          Icons.category, // Dummy icon
+                          color: isSelected ? Colors.white : Colors.blue, 
+                          size: 28
+                        ),
+                      ),
+                      const SizedBox(height: 6),
+                      Text(
+                        cat.name.tr(), 
+                        style: TextStyle(
+                          fontSize: 11, 
+                          fontWeight: isSelected ? FontWeight.w900 : FontWeight.bold, 
+                          color: isSelected ? Colors.blue : Colors.grey[600],
+                          letterSpacing: -0.2,
+                        ), 
+                        maxLines: 1, 
+                        overflow: TextOverflow.ellipsis
+                      ),
+                    ],
+                  ),
+                ),
+              );
             },
-            child: Container(
-              width: 75,
-              margin: const EdgeInsets.symmetric(horizontal: 6, vertical: 4),
-              child: Column(
-                children: [
-                  AnimatedContainer(
-                    duration: const Duration(milliseconds: 300),
-                    height: 65,
-                    width: 65,
-                    decoration: BoxDecoration(
-                      color: isSelected ? Colors.blue : Colors.white, // Dummy color
-                      borderRadius: BorderRadius.circular(18),
-                      boxShadow: [
-                        BoxShadow(
-                          color: isSelected 
-                            ? Colors.blue.withValues(alpha: 0.2) 
-                            : Colors.black.withValues(alpha: 0.03),
-                          blurRadius: 10,
-                          offset: const Offset(0, 5),
-                        )
-                      ],
-                      border: isSelected ? null : Border.all(color: Colors.grey[100]!),
-                    ),
-                    child: Icon(
-                      Icons.category, // Dummy icon
-                      color: isSelected ? Colors.white : Colors.blue, 
-                      size: 28
-                    ),
-                  ),
-                  const SizedBox(height: 6),
-                  Text(
-                    cat.name.tr(), 
-                    style: TextStyle(
-                      fontSize: 11, 
-                      fontWeight: isSelected ? FontWeight.w900 : FontWeight.bold, 
-                      color: isSelected ? Colors.blue : Colors.grey[600],
-                      letterSpacing: -0.2,
-                    ), 
-                    maxLines: 1, 
-                    overflow: TextOverflow.ellipsis
-                  ),
-                ],
-              ),
-            ),
-          );
-        },
+          ),
+        );
+      },
+      loading: () => const SizedBox(height: 115, child: Center(child: CircularProgressIndicator())),
+      error: (error, stack) => SizedBox(
+        height: 115,
+        child: Center(
+          child: Text(
+            error.toString().contains('JWT issued at future') 
+                ? "Time mismatch. Please fix device clock." 
+                : "Error loading categories",
+            style: const TextStyle(fontSize: 10, color: Colors.red),
+          ),
+        ),
       ),
     );
   }

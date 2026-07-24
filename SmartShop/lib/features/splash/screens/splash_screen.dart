@@ -42,11 +42,17 @@ class _SplashScreenState extends ConsumerState<SplashScreen> with SingleTickerPr
     final user = authState.value;
 
     if (user != null) {
-      // Initialize wishlist for the user
       ref.read(wishlistNotifierProvider.notifier).fetchWishlist(user.uid);
-      // Ensure home tab is selected
       ref.read(navigationNotifierProvider.notifier).setIndex(0);
-      Navigator.pushReplacementNamed(context, AppRoutes.main);
+      
+      // Redirect based on role
+      if (user.role == 'admin' || user.role == 'super_admin' || user.role == 'owner') {
+        Navigator.pushReplacementNamed(context, AppRoutes.adminDashboard);
+      } else if (user.role == 'delivery_man') {
+        Navigator.pushReplacementNamed(context, AppRoutes.deliveryDashboard);
+      } else {
+        Navigator.pushReplacementNamed(context, AppRoutes.main);
+      }
     } else {
       Navigator.pushReplacementNamed(context, AppRoutes.login);
     }

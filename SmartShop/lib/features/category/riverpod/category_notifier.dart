@@ -21,10 +21,16 @@ class CategoryNotifier extends AsyncNotifier<List<CategoryModel>> {
   Future<List<CategoryModel>> _fetchCategories() async {
     final user = ref.read(authNotifierProvider).value;
     if (user != null) {
-      // Assuming a generic user might be an admin, or we want all categories for the shop they belong to.
-      // If we just want all categories globally, we use getAllCategories().
-      // For now, let's just get all categories for display everywhere.
-      return await _repository.getAllCategories();
+      try {
+        return await _repository.getAllCategories();
+      } catch (e) {
+        if (e.toString().contains('JWT issued at future')) {
+          // Wait 2 seconds and retry once if it's a clock skew issue
+          await Future.delayed(const Duration(seconds: 2));
+          return await _repository.getAllCategories();
+        }
+        rethrow;
+      }
     }
     return [];
   }

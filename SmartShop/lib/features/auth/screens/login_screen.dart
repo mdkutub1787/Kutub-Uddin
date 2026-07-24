@@ -403,7 +403,18 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
       if (!mounted) return;
       await _saveCredentials();
       TextInput.finishAutofillContext();
-      Navigator.pushReplacementNamed(context, AppRoutes.main);
+      if (context.mounted) {
+        final user = ref.read(authNotifierProvider).value;
+        if (user != null) {
+          if (user.role == 'admin' || user.role == 'super_admin' || user.role == 'owner') {
+            Navigator.pushReplacementNamed(context, AppRoutes.adminDashboard);
+          } else if (user.role == 'delivery_man') {
+            Navigator.pushReplacementNamed(context, AppRoutes.deliveryDashboard);
+          } else {
+            Navigator.pushReplacementNamed(context, AppRoutes.main);
+          }
+        }
+      }
     } catch (e) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(

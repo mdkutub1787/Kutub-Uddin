@@ -44,23 +44,34 @@ class ProductNotifier extends Notifier<ProductState> {
   @override
   ProductState build() {
     _repository = ref.watch(productRepositoryProvider);
+    
+    // Set up real-time listener
     _initStream();
-    return ProductState();
+    
+    return ProductState(isLoading: true);
   }
 
   void _initStream({String? shopId}) {
-    state = state.copyWith(isLoading: true);
-    
     final stream = shopId != null 
         ? _repository.getProductsByShop(shopId)
         : _repository.getAllProducts();
         
-    stream.listen((products) {
-      state = state.copyWith(
-        featuredProducts: products,
-        isLoading: false,
-      );
-    });
+    final subscription = stream.listen(
+      (products) {
+        state = state.copyWith(
+          featuredProducts: products,
+          isLoading: false,
+        );
+      },
+      onError: (error) {
+        // Handle stream errors like Realtime disabled or JWT issues
+        if (error.toString().contains('JWT issued at future')) {
+          Future.delayed(const Duration(seconds: 3), () => _initStream(shopId: shopId));
+        }
+      },
+    );
+
+    ref.onDispose(() => subscription.cancel());
   }
 
   void filterByCategory(String categoryId) {

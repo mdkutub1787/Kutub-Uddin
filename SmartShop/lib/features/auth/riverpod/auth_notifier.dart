@@ -43,6 +43,8 @@ class AuthNotifier extends AsyncNotifier<UserModel?> {
     try {
       await _repository.signIn(email, password);
       error = null;
+      final user = _repository.currentUser;
+      state = AsyncData(user != null ? _mapToUserModel(user) : null);
     } catch (e, st) {
       error = e.toString();
       state = AsyncError(e, st);
@@ -55,6 +57,8 @@ class AuthNotifier extends AsyncNotifier<UserModel?> {
     try {
       await _repository.signUp(email, password, metadata: metadata);
       error = null;
+      final user = _repository.currentUser;
+      state = AsyncData(user != null ? _mapToUserModel(user) : null);
     } catch (e, st) {
       error = e.toString();
       state = AsyncError(e, st);
