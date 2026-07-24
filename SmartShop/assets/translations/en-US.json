@@ -174,5 +174,10 @@
   "admin_panel_desc": "Manage products, orders & analytics",
   "orders_count": "Orders",
   "wishlist_count": "Wishlist",
-  "cart_count": "Cart"
+  "cart_count": "Cart",
+  "admin_verification": "Admin Verification",
+  "enter_admin_code": "Please enter admin code",
+  "admin_access_granted": "Admin access granted",
+  "login_failed": "Login failed: {}",
+  "registration_failed": "Registration failed: {}"
 }

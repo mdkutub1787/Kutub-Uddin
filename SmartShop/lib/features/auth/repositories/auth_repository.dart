@@ -21,11 +21,11 @@ class AuthRepository {
   }
 
   // Sign Up
-  Future<AuthResponse> signUp(String email, String password, {String? name}) async {
+  Future<AuthResponse> signUp(String email, String password, {required Map<String, dynamic> metadata}) async {
     return await _supabase.auth.signUp(
       email: email,
       password: password,
-      data: name != null ? {'full_name': name} : null,
+      data: metadata,
     );
   }
 

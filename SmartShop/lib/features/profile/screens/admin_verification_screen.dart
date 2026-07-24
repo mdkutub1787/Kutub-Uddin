@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../auth/riverpod/auth_notifier.dart';
 import '../../../core/riverpod/settings_notifier.dart';
+import '../../../utils/constants/app_strings.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 class AdminVerificationScreen extends ConsumerStatefulWidget {
   const AdminVerificationScreen({super.key});
@@ -24,7 +26,7 @@ class _AdminVerificationScreenState extends ConsumerState<AdminVerificationScree
     final adminCode = _adminCodeController.text.trim();
 
     if (adminCode.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Please enter admin code')));
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(AppStrings.enterAdminCode.tr())));
       return;
     }
 
@@ -32,7 +34,7 @@ class _AdminVerificationScreenState extends ConsumerState<AdminVerificationScree
 
     if (mounted) {
       if (success) {
-        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Admin access granted!')));
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(AppStrings.adminAccessGranted.tr())));
         Navigator.pop(context, true);
       } else {
         final error = ref.read(authNotifierProvider.notifier).error;
@@ -51,7 +53,7 @@ class _AdminVerificationScreenState extends ConsumerState<AdminVerificationScree
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
-        title: const Text('Admin Verification'),
+        title: Text(AppStrings.adminVerification.tr()),
         backgroundColor: Colors.transparent,
         elevation: 0,
         foregroundColor: Colors.black87,

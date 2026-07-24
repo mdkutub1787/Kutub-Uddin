@@ -176,4 +176,9 @@ class AppStrings {
   static const String products = 'products';
   static const String orders = 'orders';
   static const String analytics = 'analytics';
+  static const String adminVerification = 'admin_verification';
+  static const String enterAdminCode = 'enter_admin_code';
+  static const String adminAccessGranted = 'admin_access_granted';
+  static const String loginFailed = 'login_failed';
+  static const String registrationFailed = 'registration_failed';
 }

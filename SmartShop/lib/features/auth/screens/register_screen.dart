@@ -67,11 +67,13 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
           ),
 
           SafeArea(
-            child: SingleChildScrollView(
-              padding: const EdgeInsets.symmetric(horizontal: 24),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
+            child: Stack(
+              children: [
+                SingleChildScrollView(
+                  padding: const EdgeInsets.symmetric(horizontal: 24),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
                   const SizedBox(height: 8),
                   Align(
                     alignment: Alignment.topLeft,
@@ -301,16 +303,58 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                           AppStrings.loginTitle.tr(),
                           style: TextStyle(
                             color: primaryColor,
-                            fontWeight: FontWeight.w900,
-                            fontSize: 15,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 14,
                           ),
                         ),
                       ),
                     ],
                   ),
-                  const SizedBox(height: 30),
+                  const SizedBox(height: 40),
                 ],
               ),
+            ),
+                Positioned(
+                  top: 10,
+                  right: 10,
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                    decoration: BoxDecoration(
+                      color: primaryColor.withValues(alpha: 0.1),
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        GestureDetector(
+                          onTap: () => context.setLocale(const Locale('en', 'US')),
+                          child: Text(
+                            "EN", 
+                            style: TextStyle(
+                              fontWeight: context.locale.languageCode == 'en' ? FontWeight.bold : FontWeight.normal,
+                              color: context.locale.languageCode == 'en' ? primaryColor : Colors.grey,
+                            ),
+                          ),
+                        ),
+                        const Padding(
+                          padding: EdgeInsets.symmetric(horizontal: 8.0),
+                          child: Text("|", style: TextStyle(color: Colors.grey)),
+                        ),
+                        GestureDetector(
+                          onTap: () => context.setLocale(const Locale('bn', 'BD')),
+                          child: Text(
+                            "BN", 
+                            style: TextStyle(
+                              fontWeight: context.locale.languageCode == 'bn' ? FontWeight.bold : FontWeight.normal,
+                              color: context.locale.languageCode == 'bn' ? primaryColor : Colors.grey,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ],
             ),
           ),
         ],
@@ -374,6 +418,11 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(AppStrings.fillAllFields.tr())));
       return;
     }
+
+    if (_isCreatingShop && _shopNameController.text.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Please enter shop name")));
+      return;
+    }
     
     if (_passwordController.text != _confirmPasswordController.text) {
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(AppStrings.passwordMismatch.tr())));
@@ -381,10 +430,21 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
     }
 
     try {
+      final metadata = {
+        'full_name': _nameController.text.trim(),
+        'phone_number': _phoneController.text.trim(),
+        'address': _addressController.text.trim(),
+        'role': _isCreatingShop ? 'owner' : 'user',
+      };
+
+      if (_isCreatingShop) {
+        metadata['shop_name'] = _shopNameController.text.trim();
+      }
+
       await ref.read(authNotifierProvider.notifier).signUp(
         _emailController.text.trim(),
         _passwordController.text,
-        _nameController.text.trim(),
+        metadata,
       );
       
       if (!mounted) return;
@@ -398,7 +458,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Registration failed: \${e.toString()}'),
+          content: Text(AppStrings.registrationFailed.tr(args: [e.toString().split(':').last.trim()])),
           backgroundColor: AppColors.error,
           behavior: SnackBarBehavior.floating,
         ),

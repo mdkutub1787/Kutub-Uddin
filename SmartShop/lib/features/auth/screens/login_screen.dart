@@ -92,11 +92,13 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
           ),
 
           SafeArea(
-            child: SingleChildScrollView(
-              padding: const EdgeInsets.symmetric(horizontal: 24),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
+            child: Stack(
+              children: [
+                SingleChildScrollView(
+                  padding: const EdgeInsets.symmetric(horizontal: 24),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
                   SizedBox(height: size.height * 0.05),
                   
                   // App Logo
@@ -286,6 +288,48 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                 ],
               ),
             ),
+                Positioned(
+                  top: 10,
+                  right: 10,
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                    decoration: BoxDecoration(
+                      color: primaryColor.withValues(alpha: 0.1),
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        GestureDetector(
+                          onTap: () => context.setLocale(const Locale('en', 'US')),
+                          child: Text(
+                            "EN", 
+                            style: TextStyle(
+                              fontWeight: context.locale.languageCode == 'en' ? FontWeight.bold : FontWeight.normal,
+                              color: context.locale.languageCode == 'en' ? primaryColor : Colors.grey,
+                            ),
+                          ),
+                        ),
+                        const Padding(
+                          padding: EdgeInsets.symmetric(horizontal: 8.0),
+                          child: Text("|", style: TextStyle(color: Colors.grey)),
+                        ),
+                        GestureDetector(
+                          onTap: () => context.setLocale(const Locale('bn', 'BD')),
+                          child: Text(
+                            "BN", 
+                            style: TextStyle(
+                              fontWeight: context.locale.languageCode == 'bn' ? FontWeight.bold : FontWeight.normal,
+                              color: context.locale.languageCode == 'bn' ? primaryColor : Colors.grey,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ],
+            ),
           ),
         ],
       ),
@@ -364,7 +408,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Login failed: \${e.toString()}'),
+          content: Text(AppStrings.loginFailed.tr(args: [e.toString().split(':').last.trim()])),
           backgroundColor: AppColors.error,
           behavior: SnackBarBehavior.floating,
         ),

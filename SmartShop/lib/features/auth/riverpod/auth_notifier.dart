@@ -50,10 +50,10 @@ class AuthNotifier extends AsyncNotifier<UserModel?> {
     }
   }
 
-  Future<void> signUp(String email, String password, String name) async {
+  Future<void> signUp(String email, String password, Map<String, dynamic> metadata) async {
     state = const AsyncLoading();
     try {
-      await _repository.signUp(email, password, name: name);
+      await _repository.signUp(email, password, metadata: metadata);
       error = null;
     } catch (e, st) {
       error = e.toString();

@@ -161,6 +161,7 @@
   "push_notifications": "পুশ নোটিফিকেশন",
   "customer_chat": "কাস্টমার চ্যাট",
   "hello_admin": "হ্যালো, অ্যাডমিন!",
+  "hello_super_admin": "হ্যালো, সুপার অ্যাডমিন!",
   "admin_welcome_msg": "আপনার দোকান ম্যানেজারে স্বাগতম।",
   "products": "পণ্যসমূহ",
   "orders": "অর্ডারসমূহ",
@@ -170,8 +171,13 @@
   "appearance": "ডার্ক মোড",
   "english": "ইংরেজি",
   "bengali": "বাংলা",
-  "admin_panel_desc": "পণ্য, অর্ডার এবং বিশ্লেষণ ম্যানেজ করুন",
+  "admin_panel_desc": "Manage products, orders & analytics",
   "orders_count": "অর্ডার",
   "wishlist_count": "উইশলিস্ট",
-  "cart_count": "কার্ট"
+  "cart_count": "কার্ট",
+  "admin_verification": "অ্যাডমিন ভেরিফিকেশন",
+  "enter_admin_code": "অনুগ্রহ করে অ্যাডমিন কোড দিন",
+  "admin_access_granted": "অ্যাডমিন অ্যাক্সেস অনুমোদিত হয়েছে",
+  "login_failed": "লগইন ব্যর্থ হয়েছে: {}",
+  "registration_failed": "রেজিস্ট্রেশন ব্যর্থ হয়েছে: {}"
 }
