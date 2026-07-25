@@ -45,63 +45,124 @@ class _NotificationScreenState extends ConsumerState<NotificationScreen> with Si
   @override
   Widget build(BuildContext context) {
     final noticeState = ref.watch(notificationNotifierProvider);
-    final supportState = ref.watch(supportNotifierProvider);
     final auth = ref.watch(authNotifierProvider).value;
     
     // dummy unread counts
     final noticeUnreadCount = 0; 
     final supportUnreadCount = 0; 
-
     final isAdmin = auth?.role == 'admin' || auth?.role == 'super_admin';
 
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Theme.of(context).primaryColor,
-        foregroundColor: Colors.white,
-        title: const Text("Notification Center", style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white)),
-        centerTitle: true,
-        bottom: TabBar(
-          controller: _tabController,
-          indicatorColor: Colors.white,
-          indicatorWeight: 3,
-          labelColor: Colors.white,
-          unselectedLabelColor: Colors.white70,
-          tabs: [
-            Tab(
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  const Text("Notices"),
-                  if (noticeUnreadCount > 0)
-                    _buildTabBadge(noticeUnreadCount),
-                ],
-              ),
+      backgroundColor: const Color(0xFFF5F7FA), // Light premium background
+      body: Column(
+        children: [
+          _buildPremiumHeader(noticeUnreadCount, supportUnreadCount, isAdmin),
+          Expanded(
+            child: TabBarView(
+              controller: _tabController,
+              children: [
+                _buildNoticeTab(noticeState, isAdmin, ref),
+                const SupportScreen(isEmbedded: true),
+              ],
             ),
-            Tab(
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  const Text("Support"),
-                  if (supportUnreadCount > 0)
-                    _buildTabBadge(supportUnreadCount),
-                ],
-              ),
-            ),
-          ],
-        ),
-        actions: [
-          if (isAdmin && _tabController.index == 0)
-            IconButton(
-              icon: const Icon(Icons.add_circle_outline),
-              onPressed: () => _showAddEditDialog(context, ref),
-            ),
+          ),
         ],
       ),
-      body: TabBarView(
-        controller: _tabController,
+    );
+  }
+
+  Widget _buildPremiumHeader(int noticeCount, int supportCount, bool isAdmin) {
+    return Container(
+      padding: EdgeInsets.only(top: MediaQuery.of(context).padding.top, bottom: 20),
+      decoration: const BoxDecoration(
+        color: Color(0xFF1B3128),
+        borderRadius: BorderRadius.only(
+          bottomLeft: Radius.circular(30),
+          bottomRight: Radius.circular(30),
+        ),
+        boxShadow: [
+          BoxShadow(color: Colors.black26, blurRadius: 10, offset: Offset(0, 5))
+        ],
+      ),
+      child: Column(
         children: [
-          _buildNoticeTab(noticeState, isAdmin, ref),
-          const SupportScreen(isEmbedded: true), // Updated with isEmbedded
+          // Header Bar
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                GestureDetector(
+                  onTap: () => Navigator.pop(context),
+                  child: Container(
+                    padding: const EdgeInsets.all(8),
+                    decoration: BoxDecoration(color: Colors.white.withValues(alpha: 0.1), shape: BoxShape.circle),
+                    child: const Icon(Icons.arrow_back_ios_new_rounded, color: Colors.white, size: 18),
+                  ),
+                ),
+                const Text(
+                  "Notification Center",
+                  style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold),
+                ),
+                if (isAdmin)
+                  GestureDetector(
+                    onTap: () => _showAddEditDialog(context, ref),
+                    child: Container(
+                      padding: const EdgeInsets.all(8),
+                      decoration: BoxDecoration(color: Colors.white.withValues(alpha: 0.1), shape: BoxShape.circle),
+                      child: const Icon(Icons.add_rounded, color: Colors.white, size: 20),
+                    ),
+                  )
+                else
+                  const SizedBox(width: 36),
+              ],
+            ),
+          ),
+          const SizedBox(height: 15),
+          // Custom TabBar
+          Container(
+            height: 45,
+            margin: const EdgeInsets.symmetric(horizontal: 20),
+            decoration: BoxDecoration(
+              color: Colors.white.withValues(alpha: 0.1),
+              borderRadius: BorderRadius.circular(25),
+            ),
+            child: TabBar(
+              controller: _tabController,
+              dividerColor: Colors.transparent,
+              indicatorSize: TabBarIndicatorSize.tab,
+              indicator: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(25),
+                boxShadow: [
+                  BoxShadow(color: Colors.black.withValues(alpha: 0.1), blurRadius: 4, offset: const Offset(0, 2))
+                ]
+              ),
+              labelColor: const Color(0xFF1B3128),
+              unselectedLabelColor: Colors.white70,
+              labelStyle: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
+              tabs: [
+                Tab(
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      const Text("Notices"),
+                      if (noticeCount > 0) _buildTabBadge(noticeCount),
+                    ],
+                  ),
+                ),
+                Tab(
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      const Text("Support"),
+                      if (supportCount > 0) _buildTabBadge(supportCount),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
         ],
       ),
     );
@@ -157,35 +218,73 @@ class _NotificationScreenState extends ConsumerState<NotificationScreen> with Si
 
   Widget _buildNotificationCard(BuildContext context, dynamic notification, bool isAdmin, WidgetRef ref) {
     return Container(
-      margin: const EdgeInsets.only(bottom: 16),
+      margin: const EdgeInsets.only(bottom: 12),
       decoration: BoxDecoration(
-        color: Theme.of(context).cardColor,
-        borderRadius: BorderRadius.circular(15),
-        boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.05), blurRadius: 10, offset: const Offset(0, 4))],
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(20),
+        boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.03), blurRadius: 10, offset: const Offset(0, 4))],
       ),
-      child: ListTile(
-        onTap: () => Navigator.pushNamed(context, AppRoutes.notificationDetails, arguments: notification),
-        contentPadding: const EdgeInsets.all(16),
-        title: Text(notification.title, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
-        subtitle: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const SizedBox(height: 8),
-            Text(notification.message, maxLines: 2, overflow: TextOverflow.ellipsis),
-            const SizedBox(height: 8),
-            Text(
-              DateFormat('dd MMM yyyy, hh:mm a').format(notification.timestamp),
-              style: TextStyle(color: Colors.grey[400], fontSize: 12),
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          borderRadius: BorderRadius.circular(20),
+          onTap: () => Navigator.pushNamed(context, AppRoutes.notificationDetails, arguments: notification),
+          child: Padding(
+            padding: const EdgeInsets.all(16),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(12),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFE2F3ED),
+                    borderRadius: BorderRadius.circular(16),
+                  ),
+                  child: const Icon(Icons.notifications_active_rounded, color: Color(0xFF1B3128), size: 24),
+                ),
+                const SizedBox(width: 16),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Expanded(
+                            child: Text(notification.title, style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 16, color: Color(0xFF1B3128)), maxLines: 1, overflow: TextOverflow.ellipsis),
+                          ),
+                          Text(
+                            DateFormat('dd MMM').format(notification.timestamp),
+                            style: TextStyle(color: Colors.grey[400], fontSize: 11, fontWeight: FontWeight.bold),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 6),
+                      Text(notification.message, maxLines: 2, overflow: TextOverflow.ellipsis, style: TextStyle(color: Colors.grey[600], fontSize: 13, height: 1.4)),
+                      if (isAdmin) ...[
+                        const SizedBox(height: 10),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.end,
+                          children: [
+                            GestureDetector(
+                              onTap: () => _showAddEditDialog(context, ref, notification: notification),
+                              child: const Icon(Icons.edit_rounded, color: Colors.blue, size: 18),
+                            ),
+                            const SizedBox(width: 16),
+                            GestureDetector(
+                              onTap: () => ref.read(notificationNotifierProvider.notifier).deleteNotification(notification.id),
+                              child: const Icon(Icons.delete_rounded, color: Colors.red, size: 18),
+                            ),
+                          ],
+                        )
+                      ]
+                    ],
+                  ),
+                ),
+              ],
             ),
-          ],
+          ),
         ),
-        trailing: isAdmin ? Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            IconButton(icon: const Icon(Icons.edit, color: Colors.blue), onPressed: () => _showAddEditDialog(context, ref, notification: notification)),
-            IconButton(icon: const Icon(Icons.delete, color: Colors.red), onPressed: () => ref.read(notificationNotifierProvider.notifier).deleteNotification(notification.id)),
-          ],
-        ) : const Icon(Icons.arrow_forward_ios, size: 14, color: Colors.grey),
       ),
     );
   }

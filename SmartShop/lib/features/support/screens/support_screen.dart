@@ -112,21 +112,35 @@ class _SupportScreenState extends ConsumerState<SupportScreen> {
       children: [
         // Professional Shop Info Header
         Container(
-          padding: const EdgeInsets.all(16),
-          color: settings.primaryColor.withValues(alpha: 0.1),
+          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 15),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.03), blurRadius: 10, offset: const Offset(0, 4))],
+          ),
           child: Row(
             children: [
-              CircleAvatar(
-                backgroundColor: settings.primaryColor,
-                child: const Icon(Icons.storefront_rounded, color: Colors.white),
+              Container(
+                padding: const EdgeInsets.all(10),
+                decoration: BoxDecoration(
+                  color: const Color(0xFFE2F3ED),
+                  shape: BoxShape.circle,
+                ),
+                child: const Icon(Icons.support_agent_rounded, color: Color(0xFF1B3128), size: 24),
               ),
               const SizedBox(width: 15),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(settings.shopName ?? 'Shop', style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
-                    Text(AppStrings.onlineSupport.tr(), style: const TextStyle(color: Colors.green, fontSize: 13, fontWeight: FontWeight.bold)),
+                    Text("Customer Support", style: const TextStyle(fontWeight: FontWeight.w900, fontSize: 16, color: Color(0xFF1B3128))),
+                    const SizedBox(height: 2),
+                    Row(
+                      children: [
+                        Container(width: 8, height: 8, decoration: const BoxDecoration(color: Colors.green, shape: BoxShape.circle)),
+                        const SizedBox(width: 6),
+                        Text(AppStrings.onlineSupport.tr(), style: const TextStyle(color: Colors.grey, fontSize: 12, fontWeight: FontWeight.bold)),
+                      ],
+                    ),
                   ],
                 ),
               ),
@@ -134,44 +148,48 @@ class _SupportScreenState extends ConsumerState<SupportScreen> {
           ),
         ),
         Expanded(
-          child: ListView.builder(
-            padding: const EdgeInsets.all(16),
-            itemCount: messages.length,
-            itemBuilder: (context, index) {
-              final msg = messages[index];
-              bool isMe = !msg.isAdmin;
-              return Align(
-                alignment: isMe ? Alignment.centerRight : Alignment.centerLeft,
-                child: Container(
-                  margin: const EdgeInsets.only(bottom: 8),
-                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-                  constraints: BoxConstraints(maxWidth: MediaQuery.of(context).size.width * 0.75),
-                  decoration: BoxDecoration(
-                    color: isMe ? settings.primaryColor : Colors.grey[200],
-                    borderRadius: BorderRadius.only(
-                      topLeft: const Radius.circular(15),
-                      topRight: const Radius.circular(15),
-                      bottomLeft: Radius.circular(isMe ? 15 : 0),
-                      bottomRight: Radius.circular(isMe ? 0 : 15),
+          child: Container(
+            color: const Color(0xFFF5F7FA),
+            child: ListView.builder(
+              padding: const EdgeInsets.all(20),
+              itemCount: messages.length,
+              itemBuilder: (context, index) {
+                final msg = messages[index];
+                bool isMe = !msg.isAdmin;
+                return Align(
+                  alignment: isMe ? Alignment.centerRight : Alignment.centerLeft,
+                  child: Container(
+                    margin: const EdgeInsets.only(bottom: 12),
+                    padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 12),
+                    constraints: BoxConstraints(maxWidth: MediaQuery.of(context).size.width * 0.75),
+                    decoration: BoxDecoration(
+                      color: isMe ? const Color(0xFF1B3128) : Colors.white,
+                      boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.05), blurRadius: 5, offset: const Offset(0, 2))],
+                      borderRadius: BorderRadius.only(
+                        topLeft: const Radius.circular(20),
+                        topRight: const Radius.circular(20),
+                        bottomLeft: Radius.circular(isMe ? 20 : 0),
+                        bottomRight: Radius.circular(isMe ? 0 : 20),
+                      ),
+                    ),
+                    child: Column(
+                      crossAxisAlignment: isMe ? CrossAxisAlignment.end : CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          msg.message,
+                          style: TextStyle(color: isMe ? Colors.white : Colors.black87, fontSize: 14, height: 1.4),
+                        ),
+                        const SizedBox(height: 6),
+                        Text(
+                          DateFormat('hh:mm a').format(msg.timestamp),
+                          style: TextStyle(color: isMe ? Colors.white54 : Colors.grey[500], fontSize: 10, fontWeight: FontWeight.bold),
+                        ),
+                      ],
                     ),
                   ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        msg.message,
-                        style: TextStyle(color: isMe ? Colors.white : Colors.black87),
-                      ),
-                      const SizedBox(height: 4),
-                      Text(
-                        DateFormat('hh:mm a').format(msg.timestamp),
-                        style: TextStyle(color: isMe ? Colors.white70 : Colors.black54, fontSize: 10),
-                      ),
-                    ],
-                  ),
-                ),
-              );
-            },
+                );
+              },
+            ),
           ),
         ),
         _buildInputArea(user),
@@ -181,42 +199,52 @@ class _SupportScreenState extends ConsumerState<SupportScreen> {
 
   Widget _buildInputArea(dynamic user) {
     return Container(
-      padding: const EdgeInsets.fromLTRB(16, 8, 8, 16),
+      padding: const EdgeInsets.fromLTRB(16, 12, 16, 24),
       decoration: BoxDecoration(
         color: Colors.white,
-        boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.05), blurRadius: 10, offset: const Offset(0, -5))],
+        boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.03), blurRadius: 10, offset: const Offset(0, -5))],
       ),
       child: SafeArea(
         child: Row(
           children: [
             Expanded(
-              child: TextField(
-                controller: _messageController,
-                decoration: InputDecoration(
-                  hintText: AppStrings.typeMessage.tr(),
-                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(25), borderSide: BorderSide.none),
-                  filled: true,
-                  fillColor: Colors.grey[100],
-                  contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+              child: Container(
+                decoration: BoxDecoration(
+                  color: const Color(0xFFF5F7FA),
+                  borderRadius: BorderRadius.circular(30),
+                  border: Border.all(color: Colors.grey.withValues(alpha: 0.2)),
+                ),
+                child: TextField(
+                  controller: _messageController,
+                  decoration: InputDecoration(
+                    hintText: AppStrings.typeMessage.tr(),
+                    hintStyle: TextStyle(color: Colors.grey[400]),
+                    border: InputBorder.none,
+                    contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
+                  ),
                 ),
               ),
             ),
-            const SizedBox(width: 8),
-            CircleAvatar(
-              backgroundColor: Theme.of(context).primaryColor,
-              child: IconButton(
-                icon: const Icon(Icons.send_rounded, color: Colors.white),
-                onPressed: () {
-                  if (_messageController.text.isNotEmpty && user != null) {
-                    // ref.read(supportNotifierProvider.notifier).sendMessage(
-                    //  user.uid, 
-                    //  user.name, 
-                    //  _messageController.text,
-                    //  userPhone: user.phoneNumber,
-                    // );
-                    _messageController.clear();
-                  }
-                },
+            const SizedBox(width: 12),
+            GestureDetector(
+              onTap: () {
+                if (_messageController.text.isNotEmpty && user != null) {
+                  // ref.read(supportNotifierProvider.notifier).sendMessage(
+                  //  user.uid, 
+                  //  user.name, 
+                  //  _messageController.text,
+                  //  userPhone: user.phoneNumber,
+                  // );
+                  _messageController.clear();
+                }
+              },
+              child: Container(
+                padding: const EdgeInsets.all(14),
+                decoration: const BoxDecoration(
+                  color: Color(0xFF1B3128),
+                  shape: BoxShape.circle,
+                ),
+                child: const Icon(Icons.send_rounded, color: Colors.white, size: 20),
               ),
             ),
           ],
