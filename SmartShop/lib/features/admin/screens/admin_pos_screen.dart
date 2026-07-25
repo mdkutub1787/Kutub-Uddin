@@ -12,7 +12,7 @@ import '../../auth/riverpod/auth_notifier.dart';
 import '../../order/riverpod/order_notifier.dart';
 import '../../user/riverpod/user_notifier.dart';
 import '../../../core/riverpod/settings_notifier.dart';
-import '../../../utils/constants/app_strings.dart';
+import '../../../core/app_strings.dart';
 import '../../../widgets/custom_app_bar.dart';
 
 class AdminPosScreen extends ConsumerStatefulWidget {

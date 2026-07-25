@@ -8,7 +8,7 @@ import '../models/product_model.dart';
 // import '../../cart/riverpod/cart_notifier.dart';
 // import '../../wishlist/riverpod/wishlist_notifier.dart';
 // import '../../auth/riverpod/auth_notifier.dart';
-import '../../../utils/constants/app_strings.dart';
+import '../../../core/app_strings.dart';
 
 class ProductDetailsScreen extends ConsumerWidget {
   final ProductModel product;

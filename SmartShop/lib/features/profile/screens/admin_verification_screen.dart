@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../auth/riverpod/auth_notifier.dart';
 import '../../../core/riverpod/settings_notifier.dart';
-import '../../../utils/constants/app_strings.dart';
+import '../../../core/app_strings.dart';
 import 'package:easy_localization/easy_localization.dart';
 
 class AdminVerificationScreen extends ConsumerStatefulWidget {

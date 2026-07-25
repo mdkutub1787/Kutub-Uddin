@@ -9,7 +9,7 @@ class SettingsState {
 
   SettingsState({
     this.themeMode = ThemeMode.system,
-    this.primaryColor = Colors.deepPurple,
+    this.primaryColor = const Color(0xFF54B599), // AppColors.primary (Teal)
     this.shopName = 'Smart Shop',
   });
 

@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../models/product_model.dart';
@@ -9,18 +10,26 @@ class ProductRepository {
   ProductRepository(this._supabase);
 
   Stream<List<ProductModel>> getProductsByShop(String shopId) {
+    debugPrint('📡 INFO: Fetching products for shop: $shopId');
     return _supabase
         .from(_table)
         .stream(primaryKey: ['id'])
         .eq('shopId', shopId)
-        .map((data) => data.map((json) => ProductModel.fromJson(json)).toList());
+        .map((data) {
+          debugPrint('✅ SUCCESS: Loaded ${data.length} products for shop $shopId');
+          return data.map((json) => ProductModel.fromJson(json)).toList();
+        });
   }
 
   Stream<List<ProductModel>> getAllProducts() {
+    debugPrint('📡 INFO: Fetching all products');
     return _supabase
         .from(_table)
         .stream(primaryKey: ['id'])
-        .map((data) => data.map((json) => ProductModel.fromJson(json)).toList());
+        .map((data) {
+          debugPrint('✅ SUCCESS: Loaded ${data.length} products globally');
+          return data.map((json) => ProductModel.fromJson(json)).toList();
+        });
   }
 
   Future<void> addProduct(ProductModel product) async {

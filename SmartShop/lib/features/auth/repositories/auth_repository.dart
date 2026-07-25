@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -14,24 +15,43 @@ class AuthRepository {
 
   // Sign In
   Future<AuthResponse> signIn(String email, String password) async {
-    return await _supabase.auth.signInWithPassword(
-      email: email,
-      password: password,
-    );
+    try {
+      final response = await _supabase.auth.signInWithPassword(
+        email: email,
+        password: password,
+      );
+      debugPrint('✅ SUCCESS: Login successful for $email');
+      return response;
+    } catch (e) {
+      debugPrint('❌ ERROR: Login failed for $email -> $e');
+      rethrow;
+    }
   }
 
   // Sign Up
   Future<AuthResponse> signUp(String email, String password, {required Map<String, dynamic> metadata}) async {
-    return await _supabase.auth.signUp(
-      email: email,
-      password: password,
-      data: metadata,
-    );
+    try {
+      final response = await _supabase.auth.signUp(
+        email: email,
+        password: password,
+        data: metadata,
+      );
+      debugPrint('✅ SUCCESS: Registration successful for $email');
+      return response;
+    } catch (e) {
+      debugPrint('❌ ERROR: Registration failed for $email -> $e');
+      rethrow;
+    }
   }
 
   // Sign Out
   Future<void> signOut() async {
-    await _supabase.auth.signOut();
+    try {
+      await _supabase.auth.signOut();
+      debugPrint('✅ SUCCESS: User signed out');
+    } catch (e) {
+      debugPrint('❌ ERROR: Sign out failed -> $e');
+    }
   }
 }
 

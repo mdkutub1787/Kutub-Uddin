@@ -18,6 +18,7 @@ dependencies:
   cupertino_icons: ^1.0.8
   image_picker: ^1.0.7
   intl: ^0.20.2
+  flutter_native_splash: ^2.4.8
 
 dev_dependencies:
   flutter_test:
@@ -26,9 +27,11 @@ dev_dependencies:
   flutter_launcher_icons: ^0.13.1
 
 flutter_launcher_icons:
-  android: "launcher_icon"
+  android: true
   ios: true
   image_path: "assets/images/app_icon.png"
+  adaptive_icon_background: "#ffffff"
+  adaptive_icon_foreground: "assets/images/app_icon.png"
   min_sdk_android: 21
 
 flutter:
@@ -37,3 +40,11 @@ flutter:
   assets:
     - assets/images/
     - assets/translations/
+
+flutter_native_splash:
+  color: "#ffffff"
+  image: "assets/images/app_icon.png"
+  android_12:
+    image: "assets/images/app_icon.png"
+    icon_background_color: "#ffffff"
+    color: "#ffffff"

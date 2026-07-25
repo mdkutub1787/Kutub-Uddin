@@ -4,8 +4,10 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:easy_localization/easy_localization.dart';
 
 import '../riverpod/auth_notifier.dart';
-import '../../../utils/constants/app_colors.dart';
-import '../../../utils/constants/app_strings.dart';
+import '../../../theme/app_colors.dart';
+import '../../../core/app_strings.dart';
+import '../../../routes/app_routes.dart';
+import '../../../core/widgets/curved_header.dart';
 
 class RegisterScreen extends ConsumerStatefulWidget {
   const RegisterScreen({super.key});
@@ -19,11 +21,9 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
   final _emailController = TextEditingController();
   final _phoneController = TextEditingController();
   final _addressController = TextEditingController();
-  final _shopNameController = TextEditingController();
   final _passwordController = TextEditingController();
   final _confirmPasswordController = TextEditingController();
   bool _isPasswordVisible = false;
-  bool _isCreatingShop = false;
 
   @override
   void dispose() {
@@ -31,7 +31,6 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
     _emailController.dispose();
     _phoneController.dispose();
     _addressController.dispose();
-    _shopNameController.dispose();
     _passwordController.dispose();
     _confirmPasswordController.dispose();
     super.dispose();
@@ -41,271 +40,162 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
   Widget build(BuildContext context) {
     final authState = ref.watch(authNotifierProvider);
     final isLoading = authState.isLoading;
-    final primaryColor = Theme.of(context).primaryColor;
-    final size = MediaQuery.of(context).size;
 
     return Scaffold(
-      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+      backgroundColor: const Color(0xFFE2F3ED),
       body: Stack(
         children: [
-          // Decorative Background Elements
+          // Background blobs
           Positioned(
-            top: -size.height * 0.1,
-            right: -size.width * 0.2,
-            child: CircleAvatar(
-              radius: size.width * 0.4,
-              backgroundColor: primaryColor.withValues(alpha: 0.05),
+            top: -100,
+            left: -80,
+            child: Container(
+              width: 300,
+              height: 300,
+              decoration: const BoxDecoration(
+                color: Color(0xFF75CDB3), // Lighter teal blob
+                shape: BoxShape.circle,
+              ),
             ),
           ),
           Positioned(
-            bottom: -size.height * 0.1,
-            left: -size.width * 0.2,
-            child: CircleAvatar(
-              radius: size.width * 0.3,
-              backgroundColor: primaryColor.withValues(alpha: 0.05),
+            bottom: -150,
+            right: -120,
+            child: Container(
+              width: 300,
+              height: 300,
+              decoration: const BoxDecoration(
+                color: Color(0xFF54B599), // Darker teal blob
+                shape: BoxShape.circle,
+              ),
             ),
           ),
-
+          
           SafeArea(
-            child: Stack(
-              children: [
-                SingleChildScrollView(
-                  padding: const EdgeInsets.symmetric(horizontal: 24),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                  const SizedBox(height: 8),
-                  Align(
-                    alignment: Alignment.topLeft,
-                    child: IconButton(
-                      icon: const Icon(Icons.arrow_back_ios_new_rounded, size: 20),
-                      onPressed: () => Navigator.pop(context),
-                    ),
+            child: SingleChildScrollView(
+              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 20),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  GestureDetector(
+                    onTap: () => Navigator.pop(context),
+                    child: const Icon(Icons.arrow_back_ios, color: Colors.black87, size: 20),
                   ),
-                  
-                  const SizedBox(height: 4),
-                  // App Title
+                  const SizedBox(height: 30),
                   Text(
-                    AppStrings.registerTitle.tr(),
+                    "Create\naccount.",
                     style: Theme.of(context).textTheme.displayLarge?.copyWith(
-                      fontSize: 34,
-                      fontWeight: FontWeight.w900,
-                      color: primaryColor,
-                      letterSpacing: -1,
+                      fontSize: 40,
+                      height: 1.1,
+                      color: const Color(0xFF1B3128), // Dark teal for high contrast
                     ),
                   ),
-                  const SizedBox(height: 4),
+                  const SizedBox(height: 10),
                   Text(
-                    AppStrings.registrationSubtitle.tr(),
-                    style: TextStyle(
-                      fontSize: 14,
-                      color: Colors.grey[600],
-                      fontWeight: FontWeight.w500,
+                    "Fill in your details to continue",
+                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                      color: const Color(0xFF50685E), // Muted dark teal
                     ),
                   ),
                   
-                  const SizedBox(height: 32),
+                  const SizedBox(height: 40),
                   
-                  // Account Type Toggle
+                  // Form Container
                   Container(
-                    padding: const EdgeInsets.all(4),
                     decoration: BoxDecoration(
-                      color: primaryColor.withValues(alpha: 0.05),
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    child: Row(
-                      children: [
-                        Expanded(
-                          child: InkWell(
-                            onTap: () => setState(() => _isCreatingShop = false),
-                            child: Container(
-                              padding: const EdgeInsets.symmetric(vertical: 8),
-                              decoration: BoxDecoration(
-                                color: !_isCreatingShop ? Colors.white : Colors.transparent,
-                                borderRadius: BorderRadius.circular(8),
-                                boxShadow: !_isCreatingShop ? [const BoxShadow(color: Colors.black12, blurRadius: 4)] : null,
-                              ),
-                              child: Center(
-                                child: Text("Customer", style: TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  color: !_isCreatingShop ? primaryColor : Colors.grey,
-                                )),
-                              ),
-                            ),
-                          ),
-                        ),
-                        Expanded(
-                          child: InkWell(
-                            onTap: () => setState(() => _isCreatingShop = true),
-                            child: Container(
-                              padding: const EdgeInsets.symmetric(vertical: 8),
-                              decoration: BoxDecoration(
-                                color: _isCreatingShop ? Colors.white : Colors.transparent,
-                                borderRadius: BorderRadius.circular(8),
-                                boxShadow: _isCreatingShop ? [const BoxShadow(color: Colors.black12, blurRadius: 4)] : null,
-                              ),
-                              child: Center(
-                                child: Text("Shop Owner", style: TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  color: _isCreatingShop ? primaryColor : Colors.grey,
-                                )),
-                              ),
-                            ),
-                          ),
-                        ),
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(30),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withValues(alpha: 0.05),
+                          blurRadius: 20,
+                          offset: const Offset(0, 10),
+                        )
                       ],
                     ),
-                  ),
-                  
-                  const SizedBox(height: 24),
-                  
-                  // Form Fields
-                  AutofillGroup(
-                    child: Column(
-                      children: [
-                        if (_isCreatingShop) ...[
-                          _buildTextField(
-                            controller: _shopNameController,
-                            label: "Shop Name",
-                            hint: "Enter your business name",
-                            icon: Icons.store_rounded,
-                            action: TextInputAction.next,
+                    padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 30),
+                    child: AutofillGroup(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          _buildModernField(
+                            controller: _nameController,
+                            hint: "username",
+                            icon: Icons.person_outline_rounded,
                           ),
-                          const SizedBox(height: 16),
+                          _buildModernField(
+                            controller: _phoneController,
+                            hint: "phone number",
+                            icon: Icons.phone_android_rounded,
+                            keyboardType: TextInputType.phone,
+                          ),
+                          _buildModernField(
+                            controller: _addressController,
+                            hint: "address",
+                            icon: Icons.location_on_outlined,
+                          ),
+                          _buildModernField(
+                            controller: _emailController,
+                            hint: "username@gmail.com",
+                            icon: Icons.email_outlined,
+                            keyboardType: TextInputType.emailAddress,
+                          ),
+                          _buildModernField(
+                            controller: _passwordController,
+                            hint: "••••••",
+                            icon: Icons.lock_outline_rounded,
+                            obscure: !_isPasswordVisible,
+                            suffix: IconButton(
+                              icon: Icon(
+                                _isPasswordVisible ? Icons.visibility_off : Icons.visibility,
+                                color: Colors.black26,
+                                size: 20,
+                              ),
+                              onPressed: () => setState(() => _isPasswordVisible = !_isPasswordVisible),
+                            ),
+                          ),
+                          
+                          const SizedBox(height: 20),
+                          
+                          // REGISTER BUTTON
+                          SizedBox(
+                            height: 55,
+                            child: ElevatedButton(
+                              onPressed: isLoading ? null : _handleRegister,
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: const Color(0xFF1B3128), // Premium Dark Teal/Black
+                                foregroundColor: Colors.white,
+                                elevation: 5,
+                                shadowColor: Colors.black26,
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(30),
+                                ),
+                              ),
+                              child: isLoading
+                                  ? const CircularProgressIndicator(color: Colors.white)
+                                  : const Text(
+                                      "Create Account", 
+                                      style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold)
+                                    ),
+                            ),
+                          ),
                         ],
-                        _buildTextField(
-                          controller: _nameController,
-                          label: AppStrings.nameLabel.tr(),
-                          hint: AppStrings.fullNameHint.tr(),
-                          icon: Icons.person_outline_rounded,
-                          action: TextInputAction.next,
-                          autofillHints: [AutofillHints.name],
-                        ),
-                        const SizedBox(height: 16),
-                        
-                        _buildTextField(
-                          controller: _phoneController,
-                          label: AppStrings.phoneLabel.tr(),
-                          hint: "01XXXXXXXXX",
-                          icon: Icons.phone_android_rounded,
-                          keyboardType: TextInputType.phone,
-                          action: TextInputAction.next,
-                          autofillHints: [AutofillHints.telephoneNumber],
-                        ),
-                        const SizedBox(height: 16),
-                        
-                        _buildTextField(
-                          controller: _addressController,
-                          label: AppStrings.addressLabel.tr(),
-                          hint: AppStrings.addressHint.tr(),
-                          icon: Icons.location_on_outlined,
-                          action: TextInputAction.next,
-                          autofillHints: [AutofillHints.fullStreetAddress],
-                        ),
-                        const SizedBox(height: 16),
-                        
-                        _buildTextField(
-                          controller: _emailController,
-                          label: AppStrings.emailLabel.tr(),
-                          hint: "example@mail.com",
-                          icon: Icons.alternate_email_rounded,
-                          keyboardType: TextInputType.emailAddress,
-                          action: TextInputAction.next,
-                          autofillHints: [AutofillHints.email],
-                        ),
-                        const SizedBox(height: 16),
-                        
-                        _buildTextField(
-                          controller: _passwordController,
-                          label: AppStrings.passwordLabel.tr(),
-                          hint: "••••••••",
-                          icon: Icons.lock_outline_rounded,
-                          obscure: !_isPasswordVisible,
-                          action: TextInputAction.next,
-                          autofillHints: [AutofillHints.newPassword],
-                          suffix: IconButton(
-                            icon: Icon(
-                              _isPasswordVisible
-                                  ? Icons.visibility_off_rounded
-                                  : Icons.visibility_rounded,
-                              color: Colors.grey,
-                              size: 20,
-                            ),
-                            onPressed: () => setState(() => _isPasswordVisible = !_isPasswordVisible),
-                          ),
-                        ),
-                        const SizedBox(height: 16),
-                        
-                        _buildTextField(
-                          controller: _confirmPasswordController,
-                          label: AppStrings.confirmPasswordLabel.tr(),
-                          hint: "••••••••",
-                          icon: Icons.verified_user_outlined,
-                          obscure: !_isPasswordVisible,
-                          action: TextInputAction.done,
-                          autofillHints: [AutofillHints.password],
-                          onSubmitted: (_) => _handleRegister(),
-                        ),
-                        
-                        const SizedBox(height: 32),
-                        
-                        // REGISTER BUTTON
-                        SizedBox(
-                          width: double.infinity,
-                          height: 55,
-                          child: ElevatedButton(
-                            onPressed: isLoading
-                                ? null
-                                : () => _handleRegister(),
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: primaryColor,
-                              foregroundColor: Colors.white,
-                              elevation: 6,
-                              shadowColor: primaryColor.withValues(alpha: 0.3),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(16),
-                              ),
-                            ),
-                            child: isLoading
-                                ? const SizedBox(
-                                    height: 20,
-                                    width: 20,
-                                    child: CircularProgressIndicator(
-                                      color: Colors.white,
-                                      strokeWidth: 2,
-                                    ),
-                                  )
-                                : Text(
-                                    AppStrings.registerTitle.tr().toUpperCase(),
-                                    style: const TextStyle(
-                                      fontSize: 16, 
-                                      fontWeight: FontWeight.w900,
-                                      letterSpacing: 1
-                                    ),
-                                  ),
-                          ),
-                        ),
-                      ],
+                      ),
                     ),
                   ),
                   
-                  const SizedBox(height: 24),
+                  const SizedBox(height: 30),
+                  
+                  // Login Link
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Text(
-                        AppStrings.alreadyHaveAccount.tr(),
-                        style: TextStyle(color: Colors.grey[600], fontSize: 14),
-                      ),
-                      TextButton(
-                        onPressed: () => Navigator.pop(context),
-                        child: Text(
-                          AppStrings.loginTitle.tr(),
-                          style: TextStyle(
-                            color: primaryColor,
-                            fontWeight: FontWeight.bold,
-                            fontSize: 14,
-                          ),
+                      const Text("Already have account? ", style: TextStyle(color: Colors.black54)),
+                      GestureDetector(
+                        onTap: () => Navigator.pop(context),
+                        child: const Text(
+                          "Login",
+                          style: TextStyle(color: Color(0xFF1B3128), fontWeight: FontWeight.w900, decoration: TextDecoration.underline),
                         ),
                       ),
                     ],
@@ -314,100 +204,84 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                 ],
               ),
             ),
-                Positioned(
-                  top: 10,
-                  right: 10,
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                    decoration: BoxDecoration(
-                      color: primaryColor.withValues(alpha: 0.1),
-                      borderRadius: BorderRadius.circular(20),
-                    ),
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        GestureDetector(
-                          onTap: () => context.setLocale(const Locale('en', 'US')),
-                          child: Text(
-                            "EN", 
-                            style: TextStyle(
-                              fontWeight: context.locale.languageCode == 'en' ? FontWeight.bold : FontWeight.normal,
-                              color: context.locale.languageCode == 'en' ? primaryColor : Colors.grey,
-                            ),
-                          ),
-                        ),
-                        const Padding(
-                          padding: EdgeInsets.symmetric(horizontal: 8.0),
-                          child: Text("|", style: TextStyle(color: Colors.grey)),
-                        ),
-                        GestureDetector(
-                          onTap: () => context.setLocale(const Locale('bn', 'BD')),
-                          child: Text(
-                            "BN", 
-                            style: TextStyle(
-                              fontWeight: context.locale.languageCode == 'bn' ? FontWeight.bold : FontWeight.normal,
-                              color: context.locale.languageCode == 'bn' ? primaryColor : Colors.grey,
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              ],
-            ),
+          ),
+          
+          // Language Switcher
+          Positioned(
+            top: MediaQuery.of(context).padding.top + 10,
+            right: 20,
+            child: _buildLangSwitcher(context),
           ),
         ],
       ),
     );
   }
 
-  Widget _buildTextField({
+  Widget _buildLangSwitcher(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+      decoration: BoxDecoration(
+        color: Colors.black.withValues(alpha: 0.05),
+        borderRadius: BorderRadius.circular(20),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          _langBtn("EN", context, const Locale('en', 'US')),
+          const Text(" | ", style: TextStyle(color: Colors.black38)),
+          _langBtn("BN", context, const Locale('bn', 'BD')),
+        ],
+      ),
+    );
+  }
+
+  Widget _langBtn(String code, BuildContext context, Locale locale) {
+    bool isSel = context.locale.languageCode == locale.languageCode;
+    return GestureDetector(
+      onTap: () => context.setLocale(locale),
+      child: Text(
+        code,
+        style: TextStyle(
+          fontSize: 12,
+          fontWeight: isSel ? FontWeight.bold : FontWeight.normal,
+          color: isSel ? Colors.black87 : Colors.black38,
+        ),
+      ),
+    );
+  }
+
+  Widget _buildModernField({
     required TextEditingController controller,
-    required String label,
     required String hint,
     required IconData icon,
     bool obscure = false,
     TextInputType? keyboardType,
-    TextInputAction? action,
     Widget? suffix,
-    Function(String)? onSubmitted,
-    Iterable<String>? autofillHints,
   }) {
-    return Container(
-      decoration: BoxDecoration(
-        color: Theme.of(context).cardColor,
-        borderRadius: BorderRadius.circular(16),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.02),
-            blurRadius: 10,
-            offset: const Offset(0, 4),
-          )
-        ],
-      ),
-      child: TextField(
-        controller: controller,
-        obscureText: obscure,
-        keyboardType: keyboardType,
-        textInputAction: action,
-        onSubmitted: onSubmitted,
-        autofillHints: autofillHints,
-        style: const TextStyle(fontWeight: FontWeight.w500, fontSize: 14),
-        decoration: InputDecoration(
-          labelText: label,
-          hintText: hint,
-          prefixIcon: Icon(icon, color: Theme.of(context).primaryColor, size: 20),
-          suffixIcon: suffix,
-          border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(16),
-            borderSide: BorderSide.none,
-          ),
-          filled: true,
-          fillColor: Colors.transparent,
-          contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+    return Column(
+      children: [
+        Row(
+          children: [
+            Icon(icon, color: Colors.black38, size: 20),
+            const SizedBox(width: 15),
+            Expanded(
+              child: TextField(
+                controller: controller,
+                obscureText: obscure,
+                keyboardType: keyboardType,
+                style: const TextStyle(color: Colors.black87, fontSize: 16),
+                decoration: InputDecoration(
+                  hintText: hint,
+                  hintStyle: const TextStyle(color: Colors.black26),
+                  border: InputBorder.none,
+                ),
+              ),
+            ),
+            if (suffix != null) suffix,
+          ],
         ),
-      ),
+        const Divider(color: Colors.black12, height: 1),
+      ],
     );
   }
 
@@ -419,27 +293,13 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
       return;
     }
 
-    if (_isCreatingShop && _shopNameController.text.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Please enter shop name")));
-      return;
-    }
-    
-    if (_passwordController.text != _confirmPasswordController.text) {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(AppStrings.passwordMismatch.tr())));
-      return;
-    }
-
     try {
       final metadata = {
         'full_name': _nameController.text.trim(),
         'phone_number': _phoneController.text.trim(),
         'address': _addressController.text.trim(),
-        'role': _isCreatingShop ? 'owner' : 'user',
+        'role': 'user', 
       };
-
-      if (_isCreatingShop) {
-        metadata['shop_name'] = _shopNameController.text.trim();
-      }
 
       await ref.read(authNotifierProvider.notifier).signUp(
         _emailController.text.trim(),
@@ -449,11 +309,17 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
       
       if (!mounted) return;
       TextInput.finishAutofillContext();
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(AppStrings.regSuccess.tr())));
       
-      // Optionally navigate back to login after successful registration
-      // Navigator.pushReplacementNamed(context, AppRoutes.login);
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text("Account created successfully! Please login."),
+          backgroundColor: Colors.green,
+        ),
+      );
       
+      // Go to Login Page
+      Navigator.pushNamedAndRemoveUntil(context, AppRoutes.login, (route) => false);
+
     } catch (e) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(

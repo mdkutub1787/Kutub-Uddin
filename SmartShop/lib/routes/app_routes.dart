@@ -21,9 +21,11 @@ import '../features/order/models/order_model.dart';
 import '../models/notification_model.dart';
 
 import '../features/splash/screens/splash_screen.dart';
+import '../features/splash/screens/onboarding_screen.dart';
 
 class AppRoutes {
   static const String splash = '/';
+  static const String onboarding = '/onboarding';
   static const String login = '/login';
   static const String register = '/register';
   static const String main = '/main';
@@ -46,6 +48,8 @@ class AppRoutes {
     switch (settings.name) {
       case splash:
         return MaterialPageRoute(builder: (_) => const SplashScreen());
+      case onboarding:
+        return MaterialPageRoute(builder: (_) => const OnboardingScreen());
       case login:
         return MaterialPageRoute(builder: (_) => const LoginScreen());
       case register:

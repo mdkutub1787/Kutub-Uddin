@@ -4,7 +4,7 @@ import 'package:easy_localization/easy_localization.dart';
 import '../../order/riverpod/order_notifier.dart';
 import '../../auth/riverpod/auth_notifier.dart';
 import '../../../core/riverpod/navigation_notifier.dart';
-import '../../../utils/constants/app_strings.dart';
+import '../../../core/app_strings.dart';
 import '../../../routes/app_routes.dart';
 import '../../../widgets/custom_app_bar.dart';
 import '../../../widgets/app_card.dart';
@@ -76,70 +76,106 @@ class _MyOrdersScreenState extends ConsumerState<MyOrdersScreen> {
                         itemCount: orderState.value!.length,
                         itemBuilder: (context, index) {
                           final order = orderState.value![index];
-                          return AppCard(
-                            margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                            borderRadius: 16,
-                            onTap: () {
-                              Navigator.pushNamed(
-                                context,
-                                AppRoutes.orderDetails,
-                                arguments: order,
-                              );
-                            },
-                            child: Padding(
-                              padding: const EdgeInsets.all(12.0),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Row(
-                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                    children: [
-                                      Expanded(
-                                        child: Column(
-                                          crossAxisAlignment: CrossAxisAlignment.start,
-                                          children: [
-                                            Text(
-                                              "${AppStrings.orderId.tr()}: ${order.id}",
-                                              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13),
-                                              maxLines: 1,
-                                              overflow: TextOverflow.ellipsis,
-                                            ),
-                                            Text(
-                                              DateFormat('dd MMM yyyy, hh:mm a').format(order.date),
-                                              style: const TextStyle(color: Colors.grey, fontSize: 11),
-                                            ),
-                                          ],
-                                        ),
-                                      ),
-                                      _buildStatusBadge(order.status),
-                                    ],
-                                  ),
-                                  const Divider(height: 20),
-                                  Row(
-                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                    children: [
-                                      Text(
-                                        AppStrings.itemsCount.tr(args: [order.items.length.toString()]),
-                                        style: const TextStyle(fontWeight: FontWeight.w500, fontSize: 14),
-                                      ),
-                                      Text(
-                                        "${AppStrings.total.tr()}: ${AppStrings.currency.tr()}${order.totalAmount}",
-                                        style: TextStyle(
-                                          fontWeight: FontWeight.bold,
-                                          fontSize: 15,
-                                          color: Theme.of(context).primaryColor,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ],
-                              ),
-                            ),
-                          );
+                          return _buildPremiumOrderCard(context, order);
                         },
                       ),
           ),
         ],
+      ),
+    );
+  }
+
+  Widget _buildPremiumOrderCard(BuildContext context, dynamic order) {
+    return Container(
+      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(24),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.04),
+            blurRadius: 20,
+            offset: const Offset(0, 10),
+          ),
+        ],
+      ),
+      child: InkWell(
+        onTap: () => Navigator.pushNamed(context, AppRoutes.orderDetails, arguments: order),
+        borderRadius: BorderRadius.circular(24),
+        child: Padding(
+          padding: const EdgeInsets.all(20),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Row(
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.all(8),
+                        decoration: BoxDecoration(
+                          color: Theme.of(context).primaryColor.withValues(alpha: 0.1),
+                          shape: BoxShape.circle,
+                        ),
+                        child: Icon(Icons.shopping_bag_outlined, color: Theme.of(context).primaryColor, size: 20),
+                      ),
+                      const SizedBox(width: 12),
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            "${AppStrings.orderId.tr()} #${order.id.toString().substring(0, 8)}",
+                            style: const TextStyle(fontWeight: FontWeight.w900, fontSize: 14),
+                          ),
+                          Text(
+                            DateFormat('dd MMM yyyy').format(order.date),
+                            style: const TextStyle(color: Colors.grey, fontSize: 12, fontWeight: FontWeight.w500),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                  _buildStatusBadge(order.status),
+                ],
+              ),
+              const Padding(
+                padding: EdgeInsets.symmetric(vertical: 16),
+                child: Divider(height: 1, thickness: 1, color: Color(0xFFF0F0F0)),
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(AppStrings.itemsCount.tr(args: [order.items.length.toString()]), style: const TextStyle(color: Colors.grey, fontSize: 12, fontWeight: FontWeight.bold)),
+                      const SizedBox(height: 4),
+                      Text(
+                        "${AppStrings.currency.tr()} ${NumberFormat('#,##,###').format(order.totalAmount.toInt())}",
+                        style: TextStyle(fontWeight: FontWeight.w900, fontSize: 18, color: Theme.of(context).primaryColor),
+                      ),
+                    ],
+                  ),
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                    decoration: BoxDecoration(
+                      color: Colors.black,
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                    child: Row(
+                      children: [
+                        const Text("Track Order", style: TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.bold)),
+                        const SizedBox(width: 4),
+                        const Icon(Icons.arrow_forward_rounded, color: Colors.white, size: 14),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }

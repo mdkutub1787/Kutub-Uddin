@@ -4,7 +4,7 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../order/models/order_model.dart';
 import '../../order/riverpod/order_notifier.dart';
-import '../../../utils/constants/app_strings.dart';
+import '../../../core/app_strings.dart';
 import '../../../widgets/custom_app_bar.dart';
 import '../../auth/riverpod/auth_notifier.dart';
 

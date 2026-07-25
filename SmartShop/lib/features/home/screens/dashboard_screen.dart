@@ -6,17 +6,18 @@ import '../../auth/riverpod/auth_notifier.dart';
 import '../../product/riverpod/product_notifier.dart';
 import '../../../core/riverpod/settings_notifier.dart';
 import '../../../core/riverpod/navigation_notifier.dart';
-import '../../../utils/constants/app_strings.dart';
+import '../../../core/app_strings.dart';
 import '../../../routes/app_routes.dart';
 import '../../cart/riverpod/cart_notifier.dart';
 import '../../wishlist/riverpod/wishlist_notifier.dart';
 import '../../notification/riverpod/notification_notifier.dart';
 import '../../support/riverpod/support_notifier.dart';
+import '../../banner/riverpod/banner_notifier.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../../widgets/product_card.dart';
 import '../../../widgets/custom_app_bar.dart';
 import '../../../widgets/app_card.dart';
-import '../../../utils/constants/app_colors.dart';
+import '../../../theme/app_colors.dart';
 
 class DashboardScreen extends ConsumerWidget {
   const DashboardScreen({super.key});
@@ -203,6 +204,7 @@ class DashboardScreen extends ConsumerWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       _buildSearchBar(context, ref),
+                      _buildPromoBanner(context, ref), // Dynamic promo banners
                       _buildSectionHeader(context, AppStrings.categoriesTitle.tr(), () {}),
                       _buildCategoryList(context, ref),
                       _buildSectionHeader(context, AppStrings.featuredProductsTitle.tr(), () {}),
@@ -251,6 +253,182 @@ class DashboardScreen extends ConsumerWidget {
     );
   }
 
+  Widget _buildPromoBanner(BuildContext context, WidgetRef ref) {
+    final bannerState = ref.watch(bannerNotifierProvider);
+
+    return bannerState.when(
+      data: (banners) {
+        if (banners.isEmpty) {
+          // Fallback to static if no dynamic banners available
+          return _buildStaticBanner(context);
+        }
+
+        return SizedBox(
+          height: 180,
+          child: PageView.builder(
+            itemCount: banners.length,
+            itemBuilder: (context, index) {
+              final banner = banners[index];
+              return Container(
+                margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(24),
+                  image: DecorationImage(
+                    image: NetworkImage(banner.imageUrl),
+                    fit: BoxFit.cover,
+                  ),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Theme.of(context).primaryColor.withValues(alpha: 0.3),
+                      blurRadius: 20,
+                      offset: const Offset(0, 10),
+                    ),
+                  ],
+                ),
+                child: Stack(
+                  children: [
+                    Container(
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(24),
+                        gradient: LinearGradient(
+                          colors: [Colors.black.withValues(alpha: 0.7), Colors.transparent],
+                          begin: Alignment.centerLeft,
+                          end: Alignment.centerRight,
+                        ),
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.all(20.0),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          if (banner.tag.isNotEmpty)
+                            Container(
+                              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                              decoration: BoxDecoration(
+                                color: Colors.white24,
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                              child: Text(
+                                banner.tag,
+                                style: const TextStyle(color: Colors.white, fontSize: 10, fontWeight: FontWeight.bold, letterSpacing: 1.5),
+                              ),
+                            ),
+                          const SizedBox(height: 8),
+                          Text(
+                            banner.title,
+                            style: const TextStyle(color: Colors.white, fontSize: 24, fontWeight: FontWeight.w900),
+                          ),
+                          const SizedBox(height: 4),
+                          Text(
+                            banner.subtitle,
+                            style: const TextStyle(color: Colors.white70, fontSize: 12),
+                          ),
+                          const SizedBox(height: 12),
+                          ElevatedButton(
+                            onPressed: () {},
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.white,
+                              foregroundColor: Theme.of(context).primaryColor,
+                              minimumSize: const Size(100, 32),
+                              padding: const EdgeInsets.symmetric(horizontal: 16),
+                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+                            ),
+                            child: Text(banner.actionText, style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold)),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              );
+            },
+          ),
+        );
+      },
+      loading: () => const SizedBox(height: 160, child: Center(child: CircularProgressIndicator())),
+      error: (e, st) => _buildStaticBanner(context), // Fallback on error
+    );
+  }
+
+  Widget _buildStaticBanner(BuildContext context) {
+    return Container(
+      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      height: 180,
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(24),
+        image: const DecorationImage(
+          image: AssetImage('assets/images/promo_banner.png'),
+          fit: BoxFit.cover,
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: Theme.of(context).primaryColor.withValues(alpha: 0.3),
+            blurRadius: 20,
+            offset: const Offset(0, 10),
+          ),
+        ],
+      ),
+      child: Stack(
+        children: [
+          Container(
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(24),
+              gradient: LinearGradient(
+                colors: [Colors.black.withValues(alpha: 0.7), Colors.transparent],
+                begin: Alignment.centerLeft,
+                end: Alignment.centerRight,
+              ),
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                  decoration: BoxDecoration(
+                    color: Colors.white24,
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: const Text(
+                    "MEGA SALE",
+                    style: TextStyle(color: Colors.white, fontSize: 10, fontWeight: FontWeight.bold, letterSpacing: 1.5),
+                  ),
+                ),
+                const SizedBox(height: 8),
+                const Text(
+                  "Up to 50% OFF",
+                  style: TextStyle(color: Colors.white, fontSize: 24, fontWeight: FontWeight.w900),
+                ),
+                const SizedBox(height: 4),
+                const Text(
+                  "On all premium electronics",
+                  style: TextStyle(color: Colors.white70, fontSize: 12),
+                ),
+                const SizedBox(height: 12),
+                ElevatedButton(
+                  onPressed: () {},
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.white,
+                    foregroundColor: Theme.of(context).primaryColor,
+                    minimumSize: const Size(100, 32),
+                    padding: const EdgeInsets.symmetric(horizontal: 16),
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+                  ),
+                  child: const Text("Shop Now", style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold)),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
   Widget _buildSectionHeader(BuildContext context, String title, VoidCallback onSeeAll) {
     return Padding(
       padding: const EdgeInsets.fromLTRB(16, 12, 12, 8),
@@ -287,6 +465,10 @@ class DashboardScreen extends ConsumerWidget {
             itemBuilder: (context, index) {
               final cat = categories[index];
               bool isSelected = selectedCategoryId == cat.id;
+              
+              // We'll use the category imageUrl if it exists, otherwise fallback to an icon.
+              bool hasImage = cat.imageUrl.isNotEmpty;
+              
               return GestureDetector(
                 onTap: () {
                   // ref.read(productNotifierProvider.notifier).filterByCategory(cat.id);
@@ -301,12 +483,15 @@ class DashboardScreen extends ConsumerWidget {
                         height: 65,
                         width: 65,
                         decoration: BoxDecoration(
-                          color: isSelected ? Colors.blue : Colors.white, // Dummy color
+                          color: isSelected ? Theme.of(context).primaryColor : Colors.white,
                           borderRadius: BorderRadius.circular(18),
+                          image: hasImage 
+                            ? DecorationImage(image: NetworkImage(cat.imageUrl), fit: BoxFit.cover)
+                            : null,
                           boxShadow: [
                             BoxShadow(
                               color: isSelected 
-                                ? Colors.blue.withValues(alpha: 0.2) 
+                                ? Theme.of(context).primaryColor.withValues(alpha: 0.2) 
                                 : Colors.black.withValues(alpha: 0.03),
                               blurRadius: 10,
                               offset: const Offset(0, 5),
@@ -314,11 +499,13 @@ class DashboardScreen extends ConsumerWidget {
                           ],
                           border: isSelected ? null : Border.all(color: Colors.grey[100]!),
                         ),
-                        child: Icon(
-                          Icons.category, // Dummy icon
-                          color: isSelected ? Colors.white : Colors.blue, 
-                          size: 28
-                        ),
+                        child: !hasImage 
+                          ? Icon(
+                              Icons.category,
+                              color: isSelected ? Colors.white : Theme.of(context).primaryColor, 
+                              size: 28
+                            )
+                          : null,
                       ),
                       const SizedBox(height: 6),
                       Text(
@@ -326,7 +513,7 @@ class DashboardScreen extends ConsumerWidget {
                         style: TextStyle(
                           fontSize: 11, 
                           fontWeight: isSelected ? FontWeight.w900 : FontWeight.bold, 
-                          color: isSelected ? Colors.blue : Colors.grey[600],
+                          color: isSelected ? Theme.of(context).primaryColor : Colors.grey[600],
                           letterSpacing: -0.2,
                         ), 
                         maxLines: 1, 

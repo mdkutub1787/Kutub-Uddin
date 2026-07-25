@@ -5,7 +5,7 @@ import '../riverpod/wishlist_notifier.dart';
 import '../../product/riverpod/product_notifier.dart';
 import '../../cart/riverpod/cart_notifier.dart';
 import '../../auth/riverpod/auth_notifier.dart';
-import '../../../utils/constants/app_strings.dart';
+import '../../../core/app_strings.dart';
 import '../../../widgets/custom_app_bar.dart';
 import '../../../widgets/empty_state_widget.dart';
 import '../../../widgets/product_list_item.dart';

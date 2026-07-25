@@ -3,7 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:easy_localization/easy_localization.dart';
 import '../features/product/models/product_model.dart';
 import '../core/riverpod/settings_notifier.dart';
-import '../utils/constants/app_strings.dart';
+import '../core/app_strings.dart';
 import '../routes/app_routes.dart';
 import 'package:intl/intl.dart';
 import 'app_card.dart';

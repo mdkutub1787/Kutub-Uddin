@@ -10,8 +10,9 @@ import '../../support/riverpod/support_notifier.dart';
 import '../../user/riverpod/user_notifier.dart';
 import '../../auth/riverpod/auth_notifier.dart';
 import '../../../routes/app_routes.dart';
-import '../../../utils/constants/app_strings.dart';
+import '../../../core/app_strings.dart';
 import '../../../widgets/custom_app_bar.dart';
+import '../../../core/utils/exit_dialog_helper.dart';
 import 'admin_product_list_screen.dart';
 import 'admin_category_list_screen.dart';
 import 'admin_order_list_screen.dart';
@@ -62,14 +63,20 @@ class _AdminDashboardScreenState extends ConsumerState<AdminDashboardScreen> {
     final categories = categoryState.value ?? [];
     final users = userState.value ?? [];
 
-    return Scaffold(
-      appBar: CustomAppBar(title: AppStrings.adminControlPanel.tr()),
-      body: RefreshIndicator(
-        onRefresh: () async {
-          await ref.read(orderNotifierProvider.notifier).loadOrders();
-          await ref.read(userNotifierProvider.notifier).loadUsers();
-          await ref.read(categoryNotifierProvider.notifier).loadCategories();
-        },
+    return PopScope(
+      canPop: false,
+      onPopInvokedWithResult: (didPop, result) async {
+        if (didPop) return;
+        await ExitDialogHelper.showExitDialog(context);
+      },
+      child: Scaffold(
+        appBar: CustomAppBar(title: AppStrings.adminControlPanel.tr()),
+        body: RefreshIndicator(
+          onRefresh: () async {
+            await ref.read(orderNotifierProvider.notifier).loadOrders();
+            await ref.read(userNotifierProvider.notifier).loadUsers();
+            await ref.read(categoryNotifierProvider.notifier).loadCategories();
+          },
         child: SingleChildScrollView(
           physics: const AlwaysScrollableScrollPhysics(),
           padding: const EdgeInsets.symmetric(vertical: 12),
@@ -128,7 +135,7 @@ class _AdminDashboardScreenState extends ConsumerState<AdminDashboardScreen> {
           ),
         ),
       ),
-    );
+    ));
   }
 
   Widget _buildAdminHero(BuildContext context, Color color, String userName, String role) {
@@ -137,11 +144,18 @@ class _AdminDashboardScreenState extends ConsumerState<AdminDashboardScreen> {
 
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.fromLTRB(20, 15, 20, 25),
+      margin: const EdgeInsets.symmetric(horizontal: 16),
+      padding: const EdgeInsets.fromLTRB(25, 25, 25, 30),
       decoration: BoxDecoration(
-        color: color, 
-        borderRadius: const BorderRadius.vertical(bottom: Radius.circular(35)),
-        boxShadow: [BoxShadow(color: color.withValues(alpha: 0.3), blurRadius: 15, offset: const Offset(0, 8))],
+        gradient: LinearGradient(
+          colors: [color, color.withValues(alpha: 0.8)],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
+        borderRadius: BorderRadius.circular(36),
+        boxShadow: [
+          BoxShadow(color: color.withValues(alpha: 0.3), blurRadius: 25, offset: const Offset(0, 15))
+        ],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -149,11 +163,25 @@ class _AdminDashboardScreenState extends ConsumerState<AdminDashboardScreen> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              const CircleAvatar(radius: 24, backgroundColor: Colors.white24, child: Icon(Icons.admin_panel_settings_rounded, size: 30, color: Colors.white)),
+              Container(
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: Colors.white.withValues(alpha: 0.15),
+                  shape: BoxShape.circle,
+                  border: Border.all(color: Colors.white.withValues(alpha: 0.3), width: 2),
+                ),
+                child: const Icon(Icons.admin_panel_settings_rounded, size: 30, color: Colors.white),
+              ),
               if (shopId != null)
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
-                  decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(15)),
+                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(20),
+                    boxShadow: [
+                      BoxShadow(color: Colors.black.withValues(alpha: 0.1), blurRadius: 10)
+                    ],
+                  ),
                   child: Row(
                     children: [
                       Icon(Icons.storefront_rounded, size: 16, color: color),
@@ -164,22 +192,23 @@ class _AdminDashboardScreenState extends ConsumerState<AdminDashboardScreen> {
                 ),
             ],
           ),
-          const SizedBox(height: 20),
+          const SizedBox(height: 30),
           Text(
             "Hello, $userName",
-            style: const TextStyle(color: Colors.white, fontSize: 24, fontWeight: FontWeight.w900, letterSpacing: -0.5)
+            style: const TextStyle(color: Colors.white, fontSize: 26, fontWeight: FontWeight.w900, letterSpacing: -0.5)
           ),
           Container(
-            margin: const EdgeInsets.only(top: 4),
-            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-            decoration: BoxDecoration(color: Colors.white24, borderRadius: BorderRadius.circular(20)),
+            margin: const EdgeInsets.only(top: 8),
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+            decoration: BoxDecoration(
+              color: Colors.white24,
+              borderRadius: BorderRadius.circular(20),
+            ),
             child: Text(
               role.replaceAll('_', ' ').toUpperCase(), 
-              style: const TextStyle(color: Colors.white, fontSize: 10, fontWeight: FontWeight.w900, letterSpacing: 1.5)
+              style: const TextStyle(color: Colors.white, fontSize: 11, fontWeight: FontWeight.w900, letterSpacing: 2)
             ),
           ),
-          const SizedBox(height: 8),
-          Text(AppStrings.adminWelcomeMsg.tr(), style: TextStyle(color: Colors.white.withValues(alpha: 0.8), fontSize: 13)),
         ],
       ),
     );
@@ -188,7 +217,7 @@ class _AdminDashboardScreenState extends ConsumerState<AdminDashboardScreen> {
   Widget _buildAdminCard(BuildContext context, String title, IconData icon, Color color, String sub, VoidCallback onTap, {int badgeCount = 0}) {
     return InkWell(
       onTap: onTap,
-      borderRadius: BorderRadius.circular(16),
+      borderRadius: BorderRadius.circular(24),
       child: Stack(
         clipBehavior: Clip.none,
         children: [
@@ -196,37 +225,40 @@ class _AdminDashboardScreenState extends ConsumerState<AdminDashboardScreen> {
             width: double.infinity,
             padding: const EdgeInsets.symmetric(horizontal: 12),
             decoration: BoxDecoration(
-              color: Theme.of(context).cardColor, 
-              borderRadius: BorderRadius.circular(16), 
+              color: Colors.white, 
+              borderRadius: BorderRadius.circular(24), 
               boxShadow: [
-                BoxShadow(color: Colors.black.withValues(alpha: 0.02), blurRadius: 15, offset: const Offset(0, 8))
+                BoxShadow(color: color.withValues(alpha: 0.1), blurRadius: 20, offset: const Offset(0, 10))
               ], 
-              border: Border.all(color: color.withValues(alpha: 0.05), width: 1.5)
+              border: Border.all(color: color.withValues(alpha: 0.05), width: 2)
             ),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Container(
-                  padding: const EdgeInsets.all(6), 
-                  decoration: BoxDecoration(color: color.withValues(alpha: 0.08), shape: BoxShape.circle), 
-                  child: Icon(icon, size: 22, color: color)
+                  padding: const EdgeInsets.all(10), 
+                  decoration: BoxDecoration(
+                    color: color.withValues(alpha: 0.1), 
+                    shape: BoxShape.circle,
+                  ), 
+                  child: Icon(icon, size: 26, color: color)
                 ),
-                const SizedBox(height: 8),
-                Text(title, textAlign: TextAlign.center, style: const TextStyle(fontSize: 13, fontWeight: FontWeight.bold), maxLines: 1),
-                const SizedBox(height: 2),
-                Text(sub, textAlign: TextAlign.center, style: const TextStyle(fontSize: 9, color: Colors.grey), maxLines: 1),
+                const SizedBox(height: 12),
+                Text(title, textAlign: TextAlign.center, style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w900, color: Colors.black87), maxLines: 1),
+                const SizedBox(height: 4),
+                Text(sub, textAlign: TextAlign.center, style: TextStyle(fontSize: 10, color: Colors.grey[600], fontWeight: FontWeight.bold), maxLines: 1),
               ],
             ),
           ),
           if (badgeCount > 0)
             Positioned(
-              top: -4,
-              right: -4,
+              top: -6,
+              right: -6,
               child: Container(
-                padding: const EdgeInsets.all(4), 
-                decoration: BoxDecoration(color: Colors.red, shape: BoxShape.circle, border: Border.all(color: Colors.white, width: 2)), 
-                constraints: const BoxConstraints(minWidth: 20, minHeight: 20), 
-                child: Text('$badgeCount', style: const TextStyle(color: Colors.white, fontSize: 8, fontWeight: FontWeight.bold), textAlign: TextAlign.center)
+                padding: const EdgeInsets.all(6), 
+                decoration: BoxDecoration(color: Colors.red, shape: BoxShape.circle, border: Border.all(color: Colors.white, width: 3)), 
+                constraints: const BoxConstraints(minWidth: 26, minHeight: 26), 
+                child: Text('$badgeCount', style: const TextStyle(color: Colors.white, fontSize: 10, fontWeight: FontWeight.bold), textAlign: TextAlign.center)
               ),
             ),
         ],

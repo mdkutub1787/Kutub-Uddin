@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../auth/riverpod/auth_notifier.dart';
 import '../../../core/riverpod/settings_notifier.dart';
@@ -54,7 +55,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen> with SingleTickerPr
         Navigator.pushReplacementNamed(context, AppRoutes.main);
       }
     } else {
-      Navigator.pushReplacementNamed(context, AppRoutes.login);
+      Navigator.pushReplacementNamed(context, AppRoutes.onboarding);
     }
   }
 
@@ -66,63 +67,88 @@ class _SplashScreenState extends ConsumerState<SplashScreen> with SingleTickerPr
 
   @override
   Widget build(BuildContext context) {
-    final settings = ref.watch(settingsProvider);
-    
     return Scaffold(
-      backgroundColor: settings.primaryColor,
-      body: FadeTransition(
-        opacity: _animation,
-        child: Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Container(
-                padding: const EdgeInsets.all(30),
-                decoration: const BoxDecoration(
-                  color: Colors.white,
-                  shape: BoxShape.circle,
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black26,
-                      blurRadius: 30,
-                      offset: Offset(0, 15),
-                    )
-                  ],
-                ),
-                child: Image.asset(
-                  'assets/images/app_icon.png',
-                  height: 120,
-                  width: 120,
-                ),
-              ),
-              const SizedBox(height: 24),
-              const Text(
-                "SMART SHOP",
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 32,
-                  fontWeight: FontWeight.bold,
-                  letterSpacing: 3,
-                ),
-              ),
-              const SizedBox(height: 8),
-              Text(
-                "Your Premium Shopping Destination",
-                style: TextStyle(
-                  color: Colors.white.withValues(alpha: 0.8),
-                  fontSize: 14,
-                  letterSpacing: 1,
-                ),
-              ),
-              const SizedBox(height: 50),
-              const CircularProgressIndicator(
-                color: Colors.white,
-                strokeWidth: 3,
-              ),
-            ],
+      backgroundColor: Colors.white,
+      body: Stack(
+        children: [
+          // Elegant Background Curves
+          Positioned(
+            top: -100,
+            right: -50,
+            child: CircleAvatar(
+              radius: 180,
+              backgroundColor: Theme.of(context).primaryColor.withValues(alpha: 0.1),
+            ),
           ),
-        ),
+          Positioned(
+            bottom: -80,
+            left: -80,
+            child: CircleAvatar(
+              radius: 150,
+              backgroundColor: Theme.of(context).primaryColor.withValues(alpha: 0.1),
+            ),
+          ),
+          FadeTransition(
+            opacity: _animation,
+            child: Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  // Logo with a premium glass-morphism effect
+                  Container(
+                    padding: const EdgeInsets.all(25),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      shape: BoxShape.circle,
+                      boxShadow: [
+                        BoxShadow(
+                          color: Theme.of(context).primaryColor.withValues(alpha: 0.2),
+                          blurRadius: 40,
+                          offset: const Offset(0, 20),
+                        )
+                      ],
+                    ),
+                    child: Hero(
+                      tag: 'app_logo',
+                      child: Image.asset(
+                        'assets/images/app_icon.png',
+                        width: 100,
+                        height: 100,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 40),
+                  Text(
+                    "Smart Shop",
+                    style: Theme.of(context).textTheme.displayLarge?.copyWith(
+                      fontSize: 42,
+                      color: Theme.of(context).primaryColor,
+                    ),
+                  ),
+                  const SizedBox(height: 10),
+                  Text(
+                    "Elegance in Every Purchase",
+                    style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                      color: Colors.black45,
+                      letterSpacing: 0.5,
+                    ),
+                  ),
+                  const SizedBox(height: 80),
+                  SizedBox(
+                    width: 40,
+                    height: 40,
+                    child: CircularProgressIndicator(
+                      color: Theme.of(context).primaryColor,
+                      strokeWidth: 3,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }
 }
+

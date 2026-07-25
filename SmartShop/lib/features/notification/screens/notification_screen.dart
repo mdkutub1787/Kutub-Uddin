@@ -5,7 +5,7 @@ import 'package:intl/intl.dart';
 import '../riverpod/notification_notifier.dart';
 import '../../support/riverpod/support_notifier.dart';
 import '../../auth/riverpod/auth_notifier.dart';
-import '../../../utils/constants/app_strings.dart';
+import '../../../core/app_strings.dart';
 import '../../../routes/app_routes.dart';
 import '../../support/screens/support_screen.dart';
 

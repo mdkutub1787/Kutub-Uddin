@@ -9,7 +9,7 @@ import '../../auth/riverpod/auth_notifier.dart';
 import '../../../core/riverpod/navigation_notifier.dart';
 import '../../order/models/order_model.dart';
 import '../../../models/coupon_model.dart';
-import '../../../utils/constants/app_strings.dart';
+import '../../../core/app_strings.dart';
 import '../../../routes/app_routes.dart';
 import '../../../widgets/custom_app_bar.dart';
 import '../../../widgets/empty_state_widget.dart';

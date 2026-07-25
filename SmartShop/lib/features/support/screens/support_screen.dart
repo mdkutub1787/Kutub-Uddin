@@ -6,7 +6,7 @@ import '../riverpod/support_notifier.dart';
 import '../../auth/riverpod/auth_notifier.dart';
 import '../../../core/riverpod/settings_notifier.dart';
 import '../../../models/support_ticket_model.dart';
-import '../../../utils/constants/app_strings.dart';
+import '../../../core/app_strings.dart';
 
 class SupportScreen extends ConsumerStatefulWidget {
   final bool isEmbedded;

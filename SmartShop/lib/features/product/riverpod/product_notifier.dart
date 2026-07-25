@@ -64,7 +64,8 @@ class ProductNotifier extends Notifier<ProductState> {
         );
       },
       onError: (error) {
-        // Handle stream errors like Realtime disabled or JWT issues
+        // Handle stream errors (Realtime disabled, JWT issues, etc.)
+        state = state.copyWith(isLoading: false);
         if (error.toString().contains('JWT issued at future')) {
           Future.delayed(const Duration(seconds: 3), () => _initStream(shopId: shopId));
         }

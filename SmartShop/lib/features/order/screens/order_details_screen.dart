@@ -7,7 +7,7 @@ import '../../../core/riverpod/settings_notifier.dart';
 import '../../auth/riverpod/auth_notifier.dart';
 import '../../admin/riverpod/activity_log_notifier.dart';
 import '../../order/repositories/order_repository.dart';
-import 'package:smart_shop/utils/constants/app_strings.dart';
+import 'package:smart_shop/core/app_strings.dart';
 import 'package:easy_localization/easy_localization.dart';
 import '../../../widgets/custom_app_bar.dart';
 

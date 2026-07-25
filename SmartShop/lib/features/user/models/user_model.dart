@@ -4,15 +4,13 @@ class UserModel {
   final String name; 
   final String phoneNumber;
   final String address;
-  final String role; // 'user', 'owner', 'admin', 'delivery_man'
+  final String role;
   final String? shopId;
+  final String? shopName;
+  final String? imageUrl;
   final bool isActive;
   
-  // Delivery man specific fields
   final bool? isAvailable;
-  final double? latitude;
-  final double? longitude;
-  final String? vehicleType;
 
   UserModel({
     required this.uid,
@@ -22,27 +20,25 @@ class UserModel {
     required this.address,
     required this.role,
     this.shopId,
+    this.shopName,
+    this.imageUrl,
     this.isActive = true,
     this.isAvailable,
-    this.latitude,
-    this.longitude,
-    this.vehicleType,
   });
 
   factory UserModel.fromJson(Map<String, dynamic> data) {
     return UserModel(
-      uid: data['id']?.toString() ?? '',
+      uid: data['id']?.toString() ?? data['uid']?.toString() ?? '',
       email: data['email'] ?? '',
-      name: data['name'] ?? '',
-      phoneNumber: data['phoneNumber'] ?? '',
+      name: data['name'] ?? data['full_name'] ?? '',
+      phoneNumber: data['phoneNumber'] ?? data['phone_number'] ?? '',
       address: data['address'] ?? '',
       role: data['role'] ?? 'user',
       shopId: data['shopId']?.toString(),
+      shopName: data['shop_name'] ?? data['shopName'],
+      imageUrl: data['imageUrl'] ?? data['image_url'] ?? data['avatar_url'],
       isActive: data['isActive'] ?? true,
       isAvailable: data['isAvailable'],
-      latitude: data['latitude']?.toDouble(),
-      longitude: data['longitude']?.toDouble(),
-      vehicleType: data['vehicleType'],
     );
   }
 
@@ -54,11 +50,10 @@ class UserModel {
       'address': address,
       'role': role,
       'shopId': shopId,
+      'shop_name': shopName,
+      'imageUrl': imageUrl,
       'isActive': isActive,
       'isAvailable': isAvailable,
-      'latitude': latitude,
-      'longitude': longitude,
-      'vehicleType': vehicleType,
     };
   }
 
@@ -70,11 +65,10 @@ class UserModel {
     String? address,
     String? role,
     String? shopId,
+    String? shopName,
+    String? imageUrl,
     bool? isActive,
     bool? isAvailable,
-    double? latitude,
-    double? longitude,
-    String? vehicleType,
   }) {
     return UserModel(
       uid: uid ?? this.uid,
@@ -84,11 +78,10 @@ class UserModel {
       address: address ?? this.address,
       role: role ?? this.role,
       shopId: shopId ?? this.shopId,
+      shopName: shopName ?? this.shopName,
+      imageUrl: imageUrl ?? this.imageUrl,
       isActive: isActive ?? this.isActive,
       isAvailable: isAvailable ?? this.isAvailable,
-      latitude: latitude ?? this.latitude,
-      longitude: longitude ?? this.longitude,
-      vehicleType: vehicleType ?? this.vehicleType,
     );
   }
 }

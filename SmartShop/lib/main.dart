@@ -8,7 +8,7 @@ import 'core/riverpod/settings_notifier.dart';
 import 'core/riverpod/loading_notifier.dart';
 import 'features/splash/screens/splash_screen.dart';
 import 'routes/app_routes.dart';
-import 'utils/theme/app_theme.dart';
+import 'theme/app_theme.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();

@@ -29,10 +29,12 @@ class AuthNotifier extends AsyncNotifier<UserModel?> {
       uid: user.id,
       email: user.email ?? '',
       name: metadata['full_name'] ?? metadata['name'] ?? '',
-      phoneNumber: metadata['phone_number'] ?? '',
+      phoneNumber: metadata['phone_number'] ?? metadata['phoneNumber'] ?? '',
       address: metadata['address'] ?? '',
       role: metadata['role'] ?? 'user',
       shopId: metadata['shopId'],
+      shopName: metadata['shop_name'] ?? metadata['shopName'],
+      imageUrl: metadata['image_url'] ?? metadata['imageUrl'] ?? metadata['avatar_url'],
     );
   }
 

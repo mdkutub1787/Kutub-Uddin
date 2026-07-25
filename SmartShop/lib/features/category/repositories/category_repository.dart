@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../models/category_model.dart';
 
@@ -21,9 +22,12 @@ class CategoryRepository {
 
   Future<List<CategoryModel>> getAllCategories() async {
     try {
+      debugPrint('📡 INFO: Fetching all categories');
       final response = await _supabase.from(_table).select();
-      return (response as List).map((json) => CategoryModel.fromJson(json)).toList();
+      debugPrint('✅ SUCCESS: Loaded ${(response as List).length} categories');
+      return response.map((json) => CategoryModel.fromJson(json)).toList();
     } catch (e) {
+      debugPrint('❌ ERROR: Failed to load categories -> $e');
       rethrow;
     }
   }

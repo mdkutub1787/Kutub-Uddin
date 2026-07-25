@@ -1,6 +1,8 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:image_picker/image_picker.dart';
 import '../../auth/riverpod/auth_notifier.dart';
 import '../../../widgets/custom_app_bar.dart';
 
@@ -12,8 +14,10 @@ class EditProfileScreen extends ConsumerStatefulWidget {
 }
 
 class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
-  late TextEditingController _nameController, _phoneController, _addressController;
+  late TextEditingController _nameController, _phoneController, _addressController, _shopNameController;
   bool _isSaving = false;
+  File? _imageFile;
+  final _picker = ImagePicker();
 
   @override
   void initState() {
@@ -22,6 +26,28 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
     _nameController = TextEditingController(text: user?.name ?? "");
     _phoneController = TextEditingController(text: user?.phoneNumber ?? "");
     _addressController = TextEditingController(text: user?.address ?? "");
+    _shopNameController = TextEditingController(text: user?.shopName ?? "");
+  }
+
+  Future<void> _pickImage() async {
+    final pickedFile = await _picker.pickImage(source: ImageSource.gallery, imageQuality: 70);
+    if (pickedFile != null) {
+      setState(() => _imageFile = File(pickedFile.path));
+    }
+  }
+
+  Future<String?> _uploadImage(String userId) async {
+    if (_imageFile == null) return null;
+    try {
+      final fileName = '$userId-${DateTime.now().millisecondsSinceEpoch}.jpg';
+      final path = 'avatars/$fileName';
+      await Supabase.instance.client.storage.from('app_images').upload(path, _imageFile!);
+      final url = Supabase.instance.client.storage.from('app_images').getPublicUrl(path);
+      return url;
+    } catch (e) {
+      debugPrint("Image upload error: $e");
+      return null;
+    }
   }
 
   Future<void> _updateProfile() async {
@@ -30,11 +56,35 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
     try {
       final user = ref.read(authNotifierProvider).value;
       if (user != null) {
-        await Supabase.instance.client.from('users').update({
+        String? imageUrl = await _uploadImage(user.uid);
+        
+        final updateData = {
+          'id': user.uid,
+          'email': user.email,
           'name': _nameController.text.trim(),
-          'phone_number': _phoneController.text.trim(),
+          'phoneNumber': _phoneController.text.trim(),
           'address': _addressController.text.trim(),
-        }).eq('id', user.uid);
+          'shop_name': _shopNameController.text.trim(),
+          'role': user.role,
+        };
+        
+        if (imageUrl != null) updateData['imageUrl'] = imageUrl;
+
+        await Supabase.instance.client.from('users').upsert(updateData);
+        
+        // Also update Supabase Auth metadata to keep them in sync
+        await Supabase.instance.client.auth.updateUser(
+          UserAttributes(
+            data: {
+              'full_name': _nameController.text.trim(),
+              'phone_number': _phoneController.text.trim(),
+              'address': _addressController.text.trim(),
+              'shop_name': _shopNameController.text.trim(),
+              if (imageUrl != null) 'image_url': imageUrl,
+            },
+          ),
+        );
+
         await ref.read(authNotifierProvider.notifier).refreshUserData();
         if (mounted) Navigator.pop(context);
       }
@@ -47,6 +97,7 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final user = ref.watch(authNotifierProvider).value;
     final primaryColor = Theme.of(context).primaryColor;
     final size = MediaQuery.of(context).size;
 
@@ -81,12 +132,58 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
                 padding: const EdgeInsets.symmetric(horizontal: 28, vertical: 20),
                 child: Column(
                   children: [
-                    const SizedBox(height: 20),
+                    // Profile Image Picker
+                    Center(
+                      child: Stack(
+                        children: [
+                          Container(
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              border: Border.all(color: primaryColor.withValues(alpha: 0.2), width: 4),
+                            ),
+                            child: CircleAvatar(
+                              radius: 60,
+                              backgroundColor: Colors.grey[200],
+                              backgroundImage: _imageFile != null 
+                                ? FileImage(_imageFile!) 
+                                : (user?.imageUrl != null ? NetworkImage(user!.imageUrl!) : null) as ImageProvider?,
+                              child: _imageFile == null && user?.imageUrl == null 
+                                ? Icon(Icons.person, size: 60, color: Colors.grey[400]) 
+                                : null,
+                            ),
+                          ),
+                          Positioned(
+                            bottom: 0,
+                            right: 0,
+                            child: GestureDetector(
+                              onTap: _pickImage,
+                              child: Container(
+                                padding: const EdgeInsets.all(8),
+                                decoration: BoxDecoration(
+                                  color: primaryColor,
+                                  shape: BoxShape.circle,
+                                  boxShadow: [BoxShadow(color: Colors.black26, blurRadius: 10)],
+                                ),
+                                child: const Icon(Icons.camera_alt, color: Colors.white, size: 20),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(height: 30),
+                    
                     _field(_nameController, "Full Name", Icons.person_outline_rounded, autofillHints: [AutofillHints.name]),
-                    const SizedBox(height: 24),
+                    const SizedBox(height: 20),
+                    
+                    if (user?.role == 'owner' || user?.role == 'admin' || _shopNameController.text.isNotEmpty) ...[
+                      _field(_shopNameController, "Shop Name", Icons.store_rounded),
+                      const SizedBox(height: 20),
+                    ],
+                    
                     _field(_phoneController, "Phone Number", Icons.phone_android_rounded, keyboardType: TextInputType.phone, autofillHints: [AutofillHints.telephoneNumber]),
-                    const SizedBox(height: 24),
-                    _field(_addressController, "Full Address", Icons.location_on_outlined, lines: 3, autofillHints: [AutofillHints.fullStreetAddress]),
+                    const SizedBox(height: 20),
+                    _field(_addressController, "Full Address", Icons.location_on_outlined, lines: 2, autofillHints: [AutofillHints.fullStreetAddress]),
                     const SizedBox(height: 40),
                     
                     SizedBox(

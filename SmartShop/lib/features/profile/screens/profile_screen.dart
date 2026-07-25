@@ -3,7 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:easy_localization/easy_localization.dart';
 import '../../auth/riverpod/auth_notifier.dart';
 import '../../../core/riverpod/settings_notifier.dart';
-import '../../../utils/constants/app_strings.dart';
+import '../../../core/app_strings.dart';
 import '../../../routes/app_routes.dart';
 import '../../cart/riverpod/cart_notifier.dart';
 import '../../wishlist/riverpod/wishlist_notifier.dart';
@@ -12,7 +12,7 @@ import '../../notification/riverpod/notification_notifier.dart';
 import '../../support/riverpod/support_notifier.dart';
 import '../../../widgets/custom_app_bar.dart';
 import '../../../widgets/app_card.dart';
-import '../../../utils/constants/app_colors.dart';
+import '../../../theme/app_colors.dart';
 
 class ProfileScreen extends ConsumerWidget {
   const ProfileScreen({super.key});
@@ -154,12 +154,94 @@ class ProfileScreen extends ConsumerWidget {
     );
   }
 
+  Widget _buildProfileHeader(BuildContext context, dynamic user, dynamic settings, bool isAdmin) {
+    return Container(
+      margin: const EdgeInsets.symmetric(horizontal: 20),
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          colors: [settings.primaryColor, settings.primaryColor.withValues(alpha: 0.7)],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
+        borderRadius: BorderRadius.circular(30),
+        boxShadow: [
+          BoxShadow(
+            color: settings.primaryColor.withValues(alpha: 0.3),
+            blurRadius: 20,
+            offset: const Offset(0, 10),
+          )
+        ],
+      ),
+      child: Column(
+        children: [
+          Stack(
+            children: [
+              Container(
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  border: Border.all(color: Colors.white.withValues(alpha: 0.4), width: 4),
+                  boxShadow: [
+                    BoxShadow(color: Colors.black.withValues(alpha: 0.1), blurRadius: 10)
+                  ],
+                ),
+                child: const CircleAvatar(
+                  radius: 45,
+                  backgroundColor: Colors.white,
+                  child: Icon(Icons.person_rounded, size: 50, color: Colors.grey),
+                ),
+              ),
+              Positioned(
+                bottom: 0,
+                right: 0,
+                child: GestureDetector(
+                  onTap: () => Navigator.pushNamed(context, AppRoutes.editProfile),
+                  child: Container(
+                    padding: const EdgeInsets.all(6),
+                    decoration: const BoxDecoration(
+                      color: Colors.white,
+                      shape: BoxShape.circle,
+                    ),
+                    child: Icon(Icons.edit_rounded, color: settings.primaryColor, size: 14),
+                  ),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 15),
+          Text(user?.name ?? "User Name", style: const TextStyle(fontSize: 22, fontWeight: FontWeight.w900, color: Colors.white)),
+          Text(user?.email ?? "", style: TextStyle(color: Colors.white.withValues(alpha: 0.9), fontSize: 13, fontWeight: FontWeight.w500)),
+          if (isAdmin)
+            Container(
+              margin: const EdgeInsets.only(top: 10),
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+              decoration: BoxDecoration(
+                color: Colors.white24,
+                borderRadius: BorderRadius.circular(20),
+              ),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const Icon(Icons.admin_panel_settings_rounded, size: 14, color: Colors.white),
+                  const SizedBox(width: 6),
+                  Text(
+                    (user?.role == 'super_admin' ? AppStrings.superAdmin.tr() : AppStrings.storeAdmin.tr()).toUpperCase(), 
+                    style: const TextStyle(fontSize: 10, fontWeight: FontWeight.w900, color: Colors.white, letterSpacing: 1)
+                  ),
+                ],
+              ),
+            ),
+        ],
+      ),
+    );
+  }
+
   Widget _buildSectionHeader(String title) {
     return Padding(
-      padding: const EdgeInsets.fromLTRB(25, 0, 25, 8),
+      padding: const EdgeInsets.fromLTRB(25, 10, 25, 10),
       child: Align(
         alignment: Alignment.centerLeft,
-        child: Text(title.toUpperCase(), style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w900, color: Colors.grey, letterSpacing: 1.1)),
+        child: Text(title.toUpperCase(), style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w900, color: Colors.grey, letterSpacing: 1.2)),
       ),
     );
   }
@@ -169,11 +251,11 @@ class ProfileScreen extends ConsumerWidget {
       padding: const EdgeInsets.symmetric(horizontal: 20),
       child: Row(
         children: [
-          _statItem(context, "$orderCount", AppStrings.ordersCountLabel.tr(), Colors.blue, () => Navigator.pushNamed(context, AppRoutes.myOrders)),
-          const SizedBox(width: 10),
-          _statItem(context, "$wishlistCount", AppStrings.wishlistCountLabel.tr(), Colors.pink, () => Navigator.pushNamed(context, AppRoutes.wishlist)),
-          const SizedBox(width: 10),
-          _statItem(context, "$cartCount", AppStrings.cartCountLabel.tr(), Colors.orange, () => Navigator.pushNamed(context, AppRoutes.cart)),
+          _statItem(context, "$orderCount", AppStrings.ordersCountLabel.tr(), Colors.blueAccent, () => Navigator.pushNamed(context, AppRoutes.myOrders)),
+          const SizedBox(width: 15),
+          _statItem(context, "$wishlistCount", AppStrings.wishlistCountLabel.tr(), Colors.pinkAccent, () => Navigator.pushNamed(context, AppRoutes.wishlist)),
+          const SizedBox(width: 15),
+          _statItem(context, "$cartCount", AppStrings.cartCountLabel.tr(), Colors.orangeAccent, () => Navigator.pushNamed(context, AppRoutes.cart)),
         ],
       ),
     );
@@ -183,18 +265,26 @@ class ProfileScreen extends ConsumerWidget {
     return Expanded(
       child: InkWell(
         onTap: onTap,
-        borderRadius: BorderRadius.circular(15),
+        borderRadius: BorderRadius.circular(24),
         child: Container(
-          padding: const EdgeInsets.symmetric(vertical: 12),
+          padding: const EdgeInsets.symmetric(vertical: 16),
           decoration: BoxDecoration(
-            color: color.withValues(alpha: 0.1),
-            borderRadius: BorderRadius.circular(15),
-            border: Border.all(color: color.withValues(alpha: 0.2)),
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(24),
+            boxShadow: [
+              BoxShadow(color: color.withValues(alpha: 0.1), blurRadius: 15, offset: const Offset(0, 5)),
+            ],
+            border: Border.all(color: color.withValues(alpha: 0.1)),
           ),
           child: Column(
             children: [
-              Text(value, style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: color)),
-              Text(label, style: TextStyle(fontSize: 11, color: color.withValues(alpha: 0.8), fontWeight: FontWeight.w600)),
+              Container(
+                padding: const EdgeInsets.all(8),
+                decoration: BoxDecoration(color: color.withValues(alpha: 0.15), shape: BoxShape.circle),
+                child: Text(value, style: TextStyle(fontSize: 16, fontWeight: FontWeight.w900, color: color)),
+              ),
+              const SizedBox(height: 8),
+              Text(label, style: const TextStyle(fontSize: 10, color: Colors.black54, fontWeight: FontWeight.bold)),
             ],
           ),
         ),
@@ -205,30 +295,44 @@ class ProfileScreen extends ConsumerWidget {
   Widget _buildMenuCard(BuildContext context, List<Widget> items) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20),
-      child: AppCard(
-        elevation: 2,
-        borderRadius: 20,
-        child: Column(children: items),
+      child: Container(
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(24),
+          boxShadow: [
+            BoxShadow(color: Colors.black.withValues(alpha: 0.03), blurRadius: 20, offset: const Offset(0, 5)),
+          ],
+        ),
+        child: Material(
+          color: Colors.transparent,
+          borderRadius: BorderRadius.circular(24),
+          clipBehavior: Clip.antiAlias,
+          child: Column(children: items),
+        ),
       ),
     );
   }
 
   Widget _menuItem(IconData icon, String title, VoidCallback onTap, {int badge = 0}) {
     return ListTile(
-      dense: true,
-      leading: Icon(icon, size: 20),
-      title: Text(title, style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w500)),
+      contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 4),
+      leading: Container(
+        padding: const EdgeInsets.all(8),
+        decoration: BoxDecoration(color: Colors.grey[100], borderRadius: BorderRadius.circular(12)),
+        child: Icon(icon, size: 20, color: Colors.grey[800]),
+      ),
+      title: Text(title, style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w600, color: Colors.black87)),
       trailing: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
           if (badge > 0)
             Container(
-              padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-              decoration: BoxDecoration(color: Colors.red, borderRadius: BorderRadius.circular(10)),
-              child: Text('$badge', style: const TextStyle(color: Colors.white, fontSize: 9, fontWeight: FontWeight.bold)),
+              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+              decoration: BoxDecoration(color: Colors.red, borderRadius: BorderRadius.circular(12)),
+              child: Text('$badge', style: const TextStyle(color: Colors.white, fontSize: 10, fontWeight: FontWeight.bold)),
             ),
-          const SizedBox(width: 4),
-          const Icon(Icons.arrow_forward_ios, size: 12, color: Colors.grey),
+          const SizedBox(width: 8),
+          const Icon(Icons.arrow_forward_ios_rounded, size: 14, color: Colors.grey),
         ],
       ),
       onTap: onTap,
@@ -443,84 +547,7 @@ class ProfileScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildProfileHeader(BuildContext context, dynamic user, dynamic settings, bool isAdmin) {
-    return Column(
-      children: [
-        Stack(
-          children: [
-            Container(
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                border: Border.all(color: settings.primaryColor.withValues(alpha: 0.2), width: 4),
-              ),
-              child: CircleAvatar(
-                radius: 55,
-                backgroundColor: settings.primaryColor.withValues(alpha: 0.1),
-                child: Icon(Icons.person_rounded, size: 70, color: settings.primaryColor),
-              ),
-            ),
-            Positioned(
-              bottom: 0,
-              right: 0,
-              child: GestureDetector(
-                onTap: () => Navigator.pushNamed(context, AppRoutes.editProfile),
-                child: CircleAvatar(
-                  backgroundColor: settings.primaryColor,
-                  radius: 18,
-                  child: const Icon(Icons.edit_rounded, color: Colors.white, size: 18),
-                ),
-              ),
-            ),
-          ],
-        ),
-        const SizedBox(height: 15),
-        Text(user?.name ?? "User Name", style: const TextStyle(fontSize: 22, fontWeight: FontWeight.w900, letterSpacing: -0.5)),
-        Text(user?.email ?? "", style: TextStyle(color: Colors.grey[600], fontSize: 14)),
-        if (isAdmin)
-          Container(
-            margin: const EdgeInsets.only(top: 10),
-            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 5),
-            decoration: BoxDecoration(
-              color: Colors.amber[700]!.withValues(alpha: 0.15),
-              borderRadius: BorderRadius.circular(20),
-              border: Border.all(color: Colors.amber[700]!.withValues(alpha: 0.3)),
-            ),
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Icon(Icons.verified_user_rounded, size: 14, color: Colors.amber[900]),
-                const SizedBox(width: 6),
-                Text(
-                  (user?.role == 'super_admin' ? AppStrings.superAdmin.tr() : AppStrings.storeAdmin.tr()).toUpperCase(), 
-                  style: TextStyle(fontSize: 10, fontWeight: FontWeight.w900, color: Colors.amber[900], letterSpacing: 1)
-                ),
-              ],
-            ),
-          ),
-        if (user?.role == 'delivery_man')
-          Container(
-            margin: const EdgeInsets.only(top: 10),
-            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 5),
-            decoration: BoxDecoration(
-              color: Colors.blue[700]!.withValues(alpha: 0.15),
-              borderRadius: BorderRadius.circular(20),
-              border: Border.all(color: Colors.blue[700]!.withValues(alpha: 0.3)),
-            ),
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                const Icon(Icons.delivery_dining_rounded, size: 14, color: Colors.blue),
-                const SizedBox(width: 6),
-                Text(
-                  "DELIVERY PARTNER", 
-                  style: TextStyle(fontSize: 10, fontWeight: FontWeight.w900, color: Colors.blue[900], letterSpacing: 1)
-                ),
-              ],
-            ),
-          ),
-      ],
-    );
-  }
+
 
   void _showChangePasswordDialog(BuildContext context, WidgetRef ref) {
     final oldController = TextEditingController();
