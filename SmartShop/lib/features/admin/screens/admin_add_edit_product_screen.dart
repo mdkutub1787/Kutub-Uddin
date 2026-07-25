@@ -5,6 +5,8 @@ import '../../product/models/product_model.dart';
 import '../../product/riverpod/product_notifier.dart';
 import '../../category/riverpod/category_notifier.dart';
 import '../../auth/riverpod/auth_notifier.dart';
+import 'dart:io';
+import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../../widgets/custom_app_bar.dart';
 
 class AdminAddEditProductScreen extends ConsumerStatefulWidget {
@@ -50,16 +52,46 @@ class _AdminAddEditProductScreenState extends ConsumerState<AdminAddEditProductS
   Future<void> _pickImage(ImageSource source) async {
     try {
       final picker = ImagePicker();
-      final XFile? pickedFile = await picker.pickImage(source: source);
+      final XFile? pickedFile = await picker.pickImage(source: source, maxWidth: 800, imageQuality: 80);
       if (pickedFile != null) {
-        if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text("Image selected. Please upload to Storage to get URL permanently.")),
-          );
+        setState(() => _isSaving = true);
+        
+        final file = File(pickedFile.path);
+        final fileExt = pickedFile.path.split('.').last;
+        final fileName = '${DateTime.now().millisecondsSinceEpoch}.$fileExt';
+        
+        // Try uploading to Supabase 'products' bucket
+        try {
+          await Supabase.instance.client.storage
+              .from('products')
+              .upload(fileName, file);
+              
+          final publicUrl = Supabase.instance.client.storage
+              .from('products')
+              .getPublicUrl(fileName);
+              
+          setState(() {
+            _imageController.text = publicUrl;
+            _isSaving = false;
+          });
+          
+          if (mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(content: Text("Image uploaded successfully!")),
+            );
+          }
+        } catch (e) {
+          setState(() => _isSaving = false);
+          if (mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(content: Text("Upload failed. Create a public 'products' bucket in Supabase storage.\nError: $e")),
+            );
+          }
         }
       }
     } catch (e) {
       if (mounted) {
+        setState(() => _isSaving = false);
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text("Error picking image: $e")),
         );

@@ -158,12 +158,14 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                             hint: "username@gmail.com",
                             icon: Icons.email_outlined,
                             keyboardType: TextInputType.emailAddress,
+                            autofillHints: const [AutofillHints.email],
                           ),
                           _buildModernField(
                             controller: _passwordController,
                             hint: "••••••",
                             icon: Icons.lock_outline_rounded,
                             obscure: !_isPasswordVisible,
+                            autofillHints: const [AutofillHints.password],
                           ),
                           
                           Align(
@@ -283,6 +285,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     bool obscure = false,
     TextInputType? keyboardType,
     Widget? suffix,
+    Iterable<String>? autofillHints,
   }) {
     return Column(
       children: [
@@ -295,6 +298,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                 controller: controller,
                 obscureText: obscure,
                 keyboardType: keyboardType,
+                autofillHints: autofillHints,
                 style: const TextStyle(color: Colors.black87, fontSize: 16),
                 decoration: InputDecoration(
                   hintText: hint,

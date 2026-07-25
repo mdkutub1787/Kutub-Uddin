@@ -71,7 +71,12 @@ class DashboardScreen extends ConsumerWidget {
                             CircleAvatar(
                               radius: 20,
                               backgroundColor: Colors.white24,
-                              child: Text(userName.isNotEmpty ? userName[0].toUpperCase() : 'U', style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 14)),
+                              backgroundImage: auth?.imageUrl != null && auth!.imageUrl!.isNotEmpty 
+                                  ? NetworkImage(auth.imageUrl!) 
+                                  : null,
+                              child: auth?.imageUrl == null || auth!.imageUrl!.isEmpty
+                                  ? Text(userName.isNotEmpty ? userName[0].toUpperCase() : 'U', style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 14))
+                                  : null,
                             ),
                             const SizedBox(width: 12),
                             Expanded(
@@ -204,14 +209,25 @@ class DashboardScreen extends ConsumerWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       _buildSearchBar(context, ref),
-                      _buildPromoBanner(context, ref), // Dynamic promo banners
-                      _buildSectionHeader(context, AppStrings.categoriesTitle.tr(), () {}),
-                      _buildCategoryList(context, ref),
-                      _buildSectionHeader(context, AppStrings.featuredProductsTitle.tr(), () {}),
-                      _buildFeaturedProducts(context, ref),
-                      const SizedBox(height: 12),
-                      _buildCategorySections(context, ref),
-                      const SizedBox(height: 100),
+                      Container(
+                        decoration: const BoxDecoration(
+                          color: Colors.white,
+                        ),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const SizedBox(height: 10),
+                            _buildPromoBanner(context, ref), // Dynamic promo banners
+                            _buildSectionHeader(context, AppStrings.categoriesTitle.tr(), () {}),
+                            _buildCategoryList(context, ref),
+                            _buildSectionHeader(context, AppStrings.featuredProductsTitle.tr(), () {}),
+                            _buildFeaturedProducts(context, ref),
+                            const SizedBox(height: 12),
+                            _buildCategorySections(context, ref),
+                            const SizedBox(height: 100),
+                          ],
+                        ),
+                      ),
                     ],
                   ),
                 ),
@@ -224,34 +240,50 @@ class DashboardScreen extends ConsumerWidget {
   }
 
   Widget _buildSearchBar(BuildContext context, WidgetRef ref) {
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(12, 12, 12, 12),
+    return Container(
+      decoration: BoxDecoration(
+        color: Theme.of(context).primaryColor,
+      ),
+      padding: const EdgeInsets.fromLTRB(20, 10, 20, 20),
       child: Hero(
-        tag: 'search_bar',
-        child: AppCard(
-          elevation: 5,
-          borderRadius: 20,
-          child: TextField(
-            onChanged: (query) {
-               // ref.read(productNotifierProvider.notifier).searchProducts(query);
-            },
-            decoration: InputDecoration(
-              hintText: AppStrings.searchHint.tr(),
-              prefixIcon: Icon(Icons.search_rounded, color: Theme.of(context).primaryColor, size: 22),
-              suffixIcon: Container(
-                margin: const EdgeInsets.all(6),
-                padding: const EdgeInsets.all(8),
-                decoration: BoxDecoration(color: Theme.of(context).primaryColor, borderRadius: BorderRadius.circular(12)),
-                child: const Icon(Icons.tune_rounded, color: Colors.white, size: 18),
+          tag: 'search_bar',
+          child: Container(
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(20),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withValues(alpha: 0.05),
+                  blurRadius: 15,
+                  offset: const Offset(0, 5),
+                )
+              ],
+            ),
+            child: TextField(
+              onChanged: (query) {
+                 // ref.read(productNotifierProvider.notifier).searchProducts(query);
+              },
+              decoration: InputDecoration(
+                hintText: AppStrings.searchHint.tr(),
+                hintStyle: TextStyle(color: Colors.grey[400], fontSize: 14),
+                prefixIcon: Icon(Icons.search_rounded, color: Theme.of(context).primaryColor, size: 22),
+                suffixIcon: Container(
+                  margin: const EdgeInsets.all(6),
+                  padding: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(color: Theme.of(context).primaryColor, borderRadius: BorderRadius.circular(12)),
+                  child: const Icon(Icons.tune_rounded, color: Colors.white, size: 18),
+                ),
+                border: OutlineInputBorder(borderRadius: BorderRadius.circular(20), borderSide: BorderSide.none),
+                filled: true,
+                fillColor: Colors.white,
+                contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
               ),
-              border: InputBorder.none,
-              contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
             ),
           ),
         ),
-      ),
     );
   }
+
 
   Widget _buildPromoBanner(BuildContext context, WidgetRef ref) {
     final bannerState = ref.watch(bannerNotifierProvider);
@@ -608,9 +640,14 @@ class DashboardScreen extends ConsumerWidget {
               color: primaryColor,
               borderRadius: const BorderRadius.only(bottomRight: Radius.circular(30)),
             ),
-            currentAccountPicture: const CircleAvatar(
+            currentAccountPicture: CircleAvatar(
               backgroundColor: Colors.white,
-              child: Icon(Icons.person, size: 40, color: Colors.grey),
+              backgroundImage: auth?.imageUrl != null && auth!.imageUrl!.isNotEmpty 
+                  ? NetworkImage(auth.imageUrl!) 
+                  : null,
+              child: auth?.imageUrl == null || auth!.imageUrl!.isEmpty
+                  ? const Icon(Icons.person, size: 40, color: Colors.grey)
+                  : null,
             ),
             accountName: Text(
               auth?.name ?? AppStrings.guest.tr(),

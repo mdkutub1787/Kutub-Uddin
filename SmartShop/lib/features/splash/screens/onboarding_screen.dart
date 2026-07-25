@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../../../routes/app_routes.dart';
 import '../../../core/utils/exit_dialog_helper.dart';
 
@@ -34,6 +35,14 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
     super.dispose();
   }
 
+  Future<void> _completeOnboarding(BuildContext context) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool('has_seen_onboarding', true);
+    if (context.mounted) {
+      Navigator.pushReplacementNamed(context, AppRoutes.login);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return PopScope(
@@ -51,7 +60,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
               Align(
                 alignment: Alignment.topRight,
                 child: TextButton(
-                  onPressed: () => Navigator.pushReplacementNamed(context, AppRoutes.login),
+                  onPressed: () => _completeOnboarding(context),
                   child: Text(
                     "Skip",
                     style: TextStyle(
@@ -102,7 +111,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                       child: ElevatedButton(
                         onPressed: () {
                           if (_currentPage == _onboardingData.length - 1) {
-                            Navigator.pushReplacementNamed(context, AppRoutes.login);
+                            _completeOnboarding(context);
                           } else {
                             _pageController.nextPage(
                               duration: const Duration(milliseconds: 300),
@@ -130,7 +139,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                       children: [
                         const Text("Already Have Account? ", style: TextStyle(color: Colors.black54)),
                         GestureDetector(
-                          onTap: () => Navigator.pushReplacementNamed(context, AppRoutes.login),
+                          onTap: () => _completeOnboarding(context),
                           child: Text(
                             "Login",
                             style: TextStyle(color: Theme.of(context).primaryColor, fontWeight: FontWeight.bold),

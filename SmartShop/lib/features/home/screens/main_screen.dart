@@ -59,84 +59,80 @@ class _MainScreenState extends ConsumerState<MainScreen> {
           index: selectedIndex,
           children: _screens,
         ),
-        bottomNavigationBar: Container(
-          margin: const EdgeInsets.only(left: 20, right: 20, bottom: 20),
-          decoration: BoxDecoration(
-            color: Colors.white.withValues(alpha: 0.9),
-            borderRadius: BorderRadius.circular(40),
-            boxShadow: [
-              BoxShadow(
-                color: settings.primaryColor.withValues(alpha: 0.15),
-                blurRadius: 30,
-                offset: const Offset(0, 10),
-              ),
-            ],
-          ),
-          child: ClipRRect(
-            borderRadius: BorderRadius.circular(40),
-            child: BackdropFilter(
-              filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
-              child: NavigationBarTheme(
-                data: NavigationBarThemeData(
-                  indicatorColor: settings.primaryColor.withValues(alpha: 0.15),
-                  labelTextStyle: WidgetStateProperty.resolveWith((states) {
-                    if (states.contains(WidgetState.selected)) {
-                      return TextStyle(
-                        fontSize: 12,
-                        fontWeight: FontWeight.w800,
-                        color: settings.primaryColor,
-                      );
-                    }
-                    return const TextStyle(fontSize: 12, color: Colors.grey, fontWeight: FontWeight.w500);
-                  }),
-                  iconTheme: WidgetStateProperty.resolveWith((states) {
-                    if (states.contains(WidgetState.selected)) {
-                      return IconThemeData(color: settings.primaryColor, size: 26);
-                    }
-                    return const IconThemeData(color: Colors.grey, size: 24);
-                  }),
+        bottomNavigationBar: SafeArea(
+          child: Container(
+            margin: const EdgeInsets.only(left: 20, right: 20, bottom: 20),
+            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(40),
+              boxShadow: [
+                BoxShadow(
+                  color: settings.primaryColor.withValues(alpha: 0.15),
+                  blurRadius: 30,
+                  offset: const Offset(0, 10),
                 ),
-                child: NavigationBar(
-                  selectedIndex: selectedIndex,
-                  onDestinationSelected: (index) => ref.read(navigationNotifierProvider.notifier).setIndex(index),
-                  backgroundColor: Colors.transparent, // Let Container handle background
-                  elevation: 0,
-                  height: 75,
-                  labelBehavior: NavigationDestinationLabelBehavior.onlyShowSelected,
-                  destinations: [
-                    NavigationDestination(
-                      icon: const Icon(Icons.home_outlined),
-                      selectedIcon: const Icon(Icons.home_rounded),
-                      label: AppStrings.homeMenu.tr(),
-                    ),
-                    NavigationDestination(
-                      icon: const Icon(Icons.receipt_long_outlined),
-                      selectedIcon: const Icon(Icons.receipt_long_rounded),
-                      label: AppStrings.myOrdersMenu.tr(),
-                    ),
-                    NavigationDestination(
-                      icon: Badge(
-                        label: Text('$cartItemCount'),
-                        isLabelVisible: cartItemCount > 0,
-                        child: const Icon(Icons.shopping_bag_outlined),
-                      ),
-                      selectedIcon: Badge(
-                        label: Text('$cartItemCount'),
-                        isLabelVisible: cartItemCount > 0,
-                        child: const Icon(Icons.shopping_bag_rounded),
-                      ),
-                      label: AppStrings.myCart.tr(),
-                    ),
-                    NavigationDestination(
-                      icon: const Icon(Icons.person_outline_rounded),
-                      selectedIcon: const Icon(Icons.person_rounded),
-                      label: AppStrings.accountMenu.tr(),
-                    ),
-                  ],
-                ),
-              ),
+              ],
+            ),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                _buildNavItem(0, Icons.home_rounded, Icons.home_outlined, AppStrings.homeMenu.tr(), selectedIndex, settings),
+                _buildNavItem(1, Icons.receipt_long_rounded, Icons.receipt_long_outlined, AppStrings.myOrdersMenu.tr(), selectedIndex, settings),
+                _buildNavItem(2, Icons.shopping_bag_rounded, Icons.shopping_bag_outlined, AppStrings.myCart.tr(), selectedIndex, settings, badgeCount: cartItemCount),
+                _buildNavItem(3, Icons.person_rounded, Icons.person_outline_rounded, AppStrings.accountMenu.tr(), selectedIndex, settings),
+              ],
             ),
           ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildNavItem(int index, IconData activeIcon, IconData inactiveIcon, String label, int selectedIndex, dynamic settings, {int badgeCount = 0}) {
+    bool isSelected = selectedIndex == index;
+    return GestureDetector(
+      onTap: () => ref.read(navigationNotifierProvider.notifier).setIndex(index),
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 300),
+        curve: Curves.easeOutCubic,
+        padding: EdgeInsets.symmetric(horizontal: isSelected ? 20 : 16, vertical: 12),
+        decoration: BoxDecoration(
+          color: isSelected ? settings.primaryColor.withValues(alpha: 0.1) : Colors.transparent,
+          borderRadius: BorderRadius.circular(30),
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Stack(
+              clipBehavior: Clip.none,
+              children: [
+                Icon(isSelected ? activeIcon : inactiveIcon, color: isSelected ? settings.primaryColor : Colors.grey[400], size: 24),
+                if (badgeCount > 0)
+                  Positioned(
+                    right: -6,
+                    top: -6,
+                    child: Container(
+                      padding: const EdgeInsets.all(4),
+                      decoration: const BoxDecoration(color: Colors.red, shape: BoxShape.circle),
+                      constraints: const BoxConstraints(minWidth: 16, minHeight: 16),
+                      child: Text(
+                        '$badgeCount',
+                        style: const TextStyle(color: Colors.white, fontSize: 10, fontWeight: FontWeight.bold),
+                        textAlign: TextAlign.center,
+                      ),
+                    ),
+                  )
+              ],
+            ),
+            if (isSelected) ...[
+              const SizedBox(width: 8),
+              Text(
+                label,
+                style: TextStyle(color: settings.primaryColor, fontWeight: FontWeight.w800, fontSize: 13),
+              ),
+            ]
+          ],
         ),
       ),
     );

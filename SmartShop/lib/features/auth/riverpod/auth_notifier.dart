@@ -11,19 +11,35 @@ class AuthNotifier extends AsyncNotifier<UserModel?> {
     _repository = ref.watch(authRepositoryProvider);
     
     // Listen to auth state changes
-    _repository.authStateChanges.listen((data) {
+    _repository.authStateChanges.listen((data) async {
       if (data.session?.user != null) {
-        state = AsyncData(_mapToUserModel(data.session!.user!));
+        final userData = await _fetchUserData(data.session!.user!);
+        state = AsyncData(userData);
       } else {
         state = const AsyncData(null);
       }
     });
 
     final sbUser = _repository.currentUser;
-    return sbUser != null ? _mapToUserModel(sbUser) : null;
+    return sbUser != null ? await _fetchUserData(sbUser) : null;
   }
 
-  UserModel _mapToUserModel(sb.User user) {
+  Future<UserModel> _fetchUserData(sb.User user) async {
+    try {
+      final response = await sb.Supabase.instance.client
+          .from('users')
+          .select()
+          .eq('id', user.id)
+          .maybeSingle();
+
+      if (response != null) {
+        return UserModel.fromJson(response);
+      }
+    } catch (e) {
+      // print('Error fetching user data from DB: $e');
+    }
+    
+    // Fallback to auth metadata if DB row not found
     final metadata = user.userMetadata ?? {};
     return UserModel(
       uid: user.id,
@@ -46,7 +62,7 @@ class AuthNotifier extends AsyncNotifier<UserModel?> {
       await _repository.signIn(email, password);
       error = null;
       final user = _repository.currentUser;
-      state = AsyncData(user != null ? _mapToUserModel(user) : null);
+      state = AsyncData(user != null ? await _fetchUserData(user) : null);
     } catch (e, st) {
       error = e.toString();
       state = AsyncError(e, st);
@@ -60,7 +76,7 @@ class AuthNotifier extends AsyncNotifier<UserModel?> {
       await _repository.signUp(email, password, metadata: metadata);
       error = null;
       final user = _repository.currentUser;
-      state = AsyncData(user != null ? _mapToUserModel(user) : null);
+      state = AsyncData(user != null ? await _fetchUserData(user) : null);
     } catch (e, st) {
       error = e.toString();
       state = AsyncError(e, st);
@@ -92,9 +108,9 @@ class AuthNotifier extends AsyncNotifier<UserModel?> {
   }
 
   Future<void> refreshUserData() async {
-    // just dummy refresh
-    if (state.value != null) {
-       state = AsyncData(state.value!.copyWith());
+    if (state.value != null && _repository.currentUser != null) {
+      final freshData = await _fetchUserData(_repository.currentUser!);
+      state = AsyncData(freshData);
     }
   }
 }

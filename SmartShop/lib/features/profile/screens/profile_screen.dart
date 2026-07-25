@@ -37,6 +37,12 @@ class ProfileScreen extends ConsumerWidget {
     return Scaffold(
       appBar: CustomAppBar(
         title: AppStrings.profileMenu.tr(),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.logout_rounded, color: Colors.white),
+            onPressed: () => _showLogoutConfirmation(context, ref),
+          ),
+        ],
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.symmetric(vertical: 12),
@@ -96,22 +102,7 @@ class ProfileScreen extends ConsumerWidget {
 
             const SizedBox(height: 24),
 
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20),
-              child: SizedBox(
-                width: double.infinity,
-                child: OutlinedButton.icon(
-                  onPressed: () => _showLogoutConfirmation(context, ref),
-                  icon: const Icon(Icons.logout, color: Colors.red, size: 20),
-                  label: Text(AppStrings.logout.tr(), style: const TextStyle(color: Colors.red, fontWeight: FontWeight.bold, fontSize: 14)),
-                  style: OutlinedButton.styleFrom(
-                    padding: const EdgeInsets.symmetric(vertical: 12),
-                    side: const BorderSide(color: Colors.red, width: 1.2),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
-                  ),
-                ),
-              ),
-            ),
+
 
             const SizedBox(height: 12),
             Text("${AppStrings.appVersion.tr()} 1.0.0", style: TextStyle(color: Colors.grey[400], fontSize: 11)),
@@ -216,26 +207,30 @@ class ProfileScreen extends ConsumerWidget {
           const SizedBox(height: 15),
           Text(user?.name ?? "User Name", style: const TextStyle(fontSize: 22, fontWeight: FontWeight.w900, color: Colors.white)),
           Text(user?.email ?? "", style: TextStyle(color: Colors.white.withValues(alpha: 0.9), fontSize: 13, fontWeight: FontWeight.w500)),
-          if (isAdmin)
-            Container(
-              margin: const EdgeInsets.only(top: 10),
-              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
-              decoration: BoxDecoration(
-                color: Colors.white24,
-                borderRadius: BorderRadius.circular(20),
-              ),
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  const Icon(Icons.admin_panel_settings_rounded, size: 14, color: Colors.white),
-                  const SizedBox(width: 6),
-                  Text(
-                    (user?.role == 'super_admin' ? AppStrings.superAdmin.tr() : AppStrings.storeAdmin.tr()).toUpperCase(), 
-                    style: const TextStyle(fontSize: 10, fontWeight: FontWeight.w900, color: Colors.white, letterSpacing: 1)
-                  ),
-                ],
-              ),
+          Container(
+            margin: const EdgeInsets.only(top: 10),
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+            decoration: BoxDecoration(
+              color: Colors.white24,
+              borderRadius: BorderRadius.circular(20),
             ),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Icon(
+                  user?.role == 'admin' || user?.role == 'super_admin' ? Icons.admin_panel_settings_rounded : 
+                  user?.role == 'delivery_man' ? Icons.local_shipping_rounded : 
+                  Icons.person_outline_rounded, 
+                  size: 14, color: Colors.white
+                ),
+                const SizedBox(width: 6),
+                Text(
+                  (user?.role == 'user' ? 'Customer' : user?.role ?? 'Customer').toUpperCase().replaceAll('_', ' '), 
+                  style: const TextStyle(fontSize: 10, fontWeight: FontWeight.w900, color: Colors.white, letterSpacing: 1)
+                ),
+              ],
+            ),
+          ),
         ],
       ),
     );

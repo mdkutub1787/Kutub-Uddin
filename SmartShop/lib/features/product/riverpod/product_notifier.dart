@@ -103,14 +103,17 @@ class ProductNotifier extends Notifier<ProductState> {
 
   Future<void> addProduct(ProductModel product) async {
     await _repository.addProduct(product);
+    _initStream(); // Refresh the list
   }
 
   Future<void> updateProduct(ProductModel product) async {
     await _repository.updateProduct(product);
+    _initStream(); // Refresh the list
   }
 
   Future<void> deleteProduct(String productId) async {
     await _repository.deleteProduct(productId);
+    _initStream(); // Refresh the list
   }
 }
 
