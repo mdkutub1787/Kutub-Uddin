@@ -23,7 +23,9 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
   final _addressController = TextEditingController();
   final _passwordController = TextEditingController();
   final _confirmPasswordController = TextEditingController();
+  final _shopNameController = TextEditingController(); // Added for shop
   bool _isPasswordVisible = false;
+  bool _isShopOwner = false; // Toggle state
 
   @override
   void dispose() {
@@ -33,6 +35,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
     _addressController.dispose();
     _passwordController.dispose();
     _confirmPasswordController.dispose();
+    _shopNameController.dispose();
     super.dispose();
   }
 
@@ -100,41 +103,99 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                   
                   const SizedBox(height: 40),
                   
-                  // Form Container
-                  Container(
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(30),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black.withValues(alpha: 0.05),
-                          blurRadius: 20,
-                          offset: const Offset(0, 10),
-                        )
-                      ],
-                    ),
-                    padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 30),
-                    child: AutofillGroup(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.stretch,
-                        children: [
-                          _buildModernField(
+                    // Form Container
+                    Container(
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(30),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withValues(alpha: 0.05),
+                            blurRadius: 20,
+                            offset: const Offset(0, 10),
+                          )
+                        ],
+                      ),
+                      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 30),
+                      child: AutofillGroup(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                          children: [
+                            // Role Toggle
+                            Container(
+                              height: 50,
+                              decoration: BoxDecoration(
+                                color: Colors.grey.shade100,
+                                borderRadius: BorderRadius.circular(25),
+                              ),
+                              child: Row(
+                                children: [
+                                  Expanded(
+                                    child: GestureDetector(
+                                      onTap: () => setState(() => _isShopOwner = false),
+                                      child: Container(
+                                        decoration: BoxDecoration(
+                                          color: !_isShopOwner ? const Color(0xFF1B3128) : Colors.transparent,
+                                          borderRadius: BorderRadius.circular(25),
+                                        ),
+                                        alignment: Alignment.center,
+                                        child: Text(
+                                          "Customer",
+                                          style: TextStyle(
+                                            color: !_isShopOwner ? Colors.white : Colors.black54,
+                                            fontWeight: FontWeight.bold,
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                  Expanded(
+                                    child: GestureDetector(
+                                      onTap: () => setState(() => _isShopOwner = true),
+                                      child: Container(
+                                        decoration: BoxDecoration(
+                                          color: _isShopOwner ? const Color(0xFF1B3128) : Colors.transparent,
+                                          borderRadius: BorderRadius.circular(25),
+                                        ),
+                                        alignment: Alignment.center,
+                                        child: Text(
+                                          "Shop Owner",
+                                          style: TextStyle(
+                                            color: _isShopOwner ? Colors.white : Colors.black54,
+                                            fontWeight: FontWeight.bold,
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            const SizedBox(height: 25),
+                            
+                            _buildModernField(
                             controller: _nameController,
                             hint: "username",
                             icon: Icons.person_outline_rounded,
                           ),
-                          _buildModernField(
-                            controller: _phoneController,
-                            hint: "phone number",
-                            icon: Icons.phone_android_rounded,
-                            keyboardType: TextInputType.phone,
-                          ),
-                          _buildModernField(
-                            controller: _addressController,
-                            hint: "address",
-                            icon: Icons.location_on_outlined,
-                          ),
-                          _buildModernField(
+                            _buildModernField(
+                              controller: _phoneController,
+                              hint: "phone number",
+                              icon: Icons.phone_android_rounded,
+                              keyboardType: TextInputType.phone,
+                            ),
+                            _buildModernField(
+                              controller: _addressController,
+                              hint: "address",
+                              icon: Icons.location_on_outlined,
+                            ),
+                            if (_isShopOwner)
+                              _buildModernField(
+                                controller: _shopNameController,
+                                hint: "shop name",
+                                icon: Icons.store_outlined,
+                              ),
+                            _buildModernField(
                             controller: _emailController,
                             hint: "username@gmail.com",
                             icon: Icons.email_outlined,
@@ -292,14 +353,23 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(AppStrings.fillAllFields.tr())));
       return;
     }
+    
+    if (_isShopOwner && _shopNameController.text.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Please enter a shop name.")));
+      return;
+    }
 
     try {
       final metadata = {
         'full_name': _nameController.text.trim(),
         'phone_number': _phoneController.text.trim(),
         'address': _addressController.text.trim(),
-        'role': 'user', 
+        'role': _isShopOwner ? 'owner' : 'user', 
       };
+      
+      if (_isShopOwner) {
+        metadata['shopName'] = _shopNameController.text.trim();
+      }
 
       await ref.read(authNotifierProvider.notifier).signUp(
         _emailController.text.trim(),

@@ -63,7 +63,7 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
           'name': _nameController.text.trim(),
           'phoneNumber': _phoneController.text.trim(),
           'address': _addressController.text.trim(),
-          'shop_name': _shopNameController.text.trim(),
+          'shopName': _shopNameController.text.trim(),
           'role': user.role,
         };
         

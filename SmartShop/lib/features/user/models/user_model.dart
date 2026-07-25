@@ -50,7 +50,7 @@ class UserModel {
       'address': address,
       'role': role,
       'shopId': shopId,
-      'shop_name': shopName,
+      'shopName': shopName,
       'imageUrl': imageUrl,
       'isActive': isActive,
       'isAvailable': isAvailable,

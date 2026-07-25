@@ -185,10 +185,15 @@ class ProfileScreen extends ConsumerWidget {
                     BoxShadow(color: Colors.black.withValues(alpha: 0.1), blurRadius: 10)
                   ],
                 ),
-                child: const CircleAvatar(
+                child: CircleAvatar(
                   radius: 45,
                   backgroundColor: Colors.white,
-                  child: Icon(Icons.person_rounded, size: 50, color: Colors.grey),
+                  backgroundImage: user?.imageUrl != null && user!.imageUrl!.isNotEmpty 
+                      ? NetworkImage(user.imageUrl!) 
+                      : null,
+                  child: user?.imageUrl == null || user!.imageUrl!.isEmpty
+                      ? const Icon(Icons.person_rounded, size: 50, color: Colors.grey)
+                      : null,
                 ),
               ),
               Positioned(
