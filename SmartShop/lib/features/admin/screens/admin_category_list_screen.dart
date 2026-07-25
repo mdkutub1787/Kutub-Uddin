@@ -1,5 +1,8 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../category/riverpod/category_notifier.dart';
 import '../../auth/riverpod/auth_notifier.dart';
 import '../../category/models/category_model.dart';
@@ -102,6 +105,55 @@ class _AdminCategoryListScreenState extends ConsumerState<AdminCategoryListScree
               TextField(controller: nameController, decoration: const InputDecoration(labelText: "Name", border: OutlineInputBorder())),
               const SizedBox(height: 20),
               TextField(controller: imageController, decoration: const InputDecoration(labelText: "Image URL", border: OutlineInputBorder())),
+              const SizedBox(height: 10),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  TextButton.icon(
+                    onPressed: () async {
+                      try {
+                        final picker = ImagePicker();
+                        final XFile? pickedFile = await picker.pickImage(source: ImageSource.camera, maxWidth: 800, imageQuality: 80);
+                        if (pickedFile != null) {
+                          setModalState(() => imageController.text = "Uploading...");
+                          final file = File(pickedFile.path);
+                          final fileName = '${DateTime.now().millisecondsSinceEpoch}.${pickedFile.path.split('.').last}';
+                          await Supabase.instance.client.storage.from('categories').upload(fileName, file);
+                          final publicUrl = Supabase.instance.client.storage.from('categories').getPublicUrl(fileName);
+                          setModalState(() => imageController.text = publicUrl);
+                        }
+                      } catch (e) {
+                        setModalState(() => imageController.text = "");
+                        ScaffoldMessenger.of(ctx).showSnackBar(SnackBar(content: Text("Upload failed: $e")));
+                      }
+                    },
+                    icon: const Icon(Icons.camera_alt_rounded, size: 20),
+                    label: const Text("Camera"),
+                  ),
+                  const SizedBox(width: 20),
+                  TextButton.icon(
+                    onPressed: () async {
+                      try {
+                        final picker = ImagePicker();
+                        final XFile? pickedFile = await picker.pickImage(source: ImageSource.gallery, maxWidth: 800, imageQuality: 80);
+                        if (pickedFile != null) {
+                          setModalState(() => imageController.text = "Uploading...");
+                          final file = File(pickedFile.path);
+                          final fileName = '${DateTime.now().millisecondsSinceEpoch}.${pickedFile.path.split('.').last}';
+                          await Supabase.instance.client.storage.from('categories').upload(fileName, file);
+                          final publicUrl = Supabase.instance.client.storage.from('categories').getPublicUrl(fileName);
+                          setModalState(() => imageController.text = publicUrl);
+                        }
+                      } catch (e) {
+                        setModalState(() => imageController.text = "");
+                        ScaffoldMessenger.of(ctx).showSnackBar(SnackBar(content: Text("Upload failed: $e")));
+                      }
+                    },
+                    icon: const Icon(Icons.image_rounded, size: 20),
+                    label: const Text("Gallery"),
+                  ),
+                ],
+              ),
               const SizedBox(height: 30),
               SizedBox(
                 width: double.infinity,

@@ -499,7 +499,7 @@ class DashboardScreen extends ConsumerWidget {
               bool isSelected = selectedCategoryId == cat.id;
               
               // We'll use the category imageUrl if it exists, otherwise fallback to an icon.
-              bool hasImage = cat.imageUrl.isNotEmpty;
+              bool hasImage = cat.imageUrl.isNotEmpty && cat.imageUrl.startsWith('http');
               
               return GestureDetector(
                 onTap: () {

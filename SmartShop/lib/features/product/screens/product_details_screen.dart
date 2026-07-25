@@ -102,7 +102,7 @@ class ProductDetailsScreen extends ConsumerWidget {
                           children: [
                             const Icon(Icons.star_rounded, color: Colors.amber, size: 22),
                             const SizedBox(width: 4),
-                            Text("\${product.rating}", style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+                            Text("${product.rating}", style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
                             Text(" (120+ Reviews)", style: TextStyle(color: Colors.grey[600], fontSize: 12)),
                           ],
                         ),
@@ -111,20 +111,20 @@ class ProductDetailsScreen extends ConsumerWidget {
                     const SizedBox(height: 20),
                     Text(product.name, style: const TextStyle(fontSize: 30, fontWeight: FontWeight.w900, letterSpacing: -0.5)),
                     const SizedBox(height: 15),
-                    Row(
-                      crossAxisAlignment: CrossAxisAlignment.end,
+                    Wrap(
+                      crossAxisAlignment: WrapCrossAlignment.end,
+                      spacing: 12,
+                      runSpacing: 8,
                       children: [
-                        Text("৳ \${NumberFormat('#,##,###').format(product.price.toInt())}", style: TextStyle(fontSize: 32, fontWeight: FontWeight.w900, color: primaryColor)),
-                        const SizedBox(width: 12),
+                        Text("৳ ${NumberFormat('#,##,###').format(product.price.toInt())}", style: TextStyle(fontSize: 32, fontWeight: FontWeight.w900, color: primaryColor)),
                         if (product.hasDiscount) ...[
-                          Text("৳ \${NumberFormat('#,##,###').format(product.originalPrice.toInt())}", style: const TextStyle(fontSize: 18, color: Colors.grey, decoration: TextDecoration.lineThrough)),
-                          const SizedBox(width: 10),
+                          Text("৳ ${NumberFormat('#,##,###').format(product.originalPrice.toInt())}", style: const TextStyle(fontSize: 18, color: Colors.grey, decoration: TextDecoration.lineThrough)),
                           Container(
                             padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                             decoration: BoxDecoration(color: Colors.red, borderRadius: BorderRadius.circular(8)),
                             child: Text(
                               AppStrings.offLabel.tr(args: [
-                                product.discountType == 'percentage' ? "\${product.discountValue.toInt()}%" : "৳ \${product.discountValue.toInt()}"
+                                product.discountType == 'percentage' ? "${product.discountValue.toInt()}%" : "৳ ${product.discountValue.toInt()}"
                               ]),
                               style: const TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.bold),
                             ),
@@ -137,12 +137,14 @@ class ProductDetailsScreen extends ConsumerWidget {
                       children: [
                         Icon(Icons.inventory_2_outlined, size: 18, color: Colors.grey[600]),
                         const SizedBox(width: 8),
-                        Text(
-                          "\${AppStrings.stock.tr()}: \${product.stock} \${AppStrings.pieces.tr()}",
-                          style: TextStyle(
-                            color: product.stock <= 5 ? Colors.orange[800] : Colors.grey[800],
-                            fontWeight: FontWeight.bold,
-                            fontSize: 14,
+                        Expanded(
+                          child: Text(
+                            "${AppStrings.stock.tr()}: ${product.stock} ${AppStrings.pieces.tr()}",
+                            style: TextStyle(
+                              color: product.stock <= 5 ? Colors.orange[800] : Colors.grey[800],
+                              fontWeight: FontWeight.bold,
+                              fontSize: 14,
+                            ),
                           ),
                         ),
                       ],
