@@ -60,7 +60,6 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
         
         final updateData = {
           'id': user.uid,
-          'email': user.email,
           'name': _nameController.text.trim(),
           'phoneNumber': _phoneController.text.trim(),
           'address': _addressController.text.trim(),
