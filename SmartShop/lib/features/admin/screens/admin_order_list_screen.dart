@@ -426,30 +426,30 @@ class _AdminOrderListScreenState extends ConsumerState<AdminOrderListScreen> wit
                     padding: const EdgeInsets.only(top: 12),
                     child: Container(
                       padding: const EdgeInsets.all(12),
-                      decoration: BoxDecoration(
-                        color: Colors.blue.withValues(alpha: 0.05),
-                        borderRadius: BorderRadius.circular(12),
-                        border: Border.all(color: Colors.blue.withValues(alpha: 0.1)),
-                      ),
+                      decoration: BoxDecoration(color: Colors.blue[50], borderRadius: BorderRadius.circular(10)),
                       child: Row(
                         children: [
-                          const Icon(Icons.delivery_dining_rounded, color: Colors.blue),
-                          const SizedBox(width: 12),
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                const Text("Assigned Delivery Man", style: TextStyle(fontSize: 10, color: Colors.grey, fontWeight: FontWeight.bold)),
-                                Text(order.deliveryManName!, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
-                              ],
-                            ),
+                          order.deliveryManImage != null && order.deliveryManImage!.isNotEmpty
+                              ? CircleAvatar(
+                                  radius: 12,
+                                  backgroundImage: NetworkImage(order.deliveryManImage!),
+                                )
+                              : const Icon(Icons.electric_moped_rounded, color: Colors.blue, size: 20),
+                          const SizedBox(width: 8),
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              const Text("Assigned Delivery Man", style: TextStyle(fontSize: 10, color: Colors.grey)),
+                              Text(order.deliveryManName ?? "Unknown", style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13)),
+                            ],
                           ),
-                          Text(order.deliveryManPhone ?? "", style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w500)),
+                          const Spacer(),
+                          Text(order.deliveryManPhone ?? "", style: const TextStyle(color: Colors.grey, fontSize: 12)),
                         ],
                       ),
                     ),
                   ),
-                if ((order.status == 'PickedUp' || order.status == 'OnTheWay') && order.deliveryManId != null)
+                if ((order.status == 'Assigned' || order.status == 'PickedUp' || order.status == 'OnTheWay') && order.deliveryManId != null)
                   Padding(
                     padding: const EdgeInsets.only(top: 12),
                     child: SizedBox(
@@ -457,12 +457,12 @@ class _AdminOrderListScreenState extends ConsumerState<AdminOrderListScreen> wit
                       child: ElevatedButton.icon(
                         onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (_) => OrderTrackingScreen(order: order))),
                         icon: const Icon(Icons.map_rounded),
-                        label: const Text("TRACK LIVE MAP", style: TextStyle(fontWeight: FontWeight.w900, letterSpacing: 1)),
+                        label: const Text("TRACK LIVE MAP", style: TextStyle(fontWeight: FontWeight.bold, letterSpacing: 1)),
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.black,
+                          backgroundColor: Colors.black87,
                           foregroundColor: Colors.white,
-                          padding: const EdgeInsets.symmetric(vertical: 14),
-                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                          padding: const EdgeInsets.symmetric(vertical: 12),
+                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
                         ),
                       ),
                     ),
