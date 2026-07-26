@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:intl/intl.dart';
@@ -54,9 +55,8 @@ class _SupportScreenState extends ConsumerState<SupportScreen> {
   }
 
   Widget _buildAdminTicketList(List<dynamic> state) {
-    if (state.isEmpty) return const Center(child: CircularProgressIndicator());
-    final tickets = []; // Access tickets from state in actual implementation
-    if (tickets.isEmpty) return Center(child: Text(AppStrings.noSupportTickets.tr()));
+    if (state.isEmpty) return Center(child: Text(AppStrings.noSupportTickets.tr()));
+    final tickets = state.cast<SupportTicket>();
 
     return ListView.builder(
       itemCount: tickets.length,
@@ -107,7 +107,7 @@ class _SupportScreenState extends ConsumerState<SupportScreen> {
   }
 
   Widget _buildChatInterface(List<dynamic> state, dynamic user, dynamic settings) {
-    final messages = []; // Access messages from state in actual implementation
+    final messages = state.cast<SupportMessage>();
     return Column(
       children: [
         // Professional Shop Info Header
@@ -229,12 +229,12 @@ class _SupportScreenState extends ConsumerState<SupportScreen> {
             GestureDetector(
               onTap: () {
                 if (_messageController.text.isNotEmpty && user != null) {
-                  // ref.read(supportNotifierProvider.notifier).sendMessage(
-                  //  user.uid, 
-                  //  user.name, 
-                  //  _messageController.text,
-                  //  userPhone: user.phoneNumber,
-                  // );
+                  ref.read(supportNotifierProvider.notifier).sendMessage(
+                   user.uid, 
+                   user.name, 
+                   _messageController.text,
+                   userPhone: user.phoneNumber,
+                  );
                   _messageController.clear();
                 }
               },
@@ -288,7 +288,6 @@ class _AdminChatDetailState extends ConsumerState<AdminChatDetail> {
 
   @override
   Widget build(BuildContext context) {
-    final supportState = ref.watch(supportNotifierProvider);
     final settings = ref.watch(settingsProvider);
 
     return Scaffold(
@@ -310,72 +309,86 @@ class _AdminChatDetailState extends ConsumerState<AdminChatDetail> {
           ),
         ],
       ),
-      body: supportState.when(
-        data: (messages) => Column(
-          children: [
-            // Professional User Info Header
-            Container(
-              padding: const EdgeInsets.all(12),
-              color: Colors.orange.withValues(alpha: 0.1),
-              child: Row(
-                children: [
-                  const CircleAvatar(child: Icon(Icons.person_outline_rounded)),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text("${AppStrings.customerLabel.tr()}: ${widget.ticket.userName}", style: const TextStyle(fontWeight: FontWeight.bold)),
-                        Text("${AppStrings.phoneLabel.tr()}: ${_userPhone ?? '...'}", style: const TextStyle(fontSize: 12)),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            Expanded(
-              child: ListView.builder(
-                padding: const EdgeInsets.all(16),
-                itemCount: messages.length,
-                itemBuilder: (context, index) {
-                  final msg = messages[index];
-                  bool isMe = msg.isAdmin;
-                  return Align(
-                    alignment: isMe ? Alignment.centerRight : Alignment.centerLeft,
-                    child: Container(
-                      margin: const EdgeInsets.only(bottom: 8),
-                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-                      constraints: BoxConstraints(maxWidth: MediaQuery.of(context).size.width * 0.75),
-                      decoration: BoxDecoration(
-                        color: isMe ? Colors.green[600] : Colors.grey[200],
-                        borderRadius: BorderRadius.only(
-                          topLeft: const Radius.circular(15),
-                          topRight: const Radius.circular(15),
-                          bottomLeft: Radius.circular(isMe ? 15 : 0),
-                          bottomRight: Radius.circular(isMe ? 0 : 15),
-                        ),
-                      ),
+      body: StreamBuilder<List<Map<String, dynamic>>>(
+        stream: Supabase.instance.client
+            .from('support_messages')
+            .stream(primaryKey: ['id'])
+            .eq('ticket_id', widget.ticket.id)
+            .order('timestamp', ascending: true),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(child: CircularProgressIndicator());
+          }
+          if (snapshot.hasError) {
+            return Center(child: Text(snapshot.error.toString()));
+          }
+          final data = snapshot.data ?? [];
+          final messages = data.map((json) => SupportMessage.fromMap(json)).toList();
+
+          return Column(
+            children: [
+              // Professional User Info Header
+              Container(
+                padding: const EdgeInsets.all(12),
+                color: Colors.orange.withValues(alpha: 0.1),
+                child: Row(
+                  children: [
+                    const CircleAvatar(child: Icon(Icons.person_outline_rounded)),
+                    const SizedBox(width: 12),
+                    Expanded(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text(msg.message, style: TextStyle(color: isMe ? Colors.white : Colors.black87)),
-                          const SizedBox(height: 4),
-                          Text(
-                            DateFormat('hh:mm a').format(msg.timestamp),
-                            style: TextStyle(color: isMe ? Colors.white70 : Colors.black54, fontSize: 10),
-                          ),
+                          Text("${AppStrings.customerLabel.tr()}: ${widget.ticket.userName}", style: const TextStyle(fontWeight: FontWeight.bold)),
+                          Text("${AppStrings.phoneLabel.tr()}: ${_userPhone ?? '...'}", style: const TextStyle(fontSize: 12)),
                         ],
                       ),
                     ),
-                  );
-                },
+                  ],
+                ),
               ),
-            ),
-            _buildAdminInput(settings),
-          ],
-        ),
-        loading: () => const Center(child: CircularProgressIndicator()),
-        error: (e, st) => Center(child: Text(e.toString())),
+              Expanded(
+                child: ListView.builder(
+                  padding: const EdgeInsets.all(16),
+                  itemCount: messages.length,
+                  itemBuilder: (context, index) {
+                    final msg = messages[index];
+                    bool isMe = msg.isAdmin;
+                    return Align(
+                      alignment: isMe ? Alignment.centerRight : Alignment.centerLeft,
+                      child: Container(
+                        margin: const EdgeInsets.only(bottom: 8),
+                        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                        constraints: BoxConstraints(maxWidth: MediaQuery.of(context).size.width * 0.75),
+                        decoration: BoxDecoration(
+                          color: isMe ? Colors.green[600] : Colors.grey[200],
+                          borderRadius: BorderRadius.only(
+                            topLeft: const Radius.circular(15),
+                            topRight: const Radius.circular(15),
+                            bottomLeft: Radius.circular(isMe ? 15 : 0),
+                            bottomRight: Radius.circular(isMe ? 0 : 15),
+                          ),
+                        ),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(msg.message, style: TextStyle(color: isMe ? Colors.white : Colors.black87)),
+                            const SizedBox(height: 4),
+                            Text(
+                              DateFormat('hh:mm a').format(msg.timestamp),
+                              style: TextStyle(color: isMe ? Colors.white70 : Colors.black54, fontSize: 10),
+                            ),
+                          ],
+                        ),
+                      ),
+                    );
+                  },
+                ),
+              ),
+              _buildAdminInput(settings),
+            ],
+          );
+        },
       ),
     );
   }
@@ -409,13 +422,13 @@ class _AdminChatDetailState extends ConsumerState<AdminChatDetail> {
                 icon: const Icon(Icons.send_rounded, color: Colors.white),
                 onPressed: () {
                   if (_msgController.text.isNotEmpty) {
-                    // ref.read(supportNotifierProvider.notifier).sendMessage(
-                    //  widget.ticket.userId, 
-                    //  widget.ticket.userName, 
-                    //  _msgController.text, 
-                    //  isAdmin: true, 
-                    //  ticketId: widget.ticket.id
-                    // );
+                    ref.read(supportNotifierProvider.notifier).sendMessage(
+                     widget.ticket.userId, 
+                     widget.ticket.userName, 
+                     _msgController.text, 
+                     isAdmin: true, 
+                     ticketId: widget.ticket.id
+                    );
                     _msgController.clear();
                   }
                 },

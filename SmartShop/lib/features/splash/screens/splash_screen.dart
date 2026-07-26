@@ -48,6 +48,14 @@ class _SplashScreenState extends ConsumerState<SplashScreen> with SingleTickerPr
     if (!mounted) return;
 
     if (user != null) {
+      if (!user.isActive) {
+        await ref.read(authNotifierProvider.notifier).signOut();
+        if (!mounted) return;
+        Navigator.pushReplacementNamed(context, AppRoutes.login);
+        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Your account has been deactivated by the Admin.')));
+        return;
+      }
+
       ref.read(wishlistNotifierProvider.notifier).fetchWishlist(user.uid);
       ref.read(navigationNotifierProvider.notifier).setIndex(0);
       

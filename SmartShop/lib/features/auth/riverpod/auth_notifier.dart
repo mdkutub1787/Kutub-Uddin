@@ -85,9 +85,18 @@ class AuthNotifier extends AsyncNotifier<UserModel?> {
       await _repository.signIn(email, password);
       error = null;
       final user = _repository.currentUser;
-      state = AsyncData(user != null ? await _fetchUserData(user) : null);
+      if (user != null) {
+        final userData = await _fetchUserData(user);
+        if (!userData.isActive) {
+          await _repository.signOut();
+          throw Exception('Your account has been deactivated by the Admin.');
+        }
+        state = AsyncData(userData);
+      } else {
+        state = const AsyncData(null);
+      }
     } catch (e, st) {
-      error = e.toString();
+      error = e.toString().replaceAll('Exception: ', '');
       state = AsyncError(e, st);
       rethrow; 
     }

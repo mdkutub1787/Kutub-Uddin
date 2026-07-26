@@ -54,34 +54,38 @@ class _MainScreenState extends ConsumerState<MainScreen> {
         await ExitDialogHelper.showExitDialog(context);
       },
       child: Scaffold(
-        extendBody: true, // Needed for floating nav bar
+        backgroundColor: const Color(0xFFF5F7FA), // Light background for the scaffold
         body: IndexedStack(
           index: selectedIndex,
           children: _screens,
         ),
-        bottomNavigationBar: SafeArea(
-          child: Container(
-            margin: const EdgeInsets.only(left: 20, right: 20, bottom: 20),
-            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(40),
-              boxShadow: [
-                BoxShadow(
-                  color: settings.primaryColor.withValues(alpha: 0.15),
-                  blurRadius: 30,
-                  offset: const Offset(0, 10),
-                ),
-              ],
+        bottomNavigationBar: Container(
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: const BorderRadius.only(
+              topLeft: Radius.circular(30),
+              topRight: Radius.circular(30),
             ),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                _buildNavItem(0, Icons.home_rounded, Icons.home_outlined, AppStrings.homeMenu.tr(), selectedIndex, settings),
-                _buildNavItem(1, Icons.receipt_long_rounded, Icons.receipt_long_outlined, AppStrings.myOrdersMenu.tr(), selectedIndex, settings),
-                _buildNavItem(2, Icons.shopping_bag_rounded, Icons.shopping_bag_outlined, AppStrings.myCart.tr(), selectedIndex, settings, badgeCount: cartItemCount),
-                _buildNavItem(3, Icons.person_rounded, Icons.person_outline_rounded, AppStrings.accountMenu.tr(), selectedIndex, settings),
-              ],
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withValues(alpha: 0.05),
+                blurRadius: 20,
+                offset: const Offset(0, -5),
+              ),
+            ],
+          ),
+          child: SafeArea(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 12),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                children: [
+                  _buildNavItem(0, Icons.home_rounded, Icons.home_outlined, AppStrings.homeMenu.tr(), selectedIndex, settings),
+                  _buildNavItem(1, Icons.receipt_long_rounded, Icons.receipt_long_outlined, AppStrings.myOrdersMenu.tr(), selectedIndex, settings),
+                  _buildNavItem(2, Icons.shopping_bag_rounded, Icons.shopping_bag_outlined, AppStrings.myCart.tr(), selectedIndex, settings, badgeCount: cartItemCount),
+                  _buildNavItem(3, Icons.person_rounded, Icons.person_outline_rounded, AppStrings.accountMenu.tr(), selectedIndex, settings),
+                ],
+              ),
             ),
           ),
         ),
