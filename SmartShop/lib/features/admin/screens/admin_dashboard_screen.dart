@@ -70,7 +70,27 @@ class _AdminDashboardScreenState extends ConsumerState<AdminDashboardScreen> {
         await ExitDialogHelper.showExitDialog(context);
       },
       child: Scaffold(
-        appBar: CustomAppBar(title: AppStrings.adminControlPanel.tr()),
+        appBar: CustomAppBar(
+          title: AppStrings.adminControlPanel.tr(),
+          actions: [
+            GestureDetector(
+              onTap: () => Navigator.pushNamed(context, AppRoutes.profile),
+              child: Padding(
+                padding: const EdgeInsets.only(right: 16.0),
+                child: CircleAvatar(
+                  radius: 16,
+                  backgroundColor: Colors.white24,
+                  backgroundImage: currentUser?.imageUrl != null && currentUser!.imageUrl!.isNotEmpty
+                      ? NetworkImage(currentUser.imageUrl!)
+                      : null,
+                  child: currentUser?.imageUrl == null || currentUser!.imageUrl!.isEmpty
+                      ? const Icon(Icons.person_rounded, size: 20, color: Colors.white)
+                      : null,
+                ),
+              ),
+            ),
+          ],
+        ),
         body: RefreshIndicator(
           onRefresh: () async {
             await ref.read(orderNotifierProvider.notifier).loadOrders();

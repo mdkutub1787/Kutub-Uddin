@@ -1,5 +1,7 @@
 import 'package:flutter/foundation.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import '../../../core/providers.dart';
 import '../models/category_model.dart';
 
 class CategoryRepository {
@@ -44,3 +46,7 @@ class CategoryRepository {
     await _supabase.from(_table).delete().eq('id', categoryId);
   }
 }
+
+final categoryRepositoryProvider = Provider<CategoryRepository>((ref) {
+  return CategoryRepository(ref.watch(supabaseClientProvider));
+});

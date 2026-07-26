@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../auth/riverpod/auth_notifier.dart';
@@ -55,7 +56,14 @@ class _SplashScreenState extends ConsumerState<SplashScreen> with SingleTickerPr
         Navigator.pushReplacementNamed(context, AppRoutes.main);
       }
     } else {
-      Navigator.pushReplacementNamed(context, AppRoutes.onboarding);
+      final prefs = await SharedPreferences.getInstance();
+      final hasSeenOnboarding = prefs.getBool('has_seen_onboarding') ?? false;
+      
+      if (hasSeenOnboarding) {
+        Navigator.pushReplacementNamed(context, AppRoutes.login);
+      } else {
+        Navigator.pushReplacementNamed(context, AppRoutes.onboarding);
+      }
     }
   }
 

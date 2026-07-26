@@ -89,103 +89,156 @@ class _AdminCategoryListScreenState extends ConsumerState<AdminCategoryListScree
   void _showCategoryDialog(BuildContext context, {CategoryModel? category}) {
     final nameController = TextEditingController(text: category?.name ?? '');
     final imageController = TextEditingController(text: category?.imageUrl ?? '');
+    bool isUploading = false;
 
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
       shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(25))),
       builder: (ctx) => StatefulBuilder(
-        builder: (context, setModalState) => Container(
-          padding: EdgeInsets.only(bottom: MediaQuery.of(ctx).viewInsets.bottom, left: 20, right: 20, top: 20),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Text(category == null ? "Add New Category" : "Update Category", style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-              const SizedBox(height: 20),
-              TextField(controller: nameController, decoration: const InputDecoration(labelText: "Name", border: OutlineInputBorder())),
-              const SizedBox(height: 20),
-              TextField(controller: imageController, decoration: const InputDecoration(labelText: "Image URL", border: OutlineInputBorder())),
-              const SizedBox(height: 10),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  TextButton.icon(
-                    onPressed: () async {
-                      try {
-                        final picker = ImagePicker();
-                        final XFile? pickedFile = await picker.pickImage(source: ImageSource.camera, maxWidth: 800, imageQuality: 80);
-                        if (pickedFile != null) {
-                          setModalState(() => imageController.text = "Uploading...");
-                          final file = File(pickedFile.path);
-                          final fileName = '${DateTime.now().millisecondsSinceEpoch}.${pickedFile.path.split('.').last}';
-                          await Supabase.instance.client.storage.from('categories').upload(fileName, file);
-                          final publicUrl = Supabase.instance.client.storage.from('categories').getPublicUrl(fileName);
-                          setModalState(() => imageController.text = publicUrl);
-                        }
-                      } catch (e) {
-                        setModalState(() => imageController.text = "");
-                        ScaffoldMessenger.of(ctx).showSnackBar(SnackBar(content: Text("Upload failed: $e")));
-                      }
-                    },
-                    icon: const Icon(Icons.camera_alt_rounded, size: 20),
-                    label: const Text("Camera"),
-                  ),
-                  const SizedBox(width: 20),
-                  TextButton.icon(
-                    onPressed: () async {
-                      try {
-                        final picker = ImagePicker();
-                        final XFile? pickedFile = await picker.pickImage(source: ImageSource.gallery, maxWidth: 800, imageQuality: 80);
-                        if (pickedFile != null) {
-                          setModalState(() => imageController.text = "Uploading...");
-                          final file = File(pickedFile.path);
-                          final fileName = '${DateTime.now().millisecondsSinceEpoch}.${pickedFile.path.split('.').last}';
-                          await Supabase.instance.client.storage.from('categories').upload(fileName, file);
-                          final publicUrl = Supabase.instance.client.storage.from('categories').getPublicUrl(fileName);
-                          setModalState(() => imageController.text = publicUrl);
-                        }
-                      } catch (e) {
-                        setModalState(() => imageController.text = "");
-                        ScaffoldMessenger.of(ctx).showSnackBar(SnackBar(content: Text("Upload failed: $e")));
-                      }
-                    },
-                    icon: const Icon(Icons.image_rounded, size: 20),
-                    label: const Text("Gallery"),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 30),
-              SizedBox(
-                width: double.infinity,
-                height: 55,
-                child: ElevatedButton(
-                  onPressed: () async {
-                    if (nameController.text.isEmpty) return;
-                    final authUser = ref.read(authNotifierProvider).value;
-                    final shopId = authUser?.shopId ?? '';
-                    
-                    final newCat = CategoryModel(
-                      id: category?.id ?? '',
-                      shopId: shopId,
-                      name: nameController.text.trim(),
-                      imageUrl: imageController.text.trim(),
-                    );
-                    
-                    if (category == null) {
-                      await ref.read(categoryNotifierProvider.notifier).addCategory(newCat);
-                    } else {
-                      await ref.read(categoryNotifierProvider.notifier).updateCategory(newCat);
-                    }
-                    
-                    if (mounted) Navigator.pop(ctx);
-                  },
-                  child: const Text("SAVE CATEGORY"),
+        builder: (context, setModalState) {
+          Future<void> pickAndUploadImage(ImageSource source) async {
+            try {
+              final picker = ImagePicker();
+              final XFile? pickedFile = await picker.pickImage(
+                source: source,
+                maxWidth: 800,
+                imageQuality: 80,
+              );
+              if (pickedFile != null) {
+                setModalState(() => isUploading = true);
+                final file = File(pickedFile.path);
+                final fileName = 'cat_${DateTime.now().millisecondsSinceEpoch}.jpg';
+                
+                await Supabase.instance.client.storage
+                    .from('categories')
+                    .upload(fileName, file);
+                
+                final publicUrl = Supabase.instance.client.storage
+                    .from('categories')
+                    .getPublicUrl(fileName);
+                
+                setModalState(() {
+                  imageController.text = publicUrl;
+                  isUploading = false;
+                });
+              }
+            } catch (e) {
+              setModalState(() => isUploading = false);
+              if (mounted) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(content: Text("Upload failed: $e")),
+                );
+              }
+            }
+          }
+
+          return Container(
+            padding: EdgeInsets.only(
+              bottom: MediaQuery.of(ctx).viewInsets.bottom,
+              left: 20,
+              right: 20,
+              top: 20,
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  category == null ? "Add New Category" : "Update Category",
+                  style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                 ),
-              ),
-              const SizedBox(height: 20),
-            ],
-          ),
-        ),
+                const SizedBox(height: 20),
+                TextField(
+                  controller: nameController,
+                  decoration: const InputDecoration(
+                    labelText: "Category Name",
+                    border: OutlineInputBorder(),
+                  ),
+                ),
+                const SizedBox(height: 20),
+                TextField(
+                  controller: imageController,
+                  decoration: InputDecoration(
+                    labelText: "Image URL",
+                    border: const OutlineInputBorder(),
+                    suffixIcon: isUploading 
+                        ? const Padding(
+                            padding: EdgeInsets.all(12.0),
+                            child: CircularProgressIndicator(strokeWidth: 2),
+                          )
+                        : null,
+                  ),
+                ),
+                const SizedBox(height: 10),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    TextButton.icon(
+                      onPressed: isUploading ? null : () => pickAndUploadImage(ImageSource.camera),
+                      icon: const Icon(Icons.camera_alt_rounded),
+                      label: const Text("Camera"),
+                    ),
+                    const SizedBox(width: 20),
+                    TextButton.icon(
+                      onPressed: isUploading ? null : () => pickAndUploadImage(ImageSource.gallery),
+                      icon: const Icon(Icons.image_rounded),
+                      label: const Text("Gallery"),
+                    ),
+                  ],
+                ),
+                if (imageController.text.isNotEmpty && !isUploading)
+                  Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 10),
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(10),
+                      child: Image.network(
+                        imageController.text,
+                        height: 100,
+                        width: 100,
+                        fit: BoxFit.cover,
+                        errorBuilder: (_, __, ___) => const Icon(Icons.broken_image, size: 50),
+                      ),
+                    ),
+                  ),
+                const SizedBox(height: 20),
+                SizedBox(
+                  width: double.infinity,
+                  height: 55,
+                  child: ElevatedButton(
+                    onPressed: isUploading ? null : () async {
+                      if (nameController.text.isEmpty) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(content: Text("Please enter a name")),
+                        );
+                        return;
+                      }
+                      
+                      final authUser = ref.read(authNotifierProvider).value;
+                      final shopId = authUser?.shopId ?? '';
+                      
+                      final newCat = CategoryModel(
+                        id: category?.id ?? '',
+                        shopId: shopId,
+                        name: nameController.text.trim(),
+                        imageUrl: imageController.text.trim(),
+                      );
+                      
+                      if (category == null) {
+                        await ref.read(categoryNotifierProvider.notifier).addCategory(newCat);
+                      } else {
+                        await ref.read(categoryNotifierProvider.notifier).updateCategory(newCat);
+                      }
+                      
+                      if (mounted) Navigator.pop(ctx);
+                    },
+                    child: Text(category == null ? "SAVE CATEGORY" : "UPDATE CATEGORY"),
+                  ),
+                ),
+                const SizedBox(height: 20),
+              ],
+            ),
+          );
+        },
       ),
     );
   }

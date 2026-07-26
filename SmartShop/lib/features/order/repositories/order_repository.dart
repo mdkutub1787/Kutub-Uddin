@@ -75,8 +75,8 @@ class OrderRepository {
 
   Future<void> updateDeliveryLocation(String orderId, double lat, double lng) async {
     await _supabase.from(_table).update({
-      'deliveryLatitude': lat,
-      'deliveryLongitude': lng,
+      'delivery_lat': lat,
+      'delivery_lng': lng,
     }).eq('id', orderId);
   }
 
@@ -102,5 +102,40 @@ class OrderRepository {
     } catch (e) {
       return false;
     }
+  }
+
+  Stream<List<OrderModel>> streamAvailableOrders() {
+    return _supabase
+        .from(_table)
+        .stream(primaryKey: ['id'])
+        .map((maps) {
+          return maps
+              .map((map) => OrderModel.fromJson(map))
+              .where((o) => (o.status == 'Pending' || o.status == 'Confirmed') && o.deliveryManId == null && o.orderType != 'pos')
+              .toList()
+            ..sort((a, b) => b.date.compareTo(a.date));
+        });
+  }
+
+  Stream<List<OrderModel>> streamMyDeliveries(String deliveryManId) {
+    return _supabase
+        .from(_table)
+        .stream(primaryKey: ['id'])
+        .map((maps) {
+          return maps
+              .map((map) => OrderModel.fromJson(map))
+              .where((o) => o.deliveryManId == deliveryManId && o.status != 'Delivered' && o.status != 'Cancelled')
+              .toList()
+            ..sort((a, b) => b.date.compareTo(a.date));
+        });
+  }
+
+  Future<void> acceptOrder(String orderId, UserModel deliveryMan) async {
+    await _supabase.from(_table).update({
+      'deliveryManId': deliveryMan.uid,
+      'deliveryManName': deliveryMan.name,
+      'deliveryManPhone': deliveryMan.phoneNumber,
+      'status': 'Assigned',
+    }).eq('id', orderId);
   }
 }

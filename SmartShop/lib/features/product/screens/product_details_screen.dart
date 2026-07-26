@@ -4,9 +4,9 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:intl/intl.dart';
 
 import '../models/product_model.dart';
-// import '../../category/riverpod/category_notifier.dart';
-// import '../../cart/riverpod/cart_notifier.dart';
-// import '../../wishlist/riverpod/wishlist_notifier.dart';
+import '../../category/riverpod/category_notifier.dart';
+import '../../cart/riverpod/cart_notifier.dart';
+import '../../wishlist/riverpod/wishlist_notifier.dart';
 // import '../../auth/riverpod/auth_notifier.dart';
 import '../../../core/app_strings.dart';
 
@@ -202,7 +202,7 @@ class ProductDetailsScreen extends ConsumerWidget {
                 height: 60,
                 child: ElevatedButton(
                   onPressed: product.stock > 0 ? () {
-                    // TODO: Implement cart functionality using Riverpod
+                    ref.read(cartNotifierProvider.notifier).addToCart(product);
                     ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(
                         content: Row(

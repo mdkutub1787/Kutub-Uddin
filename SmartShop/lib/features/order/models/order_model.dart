@@ -64,33 +64,39 @@ class OrderModel {
       'deliveryManId': deliveryManId,
       'deliveryManName': deliveryManName,
       'deliveryManPhone': deliveryManPhone,
-      'deliveryLatitude': deliveryLatitude,
-      'deliveryLongitude': deliveryLongitude,
+      'delivery_lat': deliveryLatitude,
+      'delivery_lng': deliveryLongitude,
     };
   }
 
   factory OrderModel.fromJson(Map<String, dynamic> data) {
     List<CartItem> orderItems = [];
-    if (data['items'] != null) {
-      final itemsList = data['items'] as List<dynamic>;
-      orderItems = itemsList.map((item) {
-        final itemMap = Map<String, dynamic>.from(item as Map);
-        return CartItem(
-          product: ProductModel(
-            id: itemMap['productId']?.toString() ?? '',
-            shopId: data['shopId']?.toString() ?? '',
-            name: itemMap['productName'] ?? 'Product',
-            description: '',
-            price: (itemMap['price'] ?? 0).toDouble(),
-            originalPrice: (itemMap['price'] ?? 0).toDouble(),
-            imageUrl: itemMap['imageUrl'] ?? '',
-            categoryId: '',
-            rating: 0,
-            stock: 0,
-          ),
-          quantity: itemMap['quantity'] ?? 1,
-        );
-      }).toList();
+    try {
+      if (data['items'] != null) {
+        if (data['items'] is List) {
+          final itemsList = data['items'] as List<dynamic>;
+          orderItems = itemsList.map((item) {
+            final itemMap = Map<String, dynamic>.from(item as Map);
+            return CartItem(
+              product: ProductModel(
+                id: itemMap['productId']?.toString() ?? '',
+                shopId: data['shopId']?.toString() ?? '',
+                name: itemMap['productName'] ?? 'Product',
+                description: '',
+                price: double.tryParse(itemMap['price']?.toString() ?? '0') ?? 0.0,
+                originalPrice: double.tryParse(itemMap['price']?.toString() ?? '0') ?? 0.0,
+                imageUrl: itemMap['imageUrl'] ?? '',
+                categoryId: '',
+                rating: 0,
+                stock: 0,
+              ),
+              quantity: int.tryParse(itemMap['quantity']?.toString() ?? '1') ?? 1,
+            );
+          }).toList();
+        }
+      }
+    } catch (e) {
+      print('Error parsing order items: $e');
     }
 
     return OrderModel(
@@ -101,16 +107,16 @@ class OrderModel {
       userPhone: data['userPhone'] ?? '',
       userAddress: data['userAddress'] ?? '',
       items: orderItems,
-      totalAmount: (data['totalAmount'] ?? 0).toDouble(),
-      deliveryFee: (data['deliveryFee'] ?? 0).toDouble(),
-      date: data['date'] != null ? DateTime.parse(data['date']) : DateTime.now(),
+      totalAmount: double.tryParse(data['totalAmount']?.toString() ?? '0') ?? 0.0,
+      deliveryFee: double.tryParse(data['deliveryFee']?.toString() ?? '0') ?? 0.0,
+      date: data['date'] != null ? DateTime.parse(data['date']) : (data['created_at'] != null ? DateTime.parse(data['created_at']) : DateTime.now()),
       status: data['status'] ?? 'Pending',
       orderType: data['orderType'] ?? 'online',
       deliveryManId: data['deliveryManId']?.toString(),
       deliveryManName: data['deliveryManName'],
       deliveryManPhone: data['deliveryManPhone'],
-      deliveryLatitude: data['deliveryLatitude']?.toDouble(),
-      deliveryLongitude: data['deliveryLongitude']?.toDouble(),
+      deliveryLatitude: data['delivery_lat'] != null ? (data['delivery_lat'] as num).toDouble() : null,
+      deliveryLongitude: data['delivery_lng'] != null ? (data['delivery_lng'] as num).toDouble() : null,
     );
   }
 }

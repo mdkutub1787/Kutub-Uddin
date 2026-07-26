@@ -8,6 +8,9 @@ import '../../../widgets/app_card.dart';
 import '../../../core/riverpod/settings_notifier.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:intl/intl.dart';
+import '../../order/services/pdf_invoice_service.dart';
+import 'admin_invoice_preview_screen.dart';
+import '../../order/screens/order_tracking_screen.dart';
 
 class AdminOrderListScreen extends ConsumerStatefulWidget {
   const AdminOrderListScreen({super.key});
@@ -272,7 +275,7 @@ class _AdminOrderListScreenState extends ConsumerState<AdminOrderListScreen> wit
                       ),
                       const SizedBox(width: 8),
                       Text(
-                        DateFormat('hh:mm a').format(order.date),
+                        DateFormat('dd MMM yyyy, hh:mm a').format(order.date),
                         style: TextStyle(color: Colors.grey[400], fontSize: 10),
                       ),
                     ],
@@ -357,10 +360,35 @@ class _AdminOrderListScreenState extends ConsumerState<AdminOrderListScreen> wit
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              const Text("Total Amount", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
-              Text(
-                "৳ ${NumberFormat('#,##,###').format(order.totalAmount.toInt())}",
-                style: TextStyle(fontWeight: FontWeight.w900, fontSize: 22, color: primaryColor),
+              TextButton.icon(
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => AdminInvoicePreviewScreen(
+                        order: order,
+                        shopName: settings.shopName,
+                      ),
+                    ),
+                  );
+                },
+                icon: const Icon(Icons.picture_as_pdf_rounded, color: Colors.redAccent),
+                label: const Text("Download Invoice", style: TextStyle(fontWeight: FontWeight.bold, color: Colors.redAccent)),
+                style: TextButton.styleFrom(
+                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                  backgroundColor: Colors.redAccent.withValues(alpha: 0.1),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                ),
+              ),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.end,
+                children: [
+                  const Text("Total Amount", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12, color: Colors.grey)),
+                  Text(
+                    "৳ ${NumberFormat('#,##,###').format(order.totalAmount.toInt())}",
+                    style: TextStyle(fontWeight: FontWeight.w900, fontSize: 22, color: primaryColor),
+                  ),
+                ],
               ),
             ],
           ),
@@ -418,6 +446,24 @@ class _AdminOrderListScreenState extends ConsumerState<AdminOrderListScreen> wit
                           ),
                           Text(order.deliveryManPhone ?? "", style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w500)),
                         ],
+                      ),
+                    ),
+                  ),
+                if ((order.status == 'PickedUp' || order.status == 'OnTheWay') && order.deliveryManId != null)
+                  Padding(
+                    padding: const EdgeInsets.only(top: 12),
+                    child: SizedBox(
+                      width: double.infinity,
+                      child: ElevatedButton.icon(
+                        onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (_) => OrderTrackingScreen(order: order))),
+                        icon: const Icon(Icons.map_rounded),
+                        label: const Text("TRACK LIVE MAP", style: TextStyle(fontWeight: FontWeight.w900, letterSpacing: 1)),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.black,
+                          foregroundColor: Colors.white,
+                          padding: const EdgeInsets.symmetric(vertical: 14),
+                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                        ),
                       ),
                     ),
                   ),

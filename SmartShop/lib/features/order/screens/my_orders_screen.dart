@@ -10,6 +10,7 @@ import '../../../widgets/custom_app_bar.dart';
 import '../../../widgets/app_card.dart';
 import '../../../widgets/empty_state_widget.dart';
 import 'package:intl/intl.dart';
+import 'order_tracking_screen.dart';
 
 class MyOrdersScreen extends ConsumerStatefulWidget {
   const MyOrdersScreen({super.key});
@@ -157,18 +158,29 @@ class _MyOrdersScreenState extends ConsumerState<MyOrdersScreen> {
                       ),
                     ],
                   ),
-                  Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                    decoration: BoxDecoration(
-                      color: Colors.black,
-                      borderRadius: BorderRadius.circular(20),
-                    ),
-                    child: Row(
-                      children: [
-                        const Text("Track Order", style: TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.bold)),
-                        const SizedBox(width: 4),
-                        const Icon(Icons.arrow_forward_rounded, color: Colors.white, size: 14),
-                      ],
+                  GestureDetector(
+                    onTap: () {
+                      if (order.status == 'Assigned' || order.status == 'PickedUp' || order.status == 'OnTheWay') {
+                        Navigator.push(context, MaterialPageRoute(builder: (_) => OrderTrackingScreen(order: order)));
+                      } else {
+                        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Tracking not available for this order yet.')));
+                      }
+                    },
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                      decoration: BoxDecoration(
+                        color: (order.status == 'Assigned' || order.status == 'PickedUp' || order.status == 'OnTheWay') 
+                            ? Colors.black 
+                            : Colors.grey[300],
+                        borderRadius: BorderRadius.circular(20),
+                      ),
+                      child: Row(
+                        children: [
+                          Text("Track Order", style: TextStyle(color: (order.status == 'Assigned' || order.status == 'PickedUp' || order.status == 'OnTheWay') ? Colors.white : Colors.grey[600], fontSize: 12, fontWeight: FontWeight.bold)),
+                          const SizedBox(width: 4),
+                          Icon(Icons.arrow_forward_rounded, color: (order.status == 'Assigned' || order.status == 'PickedUp' || order.status == 'OnTheWay') ? Colors.white : Colors.grey[600], size: 14),
+                        ],
+                      ),
                     ),
                   ),
                 ],

@@ -148,88 +148,155 @@ class ProfileScreen extends ConsumerWidget {
   Widget _buildProfileHeader(BuildContext context, dynamic user, dynamic settings, bool isAdmin) {
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 20),
-      padding: const EdgeInsets.all(20),
+      padding: const EdgeInsets.symmetric(vertical: 24, horizontal: 20),
+      width: double.infinity,
       decoration: BoxDecoration(
         gradient: LinearGradient(
-          colors: [settings.primaryColor, settings.primaryColor.withValues(alpha: 0.7)],
+          colors: [
+            settings.primaryColor.withValues(alpha: 0.8),
+            settings.primaryColor,
+            settings.primaryColor.withValues(alpha: 0.95),
+          ],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
-        borderRadius: BorderRadius.circular(30),
+        borderRadius: BorderRadius.circular(32),
         boxShadow: [
           BoxShadow(
-            color: settings.primaryColor.withValues(alpha: 0.3),
-            blurRadius: 20,
-            offset: const Offset(0, 10),
+            color: settings.primaryColor.withValues(alpha: 0.35),
+            blurRadius: 25,
+            offset: const Offset(0, 12),
+            spreadRadius: 2,
           )
         ],
       ),
-      child: Column(
+      child: Stack(
+        clipBehavior: Clip.none,
+        alignment: Alignment.center,
         children: [
-          Stack(
+          // Subtle background decoration
+          Positioned(
+            top: -40,
+            right: -20,
+            child: Container(
+              width: 100,
+              height: 100,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: Colors.white.withValues(alpha: 0.06),
+              ),
+            ),
+          ),
+          Positioned(
+            bottom: -30,
+            left: -30,
+            child: Container(
+              width: 80,
+              height: 80,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: Colors.white.withValues(alpha: 0.06),
+              ),
+            ),
+          ),
+          Column(
+            mainAxisSize: MainAxisSize.min,
             children: [
+              Stack(
+                clipBehavior: Clip.none,
+                children: [
+                  Container(
+                    padding: const EdgeInsets.all(5),
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: Colors.white.withValues(alpha: 0.15),
+                      boxShadow: [
+                        BoxShadow(color: Colors.white.withValues(alpha: 0.15), blurRadius: 15, spreadRadius: 5)
+                      ],
+                    ),
+                    child: Container(
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        border: Border.all(color: Colors.white, width: 3),
+                        boxShadow: [
+                          BoxShadow(color: Colors.black.withValues(alpha: 0.15), blurRadius: 10, offset: const Offset(0, 5))
+                        ],
+                      ),
+                      child: CircleAvatar(
+                        radius: 45,
+                        backgroundColor: Colors.white,
+                        backgroundImage: user?.imageUrl != null && user!.imageUrl!.isNotEmpty 
+                            ? NetworkImage(user.imageUrl!) 
+                            : null,
+                        child: user?.imageUrl == null || user!.imageUrl!.isEmpty
+                            ? const Icon(Icons.person_rounded, size: 45, color: Colors.grey)
+                            : null,
+                      ),
+                    ),
+                  ),
+                  Positioned(
+                    bottom: 0,
+                    right: 0,
+                    child: GestureDetector(
+                      onTap: () => Navigator.pushNamed(context, AppRoutes.editProfile),
+                      child: Container(
+                        padding: const EdgeInsets.all(8),
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          shape: BoxShape.circle,
+                          boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.2), blurRadius: 8, offset: const Offset(0, 3))],
+                        ),
+                        child: Icon(Icons.camera_alt_rounded, color: settings.primaryColor, size: 14),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 16),
+              Text(
+                user?.name ?? "User Name", 
+                textAlign: TextAlign.center,
+                style: const TextStyle(fontSize: 22, fontWeight: FontWeight.w900, color: Colors.white, letterSpacing: -0.5)
+              ),
+              const SizedBox(height: 4),
+              Text(
+                user?.email ?? "", 
+                textAlign: TextAlign.center,
+                style: TextStyle(color: Colors.white.withValues(alpha: 0.9), fontSize: 13, fontWeight: FontWeight.w500)
+              ),
+              const SizedBox(height: 16),
               Container(
+                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                 decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  border: Border.all(color: Colors.white.withValues(alpha: 0.4), width: 4),
+                  gradient: LinearGradient(
+                    colors: [Colors.black.withValues(alpha: 0.2), Colors.black.withValues(alpha: 0.1)],
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                  ),
+                  borderRadius: BorderRadius.circular(24),
+                  border: Border.all(color: Colors.white.withValues(alpha: 0.3), width: 1),
                   boxShadow: [
-                    BoxShadow(color: Colors.black.withValues(alpha: 0.1), blurRadius: 10)
+                    BoxShadow(color: Colors.black.withValues(alpha: 0.05), blurRadius: 8, offset: const Offset(0, 2))
                   ],
                 ),
-                child: CircleAvatar(
-                  radius: 45,
-                  backgroundColor: Colors.white,
-                  backgroundImage: user?.imageUrl != null && user!.imageUrl!.isNotEmpty 
-                      ? NetworkImage(user.imageUrl!) 
-                      : null,
-                  child: user?.imageUrl == null || user!.imageUrl!.isEmpty
-                      ? const Icon(Icons.person_rounded, size: 50, color: Colors.grey)
-                      : null,
-                ),
-              ),
-              Positioned(
-                bottom: 0,
-                right: 0,
-                child: GestureDetector(
-                  onTap: () => Navigator.pushNamed(context, AppRoutes.editProfile),
-                  child: Container(
-                    padding: const EdgeInsets.all(6),
-                    decoration: const BoxDecoration(
-                      color: Colors.white,
-                      shape: BoxShape.circle,
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(
+                      user?.role == 'admin' || user?.role == 'super_admin' ? Icons.verified_user_rounded : 
+                      user?.role == 'delivery_man' ? Icons.local_shipping_rounded : 
+                      Icons.person_rounded, 
+                      size: 14, color: Colors.white
                     ),
-                    child: Icon(Icons.edit_rounded, color: settings.primaryColor, size: 14),
-                  ),
+                    const SizedBox(width: 6),
+                    Text(
+                      (user?.role == 'user' ? 'Customer' : user?.role ?? 'Customer').toUpperCase().replaceAll('_', ' '), 
+                      style: const TextStyle(fontSize: 10, fontWeight: FontWeight.w900, color: Colors.white, letterSpacing: 1.5)
+                    ),
+                  ],
                 ),
               ),
             ],
-          ),
-          const SizedBox(height: 15),
-          Text(user?.name ?? "User Name", style: const TextStyle(fontSize: 22, fontWeight: FontWeight.w900, color: Colors.white)),
-          Text(user?.email ?? "", style: TextStyle(color: Colors.white.withValues(alpha: 0.9), fontSize: 13, fontWeight: FontWeight.w500)),
-          Container(
-            margin: const EdgeInsets.only(top: 10),
-            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
-            decoration: BoxDecoration(
-              color: Colors.white24,
-              borderRadius: BorderRadius.circular(20),
-            ),
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Icon(
-                  user?.role == 'admin' || user?.role == 'super_admin' ? Icons.admin_panel_settings_rounded : 
-                  user?.role == 'delivery_man' ? Icons.local_shipping_rounded : 
-                  Icons.person_outline_rounded, 
-                  size: 14, color: Colors.white
-                ),
-                const SizedBox(width: 6),
-                Text(
-                  (user?.role == 'user' ? 'Customer' : user?.role ?? 'Customer').toUpperCase().replaceAll('_', ' '), 
-                  style: const TextStyle(fontSize: 10, fontWeight: FontWeight.w900, color: Colors.white, letterSpacing: 1)
-                ),
-              ],
-            ),
           ),
         ],
       ),
@@ -416,36 +483,68 @@ class ProfileScreen extends ConsumerWidget {
   Widget _buildAdminCard(BuildContext context, dynamic settings) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20),
-      child: AppCard(
-        color: settings.primaryColor,
-        borderRadius: 20,
-        onTap: () => Navigator.pushNamed(context, AppRoutes.adminDashboard),
-        child: Padding(
-          padding: const EdgeInsets.all(20),
-          child: Row(
-            children: [
-              const CircleAvatar(
-                backgroundColor: Colors.white24,
-                child: Icon(Icons.admin_panel_settings, color: Colors.white),
-              ),
-              const SizedBox(width: 15),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      AppStrings.adminPanel.tr(),
-                      style: const TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold),
+      child: Container(
+        decoration: BoxDecoration(
+          gradient: const LinearGradient(
+            colors: [Color(0xFF1E1E1E), Color(0xFF2C2C2C)],
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+          ),
+          borderRadius: BorderRadius.circular(28),
+          boxShadow: [
+            BoxShadow(color: Colors.black.withValues(alpha: 0.25), blurRadius: 25, offset: const Offset(0, 10)),
+          ],
+        ),
+        child: Material(
+          color: Colors.transparent,
+          child: InkWell(
+            onTap: () => Navigator.pushNamed(context, AppRoutes.adminDashboard),
+            borderRadius: BorderRadius.circular(28),
+            child: Padding(
+              padding: const EdgeInsets.all(24),
+              child: Row(
+                children: [
+                  Container(
+                    padding: const EdgeInsets.all(14),
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        colors: [Colors.white.withValues(alpha: 0.15), Colors.white.withValues(alpha: 0.05)],
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                      ),
+                      shape: BoxShape.circle,
+                      border: Border.all(color: Colors.white.withValues(alpha: 0.2), width: 1)
                     ),
-                    Text(
-                      AppStrings.adminPanelDesc.tr(),
-                      style: const TextStyle(color: Colors.white70, fontSize: 12),
+                    child: const Icon(Icons.admin_panel_settings_rounded, color: Colors.white, size: 30),
+                  ),
+                  const SizedBox(width: 18),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          AppStrings.adminPanel.tr(),
+                          style: const TextStyle(color: Colors.white, fontSize: 19, fontWeight: FontWeight.w900, letterSpacing: 0.5),
+                        ),
+                        const SizedBox(height: 6),
+                        Text(
+                          AppStrings.adminPanelDesc.tr(),
+                          style: TextStyle(color: Colors.white.withValues(alpha: 0.6), fontSize: 12, fontWeight: FontWeight.w600),
+                        ),
+                      ],
                     ),
-                  ],
-                ),
+                  ),
+                  Container(
+                    padding: const EdgeInsets.all(8),
+                    decoration: BoxDecoration(
+                      color: Colors.white.withValues(alpha: 0.1),
+                      shape: BoxShape.circle,
+                    ),
+                    child: const Icon(Icons.arrow_forward_ios_rounded, color: Colors.white, size: 14),
+                  ),
+                ],
               ),
-              const Icon(Icons.arrow_forward_ios, color: Colors.white, size: 18),
-            ],
+            ),
           ),
         ),
       ),
@@ -494,29 +593,37 @@ class ProfileScreen extends ConsumerWidget {
   Widget _buildUserInfoSection(BuildContext context, dynamic user, dynamic settings) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20),
-      child: AppCard(
-        elevation: 1,
-        borderRadius: 16,
+      child: Container(
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(28),
+          boxShadow: [
+            BoxShadow(color: Colors.black.withValues(alpha: 0.04), blurRadius: 24, offset: const Offset(0, 8)),
+          ],
+          border: Border.all(color: Colors.grey.withValues(alpha: 0.1), width: 1.5),
+        ),
         child: Padding(
-          padding: const EdgeInsets.all(16.0),
+          padding: const EdgeInsets.all(24.0),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text(AppStrings.personalInfo.tr(), style: const TextStyle(fontSize: 15, fontWeight: FontWeight.bold)),
+                  Text(AppStrings.personalInfo.tr(), style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w800, color: Colors.black87)),
                   GestureDetector(
                     onTap: () => Navigator.pushNamed(context, AppRoutes.editProfile),
-                    child: Text(AppStrings.update.tr(), style: TextStyle(color: settings.primaryColor, fontWeight: FontWeight.bold, fontSize: 13)),
+                    child: Text(AppStrings.update.tr(), style: TextStyle(color: settings.primaryColor, fontWeight: FontWeight.w900, fontSize: 14)),
                   ),
                 ],
               ),
-              const Divider(height: 20),
+              const SizedBox(height: 16),
+              const Divider(height: 1, color: Colors.black12),
+              const SizedBox(height: 20),
               _buildInfoRow(Icons.phone_android_rounded, AppStrings.phoneLabel.tr(), user?.phoneNumber ?? "Not provided"),
-              const SizedBox(height: 10),
+              const SizedBox(height: 16),
               _buildInfoRow(Icons.email_outlined, AppStrings.emailLabel.tr(), user?.email ?? ""),
-              const SizedBox(height: 10),
+              const SizedBox(height: 16),
               _buildInfoRow(Icons.location_on_outlined, AppStrings.addressLabel.tr(), user?.address ?? "No address saved"),
             ],
           ),
@@ -529,17 +636,21 @@ class ProfileScreen extends ConsumerWidget {
     return Row(
       children: [
         Container(
-          padding: const EdgeInsets.all(8),
-          decoration: BoxDecoration(color: Colors.grey[100], borderRadius: BorderRadius.circular(10)),
-          child: Icon(icon, size: 18, color: Colors.grey[700]),
+          padding: const EdgeInsets.all(10),
+          decoration: BoxDecoration(
+            color: Colors.grey.withValues(alpha: 0.1), 
+            borderRadius: BorderRadius.circular(12)
+          ),
+          child: Icon(icon, size: 20, color: Colors.black54),
         ),
-        const SizedBox(width: 12),
+        const SizedBox(width: 16),
         Expanded(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(label, style: const TextStyle(fontSize: 11, color: Colors.grey)),
-              Text(value, style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600)),
+              Text(label, style: const TextStyle(fontSize: 12, color: Colors.black54, fontWeight: FontWeight.bold)),
+              const SizedBox(height: 4),
+              Text(value, style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w700, color: Colors.black87)),
             ],
           ),
         ),

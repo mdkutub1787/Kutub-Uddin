@@ -40,8 +40,9 @@ class AuthNotifier extends AsyncNotifier<UserModel?> {
     }
     
     // Fallback to auth metadata if DB row not found
+    // Fallback to auth metadata if DB row not found
     final metadata = user.userMetadata ?? {};
-    return UserModel(
+    final newUser = UserModel(
       uid: user.id,
       email: user.email ?? '',
       name: metadata['full_name'] ?? metadata['name'] ?? '',
@@ -52,6 +53,28 @@ class AuthNotifier extends AsyncNotifier<UserModel?> {
       shopName: metadata['shop_name'] ?? metadata['shopName'],
       imageUrl: metadata['image_url'] ?? metadata['imageUrl'] ?? metadata['avatar_url'],
     );
+    
+    // Auto-insert the missing user into the database
+    try {
+      await sb.Supabase.instance.client.from('users').insert({
+        'id': newUser.uid,
+        'email': newUser.email,
+        'name': newUser.name,
+        'phoneNumber': newUser.phoneNumber,
+        'address': newUser.address,
+        'role': newUser.role,
+        'shopId': newUser.shopId,
+        'shopName': newUser.shopName,
+        'imageUrl': newUser.imageUrl,
+        'isActive': true,
+        'isAvailable': false,
+        'created_at': DateTime.now().toIso8601String(),
+      });
+    } catch (e) {
+      // Ignore if it fails due to RLS or other reasons
+    }
+    
+    return newUser;
   }
 
   String? error;
@@ -111,6 +134,23 @@ class AuthNotifier extends AsyncNotifier<UserModel?> {
     if (state.value != null && _repository.currentUser != null) {
       final freshData = await _fetchUserData(_repository.currentUser!);
       state = AsyncData(freshData);
+    }
+  }
+
+  Future<void> updateDeliveryAvailability(bool isAvailable) async {
+    final user = state.value;
+    if (user != null) {
+      try {
+        await sb.Supabase.instance.client
+            .from('users')
+            .update({'isAvailable': isAvailable})
+            .eq('id', user.uid);
+            
+        // Optimistic UI update
+        state = AsyncData(user.copyWith(isAvailable: isAvailable));
+      } catch (e) {
+        // Handle error if needed
+      }
     }
   }
 }

@@ -95,9 +95,16 @@ class _CartScreenState extends ConsumerState<CartScreen> {
                     ],
                   ),
                 ),
+          
+          if (cartItems.isNotEmpty)
+            Positioned(
+              bottom: 90, // To stay above the MainScreen's floating bottom navigation bar
+              left: 0,
+              right: 0,
+              child: _buildCheckoutButton(context, cartItems, totalAmount, deliveryFee, settings),
+            ),
         ],
       ),
-      bottomSheet: cartItems.isEmpty ? null : _buildCheckoutButton(context, cartItems, totalAmount, deliveryFee, settings),
     );
   }
 
@@ -525,18 +532,9 @@ class _CartScreenState extends ConsumerState<CartScreen> {
 
   Widget _buildCheckoutButton(BuildContext context, List<dynamic> cartItems, double totalAmount, double deliveryFee, dynamic settings) {
     return Container(
-      padding: const EdgeInsets.fromLTRB(20, 10, 20, 20),
-      decoration: BoxDecoration(
-        color: Theme.of(context).scaffoldBackgroundColor,
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.05),
-            blurRadius: 10,
-            offset: const Offset(0, -5),
-          )
-        ],
-      ),
+      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
       child: SafeArea(
+        bottom: false, // Main screen already handles bottom safe area for floating bar
         child: SizedBox(
           width: double.infinity,
           height: 60,
@@ -590,9 +588,8 @@ class _CartScreenState extends ConsumerState<CartScreen> {
 
     LoadingOverlay.show(context);
     
-    // Simulate placing order
-    // bool success = await ref.read(orderNotifierProvider.notifier).placeOrder(newOrder);
-    bool success = true; 
+    // Place order via Supabase
+    bool success = await ref.read(orderNotifierProvider.notifier).placeOrder(newOrder);
     
     LoadingOverlay.hide(context);
     if (success) {
