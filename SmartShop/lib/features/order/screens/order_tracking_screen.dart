@@ -24,35 +24,31 @@ class _OrderTrackingScreenState extends ConsumerState<OrderTrackingScreen> {
   RealtimeChannel? _subscription;
   
   LatLng? _deliveryLocation;
-  late final LatLng _destinationLocation;
+  LatLng? _destinationLocation;
   List<LatLng> _routePoints = [];
   
   @override
   void initState() {
     super.initState();
-    // Use the actual destination if we captured it, else fallback
-    if (widget.order.deliveryLatitude != null && widget.order.deliveryLongitude != null) {
-      _destinationLocation = LatLng(widget.order.deliveryLatitude!, widget.order.deliveryLongitude!);
-    } else {
-      _destinationLocation = const LatLng(23.8103, 90.4125);
+    // Use the actual destination if we captured it
+    if (widget.order.customerLatitude != null && widget.order.customerLongitude != null) {
+      _destinationLocation = LatLng(widget.order.customerLatitude!, widget.order.customerLongitude!);
     }
     
-    // For now, let's assume the rider starts at a dummy location if we don't have rider's live loc yet
-    // Wait, _deliveryLocation is actually the RIDER's location based on previous code.
-    // So _deliveryLocation should be rider's location, _destinationLocation should be the order's lat/lng
-    
-    // As a placeholder, we use a slight offset from destination if rider loc is null
-    _deliveryLocation = LatLng(_destinationLocation.latitude - 0.01, _destinationLocation.longitude - 0.01);
+    // _deliveryLocation is actually the RIDER's location
+    if (widget.order.deliveryLatitude != null && widget.order.deliveryLongitude != null) {
+      _deliveryLocation = LatLng(widget.order.deliveryLatitude!, widget.order.deliveryLongitude!);
+    }
     
     _fetchRoute();
     _setupRealtimeSubscription();
   }
 
   Future<void> _fetchRoute() async {
-    if (_deliveryLocation == null) return;
+    if (_deliveryLocation == null || _destinationLocation == null) return;
     
     try {
-      final String url = 'http://router.project-osrm.org/route/v1/driving/${_deliveryLocation!.longitude},${_deliveryLocation!.latitude};${_destinationLocation.longitude},${_destinationLocation.latitude}?geometries=geojson';
+      final String url = 'http://router.project-osrm.org/route/v1/driving/${_deliveryLocation!.longitude},${_deliveryLocation!.latitude};${_destinationLocation!.longitude},${_destinationLocation!.latitude}?geometries=geojson';
       final response = await http.get(Uri.parse(url));
       
       if (response.statusCode == 200) {
@@ -99,24 +95,26 @@ class _OrderTrackingScreenState extends ConsumerState<OrderTrackingScreen> {
   }
   
   Future<void> _adjustCameraBounds() async {
-    if (_deliveryLocation == null) return;
-    
     final GoogleMapController controller = await _controller.future;
     
-    LatLngBounds bounds;
-    if (_deliveryLocation!.latitude > _destinationLocation.latitude) {
-      bounds = LatLngBounds(southwest: _destinationLocation, northeast: _deliveryLocation!);
-    } else {
-      bounds = LatLngBounds(southwest: _deliveryLocation!, northeast: _destinationLocation);
+    if (_deliveryLocation == null && _destinationLocation == null) return;
+
+    if (_deliveryLocation != null && _destinationLocation == null) {
+      controller.animateCamera(CameraUpdate.newLatLngZoom(_deliveryLocation!, 15));
+      return;
     }
     
-    // Adjust bounds logic for all cases (SW to NE correctly)
-    final double minLat = _deliveryLocation!.latitude < _destinationLocation.latitude ? _deliveryLocation!.latitude : _destinationLocation.latitude;
-    final double maxLat = _deliveryLocation!.latitude > _destinationLocation.latitude ? _deliveryLocation!.latitude : _destinationLocation.latitude;
-    final double minLng = _deliveryLocation!.longitude < _destinationLocation.longitude ? _deliveryLocation!.longitude : _destinationLocation.longitude;
-    final double maxLng = _deliveryLocation!.longitude > _destinationLocation.longitude ? _deliveryLocation!.longitude : _destinationLocation.longitude;
+    if (_deliveryLocation == null && _destinationLocation != null) {
+      controller.animateCamera(CameraUpdate.newLatLngZoom(_destinationLocation!, 15));
+      return;
+    }
+
+    final double minLat = _deliveryLocation!.latitude < _destinationLocation!.latitude ? _deliveryLocation!.latitude : _destinationLocation!.latitude;
+    final double maxLat = _deliveryLocation!.latitude > _destinationLocation!.latitude ? _deliveryLocation!.latitude : _destinationLocation!.latitude;
+    final double minLng = _deliveryLocation!.longitude < _destinationLocation!.longitude ? _deliveryLocation!.longitude : _destinationLocation!.longitude;
+    final double maxLng = _deliveryLocation!.longitude > _destinationLocation!.longitude ? _deliveryLocation!.longitude : _destinationLocation!.longitude;
     
-    bounds = LatLngBounds(
+    LatLngBounds bounds = LatLngBounds(
       southwest: LatLng(minLat, minLng),
       northeast: LatLng(maxLat, maxLng),
     );
@@ -138,8 +136,8 @@ class _OrderTrackingScreenState extends ConsumerState<OrderTrackingScreen> {
     
     // Initial camera position (either delivery location or a default one)
     final CameraPosition initialPosition = CameraPosition(
-      target: _deliveryLocation ?? _destinationLocation,
-      zoom: 15.0,
+      target: _deliveryLocation ?? _destinationLocation ?? const LatLng(0,0),
+      zoom: _deliveryLocation != null || _destinationLocation != null ? 15.0 : 2.0,
     );
 
     // Markers
@@ -157,17 +155,16 @@ class _OrderTrackingScreenState extends ConsumerState<OrderTrackingScreen> {
       );
     }
     
-    // Assuming destination is known (for now we use a hardcoded dhaka location, 
-    // but in a real app, parse lat/lng from userAddress or use geocoding)
-    markers.add(
-      Marker(
-        markerId: const MarkerId('destination'),
-        position: _destinationLocation,
-        infoWindow: const InfoWindow(title: 'Delivery Destination'),
-        icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueRed),
-      )
-    );
-
+    if (_destinationLocation != null) {
+      markers.add(
+        Marker(
+          markerId: const MarkerId('destination'),
+          position: _destinationLocation!,
+          infoWindow: const InfoWindow(title: 'Delivery Destination'),
+          icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueRed),
+        )
+      );
+    }
     return Scaffold(
       appBar: AppBar(
         title: const Text('Live Tracking', style: TextStyle(fontWeight: FontWeight.bold)),

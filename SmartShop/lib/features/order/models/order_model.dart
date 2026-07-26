@@ -22,6 +22,16 @@ class OrderModel {
   final String? deliveryManImage;
   final double? deliveryLatitude;
   final double? deliveryLongitude;
+  
+  // Shop Origin
+  final String? shopName;
+  final String? shopAddress;
+  final double? shopLatitude;
+  final double? shopLongitude;
+  
+  // Customer Destination
+  final double? customerLatitude;
+  final double? customerLongitude;
 
   OrderModel({
     required this.id,
@@ -42,6 +52,12 @@ class OrderModel {
     this.deliveryManImage,
     this.deliveryLatitude,
     this.deliveryLongitude,
+    this.customerLatitude,
+    this.customerLongitude,
+    this.shopName,
+    this.shopAddress,
+    this.shopLatitude,
+    this.shopLongitude,
   });
 
   Map<String, dynamic> toJson() {
@@ -69,6 +85,12 @@ class OrderModel {
       'deliveryManImage': deliveryManImage,
       'deliveryLatitude': deliveryLatitude,
       'deliveryLongitude': deliveryLongitude,
+      'customerLatitude': customerLatitude,
+      'customerLongitude': customerLongitude,
+      'shopName': shopName,
+      'shopAddress': shopAddress,
+      'shopLatitude': shopLatitude,
+      'shopLongitude': shopLongitude,
     };
   }
 
@@ -121,6 +143,12 @@ class OrderModel {
       deliveryManImage: data['deliveryManImage'],
       deliveryLatitude: data['deliveryLatitude'] != null ? (data['deliveryLatitude'] as num).toDouble() : null,
       deliveryLongitude: data['deliveryLongitude'] != null ? (data['deliveryLongitude'] as num).toDouble() : null,
+      customerLatitude: data['customerLatitude'] != null ? (data['customerLatitude'] as num).toDouble() : null,
+      customerLongitude: data['customerLongitude'] != null ? (data['customerLongitude'] as num).toDouble() : null,
+      shopName: data['shopName'],
+      shopAddress: data['shopAddress'],
+      shopLatitude: data['shopLatitude'] != null ? (data['shopLatitude'] as num).toDouble() : null,
+      shopLongitude: data['shopLongitude'] != null ? (data['shopLongitude'] as num).toDouble() : null,
     );
   }
 }

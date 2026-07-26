@@ -17,6 +17,7 @@ import '../../../widgets/product_list_item.dart';
 import 'package:intl/intl.dart';
 import '../../../widgets/loading_overlay.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 class CartScreen extends ConsumerStatefulWidget {
   const CartScreen({super.key});
@@ -594,6 +595,28 @@ class _CartScreenState extends ConsumerState<CartScreen> {
     }
 
     final shopId = cartItems.isNotEmpty ? cartItems.first.product.shopId : '';
+    String? shopName;
+    String? shopAddress;
+    double? shopLatitude;
+    double? shopLongitude;
+    
+    try {
+      if (shopId.isNotEmpty) {
+        final shopRes = await Supabase.instance.client
+            .from('shops')
+            .select()
+            .eq('id', shopId)
+            .maybeSingle();
+        if (shopRes != null) {
+          shopName = shopRes['name'];
+          shopAddress = shopRes['address'];
+          shopLatitude = shopRes['latitude'] != null ? (shopRes['latitude'] as num).toDouble() : null;
+          shopLongitude = shopRes['longitude'] != null ? (shopRes['longitude'] as num).toDouble() : null;
+        }
+      }
+    } catch (e) {
+      // ignore shop fetch error
+    }
 
     final newOrder = OrderModel(
       id: '',
@@ -607,8 +630,12 @@ class _CartScreenState extends ConsumerState<CartScreen> {
       deliveryFee: deliveryFee,
       date: DateTime.now(),
       status: 'Pending',
-      deliveryLatitude: lat,
-      deliveryLongitude: lng,
+      customerLatitude: lat,
+      customerLongitude: lng,
+      shopName: shopName,
+      shopAddress: shopAddress,
+      shopLatitude: shopLatitude,
+      shopLongitude: shopLongitude,
     );
     
     // Place order via Supabase

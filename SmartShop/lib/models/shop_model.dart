@@ -7,6 +7,8 @@ class ShopModel {
   final bool isOnlineOrderEnabled;
   final bool isPosEnabled;
   final DateTime createdAt;
+  final double? latitude;
+  final double? longitude;
 
   ShopModel({
     required this.id,
@@ -17,6 +19,8 @@ class ShopModel {
     this.isOnlineOrderEnabled = true,
     this.isPosEnabled = true,
     required this.createdAt,
+    this.latitude,
+    this.longitude,
   });
 
   factory ShopModel.fromMap(Map<String, dynamic> data, String id) {
@@ -31,6 +35,8 @@ class ShopModel {
       createdAt: data['createdAt'] != null 
           ? DateTime.parse(data['createdAt']) 
           : DateTime.now(),
+      latitude: data['latitude'] != null ? (data['latitude'] as num).toDouble() : null,
+      longitude: data['longitude'] != null ? (data['longitude'] as num).toDouble() : null,
     );
   }
 
@@ -43,6 +49,8 @@ class ShopModel {
       'isOnlineOrderEnabled': isOnlineOrderEnabled,
       'isPosEnabled': isPosEnabled,
       'createdAt': createdAt.toIso8601String(),
+      'latitude': latitude,
+      'longitude': longitude,
     };
   }
 }

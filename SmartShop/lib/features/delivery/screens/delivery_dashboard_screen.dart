@@ -10,7 +10,7 @@ import '../../auth/riverpod/auth_notifier.dart';
 import '../../../core/riverpod/settings_notifier.dart';
 import '../../../core/utils/exit_dialog_helper.dart';
 
-import '../../order/screens/order_tracking_screen.dart';
+import 'rider_map_tracking_screen.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../../../routes/app_routes.dart';
 
@@ -522,7 +522,7 @@ class _DeliveryDashboardScreenState extends ConsumerState<DeliveryDashboardScree
                   const SizedBox(width: 8),
                   Expanded(
                     child: ElevatedButton.icon(
-                      onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (_) => OrderTrackingScreen(order: order))),
+                      onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (_) => RiderMapTrackingScreen(order: order))),
                       icon: const Icon(Icons.map_rounded, size: 18),
                       label: const Text("MAP", style: TextStyle(fontSize: 12, fontWeight: FontWeight.w900, letterSpacing: 0.5)),
                       style: ElevatedButton.styleFrom(
