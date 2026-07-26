@@ -155,56 +155,140 @@ class _OrderTrackingScreenState extends ConsumerState<OrderTrackingScreen> {
             right: 0,
             bottom: 0,
             child: Container(
-              padding: const EdgeInsets.all(20),
+              padding: const EdgeInsets.all(24),
               decoration: BoxDecoration(
                 color: Colors.white,
                 borderRadius: const BorderRadius.vertical(top: Radius.circular(30)),
                 boxShadow: [
-                  BoxShadow(color: Colors.black.withValues(alpha: 0.1), blurRadius: 10, offset: const Offset(0, -5))
+                  BoxShadow(color: Colors.black.withValues(alpha: 0.1), blurRadius: 20, offset: const Offset(0, -5))
                 ]
               ),
               child: SafeArea(
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
+                    // Drag Handle
+                    Container(
+                      width: 40,
+                      height: 5,
+                      decoration: BoxDecoration(
+                        color: Colors.grey[300],
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                    ),
+                    const SizedBox(height: 20),
+                    
+                    // Status text
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              widget.order.status == 'PickedUp' || widget.order.status == 'OnTheWay' 
+                                  ? "On the way to deliver" 
+                                  : "Preparing your order",
+                              style: const TextStyle(fontWeight: FontWeight.w900, fontSize: 20, letterSpacing: -0.5),
+                            ),
+                            const SizedBox(height: 4),
+                            Text(
+                              "Arriving in 15-20 mins", // Placeholder for actual ETA
+                              style: TextStyle(color: settings.primaryColor, fontWeight: FontWeight.bold, fontSize: 14),
+                            ),
+                          ],
+                        ),
+                        Container(
+                          padding: const EdgeInsets.all(10),
+                          decoration: BoxDecoration(
+                            color: settings.primaryColor.withValues(alpha: 0.1),
+                            shape: BoxShape.circle,
+                          ),
+                          child: Icon(Icons.timer_outlined, color: settings.primaryColor),
+                        ),
+                      ],
+                    ),
+                    
+                    const SizedBox(height: 24),
+                    const Divider(height: 1),
+                    const SizedBox(height: 24),
+                    
+                    // Rider Info
                     Row(
                       children: [
-                        widget.order.deliveryManImage != null && widget.order.deliveryManImage!.isNotEmpty
-                            ? CircleAvatar(
-                                radius: 25,
-                                backgroundImage: NetworkImage(widget.order.deliveryManImage!),
-                              )
-                            : CircleAvatar(
-                                backgroundColor: settings.primaryColor.withValues(alpha: 0.1),
-                                radius: 25,
-                                child: Icon(Icons.delivery_dining_rounded, color: settings.primaryColor, size: 30),
-                              ),
+                        // Avatar
+                        Container(
+                          padding: const EdgeInsets.all(3),
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            border: Border.all(color: Colors.grey[200]!, width: 2),
+                          ),
+                          child: widget.order.deliveryManImage != null && widget.order.deliveryManImage!.isNotEmpty
+                              ? CircleAvatar(
+                                  radius: 26,
+                                  backgroundImage: NetworkImage(widget.order.deliveryManImage!),
+                                )
+                              : CircleAvatar(
+                                  backgroundColor: settings.primaryColor.withValues(alpha: 0.1),
+                                  radius: 26,
+                                  child: Icon(Icons.delivery_dining_rounded, color: settings.primaryColor, size: 30),
+                                ),
+                        ),
                         const SizedBox(width: 16),
+                        
+                        // Details
                         Expanded(
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Text(widget.order.deliveryManName ?? 'Delivery Man', style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
-                              Text(widget.order.deliveryManPhone ?? 'Contact via Support', style: const TextStyle(color: Colors.grey, fontSize: 14)),
+                              Text(
+                                widget.order.deliveryManName ?? 'Delivery Man',
+                                style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+                              ),
+                              const SizedBox(height: 2),
+                              Row(
+                                children: [
+                                  Icon(Icons.star_rounded, color: Colors.orange[400], size: 16),
+                                  const SizedBox(width: 4),
+                                  const Text("4.9", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13)),
+                                  const SizedBox(width: 8),
+                                  Text(
+                                    "• ${widget.order.deliveryManPhone ?? 'Contact via Support'}",
+                                    style: const TextStyle(color: Colors.grey, fontSize: 13),
+                                  ),
+                                ],
+                              ),
                             ],
                           ),
                         ),
-                        IconButton(
-                          onPressed: () async {
-                            final phone = widget.order.deliveryManPhone;
-                            if (phone != null && phone.isNotEmpty) {
-                              final Uri uri = Uri(scheme: 'tel', path: phone);
-                              if (await canLaunchUrl(uri)) {
-                                await launchUrl(uri);
-                              }
-                            }
-                          },
-                          icon: const Icon(Icons.call, color: Colors.green),
-                          style: IconButton.styleFrom(
-                            backgroundColor: Colors.green.withValues(alpha: 0.1),
-                            padding: const EdgeInsets.all(12),
+                        
+                        // Call Button
+                        Container(
+                          decoration: BoxDecoration(
+                            color: Colors.green,
+                            borderRadius: BorderRadius.circular(15),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.green.withValues(alpha: 0.3),
+                                blurRadius: 8,
+                                offset: const Offset(0, 4),
+                              )
+                            ],
                           ),
-                        )
+                          child: IconButton(
+                            onPressed: () async {
+                              final phone = widget.order.deliveryManPhone;
+                              if (phone != null && phone.isNotEmpty) {
+                                final Uri uri = Uri(scheme: 'tel', path: phone);
+                                if (await canLaunchUrl(uri)) {
+                                  await launchUrl(uri);
+                                }
+                              }
+                            },
+                            icon: const Icon(Icons.call_rounded, color: Colors.white),
+                            tooltip: "Call Delivery Man",
+                          ),
+                        ),
                       ],
                     ),
                   ],

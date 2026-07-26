@@ -10,6 +10,7 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:intl/intl.dart';
 import '../../order/services/pdf_invoice_service.dart';
 import 'admin_invoice_preview_screen.dart';
+import 'package:url_launcher/url_launcher.dart';
 import '../../order/screens/order_tracking_screen.dart';
 
 class AdminOrderListScreen extends ConsumerStatefulWidget {
@@ -311,7 +312,7 @@ class _AdminOrderListScreenState extends ConsumerState<AdminOrderListScreen> wit
           ),
           const SizedBox(height: 15),
           
-          _infoRow(Icons.phone_iphone_rounded, "Contact", order.userPhone, primaryColor),
+          _infoRow(Icons.phone_iphone_rounded, "Contact", order.userPhone, primaryColor, showCall: true),
           const SizedBox(height: 12),
           _infoRow(Icons.location_on_rounded, "Delivery", order.userAddress, primaryColor),
           
@@ -445,6 +446,25 @@ class _AdminOrderListScreenState extends ConsumerState<AdminOrderListScreen> wit
                           ),
                           const Spacer(),
                           Text(order.deliveryManPhone ?? "", style: const TextStyle(color: Colors.grey, fontSize: 12)),
+                          if (order.deliveryManPhone != null && order.deliveryManPhone!.isNotEmpty) ...[
+                            const SizedBox(width: 8),
+                            GestureDetector(
+                              onTap: () async {
+                                final Uri uri = Uri(scheme: 'tel', path: order.deliveryManPhone!);
+                                if (await canLaunchUrl(uri)) {
+                                  await launchUrl(uri);
+                                }
+                              },
+                              child: Container(
+                                padding: const EdgeInsets.all(6),
+                                decoration: BoxDecoration(
+                                  color: Colors.green.withValues(alpha: 0.1),
+                                  shape: BoxShape.circle,
+                                ),
+                                child: const Icon(Icons.call, color: Colors.green, size: 16),
+                              ),
+                            ),
+                          ],
                         ],
                       ),
                     ),
@@ -495,7 +515,7 @@ class _AdminOrderListScreenState extends ConsumerState<AdminOrderListScreen> wit
     );
   }
 
-  Widget _infoRow(IconData icon, String label, String value, Color primaryColor) {
+  Widget _infoRow(IconData icon, String label, String value, Color primaryColor, {bool showCall = false}) {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -514,6 +534,23 @@ class _AdminOrderListScreenState extends ConsumerState<AdminOrderListScreen> wit
             ],
           ),
         ),
+        if (showCall && value.isNotEmpty)
+          GestureDetector(
+            onTap: () async {
+              final Uri uri = Uri(scheme: 'tel', path: value);
+              if (await canLaunchUrl(uri)) {
+                await launchUrl(uri);
+              }
+            },
+            child: Container(
+              padding: const EdgeInsets.all(8),
+              decoration: BoxDecoration(
+                color: Colors.green.withValues(alpha: 0.1),
+                shape: BoxShape.circle,
+              ),
+              child: const Icon(Icons.call, color: Colors.green, size: 18),
+            ),
+          ),
       ],
     );
   }

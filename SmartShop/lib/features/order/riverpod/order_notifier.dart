@@ -14,11 +14,18 @@ final orderNotifierProvider = AsyncNotifierProvider<OrderNotifier, List<OrderMod
 });
 
 final availableOrdersProvider = StreamProvider<List<OrderModel>>((ref) {
-  return ref.watch(orderRepositoryProvider).streamAvailableOrders();
+  final repository = ref.read(orderRepositoryProvider);
+  return repository.streamAvailableOrders();
 });
 
 final myDeliveriesProvider = StreamProvider.family<List<OrderModel>, String>((ref, deliveryManId) {
-  return ref.watch(orderRepositoryProvider).streamMyDeliveries(deliveryManId);
+  final repository = ref.read(orderRepositoryProvider);
+  return repository.streamMyDeliveries(deliveryManId);
+});
+
+final myCompletedDeliveriesProvider = StreamProvider.family<List<OrderModel>, String>((ref, deliveryManId) {
+  final repository = ref.read(orderRepositoryProvider);
+  return repository.streamMyCompletedDeliveries(deliveryManId);
 });
 
 class OrderNotifier extends AsyncNotifier<List<OrderModel>> {

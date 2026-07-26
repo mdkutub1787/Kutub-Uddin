@@ -7,6 +7,7 @@ import '../../../core/riverpod/settings_notifier.dart';
 import '../../wishlist/riverpod/wishlist_notifier.dart';
 import '../../../core/riverpod/navigation_notifier.dart';
 import '../../../routes/app_routes.dart';
+import '../../user/models/user_model.dart';
 
 class SplashScreen extends ConsumerStatefulWidget {
   const SplashScreen({super.key});
@@ -36,12 +37,15 @@ class _SplashScreenState extends ConsumerState<SplashScreen> with SingleTickerPr
     await Future.delayed(const Duration(seconds: 2));
     if (!mounted) return;
 
-    final authState = ref.read(authNotifierProvider);
-    
-    // In a real app we might wait for auth initialization here, but Riverpod handles it nicely.
-    // For now, assuming authState is mostly loaded or we check value
-    
-    final user = authState.value;
+    // Wait for auth initialization to complete
+    UserModel? user;
+    try {
+      user = await ref.read(authNotifierProvider.future);
+    } catch (e) {
+      user = null;
+    }
+
+    if (!mounted) return;
 
     if (user != null) {
       ref.read(wishlistNotifierProvider.notifier).fetchWishlist(user.uid);

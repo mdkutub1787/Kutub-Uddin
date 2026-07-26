@@ -139,4 +139,17 @@ class OrderRepository {
       'status': 'Assigned',
     }).eq('id', orderId);
   }
+
+  Stream<List<OrderModel>> streamMyCompletedDeliveries(String deliveryManId) {
+    return _supabase
+        .from(_table)
+        .stream(primaryKey: ['id'])
+        .map((maps) {
+          return maps
+              .map((map) => OrderModel.fromJson(map))
+              .where((o) => o.deliveryManId == deliveryManId && o.status == 'Delivered')
+              .toList()
+            ..sort((a, b) => b.date.compareTo(a.date));
+        });
+  }
 }

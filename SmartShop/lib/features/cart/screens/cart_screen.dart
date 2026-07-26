@@ -16,6 +16,7 @@ import '../../../widgets/empty_state_widget.dart';
 import '../../../widgets/product_list_item.dart';
 import 'package:intl/intl.dart';
 import '../../../widgets/loading_overlay.dart';
+import 'package:geolocator/geolocator.dart';
 
 class CartScreen extends ConsumerStatefulWidget {
   const CartScreen({super.key});
@@ -570,6 +571,28 @@ class _CartScreenState extends ConsumerState<CartScreen> {
       return;
     }
 
+    LoadingOverlay.show(context);
+
+    // Auto-fetch Location
+    double? lat;
+    double? lng;
+    try {
+      bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
+      if (serviceEnabled) {
+        LocationPermission permission = await Geolocator.checkPermission();
+        if (permission == LocationPermission.denied) {
+          permission = await Geolocator.requestPermission();
+        }
+        if (permission == LocationPermission.whileInUse || permission == LocationPermission.always) {
+          Position position = await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
+          lat = position.latitude;
+          lng = position.longitude;
+        }
+      }
+    } catch (e) {
+      // ignore location fetch error
+    }
+
     final shopId = cartItems.isNotEmpty ? cartItems.first.product.shopId : '';
 
     final newOrder = OrderModel(
@@ -584,9 +607,9 @@ class _CartScreenState extends ConsumerState<CartScreen> {
       deliveryFee: deliveryFee,
       date: DateTime.now(),
       status: 'Pending',
+      deliveryLatitude: lat,
+      deliveryLongitude: lng,
     );
-
-    LoadingOverlay.show(context);
     
     // Place order via Supabase
     bool success = await ref.read(orderNotifierProvider.notifier).placeOrder(newOrder);

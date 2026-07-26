@@ -11,6 +11,8 @@ import '../../../core/riverpod/settings_notifier.dart';
 import '../../../core/utils/exit_dialog_helper.dart';
 
 import '../../order/screens/order_tracking_screen.dart';
+import 'package:url_launcher/url_launcher.dart';
+import '../../../routes/app_routes.dart';
 
 class DeliveryDashboardScreen extends ConsumerStatefulWidget {
   const DeliveryDashboardScreen({super.key});
@@ -101,6 +103,16 @@ class _DeliveryDashboardScreenState extends ConsumerState<DeliveryDashboardScree
       _stopLocationTracking();
     }
 
+    // Get completed deliveries
+    final completedOrdersAsync = ref.watch(myCompletedDeliveriesProvider(user.uid));
+    int totalDeliveries = 0;
+    double totalEarnings = 0;
+    
+    if (completedOrdersAsync.value != null) {
+      totalDeliveries = completedOrdersAsync.value!.length;
+      totalEarnings = completedOrdersAsync.value!.fold(0, (sum, item) => sum + item.deliveryFee);
+    }
+
     return PopScope(
       canPop: false,
       onPopInvokedWithResult: (didPop, result) async {
@@ -108,48 +120,149 @@ class _DeliveryDashboardScreenState extends ConsumerState<DeliveryDashboardScree
         await ExitDialogHelper.showExitDialog(context);
       },
       child: Scaffold(
-        backgroundColor: Colors.grey[50],
-        appBar: AppBar(
-          title: const Text("Delivery Dashboard", style: TextStyle(fontWeight: FontWeight.w900)),
-          backgroundColor: primaryColor,
-          foregroundColor: Colors.white,
-          bottom: TabBar(
-            controller: _tabController,
-            labelColor: Colors.white,
-            unselectedLabelColor: Colors.white70,
-            indicatorColor: Colors.white,
-            indicatorWeight: 4,
-            tabs: const [
-              Tab(text: "New Requests"),
-              Tab(text: "My Deliveries"),
-            ],
-          ),
-          actions: [
-            Row(
-              children: [
-                Text(
-                  (user.isAvailable ?? false) ? "ONLINE" : "OFFLINE",
-                  style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 12),
-                ),
-                Switch(
-                  value: user.isAvailable ?? false,
-                  onChanged: (val) async {
-                    // Update delivery availability
-                    await ref.read(authNotifierProvider.notifier).updateDeliveryAvailability(val);
-                  },
-                  activeThumbColor: Colors.white,
-                  activeTrackColor: Colors.greenAccent,
-                ),
-              ],
-            ),
-            const SizedBox(width: 8),
-          ],
-        ),
-        body: TabBarView(
-          controller: _tabController,
+        backgroundColor: Colors.grey[100],
+        body: Column(
           children: [
-            _buildNewRequestsTab(user, primaryColor),
-            _buildMyDeliveriesTab(user, primaryColor),
+            // Professional Rider Header
+            Container(
+              padding: EdgeInsets.only(top: MediaQuery.of(context).padding.top + 10, left: 20, right: 20, bottom: 20),
+              decoration: BoxDecoration(
+                color: primaryColor,
+                borderRadius: const BorderRadius.only(bottomLeft: Radius.circular(30), bottomRight: Radius.circular(30)),
+                boxShadow: [
+                  BoxShadow(color: primaryColor.withValues(alpha: 0.3), blurRadius: 15, offset: const Offset(0, 5))
+                ],
+              ),
+              child: Column(
+                children: [
+                  // Top Row: Avatar & Status
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      InkWell(
+                        onTap: () => Navigator.pushNamed(context, AppRoutes.profile),
+                        borderRadius: BorderRadius.circular(30),
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 4),
+                          child: Row(
+                            children: [
+                              Container(
+                                padding: const EdgeInsets.all(2),
+                                decoration: const BoxDecoration(color: Colors.white, shape: BoxShape.circle),
+                                child: CircleAvatar(
+                                  radius: 25,
+                                  backgroundImage: user.imageUrl != null && user.imageUrl!.isNotEmpty ? NetworkImage(user.imageUrl!) : null,
+                                  backgroundColor: Colors.grey[200],
+                                  child: user.imageUrl == null || user.imageUrl!.isEmpty ? Icon(Icons.person, color: primaryColor) : null,
+                                ),
+                              ),
+                              const SizedBox(width: 12),
+                              Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  const Text("Welcome back,", style: TextStyle(color: Colors.white70, fontSize: 12)),
+                                  Text(user.name, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 18)),
+                                ],
+                              ),
+                              const SizedBox(width: 8),
+                              const Icon(Icons.chevron_right_rounded, color: Colors.white70, size: 20),
+                            ],
+                          ),
+                        ),
+                      ),
+                      // Online Toggle
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                        decoration: BoxDecoration(
+                          color: Colors.black.withValues(alpha: 0.2),
+                          borderRadius: BorderRadius.circular(20),
+                        ),
+                        child: Row(
+                          children: [
+                            Text(
+                              (user.isAvailable ?? false) ? "ONLINE" : "OFFLINE",
+                              style: TextStyle(color: (user.isAvailable ?? false) ? Colors.greenAccent : Colors.white70, fontWeight: FontWeight.bold, fontSize: 10),
+                            ),
+                            const SizedBox(width: 4),
+                            SizedBox(
+                              height: 24,
+                              width: 36,
+                              child: Switch(
+                                value: user.isAvailable ?? false,
+                                onChanged: (val) async {
+                                  await ref.read(authNotifierProvider.notifier).updateDeliveryAvailability(val);
+                                },
+                                activeColor: Colors.greenAccent,
+                                inactiveThumbColor: Colors.grey[400],
+                                inactiveTrackColor: Colors.white24,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 20),
+                  
+                  // Stats Row
+                  Row(
+                    children: [
+                      Expanded(
+                        child: Container(
+                          padding: const EdgeInsets.all(12),
+                          decoration: BoxDecoration(color: Colors.white.withValues(alpha: 0.15), borderRadius: BorderRadius.circular(15)),
+                          child: Column(
+                            children: [
+                              const Text("Total Deliveries", style: TextStyle(color: Colors.white70, fontSize: 11)),
+                              const SizedBox(height: 4),
+                              Text("$totalDeliveries", style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w900, fontSize: 20)),
+                            ],
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: Container(
+                          padding: const EdgeInsets.all(12),
+                          decoration: BoxDecoration(color: Colors.white.withValues(alpha: 0.15), borderRadius: BorderRadius.circular(15)),
+                          child: Column(
+                            children: [
+                              const Text("Total Earnings", style: TextStyle(color: Colors.white70, fontSize: 11)),
+                              const SizedBox(height: 4),
+                              Text("৳${NumberFormat('#,##,###').format(totalEarnings.toInt())}", style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w900, fontSize: 20)),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 16),
+                  TabBar(
+                    controller: _tabController,
+                    labelColor: Colors.white,
+                    unselectedLabelColor: Colors.white70,
+                    indicatorColor: Colors.white,
+                    indicatorWeight: 3,
+                    dividerColor: Colors.transparent,
+                    tabs: const [
+                      Tab(text: "New Requests"),
+                      Tab(text: "My Deliveries"),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+            
+            // Tab Views
+            Expanded(
+              child: TabBarView(
+                controller: _tabController,
+                children: [
+                  _buildNewRequestsTab(user, primaryColor),
+                  _buildMyDeliveriesTab(user, primaryColor),
+                ],
+              ),
+            ),
           ],
         ),
       ),
@@ -257,12 +370,20 @@ class _DeliveryDashboardScreenState extends ConsumerState<DeliveryDashboardScree
             SizedBox(
               width: double.infinity,
               child: ElevatedButton.icon(
-                onPressed: () async {
-                  final success = await ref.read(orderNotifierProvider.notifier).acceptOrder(order, user);
-                  if (success && context.mounted) {
-                    ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Order Accepted!')));
-                    _tabController.animateTo(1);
-                  }
+                onPressed: () {
+                  _showConfirmationDialog(
+                    context,
+                    title: "Accept Order",
+                    content: "Are you sure you want to accept this delivery request?",
+                    confirmText: "ACCEPT",
+                    onConfirm: () async {
+                      final success = await ref.read(orderNotifierProvider.notifier).acceptOrder(order, user);
+                      if (success && context.mounted) {
+                        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Order Accepted!')));
+                        _tabController.animateTo(1);
+                      }
+                    },
+                  );
                 },
                 icon: const Icon(Icons.check_circle_rounded, size: 20),
                 label: const Text("ACCEPT ORDER", style: TextStyle(fontSize: 14, fontWeight: FontWeight.w900, letterSpacing: 0.5)),
@@ -320,7 +441,7 @@ class _DeliveryDashboardScreenState extends ConsumerState<DeliveryDashboardScree
             ),
             _infoItem(Icons.person_rounded, "Customer Name", order.userName),
             const SizedBox(height: 16),
-            _infoItem(Icons.phone_rounded, "Contact Number", order.userPhone),
+            _infoItem(Icons.phone_rounded, "Contact Number", order.userPhone, showCall: true),
             const SizedBox(height: 16),
             _infoItem(Icons.location_on_rounded, "Delivery Address", order.userAddress),
             const SizedBox(height: 16),
@@ -331,7 +452,15 @@ class _DeliveryDashboardScreenState extends ConsumerState<DeliveryDashboardScree
                 if (order.status == 'Assigned' || order.status == 'Pending' || order.status == 'Confirmed')
                   Expanded(
                     child: ElevatedButton.icon(
-                      onPressed: () => ref.read(orderNotifierProvider.notifier).updateOrderStatus(order.id, 'PickedUp'),
+                      onPressed: () {
+                        _showConfirmationDialog(
+                          context,
+                          title: "Mark as Picked Up",
+                          content: "Have you collected the order items from the shop?",
+                          confirmText: "YES, PICKED UP",
+                          onConfirm: () => ref.read(orderNotifierProvider.notifier).updateOrderStatus(order.id, 'PickedUp'),
+                        );
+                      },
                       icon: const Icon(Icons.inventory_2_rounded, size: 18),
                       label: const Text("MARK AS PICKED UP", style: TextStyle(fontSize: 12, fontWeight: FontWeight.w900, letterSpacing: 0.5)),
                       style: ElevatedButton.styleFrom(
@@ -346,7 +475,15 @@ class _DeliveryDashboardScreenState extends ConsumerState<DeliveryDashboardScree
                 if (order.status == 'PickedUp')
                   Expanded(
                     child: ElevatedButton.icon(
-                      onPressed: () => ref.read(orderNotifierProvider.notifier).updateOrderStatus(order.id, 'OnTheWay'),
+                      onPressed: () {
+                        _showConfirmationDialog(
+                          context,
+                          title: "Start Delivery",
+                          content: "Are you starting the journey to the customer's location?",
+                          confirmText: "START",
+                          onConfirm: () => ref.read(orderNotifierProvider.notifier).updateOrderStatus(order.id, 'OnTheWay'),
+                        );
+                      },
                       icon: const Icon(Icons.directions_bike_rounded, size: 18),
                       label: const Text("START DELIVERY", style: TextStyle(fontSize: 12, fontWeight: FontWeight.w900, letterSpacing: 0.5)),
                       style: ElevatedButton.styleFrom(
@@ -361,7 +498,15 @@ class _DeliveryDashboardScreenState extends ConsumerState<DeliveryDashboardScree
                 if (order.status == 'OnTheWay')
                   Expanded(
                     child: ElevatedButton.icon(
-                      onPressed: () => ref.read(orderNotifierProvider.notifier).updateOrderStatus(order.id, 'Delivered'),
+                      onPressed: () {
+                        _showConfirmationDialog(
+                          context,
+                          title: "Mark as Delivered",
+                          content: "Have you successfully delivered the order to the customer and collected the payment (if any)?",
+                          confirmText: "YES, DELIVERED",
+                          onConfirm: () => ref.read(orderNotifierProvider.notifier).updateOrderStatus(order.id, 'Delivered'),
+                        );
+                      },
                       icon: const Icon(Icons.check_circle_rounded, size: 18),
                       label: const Text("MARK AS DELIVERED", style: TextStyle(fontSize: 12, fontWeight: FontWeight.w900, letterSpacing: 0.5)),
                       style: ElevatedButton.styleFrom(
@@ -398,7 +543,7 @@ class _DeliveryDashboardScreenState extends ConsumerState<DeliveryDashboardScree
     );
   }
 
-  Widget _infoItem(IconData icon, String label, String value) {
+  Widget _infoItem(IconData icon, String label, String value, {bool showCall = false}) {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -413,6 +558,23 @@ class _DeliveryDashboardScreenState extends ConsumerState<DeliveryDashboardScree
             ],
           ),
         ),
+        if (showCall && value.isNotEmpty)
+          GestureDetector(
+            onTap: () async {
+              final Uri uri = Uri(scheme: 'tel', path: value);
+              if (await canLaunchUrl(uri)) {
+                await launchUrl(uri);
+              }
+            },
+            child: Container(
+              padding: const EdgeInsets.all(8),
+              decoration: BoxDecoration(
+                color: Colors.green.withValues(alpha: 0.1),
+                shape: BoxShape.circle,
+              ),
+              child: const Icon(Icons.call, color: Colors.green, size: 18),
+            ),
+          ),
       ],
     );
   }
@@ -431,6 +593,75 @@ class _DeliveryDashboardScreenState extends ConsumerState<DeliveryDashboardScree
         border: Border.all(color: color.withValues(alpha: 0.3)),
       ),
       child: Text(status.toUpperCase(), style: TextStyle(color: color, fontSize: 10, fontWeight: FontWeight.w900, letterSpacing: 0.5)),
+    );
+  }
+
+  void _showConfirmationDialog(BuildContext context, {required String title, required String content, required String confirmText, required VoidCallback onConfirm}) {
+    showDialog(
+      context: context,
+      builder: (ctx) => Dialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        elevation: 0,
+        backgroundColor: Colors.transparent,
+        child: Container(
+          padding: const EdgeInsets.all(20),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            shape: BoxShape.rectangle,
+            borderRadius: BorderRadius.circular(20),
+            boxShadow: const [
+              BoxShadow(color: Colors.black26, blurRadius: 10, offset: Offset(0, 10)),
+            ],
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Container(
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(color: Colors.blue.withValues(alpha: 0.1), shape: BoxShape.circle),
+                child: const Icon(Icons.help_outline_rounded, size: 40, color: Colors.blue),
+              ),
+              const SizedBox(height: 24),
+              Text(title, style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w900), textAlign: TextAlign.center),
+              const SizedBox(height: 12),
+              Text(content, style: const TextStyle(fontSize: 14, color: Colors.grey, fontWeight: FontWeight.w500), textAlign: TextAlign.center),
+              const SizedBox(height: 24),
+              Row(
+                children: [
+                  Expanded(
+                    child: OutlinedButton(
+                      onPressed: () => Navigator.pop(ctx),
+                      style: OutlinedButton.styleFrom(
+                        padding: const EdgeInsets.symmetric(vertical: 14),
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                        side: BorderSide(color: Colors.grey[300]!),
+                      ),
+                      child: const Text("CANCEL", style: TextStyle(color: Colors.grey, fontWeight: FontWeight.bold, letterSpacing: 1)),
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: ElevatedButton(
+                      onPressed: () {
+                        Navigator.pop(ctx);
+                        onConfirm();
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.blue,
+                        foregroundColor: Colors.white,
+                        padding: const EdgeInsets.symmetric(vertical: 14),
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                        elevation: 0,
+                      ),
+                      child: Text(confirmText, style: const TextStyle(fontWeight: FontWeight.bold, letterSpacing: 1)),
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
+      ),
     );
   }
 }
