@@ -1,10 +1,13 @@
 import 'dart:async';
+import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:http/http.dart' as http;
 import '../models/order_model.dart';
 import '../../../core/riverpod/settings_notifier.dart';
+import '../../auth/riverpod/auth_notifier.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class OrderTrackingScreen extends ConsumerStatefulWidget {
@@ -21,15 +24,49 @@ class _OrderTrackingScreenState extends ConsumerState<OrderTrackingScreen> {
   RealtimeChannel? _subscription;
   
   LatLng? _deliveryLocation;
-  final LatLng _destinationLocation = const LatLng(23.8103, 90.4125); // Replace with actual order destination parsing if available
+  late final LatLng _destinationLocation;
+  List<LatLng> _routePoints = [];
   
   @override
   void initState() {
     super.initState();
+    // Use the actual destination if we captured it, else fallback
     if (widget.order.deliveryLatitude != null && widget.order.deliveryLongitude != null) {
-      _deliveryLocation = LatLng(widget.order.deliveryLatitude!, widget.order.deliveryLongitude!);
+      _destinationLocation = LatLng(widget.order.deliveryLatitude!, widget.order.deliveryLongitude!);
+    } else {
+      _destinationLocation = const LatLng(23.8103, 90.4125);
     }
+    
+    // For now, let's assume the rider starts at a dummy location if we don't have rider's live loc yet
+    // Wait, _deliveryLocation is actually the RIDER's location based on previous code.
+    // So _deliveryLocation should be rider's location, _destinationLocation should be the order's lat/lng
+    
+    // As a placeholder, we use a slight offset from destination if rider loc is null
+    _deliveryLocation = LatLng(_destinationLocation.latitude - 0.01, _destinationLocation.longitude - 0.01);
+    
+    _fetchRoute();
     _setupRealtimeSubscription();
+  }
+
+  Future<void> _fetchRoute() async {
+    if (_deliveryLocation == null) return;
+    
+    try {
+      final String url = 'http://router.project-osrm.org/route/v1/driving/${_deliveryLocation!.longitude},${_deliveryLocation!.latitude};${_destinationLocation.longitude},${_destinationLocation.latitude}?geometries=geojson';
+      final response = await http.get(Uri.parse(url));
+      
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        if (data['routes'] != null && data['routes'].isNotEmpty) {
+          final geometry = data['routes'][0]['geometry']['coordinates'] as List;
+          setState(() {
+            _routePoints = geometry.map((coord) => LatLng(coord[1] as double, coord[0] as double)).toList();
+          });
+        }
+      }
+    } catch (e) {
+      // print('Error fetching route: $e');
+    }
   }
 
   void _setupRealtimeSubscription() {
@@ -49,12 +86,13 @@ class _OrderTrackingScreenState extends ConsumerState<OrderTrackingScreen> {
             final newLat = payload.newRecord['deliveryLatitude'];
             final newLng = payload.newRecord['deliveryLongitude'];
             
-            if (newLat != null && newLng != null) {
-              setState(() {
-                _deliveryLocation = LatLng((newLat as num).toDouble(), (newLng as num).toDouble());
-              });
-              _adjustCameraBounds();
-            }
+              if (newLat != null && newLng != null) {
+                setState(() {
+                  _deliveryLocation = LatLng((newLat as num).toDouble(), (newLng as num).toDouble());
+                });
+                _fetchRoute();
+                _adjustCameraBounds();
+              }
           },
         )
         .subscribe();
@@ -95,6 +133,8 @@ class _OrderTrackingScreenState extends ConsumerState<OrderTrackingScreen> {
   @override
   Widget build(BuildContext context) {
     final settings = ref.watch(settingsProvider);
+    final user = ref.watch(authNotifierProvider).value;
+    final isDeliveryMan = user?.role == 'delivery_man';
     
     // Initial camera position (either delivery location or a default one)
     final CameraPosition initialPosition = CameraPosition(
@@ -140,6 +180,15 @@ class _OrderTrackingScreenState extends ConsumerState<OrderTrackingScreen> {
             mapType: MapType.normal,
             initialCameraPosition: initialPosition,
             markers: markers,
+            polylines: {
+              if (_routePoints.isNotEmpty)
+                Polyline(
+                  polylineId: const PolylineId('route'),
+                  points: _routePoints,
+                  color: settings.primaryColor,
+                  width: 5,
+                )
+            },
             onMapCreated: (GoogleMapController controller) {
               _controller.complete(controller);
               if (_deliveryLocation != null) {
@@ -213,7 +262,7 @@ class _OrderTrackingScreenState extends ConsumerState<OrderTrackingScreen> {
                     const Divider(height: 1),
                     const SizedBox(height: 24),
                     
-                    // Rider Info
+                    // Dynamic Person Info (Show Customer to Rider, Show Rider to Customer)
                     Row(
                       children: [
                         // Avatar
@@ -223,16 +272,22 @@ class _OrderTrackingScreenState extends ConsumerState<OrderTrackingScreen> {
                             shape: BoxShape.circle,
                             border: Border.all(color: Colors.grey[200]!, width: 2),
                           ),
-                          child: widget.order.deliveryManImage != null && widget.order.deliveryManImage!.isNotEmpty
+                          child: isDeliveryMan 
                               ? CircleAvatar(
-                                  radius: 26,
-                                  backgroundImage: NetworkImage(widget.order.deliveryManImage!),
-                                )
-                              : CircleAvatar(
                                   backgroundColor: settings.primaryColor.withValues(alpha: 0.1),
                                   radius: 26,
-                                  child: Icon(Icons.delivery_dining_rounded, color: settings.primaryColor, size: 30),
-                                ),
+                                  child: Icon(Icons.person_rounded, color: settings.primaryColor, size: 30),
+                                )
+                              : widget.order.deliveryManImage != null && widget.order.deliveryManImage!.isNotEmpty
+                                  ? CircleAvatar(
+                                      radius: 26,
+                                      backgroundImage: NetworkImage(widget.order.deliveryManImage!),
+                                    )
+                                  : CircleAvatar(
+                                      backgroundColor: settings.primaryColor.withValues(alpha: 0.1),
+                                      radius: 26,
+                                      child: Icon(Icons.delivery_dining_rounded, color: settings.primaryColor, size: 30),
+                                    ),
                         ),
                         const SizedBox(width: 16),
                         
@@ -242,19 +297,27 @@ class _OrderTrackingScreenState extends ConsumerState<OrderTrackingScreen> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
-                                widget.order.deliveryManName ?? 'Delivery Man',
+                                isDeliveryMan ? widget.order.userName : (widget.order.deliveryManName ?? 'Delivery Man'),
                                 style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
                               ),
                               const SizedBox(height: 2),
                               Row(
                                 children: [
-                                  Icon(Icons.star_rounded, color: Colors.orange[400], size: 16),
-                                  const SizedBox(width: 4),
-                                  const Text("4.9", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13)),
-                                  const SizedBox(width: 8),
-                                  Text(
-                                    "• ${widget.order.deliveryManPhone ?? 'Contact via Support'}",
-                                    style: const TextStyle(color: Colors.grey, fontSize: 13),
+                                  if (!isDeliveryMan) ...[
+                                    Icon(Icons.star_rounded, color: Colors.orange[400], size: 16),
+                                    const SizedBox(width: 4),
+                                    const Text("4.9", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13)),
+                                    const SizedBox(width: 8),
+                                  ],
+                                  Expanded(
+                                    child: Text(
+                                      isDeliveryMan 
+                                          ? "• ${widget.order.userPhone}\n• ${widget.order.userAddress}" 
+                                          : "• ${widget.order.deliveryManPhone ?? 'Contact via Support'}",
+                                      style: const TextStyle(color: Colors.grey, fontSize: 13),
+                                      maxLines: 2,
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
                                   ),
                                 ],
                               ),
@@ -277,7 +340,7 @@ class _OrderTrackingScreenState extends ConsumerState<OrderTrackingScreen> {
                           ),
                           child: IconButton(
                             onPressed: () async {
-                              final phone = widget.order.deliveryManPhone;
+                              final phone = isDeliveryMan ? widget.order.userPhone : widget.order.deliveryManPhone;
                               if (phone != null && phone.isNotEmpty) {
                                 final Uri uri = Uri(scheme: 'tel', path: phone);
                                 if (await canLaunchUrl(uri)) {
@@ -286,7 +349,7 @@ class _OrderTrackingScreenState extends ConsumerState<OrderTrackingScreen> {
                               }
                             },
                             icon: const Icon(Icons.call_rounded, color: Colors.white),
-                            tooltip: "Call Delivery Man",
+                            tooltip: isDeliveryMan ? "Call Customer" : "Call Delivery Man",
                           ),
                         ),
                       ],

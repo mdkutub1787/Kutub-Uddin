@@ -181,7 +181,7 @@ class ProductDetailsScreen extends ConsumerWidget {
   Widget _buildBottomBar(BuildContext context, WidgetRef ref) {
     final primaryColor = Theme.of(context).primaryColor;
     return Container(
-      padding: const EdgeInsets.fromLTRB(25, 15, 25, 35),
+      padding: const EdgeInsets.fromLTRB(25, 15, 25, 15),
       decoration: BoxDecoration(
         color: Theme.of(context).cardColor,
         borderRadius: const BorderRadius.vertical(top: Radius.circular(40)),
