@@ -22,10 +22,14 @@ class WishlistNotifier extends AsyncNotifier<List<dynamic>> {
   }
 
   Future<void> toggleWishlist(String userId, String productId) async {
-    // In a real implementation, toggle the item in Supabase
-    // and then update the state
     if (state.value != null) {
-      state = AsyncData([...state.value!]);
+      final currentList = List<String>.from(state.value!);
+      if (currentList.contains(productId)) {
+        currentList.remove(productId);
+      } else {
+        currentList.add(productId);
+      }
+      state = AsyncData(currentList);
     }
   }
 }

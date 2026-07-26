@@ -19,6 +19,7 @@ class OrderModel {
   final String? deliveryManId;
   final String? deliveryManName;
   final String? deliveryManPhone;
+  final String? deliveryManImage;
   final double? deliveryLatitude;
   final double? deliveryLongitude;
 
@@ -38,6 +39,7 @@ class OrderModel {
     this.deliveryManId,
     this.deliveryManName,
     this.deliveryManPhone,
+    this.deliveryManImage,
     this.deliveryLatitude,
     this.deliveryLongitude,
   });
@@ -64,8 +66,9 @@ class OrderModel {
       'deliveryManId': deliveryManId,
       'deliveryManName': deliveryManName,
       'deliveryManPhone': deliveryManPhone,
-      'delivery_lat': deliveryLatitude,
-      'delivery_lng': deliveryLongitude,
+      'deliveryManImage': deliveryManImage,
+      'deliveryLatitude': deliveryLatitude,
+      'deliveryLongitude': deliveryLongitude,
     };
   }
 
@@ -115,8 +118,9 @@ class OrderModel {
       deliveryManId: data['deliveryManId']?.toString(),
       deliveryManName: data['deliveryManName'],
       deliveryManPhone: data['deliveryManPhone'],
-      deliveryLatitude: data['delivery_lat'] != null ? (data['delivery_lat'] as num).toDouble() : null,
-      deliveryLongitude: data['delivery_lng'] != null ? (data['delivery_lng'] as num).toDouble() : null,
+      deliveryManImage: data['deliveryManImage'],
+      deliveryLatitude: data['deliveryLatitude'] != null ? (data['deliveryLatitude'] as num).toDouble() : null,
+      deliveryLongitude: data['deliveryLongitude'] != null ? (data['deliveryLongitude'] as num).toDouble() : null,
     );
   }
 }

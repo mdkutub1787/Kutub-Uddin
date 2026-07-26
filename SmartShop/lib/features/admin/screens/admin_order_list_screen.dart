@@ -42,7 +42,7 @@ class _AdminOrderListScreenState extends ConsumerState<AdminOrderListScreen> wit
     
     // Status Filtering
     if (tabIndex == 1) filtered = orders.where((o) => o.status == 'Pending').toList();
-    if (tabIndex == 2) filtered = orders.where((o) => o.status == 'Shipped').toList();
+    if (tabIndex == 2) filtered = orders.where((o) => o.status == 'Assigned' || o.status == 'PickedUp' || o.status == 'OnTheWay').toList();
     if (tabIndex == 3) filtered = orders.where((o) => o.status == 'Delivered').toList();
     if (tabIndex == 4) filtered = orders.where((o) => o.status == 'Cancelled').toList();
 
@@ -118,7 +118,7 @@ class _AdminOrderListScreenState extends ConsumerState<AdminOrderListScreen> wit
                 tabs: const [
                   Tab(text: "All"),
                   Tab(text: "Pending"),
-                  Tab(text: "Shipped"),
+                  Tab(text: "Active"),
                   Tab(text: "Delivered"),
                   Tab(text: "Cancelled"),
                 ],

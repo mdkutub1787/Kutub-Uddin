@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../models/order_model.dart';
 import '../../../core/riverpod/settings_notifier.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class OrderTrackingScreen extends ConsumerStatefulWidget {
   final OrderModel order;
@@ -45,25 +46,44 @@ class _OrderTrackingScreenState extends ConsumerState<OrderTrackingScreen> {
             value: widget.order.id,
           ),
           callback: (payload) {
-            final newLat = payload.newRecord['delivery_lat'];
-            final newLng = payload.newRecord['delivery_lng'];
+            final newLat = payload.newRecord['deliveryLatitude'];
+            final newLng = payload.newRecord['deliveryLongitude'];
             
             if (newLat != null && newLng != null) {
               setState(() {
                 _deliveryLocation = LatLng((newLat as num).toDouble(), (newLng as num).toDouble());
               });
-              _moveCameraToDelivery();
+              _adjustCameraBounds();
             }
           },
         )
         .subscribe();
   }
   
-  Future<void> _moveCameraToDelivery() async {
+  Future<void> _adjustCameraBounds() async {
     if (_deliveryLocation == null) return;
     
     final GoogleMapController controller = await _controller.future;
-    controller.animateCamera(CameraUpdate.newLatLng(_deliveryLocation!));
+    
+    LatLngBounds bounds;
+    if (_deliveryLocation!.latitude > _destinationLocation.latitude) {
+      bounds = LatLngBounds(southwest: _destinationLocation, northeast: _deliveryLocation!);
+    } else {
+      bounds = LatLngBounds(southwest: _deliveryLocation!, northeast: _destinationLocation);
+    }
+    
+    // Adjust bounds logic for all cases (SW to NE correctly)
+    final double minLat = _deliveryLocation!.latitude < _destinationLocation.latitude ? _deliveryLocation!.latitude : _destinationLocation.latitude;
+    final double maxLat = _deliveryLocation!.latitude > _destinationLocation.latitude ? _deliveryLocation!.latitude : _destinationLocation.latitude;
+    final double minLng = _deliveryLocation!.longitude < _destinationLocation.longitude ? _deliveryLocation!.longitude : _destinationLocation.longitude;
+    final double maxLng = _deliveryLocation!.longitude > _destinationLocation.longitude ? _deliveryLocation!.longitude : _destinationLocation.longitude;
+    
+    bounds = LatLngBounds(
+      southwest: LatLng(minLat, minLng),
+      northeast: LatLng(maxLat, maxLng),
+    );
+
+    controller.animateCamera(CameraUpdate.newLatLngBounds(bounds, 80)); // 80 is padding
   }
 
   @override
@@ -122,6 +142,11 @@ class _OrderTrackingScreenState extends ConsumerState<OrderTrackingScreen> {
             markers: markers,
             onMapCreated: (GoogleMapController controller) {
               _controller.complete(controller);
+              if (_deliveryLocation != null) {
+                Future.delayed(const Duration(milliseconds: 500), () {
+                  _adjustCameraBounds();
+                });
+              }
             },
             myLocationEnabled: true,
           ),
@@ -144,11 +169,16 @@ class _OrderTrackingScreenState extends ConsumerState<OrderTrackingScreen> {
                   children: [
                     Row(
                       children: [
-                        CircleAvatar(
-                          backgroundColor: settings.primaryColor.withValues(alpha: 0.1),
-                          radius: 25,
-                          child: Icon(Icons.delivery_dining_rounded, color: settings.primaryColor, size: 30),
-                        ),
+                        widget.order.deliveryManImage != null && widget.order.deliveryManImage!.isNotEmpty
+                            ? CircleAvatar(
+                                radius: 25,
+                                backgroundImage: NetworkImage(widget.order.deliveryManImage!),
+                              )
+                            : CircleAvatar(
+                                backgroundColor: settings.primaryColor.withValues(alpha: 0.1),
+                                radius: 25,
+                                child: Icon(Icons.delivery_dining_rounded, color: settings.primaryColor, size: 30),
+                              ),
                         const SizedBox(width: 16),
                         Expanded(
                           child: Column(
@@ -160,7 +190,15 @@ class _OrderTrackingScreenState extends ConsumerState<OrderTrackingScreen> {
                           ),
                         ),
                         IconButton(
-                          onPressed: () {},
+                          onPressed: () async {
+                            final phone = widget.order.deliveryManPhone;
+                            if (phone != null && phone.isNotEmpty) {
+                              final Uri uri = Uri(scheme: 'tel', path: phone);
+                              if (await canLaunchUrl(uri)) {
+                                await launchUrl(uri);
+                              }
+                            }
+                          },
                           icon: const Icon(Icons.call, color: Colors.green),
                           style: IconButton.styleFrom(
                             backgroundColor: Colors.green.withValues(alpha: 0.1),

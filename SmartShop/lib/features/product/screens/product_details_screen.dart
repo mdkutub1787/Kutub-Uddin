@@ -7,7 +7,7 @@ import '../models/product_model.dart';
 import '../../category/riverpod/category_notifier.dart';
 import '../../cart/riverpod/cart_notifier.dart';
 import '../../wishlist/riverpod/wishlist_notifier.dart';
-// import '../../auth/riverpod/auth_notifier.dart';
+import '../../auth/riverpod/auth_notifier.dart';
 import '../../../core/app_strings.dart';
 
 class ProductDetailsScreen extends ConsumerWidget {
@@ -37,14 +37,27 @@ class ProductDetailsScreen extends ConsumerWidget {
             actions: [
               Padding(
                 padding: const EdgeInsets.all(8.0),
-                child: CircleAvatar(
-                  backgroundColor: Colors.white.withValues(alpha: 0.9),
-                  child: IconButton(
-                    icon: const Icon(Icons.favorite_border, color: Colors.black), // Update with wishlist provider later
-                    onPressed: () {
-                      // TODO: Implement wishlist functionality using Riverpod
-                    },
-                  ),
+                child: Consumer(
+                  builder: (context, ref, child) {
+                    final wishlistState = ref.watch(wishlistNotifierProvider);
+                    final isFav = wishlistState.value?.contains(product.id) ?? false;
+                    return CircleAvatar(
+                      backgroundColor: Colors.white.withValues(alpha: 0.9),
+                      child: IconButton(
+                        icon: Icon(
+                          isFav ? Icons.favorite_rounded : Icons.favorite_border_rounded,
+                          color: isFav ? const Color(0xFF2D958E) : Colors.black,
+                        ),
+                        onPressed: () {
+                          // TODO: Replace with actual user ID from auth when integrated
+                          final auth = ref.read(authNotifierProvider).value;
+                          if (auth != null) {
+                            ref.read(wishlistNotifierProvider.notifier).toggleWishlist(auth.uid, product.id);
+                          }
+                        },
+                      ),
+                    );
+                  },
                 ),
               ),
             ],

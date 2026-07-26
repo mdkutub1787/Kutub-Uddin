@@ -75,8 +75,8 @@ class OrderRepository {
 
   Future<void> updateDeliveryLocation(String orderId, double lat, double lng) async {
     await _supabase.from(_table).update({
-      'delivery_lat': lat,
-      'delivery_lng': lng,
+      'deliveryLatitude': lat,
+      'deliveryLongitude': lng,
     }).eq('id', orderId);
   }
 
@@ -135,6 +135,7 @@ class OrderRepository {
       'deliveryManId': deliveryMan.uid,
       'deliveryManName': deliveryMan.name,
       'deliveryManPhone': deliveryMan.phoneNumber,
+      'deliveryManImage': deliveryMan.imageUrl,
       'status': 'Assigned',
     }).eq('id', orderId);
   }
