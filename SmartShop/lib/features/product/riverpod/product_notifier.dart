@@ -40,7 +40,7 @@ class ProductState {
 }
 
 class ProductNotifier extends Notifier<ProductState> {
-  late final ProductRepository _repository;
+  late ProductRepository _repository;
 
   @override
   ProductState build() {

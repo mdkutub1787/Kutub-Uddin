@@ -5,7 +5,7 @@ import '../repositories/auth_repository.dart';
 import '../../user/models/user_model.dart';
 
 class AuthNotifier extends AsyncNotifier<UserModel?> {
-  late final AuthRepository _repository;
+  late AuthRepository _repository;
 
   @override
   Future<UserModel?> build() async {

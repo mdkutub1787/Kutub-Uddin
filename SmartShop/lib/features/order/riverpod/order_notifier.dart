@@ -34,7 +34,7 @@ final userOrdersStreamProvider = StreamProvider.family<List<OrderModel>, String>
 });
 
 class OrderNotifier extends AsyncNotifier<List<OrderModel>> {
-  late final OrderRepository _repository;
+  late OrderRepository _repository;
 
   @override
   FutureOr<List<OrderModel>> build() async {

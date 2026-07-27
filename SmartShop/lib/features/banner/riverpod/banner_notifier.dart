@@ -9,7 +9,7 @@ final bannerNotifierProvider = AsyncNotifierProvider<BannerNotifier, List<Banner
 });
 
 class BannerNotifier extends AsyncNotifier<List<BannerModel>> {
-  late final BannerRepository _repository;
+  late BannerRepository _repository;
 
   @override
   FutureOr<List<BannerModel>> build() async {
