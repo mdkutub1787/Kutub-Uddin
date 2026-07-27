@@ -14,6 +14,8 @@ import 'services/push_notification_service.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
 
+final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   
@@ -85,6 +87,7 @@ class MyApp extends ConsumerWidget {
     final loading = ref.watch(loadingProvider);
 
     return MaterialApp(
+      navigatorKey: navigatorKey,
       debugShowCheckedModeBanner: false,
       title: 'Smart Shop',
       

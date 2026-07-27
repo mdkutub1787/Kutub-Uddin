@@ -26,7 +26,8 @@ class OrderRepository {
         }
       }
       return true;
-    } catch (e) {
+    } catch (e, stack) {
+      print('Order placement failed: $e\n$stack');
       return false;
     }
   }

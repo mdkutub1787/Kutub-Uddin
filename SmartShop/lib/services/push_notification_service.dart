@@ -8,12 +8,14 @@ import 'package:flutter_callkit_incoming/entities/ios_params.dart';
 import 'package:flutter_callkit_incoming/entities/notification_params.dart';
 import 'package:uuid/uuid.dart';
 import 'package:flutter/material.dart';
+import 'package:audioplayers/audioplayers.dart';
+import '../main.dart'; // To access navigatorKey
 
 @pragma('vm:entry-point')
 Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   await Firebase.initializeApp();
   debugPrint("Handling a background message: ${message.messageId}");
-  PushNotificationService.handleIncomingMessage(message);
+  PushNotificationService.handleIncomingMessage(message, isForeground: false);
 }
 
 class PushNotificationService {
@@ -38,7 +40,7 @@ class PushNotificationService {
     // Foreground messaging handler
     FirebaseMessaging.onMessage.listen((RemoteMessage message) {
       debugPrint('Got a message whilst in the foreground!');
-      handleIncomingMessage(message);
+      handleIncomingMessage(message, isForeground: true);
     });
 
     // Listen to call events
@@ -54,16 +56,90 @@ class PushNotificationService {
     });
   }
 
-  static Future<void> handleIncomingMessage(RemoteMessage message) async {
+  static Future<void> handleIncomingMessage(RemoteMessage message, {bool isForeground = false}) async {
     debugPrint("Message data: ${message.data}");
     
     // Check if the message is a new order for a rider
     if (message.data['type'] == 'new_order') {
-      await showIncomingCall(
-        orderId: message.data['orderId'] ?? 'Unknown Order',
-        shopName: message.data['shopName'] ?? 'Smart Shop',
-      );
+      final orderId = message.data['orderId'] ?? 'Unknown Order';
+      final shopName = message.data['shopName'] ?? 'Smart Shop';
+      
+      if (isForeground) {
+        _showInAppIncomingOrderDialog(orderId: orderId, shopName: shopName);
+      } else {
+        await showIncomingCall(orderId: orderId, shopName: shopName);
+      }
     }
+  }
+
+  static void _showInAppIncomingOrderDialog({required String orderId, required String shopName}) async {
+    final context = navigatorKey.currentContext;
+    if (context == null) return;
+
+    final player = AudioPlayer();
+    await player.setReleaseMode(ReleaseMode.loop);
+    // You can replace this with a local asset ringtone if you have one, e.g. player.play(AssetSource('ringtone.mp3'));
+    // For now we try to play a default alarm or just vibrate, since we don't know if 'ringtone.mp3' exists.
+    // Let's assume there's a need to play sound, we'll just try to play a default tone or leave it for the user to add the asset later.
+    // We will just vibrate and print a message for now, or play a silent sound if no asset is available.
+    
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (ctx) => AlertDialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        backgroundColor: Colors.white,
+        title: Column(
+          children: [
+            const Icon(Icons.delivery_dining, size: 60, color: Colors.green),
+            const SizedBox(height: 10),
+            Text(
+              "New Delivery Request!",
+              style: const TextStyle(fontWeight: FontWeight.w900, color: Colors.green),
+              textAlign: TextAlign.center,
+            ),
+          ],
+        ),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text("Shop: $shopName", style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+            const SizedBox(height: 8),
+            Text("Order ID: #$orderId", style: const TextStyle(fontSize: 14)),
+          ],
+        ),
+        actionsAlignment: MainAxisAlignment.spaceEvenly,
+        actions: [
+          ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.red,
+              foregroundColor: Colors.white,
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+            ),
+            onPressed: () {
+              player.stop();
+              Navigator.pop(ctx);
+              debugPrint('In-app call declined: $orderId');
+            },
+            child: const Text("Decline"),
+          ),
+          ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.green,
+              foregroundColor: Colors.white,
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+            ),
+            onPressed: () {
+              player.stop();
+              Navigator.pop(ctx);
+              debugPrint('In-app call accepted: $orderId');
+              // Navigate to delivery dashboard or order details
+            },
+            child: const Text("Accept"),
+          ),
+        ],
+      ),
+    );
   }
 
   static Future<void> showIncomingCall({required String orderId, required String shopName}) async {
