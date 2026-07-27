@@ -9,9 +9,24 @@ import 'core/riverpod/loading_notifier.dart';
 import 'features/splash/screens/splash_screen.dart';
 import 'routes/app_routes.dart';
 import 'theme/app_theme.dart';
+import 'services/notification_service.dart';
+import 'services/push_notification_service.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'firebase_options.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  
+  try {
+    await Firebase.initializeApp(
+      options: DefaultFirebaseOptions.currentPlatform,
+    );
+    await PushNotificationService().init();
+  } catch (e) {
+    debugPrint("Firebase not configured yet: $e");
+  }
+
+  await NotificationService().init();
   
   // Set up Error Widgets
   ErrorWidget.builder = (FlutterErrorDetails details) {

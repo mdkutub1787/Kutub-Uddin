@@ -9,6 +9,7 @@ class ShopModel {
   final DateTime createdAt;
   final double? latitude;
   final double? longitude;
+  final String? imageUrl;
 
   ShopModel({
     required this.id,
@@ -21,6 +22,7 @@ class ShopModel {
     required this.createdAt,
     this.latitude,
     this.longitude,
+    this.imageUrl,
   });
 
   factory ShopModel.fromMap(Map<String, dynamic> data, String id) {
@@ -37,6 +39,7 @@ class ShopModel {
           : DateTime.now(),
       latitude: data['latitude'] != null ? (data['latitude'] as num).toDouble() : null,
       longitude: data['longitude'] != null ? (data['longitude'] as num).toDouble() : null,
+      imageUrl: data['imageUrl'],
     );
   }
 
@@ -51,6 +54,7 @@ class ShopModel {
       'createdAt': createdAt.toIso8601String(),
       'latitude': latitude,
       'longitude': longitude,
+      'imageUrl': imageUrl,
     };
   }
 }

@@ -1,5 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:supabase_flutter/supabase_flutter.dart' as sb;
+import 'package:firebase_messaging/firebase_messaging.dart';
 import '../repositories/auth_repository.dart';
 import '../../user/models/user_model.dart';
 
@@ -33,7 +34,9 @@ class AuthNotifier extends AsyncNotifier<UserModel?> {
           .maybeSingle();
 
       if (response != null) {
-        return UserModel.fromJson(response);
+        final existingUser = UserModel.fromJson(response);
+        await _updateFcmToken(user.id);
+        return existingUser;
       }
     } catch (e) {
       // print('Error fetching user data from DB: $e');
@@ -74,7 +77,22 @@ class AuthNotifier extends AsyncNotifier<UserModel?> {
       // Ignore if it fails due to RLS or other reasons
     }
     
+    await _updateFcmToken(newUser.uid);
     return newUser;
+  }
+
+  Future<void> _updateFcmToken(String userId) async {
+    try {
+      final fcmToken = await FirebaseMessaging.instance.getToken();
+      if (fcmToken != null) {
+        await sb.Supabase.instance.client
+            .from('users')
+            .update({'fcm_token': fcmToken})
+            .eq('id', userId);
+      }
+    } catch (e) {
+      // Firebase might not be fully initialized or permissions denied
+    }
   }
 
   String? error;

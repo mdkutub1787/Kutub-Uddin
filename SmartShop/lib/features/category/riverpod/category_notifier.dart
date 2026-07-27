@@ -19,7 +19,7 @@ class CategoryNotifier extends AsyncNotifier<List<CategoryModel>> {
     final user = ref.read(authNotifierProvider).value;
     final repository = ref.watch(categoryRepositoryProvider);
     
-    if (user != null && user.shopId != null && user.shopId!.isNotEmpty) {
+    if (user != null && (user.role == 'owner' || user.role == 'manager') && user.shopId != null && user.shopId!.isNotEmpty) {
       try {
         return await repository.getCategoriesByShop(user.shopId!);
       } catch (e) {

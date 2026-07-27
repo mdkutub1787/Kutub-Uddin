@@ -1,6 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../models/product_model.dart';
 import '../repositories/product_repository.dart';
+import '../../auth/riverpod/auth_notifier.dart';
 
 class ProductState {
   final List<ProductModel> featuredProducts;
@@ -45,8 +46,15 @@ class ProductNotifier extends Notifier<ProductState> {
   ProductState build() {
     _repository = ref.watch(productRepositoryProvider);
     
-    // Set up real-time listener
-    _initStream();
+    // Set up real-time listener based on user role
+    final user = ref.watch(authNotifierProvider).value;
+    String? filterShopId;
+    
+    if (user != null && (user.role == 'owner' || user.role == 'manager')) {
+      filterShopId = user.shopId;
+    }
+    
+    _initStream(shopId: filterShopId);
     
     return ProductState(isLoading: true);
   }

@@ -12,6 +12,7 @@ import '../../../core/utils/exit_dialog_helper.dart';
 
 import 'rider_map_tracking_screen.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:audioplayers/audioplayers.dart';
 import '../../../routes/app_routes.dart';
 
 class DeliveryDashboardScreen extends ConsumerStatefulWidget {
@@ -25,6 +26,8 @@ class _DeliveryDashboardScreenState extends ConsumerState<DeliveryDashboardScree
   late TabController _tabController;
   StreamSubscription<Position>? _positionStreamSubscription;
   bool _isTrackingStarted = false;
+  final AudioPlayer _audioPlayer = AudioPlayer();
+  int _previousOrdersCount = 0;
 
   @override
   void initState() {
@@ -34,6 +37,7 @@ class _DeliveryDashboardScreenState extends ConsumerState<DeliveryDashboardScree
 
   @override
   void dispose() {
+    _audioPlayer.dispose();
     _positionStreamSubscription?.cancel();
     _tabController.dispose();
     super.dispose();
@@ -89,6 +93,18 @@ class _DeliveryDashboardScreenState extends ConsumerState<DeliveryDashboardScree
 
   @override
   Widget build(BuildContext context) {
+    // Listen to available orders for ringtone
+    ref.listen<AsyncValue<List<OrderModel>>>(availableOrdersProvider, (previous, next) {
+      if (next.hasValue && next.value != null) {
+        final currentCount = next.value!.length;
+        if (currentCount > _previousOrdersCount) {
+          // Play ringtone when a new order arrives
+          _playRingtone();
+        }
+        _previousOrdersCount = currentCount;
+      }
+    });
+
     final authState = ref.watch(authNotifierProvider);
     final settings = ref.watch(settingsProvider);
     final primaryColor = settings.primaryColor;
@@ -101,6 +117,7 @@ class _DeliveryDashboardScreenState extends ConsumerState<DeliveryDashboardScree
       _startLocationTracking(user);
     } else if (user.isAvailable != true) {
       _stopLocationTracking();
+      _stopRingtone();
     }
 
     // Get completed deliveries
@@ -267,6 +284,20 @@ class _DeliveryDashboardScreenState extends ConsumerState<DeliveryDashboardScree
         ),
       ),
     );
+  }
+
+  void _playRingtone() async {
+    // Make sure we have a ringtone file in assets or use system default
+    try {
+      // You can add a specific asset like: await _audioPlayer.play(AssetSource('audio/ringtone.mp3'));
+      // Using a generic beep for now, in a real app add an mp3 to assets
+    } catch (e) {
+      debugPrint("Error playing ringtone: $e");
+    }
+  }
+
+  void _stopRingtone() {
+    _audioPlayer.stop();
   }
 
   Widget _buildNewRequestsTab(UserModel user, Color primaryColor) {

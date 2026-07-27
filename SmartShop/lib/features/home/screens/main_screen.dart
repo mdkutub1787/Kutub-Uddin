@@ -12,8 +12,11 @@ import '../../../core/riverpod/settings_notifier.dart';
 import '../../../core/riverpod/navigation_notifier.dart';
 import '../../auth/riverpod/auth_notifier.dart';
 import '../../support/riverpod/support_notifier.dart';
+import '../../order/riverpod/order_notifier.dart';
+import '../../order/models/order_model.dart';
 import '../../../core/app_strings.dart';
 import '../../../core/utils/exit_dialog_helper.dart';
+import '../../../services/notification_service.dart';
 
 class MainScreen extends ConsumerStatefulWidget {
   const MainScreen({super.key});
@@ -42,6 +45,33 @@ class _MainScreenState extends ConsumerState<MainScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final user = ref.watch(authNotifierProvider).value;
+    
+    // Listen to user orders for status change notifications
+    if (user != null) {
+      ref.listen<AsyncValue<List<OrderModel>>>(userOrdersStreamProvider(user.uid), (previous, next) {
+        if (previous != null && previous.hasValue && next.hasValue) {
+          final previousOrders = previous.value!;
+          final nextOrders = next.value!;
+          
+          for (final nextOrder in nextOrders) {
+            final prevOrderIndex = previousOrders.indexWhere((o) => o.id == nextOrder.id);
+            if (prevOrderIndex != -1) {
+              final prevOrder = previousOrders[prevOrderIndex];
+              if (prevOrder.status != nextOrder.status) {
+                // Status changed!
+                NotificationService().showNotification(
+                  id: nextOrder.id.hashCode,
+                  title: 'Order Status Update',
+                  body: 'Your order #${nextOrder.id.substring(nextOrder.id.length - 8)} is now ${nextOrder.status}',
+                );
+              }
+            }
+          }
+        }
+      });
+    }
+
     final settings = ref.watch(settingsProvider);
     final cartItems = ref.watch(cartNotifierProvider) ?? [];
     final cartItemCount = cartItems.fold(0, (sum, item) => sum + item.quantity);

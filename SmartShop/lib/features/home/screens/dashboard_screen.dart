@@ -17,7 +17,9 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../../widgets/product_card.dart';
 import '../../../widgets/custom_app_bar.dart';
 import '../../../widgets/app_card.dart';
+import '../../../widgets/shop_card.dart';
 import '../../../theme/app_colors.dart';
+import '../../shop/riverpod/shop_notifier.dart';
 
 class DashboardScreen extends ConsumerWidget {
   const DashboardScreen({super.key});
@@ -52,7 +54,8 @@ class DashboardScreen extends ConsumerWidget {
           
           RefreshIndicator(
             onRefresh: () async {
-              ref.read(categoryNotifierProvider.notifier).loadCategories();
+              ref.read(shopNotifierProvider.notifier).loadShops();
+              ref.read(bannerNotifierProvider.notifier).loadBanners();
             },
             child: CustomScrollView(
               physics: const BouncingScrollPhysics(parent: AlwaysScrollableScrollPhysics()),
@@ -217,14 +220,6 @@ class DashboardScreen extends ConsumerWidget {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             const SizedBox(height: 10),
-                            _buildPromoBanner(context, ref), // Dynamic promo banners
-                            _buildSectionHeader(context, AppStrings.categoriesTitle.tr(), () {}),
-                            _buildCategoryList(context, ref),
-                            _buildSectionHeader(context, AppStrings.featuredProductsTitle.tr(), () {}),
-                            _buildFeaturedProducts(context, ref),
-                            const SizedBox(height: 12),
-                            _buildCategorySections(context, ref),
-                            const SizedBox(height: 100),
                           ],
                         ),
                       ),
@@ -461,168 +456,7 @@ class DashboardScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildSectionHeader(BuildContext context, String title, VoidCallback onSeeAll) {
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(16, 12, 12, 8),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Text(title, style: const TextStyle(fontSize: 19, fontWeight: FontWeight.w900)),
-          TextButton(
-            onPressed: onSeeAll, 
-            style: TextButton.styleFrom(padding: EdgeInsets.zero, minimumSize: const Size(50, 30), tapTargetSize: MaterialTapTargetSize.shrinkWrap),
-            child: Text(AppStrings.seeAll.tr(), style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13))
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildCategoryList(BuildContext context, WidgetRef ref) {
-    final categoryState = ref.watch(categoryNotifierProvider);
-    
-    return categoryState.when(
-      data: (categories) {
-        if (categories.isEmpty) return const SizedBox.shrink();
-        
-        // For now we don't have selectedCategoryId in state, assume dummy
-        const String? selectedCategoryId = null; 
-
-        return SizedBox(
-          height: 115,
-          child: ListView.builder(
-            padding: const EdgeInsets.symmetric(horizontal: 8),
-            scrollDirection: Axis.horizontal,
-            itemCount: categories.length,
-            itemBuilder: (context, index) {
-              final cat = categories[index];
-              bool isSelected = selectedCategoryId == cat.id;
-              
-              // We'll use the category imageUrl if it exists, otherwise fallback to an icon.
-              bool hasImage = cat.imageUrl.isNotEmpty && cat.imageUrl.startsWith('http');
-              
-              return GestureDetector(
-                onTap: () {
-                  // ref.read(productNotifierProvider.notifier).filterByCategory(cat.id);
-                },
-                child: Container(
-                  width: 75,
-                  margin: const EdgeInsets.symmetric(horizontal: 6, vertical: 4),
-                  child: Column(
-                    children: [
-                      AnimatedContainer(
-                        duration: const Duration(milliseconds: 300),
-                        height: 65,
-                        width: 65,
-                        decoration: BoxDecoration(
-                          color: isSelected ? Theme.of(context).primaryColor : Colors.white,
-                          borderRadius: BorderRadius.circular(18),
-                          image: hasImage 
-                            ? DecorationImage(image: NetworkImage(cat.imageUrl), fit: BoxFit.cover)
-                            : null,
-                          boxShadow: [
-                            BoxShadow(
-                              color: isSelected 
-                                ? Theme.of(context).primaryColor.withValues(alpha: 0.2) 
-                                : Colors.black.withValues(alpha: 0.03),
-                              blurRadius: 10,
-                              offset: const Offset(0, 5),
-                            )
-                          ],
-                          border: isSelected ? null : Border.all(color: Colors.grey[100]!),
-                        ),
-                        child: !hasImage 
-                          ? Icon(
-                              Icons.category,
-                              color: isSelected ? Colors.white : Theme.of(context).primaryColor, 
-                              size: 28
-                            )
-                          : null,
-                      ),
-                      const SizedBox(height: 6),
-                      Text(
-                        cat.name.tr(), 
-                        style: TextStyle(
-                          fontSize: 11, 
-                          fontWeight: isSelected ? FontWeight.w900 : FontWeight.bold, 
-                          color: isSelected ? Theme.of(context).primaryColor : Colors.grey[600],
-                          letterSpacing: -0.2,
-                        ), 
-                        maxLines: 1, 
-                        overflow: TextOverflow.ellipsis
-                      ),
-                    ],
-                  ),
-                ),
-              );
-            },
-          ),
-        );
-      },
-      loading: () => const SizedBox(height: 115, child: Center(child: CircularProgressIndicator())),
-      error: (error, stack) => SizedBox(
-        height: 115,
-        child: Center(
-          child: Text(
-            error.toString().contains('JWT issued at future') 
-                ? "Time mismatch. Please fix device clock." 
-                : "Error loading categories",
-            style: const TextStyle(fontSize: 10, color: Colors.red),
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildFeaturedProducts(BuildContext context, WidgetRef ref) {
-    final productState = ref.watch(productNotifierProvider);
-    final products = productState.featuredProducts ?? [];
-    
-    if (productState.isLoading && products.isEmpty) {
-      return const SizedBox(height: 250, child: Center(child: CircularProgressIndicator()));
-    }
-    
-    return SizedBox(
-      height: 290,
-      child: ListView.builder(
-        padding: const EdgeInsets.symmetric(horizontal: 8),
-        scrollDirection: Axis.horizontal,
-        itemCount: products.length,
-        itemBuilder: (context, index) {
-          final product = products[index];
-          return ProductCard(product: product, heroTag: 'featured-${product.id}', width: 160);
-        },
-      ),
-    );
-  }
-
-  Widget _buildCategorySections(BuildContext context, WidgetRef ref) {
-    final categories = ref.watch(categoryNotifierProvider).value ?? [];
-    final products = ref.watch(productNotifierProvider).featuredProducts ?? [];
-
-    return Column(
-      children: categories.take(3).map((category) {
-        final categoryProducts = products.where((p) => p.categoryId == category.id).toList();
-        if (categoryProducts.isEmpty) return const SizedBox.shrink();
-        return Column(
-          children: [
-            _buildSectionHeader(context, category.name, () {
-               // ref.read(productNotifierProvider.notifier).filterByCategory(category.id);
-            }),
-            SizedBox(
-              height: 290,
-              child: ListView.builder(
-                padding: const EdgeInsets.symmetric(horizontal: 8),
-                scrollDirection: Axis.horizontal,
-                itemCount: categoryProducts.length,
-                itemBuilder: (context, index) => ProductCard(product: categoryProducts[index], heroTag: 'cat-${category.id}-${categoryProducts[index].id}', width: 160),
-              ),
-            ),
-          ],
-        );
-      }).toList(),
-    );
-  }
+  // Removed global categories and products fetching methods
 
   Widget _buildDrawer(BuildContext context, WidgetRef ref) {
     final auth = ref.watch(authNotifierProvider).value;

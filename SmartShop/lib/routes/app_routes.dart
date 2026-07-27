@@ -3,6 +3,7 @@ import '../features/auth/screens/login_screen.dart';
 import '../features/auth/screens/register_screen.dart';
 import '../features/home/screens/main_screen.dart';
 import '../features/home/screens/dashboard_screen.dart';
+import '../features/shop/screens/shop_details_screen.dart';
 import '../features/product/screens/product_details_screen.dart';
 import '../features/cart/screens/cart_screen.dart';
 import '../features/profile/screens/profile_screen.dart';
@@ -16,6 +17,7 @@ import '../features/offers/screens/offers_screen.dart';
 import '../features/notification/screens/notification_screen.dart';
 import '../features/notification/screens/notification_details_screen.dart';
 import '../features/support/screens/support_screen.dart';
+import '../models/shop_model.dart';
 import '../features/product/models/product_model.dart';
 import '../features/order/models/order_model.dart';
 import '../models/notification_model.dart';
@@ -43,6 +45,7 @@ class AppRoutes {
   static const String notifications = '/notifications';
   static const String notificationDetails = '/notification-details';
   static const String support = '/support';
+  static const String shopDetails = '/shop-details';
 
   static Route<dynamic> generateRoute(RouteSettings settings) {
     switch (settings.name) {
@@ -58,6 +61,12 @@ class AppRoutes {
         return MaterialPageRoute(builder: (_) => const MainScreen());
       case dashboard:
         return MaterialPageRoute(builder: (_) => const DashboardScreen());
+      case shopDetails:
+        if (settings.arguments is ShopModel) {
+          return MaterialPageRoute(
+              builder: (_) => ShopDetailsScreen(shop: settings.arguments as ShopModel));
+        }
+        return MaterialPageRoute(builder: (_) => const Scaffold(body: Center(child: Text('Error: Invalid arguments'))));
       case cart:
         return MaterialPageRoute(builder: (_) => const CartScreen());
       case profile:

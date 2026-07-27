@@ -152,4 +152,17 @@ class OrderRepository {
             ..sort((a, b) => b.date.compareTo(a.date));
         });
   }
+
+  Stream<List<OrderModel>> streamUserOrders(String userId) {
+    return _supabase
+        .from(_table)
+        .stream(primaryKey: ['id'])
+        .map((maps) {
+          return maps
+              .map((map) => OrderModel.fromJson(map))
+              .where((o) => o.userId == userId)
+              .toList()
+            ..sort((a, b) => b.date.compareTo(a.date));
+        });
+  }
 }

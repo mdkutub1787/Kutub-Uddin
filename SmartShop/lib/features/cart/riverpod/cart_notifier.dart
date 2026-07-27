@@ -13,7 +13,14 @@ class CartNotifier extends Notifier<List<CartItem>> {
   }
 
   void addToCart(ProductModel product, {int quantity = 1}) {
-    final currentState = state;
+    var currentState = state;
+    
+    // Check if cart has items from a different shop
+    if (currentState.isNotEmpty && currentState.first.product.shopId != product.shopId) {
+      // Clear the cart if adding product from a different shop
+      currentState = [];
+    }
+
     final index = currentState.indexWhere((item) => item.product.id == product.id);
 
     if (index != -1) {

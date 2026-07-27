@@ -28,6 +28,11 @@ final myCompletedDeliveriesProvider = StreamProvider.family<List<OrderModel>, St
   return repository.streamMyCompletedDeliveries(deliveryManId);
 });
 
+final userOrdersStreamProvider = StreamProvider.family<List<OrderModel>, String>((ref, userId) {
+  final repository = ref.read(orderRepositoryProvider);
+  return repository.streamUserOrders(userId);
+});
+
 class OrderNotifier extends AsyncNotifier<List<OrderModel>> {
   late final OrderRepository _repository;
 
@@ -40,8 +45,14 @@ class OrderNotifier extends AsyncNotifier<List<OrderModel>> {
   Future<List<OrderModel>> _fetchOrders() async {
     final user = ref.read(authNotifierProvider).value;
     if (user != null) {
-      if (user.role == 'admin' || user.role == 'super_admin' || user.role == 'owner' || user.role == 'manager') {
+      if (user.role == 'super_admin' || user.role == 'admin') {
         return await _repository.getAllOrders();
+      } else if (user.role == 'owner' || user.role == 'manager') {
+        if (user.shopId != null && user.shopId!.isNotEmpty) {
+          return await _repository.getOrdersByShop(user.shopId!);
+        } else {
+          return []; // Owner without a shop sees nothing
+        }
       } else {
         return await _repository.getUserOrders(user.uid);
       }
