@@ -265,10 +265,16 @@ class AdminChatDetail extends ConsumerStatefulWidget {
 class _AdminChatDetailState extends ConsumerState<AdminChatDetail> {
   final TextEditingController _msgController = TextEditingController();
   String? _userPhone;
+  late final Stream<List<Map<String, dynamic>>> _messagesStream;
 
   @override
   void initState() {
     super.initState();
+    _messagesStream = Supabase.instance.client
+            .from('support_messages')
+            .stream(primaryKey: ['id'])
+            .eq('ticket_id', widget.ticket.id)
+            .order('timestamp', ascending: true);
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _userPhone = widget.ticket.userPhone;
       if (_userPhone == null || _userPhone!.isEmpty) {
@@ -310,11 +316,7 @@ class _AdminChatDetailState extends ConsumerState<AdminChatDetail> {
         ],
       ),
       body: StreamBuilder<List<Map<String, dynamic>>>(
-        stream: Supabase.instance.client
-            .from('support_messages')
-            .stream(primaryKey: ['id'])
-            .eq('ticket_id', widget.ticket.id)
-            .order('timestamp', ascending: true),
+        stream: _messagesStream,
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(child: CircularProgressIndicator());

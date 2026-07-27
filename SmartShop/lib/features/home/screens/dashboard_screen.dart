@@ -102,13 +102,12 @@ class DashboardScreen extends ConsumerWidget {
                         );
                       }
 
-                      return StreamBuilder<List<Map<String, dynamic>>>(
-                        stream: Supabase.instance.client.from('shops').stream(primaryKey: ['id']).eq('id', shopId),
+                      return FutureBuilder<Map<String, dynamic>?>(
+                        future: Supabase.instance.client.from('shops').select('name').eq('id', shopId).maybeSingle(),
                         builder: (context, snapshot) {
                           String shopName = "Smart Shop";
-                          if (snapshot.hasData && snapshot.data!.isNotEmpty) {
-                            final data = snapshot.data!.first;
-                            shopName = data['name'] ?? "Smart Shop";
+                          if (snapshot.hasData && snapshot.data != null) {
+                            shopName = snapshot.data!['name'] ?? "Smart Shop";
                           }
                           return Row(
                             children: [
