@@ -47,7 +47,6 @@ class _MainScreenState extends ConsumerState<MainScreen> {
   Widget build(BuildContext context) {
     final user = ref.watch(authNotifierProvider).value;
     
-    // Listen to user orders for status change notifications
     if (user != null) {
       ref.listen<AsyncValue<List<OrderModel>>>(userOrdersStreamProvider(user.uid), (previous, next) {
         if (previous != null && previous.hasValue && next.hasValue) {
@@ -59,7 +58,6 @@ class _MainScreenState extends ConsumerState<MainScreen> {
             if (prevOrderIndex != -1) {
               final prevOrder = previousOrders[prevOrderIndex];
               if (prevOrder.status != nextOrder.status) {
-                // Status changed!
                 NotificationService().showNotification(
                   id: nextOrder.id.hashCode,
                   title: 'Order Status Update',
@@ -73,7 +71,8 @@ class _MainScreenState extends ConsumerState<MainScreen> {
     }
 
     final settings = ref.watch(settingsProvider);
-    final cartItems = ref.watch(cartNotifierProvider) ?? [];
+    final cart = ref.watch(cartNotifierProvider);
+    final cartItems = cart.items;
     final cartItemCount = cartItems.fold(0, (sum, item) => sum + item.quantity);
     final selectedIndex = ref.watch(navigationNotifierProvider);
 
@@ -84,7 +83,7 @@ class _MainScreenState extends ConsumerState<MainScreen> {
         await ExitDialogHelper.showExitDialog(context);
       },
       child: Scaffold(
-        backgroundColor: const Color(0xFFF5F7FA), // Light background for the scaffold
+        backgroundColor: const Color(0xFFF5F7FA),
         body: IndexedStack(
           index: selectedIndex,
           children: _screens,

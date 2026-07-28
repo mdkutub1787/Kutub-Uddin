@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
+import '../../../core/constants/constants.dart';
+import '../../../core/providers.dart';
 import '../../../models/support_ticket_model.dart';
 import '../../auth/riverpod/auth_notifier.dart';
 
@@ -32,39 +33,41 @@ class SupportNotifier extends AsyncNotifier<List<dynamic>> {
 
   void _loadAdminTickets() {
     _subscription?.cancel();
-    _subscription = Supabase.instance.client
-        .from('support_tickets')
+    final supabase = ref.read(supabaseClientProvider);
+    _subscription = supabase
+        .from(AppConstants.supportTicketsTable)
         .stream(primaryKey: ['id'])
         .order('lastUpdate', ascending: false)
         .listen((data) {
-      final tickets = data.map((json) => SupportTicket.fromMap(json, json['id'])).toList();
+      final tickets = data.map((json) => SupportTicket.fromMap(json, json['id'].toString())).toList();
       state = AsyncData(tickets);
     }, onError: (e, st) {
-      // state = AsyncError(e, st);
+      // Error in stream
     });
   }
 
   void _loadUserMessages(String userId) {
     _subscription?.cancel();
-    _subscription = Supabase.instance.client
-        .from('support_messages')
+    final supabase = ref.read(supabaseClientProvider);
+    _subscription = supabase
+        .from(AppConstants.supportMessagesTable)
         .stream(primaryKey: ['id'])
-        .eq('ticket_id', userId) // Using userId as ticketId for 1-on-1 support
+        .eq('ticket_id', userId) 
         .order('timestamp', ascending: true)
         .listen((data) {
       final messages = data.map((json) => SupportMessage.fromMap(json)).toList();
       state = AsyncData(messages);
     }, onError: (e, st) {
-      // state = AsyncError(e, st);
+      // Error in stream
     });
   }
 
   Future<void> sendMessage(String userId, String userName, String message, {bool isAdmin = false, String? ticketId, String? userPhone}) async {
-    final actualTicketId = ticketId ?? userId; // Using user's ID as the unique ticket ID between them and admin
+    final actualTicketId = ticketId ?? userId; 
+    final supabase = ref.read(supabaseClientProvider);
     
     try {
-      // 1. Insert message
-      await Supabase.instance.client.from('support_messages').insert({
+      await supabase.from(AppConstants.supportMessagesTable).insert({
         'ticket_id': actualTicketId,
         'senderId': userId,
         'message': message,
@@ -72,7 +75,6 @@ class SupportNotifier extends AsyncNotifier<List<dynamic>> {
         'isAdmin': isAdmin,
       });
 
-      // 2. Upsert ticket
       final ticketData = {
         'id': actualTicketId,
         'userId': actualTicketId,
@@ -83,10 +85,10 @@ class SupportNotifier extends AsyncNotifier<List<dynamic>> {
         'status': 'open',
         'adminRead': isAdmin,
       };
-      await Supabase.instance.client.from('support_tickets').upsert(ticketData);
+      await supabase.from(AppConstants.supportTicketsTable).upsert(ticketData);
       
     } catch (e) {
-      print('Error sending support message: $e');
+      // Error sending message
     }
   }
 }

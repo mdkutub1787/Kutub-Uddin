@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import '../../../core/constants/constants.dart';
+import '../../../core/providers.dart';
 import '../../category/riverpod/category_notifier.dart';
 import '../../auth/riverpod/auth_notifier.dart';
 import '../../category/models/category_model.dart';
@@ -109,13 +111,14 @@ class _AdminCategoryListScreenState extends ConsumerState<AdminCategoryListScree
                 setModalState(() => isUploading = true);
                 final file = File(pickedFile.path);
                 final fileName = 'cat_${DateTime.now().millisecondsSinceEpoch}.jpg';
+                final supabase = ref.read(supabaseClientProvider);
                 
-                await Supabase.instance.client.storage
-                    .from('categories')
+                await supabase.storage
+                    .from(AppConstants.categoryBucket)
                     .upload(fileName, file);
                 
-                final publicUrl = Supabase.instance.client.storage
-                    .from('categories')
+                final publicUrl = supabase.storage
+                    .from(AppConstants.categoryBucket)
                     .getPublicUrl(fileName);
                 
                 setModalState(() {

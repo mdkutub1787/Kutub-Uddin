@@ -24,15 +24,8 @@ class _NotificationScreenState extends ConsumerState<NotificationScreen> with Si
     super.initState();
     _tabController = TabController(length: 2, vsync: this);
     
-    // Listen to tab changes to mark as read
-    _tabController.addListener(() {
-      if (_tabController.index == 0) {
-      } else {
-      }
-    });
-
-    // Mark first tab as read initially
     WidgetsBinding.instance.addPostFrameCallback((_) {
+      ref.read(notificationNotifierProvider.notifier).loadNotifications();
     });
   }
 
@@ -47,16 +40,13 @@ class _NotificationScreenState extends ConsumerState<NotificationScreen> with Si
     final noticeState = ref.watch(notificationNotifierProvider);
     final auth = ref.watch(authNotifierProvider).value;
     
-    // dummy unread counts
-    final noticeUnreadCount = 0; 
-    final supportUnreadCount = 0; 
     final isAdmin = auth?.role == 'admin' || auth?.role == 'super_admin';
 
     return Scaffold(
-      backgroundColor: const Color(0xFFF5F7FA), // Light premium background
+      backgroundColor: const Color(0xFFF5F7FA),
       body: Column(
         children: [
-          _buildPremiumHeader(noticeUnreadCount, supportUnreadCount, isAdmin),
+          _buildPremiumHeader(0, 0, isAdmin),
           Expanded(
             child: TabBarView(
               controller: _tabController,
@@ -86,7 +76,6 @@ class _NotificationScreenState extends ConsumerState<NotificationScreen> with Si
       ),
       child: Column(
         children: [
-          // Header Bar
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
             child: Row(
@@ -119,7 +108,6 @@ class _NotificationScreenState extends ConsumerState<NotificationScreen> with Si
             ),
           ),
           const SizedBox(height: 15),
-          // Custom TabBar
           Container(
             height: 45,
             margin: const EdgeInsets.symmetric(horizontal: 20),
@@ -141,25 +129,9 @@ class _NotificationScreenState extends ConsumerState<NotificationScreen> with Si
               labelColor: const Color(0xFF1B3128),
               unselectedLabelColor: Colors.white70,
               labelStyle: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
-              tabs: [
-                Tab(
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      const Text("Notices"),
-                      if (noticeCount > 0) _buildTabBadge(noticeCount),
-                    ],
-                  ),
-                ),
-                Tab(
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      const Text("Support"),
-                      if (supportCount > 0) _buildTabBadge(supportCount),
-                    ],
-                  ),
-                ),
+              tabs: const [
+                Tab(text: "Notices"),
+                Tab(text: "Support"),
               ],
             ),
           ),
@@ -168,38 +140,23 @@ class _NotificationScreenState extends ConsumerState<NotificationScreen> with Si
     );
   }
 
-  Widget _buildTabBadge(int count) {
-    return Container(
-      margin: const EdgeInsets.only(left: 8),
-      padding: const EdgeInsets.all(4),
-      decoration: const BoxDecoration(color: Colors.red, shape: BoxShape.circle),
-      constraints: const BoxConstraints(minWidth: 18, minHeight: 18),
-      child: Text(
-        '$count',
-        style: const TextStyle(color: Colors.white, fontSize: 10, fontWeight: FontWeight.bold),
-        textAlign: TextAlign.center,
-      ),
-    );
-  }
-
   Widget _buildNoticeTab(AsyncValue<List<dynamic>> noticeState, bool isAdmin, WidgetRef ref) {
-    if (noticeState.isLoading) {
-      return const Center(child: CircularProgressIndicator());
-    }
-    
-    final notifications = noticeState.value ?? [];
-
-    if (notifications.isEmpty) {
-      return _buildEmptyState();
-    }
-    
-    return ListView.builder(
-      padding: const EdgeInsets.all(16),
-      itemCount: notifications.length,
-      itemBuilder: (context, index) {
-        final notification = notifications[index];
-        return _buildNotificationCard(context, notification, isAdmin, ref);
-      },
+    return noticeState.when(
+      data: (notifications) => notifications.isEmpty
+          ? _buildEmptyState()
+          : RefreshIndicator(
+              onRefresh: () => ref.read(notificationNotifierProvider.notifier).loadNotifications(),
+              child: ListView.builder(
+                padding: const EdgeInsets.all(16),
+                itemCount: notifications.length,
+                itemBuilder: (context, index) {
+                  final notification = notifications[index];
+                  return _buildNotificationCard(context, notification, isAdmin, ref);
+                },
+              ),
+            ),
+      loading: () => const Center(child: CircularProgressIndicator()),
+      error: (e, st) => Center(child: Text("Error: $e")),
     );
   }
 
@@ -307,13 +264,20 @@ class _NotificationScreenState extends ConsumerState<NotificationScreen> with Si
         actions: [
           TextButton(onPressed: () => Navigator.pop(ctx), child: const Text("Cancel")),
           ElevatedButton(
-            onPressed: () {
+            onPressed: () async {
               if (notification == null) {
-                // ref.read(notificationNotifierProvider.notifier).addNotification(titleController.text, messageController.text);
+                await ref.read(notificationNotifierProvider.notifier).sendNotification(
+                  title: titleController.text.trim(),
+                  message: messageController.text.trim(),
+                );
               } else {
-                // ref.read(notificationNotifierProvider.notifier).updateNotification(notification.id, titleController.text, messageController.text);
+                await ref.read(notificationNotifierProvider.notifier).updateNotification(
+                  notification.id,
+                  titleController.text.trim(),
+                  messageController.text.trim(),
+                );
               }
-              Navigator.pop(ctx);
+              if (context.mounted) Navigator.pop(ctx);
             },
             child: const Text("Save"),
           ),

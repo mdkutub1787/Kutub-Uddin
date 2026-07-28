@@ -5,6 +5,8 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:http/http.dart' as http;
+import '../../../core/providers.dart';
+import '../../../core/constants/constants.dart';
 import '../models/order_model.dart';
 import '../../../core/riverpod/settings_notifier.dart';
 import '../../auth/riverpod/auth_notifier.dart';
@@ -67,12 +69,13 @@ class _OrderTrackingScreenState extends ConsumerState<OrderTrackingScreen> {
 
   void _setupRealtimeSubscription() {
     // Listen to changes for this specific order
-    _subscription = Supabase.instance.client
+    final supabase = ref.read(supabaseClientProvider);
+    _subscription = supabase
         .channel('public:orders:id=eq.${widget.order.id}')
         .onPostgresChanges(
           event: PostgresChangeEvent.update,
           schema: 'public',
-          table: 'orders',
+          table: AppConstants.ordersTable,
           filter: PostgresChangeFilter(
             type: PostgresChangeFilterType.eq,
             column: 'id',

@@ -1,6 +1,8 @@
 import 'dart:async';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../auth/riverpod/auth_notifier.dart';
+import '../../admin/riverpod/activity_log_notifier.dart';
+import '../../notification/riverpod/notification_notifier.dart';
 import '../../../core/providers.dart';
 import '../models/order_model.dart';
 import '../repositories/order_repository.dart';
@@ -51,7 +53,7 @@ class OrderNotifier extends AsyncNotifier<List<OrderModel>> {
         if (user.shopId != null && user.shopId!.isNotEmpty) {
           return await _repository.getOrdersByShop(user.shopId!);
         } else {
-          return []; // Owner without a shop sees nothing
+          return [];
         }
       } else {
         return await _repository.getUserOrders(user.uid);
@@ -74,7 +76,12 @@ class OrderNotifier extends AsyncNotifier<List<OrderModel>> {
     try {
       final success = await _repository.placeOrder(order);
       if (success) {
-        await loadOrders(); // Refresh the list
+        // Notification
+        await ref.read(notificationNotifierProvider.notifier).sendNotification(
+          title: 'Order Placed!',
+          message: 'Your order #${order.id.isEmpty ? "" : order.id.substring(order.id.length - 8)} has been placed successfully.',
+        );
+        await loadOrders();
       }
       return success;
     } catch (e) {
@@ -85,7 +92,26 @@ class OrderNotifier extends AsyncNotifier<List<OrderModel>> {
   Future<void> updateOrderStatus(String orderId, String status) async {
     try {
       await _repository.updateOrderStatus(orderId, status);
-      await loadOrders(); // Refresh the list
+      
+      // Log Activity
+      final admin = ref.read(authNotifierProvider).value;
+      if (admin != null) {
+        await ref.read(activityLogNotifierProvider.notifier).logAction(
+          adminId: admin.uid,
+          adminName: admin.name,
+          action: 'Order Updated',
+          targetId: orderId,
+          details: 'Order status changed to $status.',
+        );
+      }
+
+      // Notification
+      await ref.read(notificationNotifierProvider.notifier).sendNotification(
+        title: 'Order $status',
+        message: 'Your order status has been updated to $status.',
+      );
+
+      await loadOrders();
     } catch (e) {
       rethrow;
     }
@@ -95,7 +121,11 @@ class OrderNotifier extends AsyncNotifier<List<OrderModel>> {
     try {
       final success = await _repository.cancelOrder(order);
       if (success) {
-        await loadOrders(); // Refresh the list
+        await ref.read(notificationNotifierProvider.notifier).sendNotification(
+          title: 'Order Cancelled',
+          message: 'Your order has been cancelled.',
+        );
+        await loadOrders();
       }
       return success;
     } catch (e) {
@@ -106,7 +136,20 @@ class OrderNotifier extends AsyncNotifier<List<OrderModel>> {
   Future<void> deleteOrder(String orderId) async {
     try {
       await _repository.deleteOrder(orderId);
-      await loadOrders(); // Refresh the list
+      
+      // Log Activity
+      final admin = ref.read(authNotifierProvider).value;
+      if (admin != null) {
+        await ref.read(activityLogNotifierProvider.notifier).logAction(
+          adminId: admin.uid,
+          adminName: admin.name,
+          action: 'Order Deleted',
+          targetId: orderId,
+          details: 'Order was permanently removed from system.',
+        );
+      }
+      
+      await loadOrders();
     } catch (e) {
       rethrow;
     }
@@ -115,7 +158,6 @@ class OrderNotifier extends AsyncNotifier<List<OrderModel>> {
   Future<bool> acceptOrder(OrderModel order, dynamic deliveryMan) async {
     try {
       await _repository.acceptOrder(order.id, deliveryMan);
-      // No need to loadOrders() if we are using streams in the UI
       return true;
     } catch (e) {
       return false;
@@ -126,7 +168,7 @@ class OrderNotifier extends AsyncNotifier<List<OrderModel>> {
     try {
       await _repository.updateDeliveryLocation(orderId, lat, lng);
     } catch (e) {
-      // Ignore if it fails
+      // ignore
     }
   }
 }

@@ -24,7 +24,6 @@ class ProductCard extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final settings = ref.watch(settingsProvider);
-    final primaryColor = settings.primaryColor;
     
     return Container(
       width: width,
@@ -53,7 +52,6 @@ class ProductCard extends ConsumerWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // IMAGE SECTION (Premium Clean Look)
             Expanded(
               flex: 12,
               child: Stack(
@@ -71,7 +69,7 @@ class ProductCard extends ConsumerWidget {
                         borderRadius: BorderRadius.circular(24),
                         child: Image.network(
                           product.imageUrl,
-                          fit: BoxFit.contain, // Contain looks more premium for products
+                          fit: BoxFit.contain,
                           errorBuilder: (context, error, stackTrace) => Center(
                             child: Icon(Icons.image_not_supported_outlined, color: Colors.grey[300], size: 40),
                           ),
@@ -80,7 +78,6 @@ class ProductCard extends ConsumerWidget {
                     ),
                   ),
                   
-                  // PREMIUM DISCOUNT TAG
                   if (product.hasDiscount)
                     Positioned(
                       top: 15,
@@ -98,24 +95,19 @@ class ProductCard extends ConsumerWidget {
                       ),
                     ),
                     
-                  // WISHLIST BUTTON (Minimalist)
                   Positioned(
                     top: 15,
                     right: 15,
                     child: Consumer(
                       builder: (context, ref, child) {
-                        final wishlistState = ref.watch(wishlistNotifierProvider);
-                        final isFav = wishlistState.value?.contains(product.id) ?? false;
+                        final isFav = ref.watch(wishlistNotifierProvider.notifier).isInWishlist(product.id);
                         return GestureDetector(
                           onTap: () {
-                            final auth = ref.read(authNotifierProvider).value;
-                            if (auth != null) {
-                              ref.read(wishlistNotifierProvider.notifier).toggleWishlist(auth.uid, product.id);
-                            }
+                            ref.read(wishlistNotifierProvider.notifier).toggleWishlist(product.id);
                           },
                           child: Icon(
                             isFav ? Icons.favorite_rounded : Icons.favorite_border_rounded,
-                            color: isFav ? const Color(0xFF2D958E) : Colors.black26,
+                            color: isFav ? Colors.red : Colors.black26,
                             size: 22,
                           ),
                         );
@@ -126,7 +118,6 @@ class ProductCard extends ConsumerWidget {
               ),
             ),
             
-            // DETAILS SECTION
             Padding(
               padding: const EdgeInsets.fromLTRB(16, 4, 16, 16),
               child: Column(
@@ -150,14 +141,18 @@ class ProductCard extends ConsumerWidget {
                           fontSize: 18,
                         ),
                       ),
-                      // Mini Add Button
-                      Container(
-                        padding: const EdgeInsets.all(6),
-                        decoration: BoxDecoration(
-                          color: Colors.black87,
-                          borderRadius: BorderRadius.circular(12),
+                      GestureDetector(
+                        onTap: () {
+                          ref.read(cartNotifierProvider.notifier).addToCart(product);
+                        },
+                        child: Container(
+                          padding: const EdgeInsets.all(6),
+                          decoration: BoxDecoration(
+                            color: Colors.black87,
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          child: const Icon(Icons.add_rounded, color: Colors.white, size: 18),
                         ),
-                        child: const Icon(Icons.add_rounded, color: Colors.white, size: 18),
                       ),
                     ],
                   ),

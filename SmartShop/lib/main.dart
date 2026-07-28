@@ -9,6 +9,7 @@ import 'core/riverpod/loading_notifier.dart';
 import 'features/splash/screens/splash_screen.dart';
 import 'routes/app_routes.dart';
 import 'theme/app_theme.dart';
+import 'core/config/app_config.dart';
 import 'services/notification_service.dart';
 import 'services/push_notification_service.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -60,8 +61,8 @@ void main() async {
 
   // Initialize Supabase
   await Supabase.initialize(
-    url: 'https://iqfmnjpxdeygpqsajuft.supabase.co',
-    anonKey: 'sb_publishable_KZD3lLvFUuAEQVF9we_GFg_wCm1Iyig',
+    url: AppConfig.supabaseUrl,
+    anonKey: AppConfig.supabaseAnonKey,
   );
   
   await EasyLocalization.ensureInitialized();

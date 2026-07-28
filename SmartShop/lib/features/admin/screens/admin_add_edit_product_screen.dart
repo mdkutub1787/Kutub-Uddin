@@ -7,6 +7,8 @@ import '../../category/riverpod/category_notifier.dart';
 import '../../auth/riverpod/auth_notifier.dart';
 import 'dart:io';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import '../../../core/constants/constants.dart';
+import '../../../core/providers.dart';
 import '../../../widgets/custom_app_bar.dart';
 
 class AdminAddEditProductScreen extends ConsumerStatefulWidget {
@@ -58,16 +60,16 @@ class _AdminAddEditProductScreenState extends ConsumerState<AdminAddEditProductS
         
         final file = File(pickedFile.path);
         final fileExt = pickedFile.path.split('.').last;
-        final fileName = '${DateTime.now().millisecondsSinceEpoch}.$fileExt';
+        final fileName = 'prod_${DateTime.now().millisecondsSinceEpoch}.$fileExt';
+        final supabase = ref.read(supabaseClientProvider);
         
-        // Try uploading to Supabase 'products' bucket
         try {
-          await Supabase.instance.client.storage
-              .from('products')
+          await supabase.storage
+              .from(AppConstants.productBucket)
               .upload(fileName, file);
               
-          final publicUrl = Supabase.instance.client.storage
-              .from('products')
+          final publicUrl = supabase.storage
+              .from(AppConstants.productBucket)
               .getPublicUrl(fileName);
               
           setState(() {
@@ -84,7 +86,7 @@ class _AdminAddEditProductScreenState extends ConsumerState<AdminAddEditProductS
           setState(() => _isSaving = false);
           if (mounted) {
             ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text("Upload failed. Create a public 'products' bucket in Supabase storage.\nError: $e")),
+              SnackBar(content: Text("Upload failed. Error: $e")),
             );
           }
         }

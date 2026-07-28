@@ -3,6 +3,8 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:intl/intl.dart';
+import '../../../core/constants/constants.dart';
+import '../../../core/providers.dart';
 import '../riverpod/support_notifier.dart';
 import '../../auth/riverpod/auth_notifier.dart';
 import '../../../core/riverpod/settings_notifier.dart';
@@ -270,8 +272,9 @@ class _AdminChatDetailState extends ConsumerState<AdminChatDetail> {
   @override
   void initState() {
     super.initState();
-    _messagesStream = Supabase.instance.client
-            .from('support_messages')
+    final supabase = ref.read(supabaseClientProvider);
+    _messagesStream = supabase
+            .from(AppConstants.supportMessagesTable)
             .stream(primaryKey: ['id'])
             .eq('ticket_id', widget.ticket.id)
             .order('timestamp', ascending: true);

@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:image_picker/image_picker.dart';
+import '../../../core/constants/constants.dart';
+import '../../../core/providers.dart';
 import '../../auth/riverpod/auth_notifier.dart';
 import '../../../widgets/custom_app_bar.dart';
 
@@ -39,10 +41,11 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
   Future<String?> _uploadImage(String userId) async {
     if (_imageFile == null) return null;
     try {
+      final supabase = ref.read(supabaseClientProvider);
       final fileName = '$userId-${DateTime.now().millisecondsSinceEpoch}.jpg';
       final path = 'avatars/$fileName';
-      await Supabase.instance.client.storage.from('app_images').upload(path, _imageFile!);
-      final url = Supabase.instance.client.storage.from('app_images').getPublicUrl(path);
+      await supabase.storage.from(AppConstants.appImagesBucket).upload(path, _imageFile!);
+      final url = supabase.storage.from(AppConstants.appImagesBucket).getPublicUrl(path);
       return url;
     } catch (e) {
       debugPrint("Image upload error: $e");
@@ -55,6 +58,7 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
     setState(() => _isSaving = true);
     try {
       final user = ref.read(authNotifierProvider).value;
+      final supabase = ref.read(supabaseClientProvider);
       if (user != null) {
         String? imageUrl = await _uploadImage(user.uid);
         
@@ -69,10 +73,10 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
         
         if (imageUrl != null) updateData['imageUrl'] = imageUrl;
 
-        await Supabase.instance.client.from('users').upsert(updateData);
+        await supabase.from(AppConstants.usersTable).upsert(updateData);
         
         // Also update Supabase Auth metadata to keep them in sync
-        await Supabase.instance.client.auth.updateUser(
+        await supabase.auth.updateUser(
           UserAttributes(
             data: {
               'full_name': _nameController.text.trim(),

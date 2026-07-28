@@ -1,6 +1,9 @@
 import 'dart:async';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../admin/riverpod/activity_log_notifier.dart';
+import '../../auth/riverpod/auth_notifier.dart';
 import '../../../core/providers.dart';
+import '../../../core/constants/constants.dart';
 import '../models/user_model.dart';
 
 final userNotifierProvider = AsyncNotifierProvider<UserNotifier, List<UserModel>>(() {
@@ -16,7 +19,7 @@ class UserNotifier extends AsyncNotifier<List<UserModel>> {
   Future<List<UserModel>> _fetchAllUsers() async {
     final supabase = ref.watch(supabaseClientProvider);
     try {
-      final response = await supabase.from('users').select();
+      final response = await supabase.from(AppConstants.usersTable).select();
       return (response as List).map((json) => UserModel.fromJson(json)).toList();
     } catch (e) {
       return [];
@@ -36,7 +39,20 @@ class UserNotifier extends AsyncNotifier<List<UserModel>> {
   Future<void> updateUser(UserModel user) async {
     final supabase = ref.read(supabaseClientProvider);
     try {
-      await supabase.from('users').update(user.toJson()).eq('id', user.uid);
+      await supabase.from(AppConstants.usersTable).update(user.toJson()).eq('id', user.uid);
+      
+      // Log Activity
+      final admin = ref.read(authNotifierProvider).value;
+      if (admin != null) {
+        await ref.read(activityLogNotifierProvider.notifier).logAction(
+          adminId: admin.uid,
+          adminName: admin.name,
+          action: 'User Updated',
+          targetId: user.name,
+          details: 'User "${user.name}" status or role was changed to ${user.isActive ? "Active" : "Inactive"}.',
+        );
+      }
+      
       await loadUsers(); // Refresh the list
     } catch (e) {
       rethrow;
@@ -46,7 +62,20 @@ class UserNotifier extends AsyncNotifier<List<UserModel>> {
   Future<void> deleteUser(String uid) async {
     final supabase = ref.read(supabaseClientProvider);
     try {
-      await supabase.from('users').delete().eq('id', uid);
+      await supabase.from(AppConstants.usersTable).delete().eq('id', uid);
+
+      // Log Activity
+      final admin = ref.read(authNotifierProvider).value;
+      if (admin != null) {
+        await ref.read(activityLogNotifierProvider.notifier).logAction(
+          adminId: admin.uid,
+          adminName: admin.name,
+          action: 'User Deleted',
+          targetId: uid,
+          details: 'User with UID: $uid was permanently deleted.',
+        );
+      }
+
       await loadUsers(); // Refresh the list
     } catch (e) {
       rethrow;

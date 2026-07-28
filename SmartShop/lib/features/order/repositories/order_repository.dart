@@ -1,33 +1,41 @@
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import '../../../core/providers.dart';
+import '../../../core/constants/constants.dart';
 import '../models/order_model.dart';
-import '../../user/models/user_model.dart'; // We haven't migrated UserModel fully yet, but we will soon
+import '../../user/models/user_model.dart';
 
 class OrderRepository {
   final SupabaseClient _supabase;
-  static const String _table = 'orders';
 
   OrderRepository(this._supabase);
 
   Future<bool> placeOrder(OrderModel order) async {
     try {
       // 1. Insert order
-      await _supabase.from(_table).insert(order.toJson());
+      await _supabase.from(AppConstants.ordersTable).insert(order.toJson());
 
       // 2. Adjust stock
       for (var item in order.items) {
         final productId = item.product.id;
         final quantity = item.quantity;
         
-        final productData = await _supabase.from('products').select('stock').eq('id', productId).single();
+        final productData = await _supabase
+            .from(AppConstants.productsTable)
+            .select('stock')
+            .eq('id', productId)
+            .single();
         final currentStock = productData['stock'] as int;
         
         if (currentStock >= quantity) {
-          await _supabase.from('products').update({'stock': currentStock - quantity}).eq('id', productId);
+          await _supabase
+              .from(AppConstants.productsTable)
+              .update({'stock': currentStock - quantity})
+              .eq('id', productId);
         }
       }
       return true;
-    } catch (e, stack) {
-      print('Order placement failed: $e\n$stack');
+    } catch (e) {
       return false;
     }
   }
@@ -35,7 +43,7 @@ class OrderRepository {
   Future<List<OrderModel>> getUserOrders(String userId) async {
     try {
       final response = await _supabase
-          .from(_table)
+          .from(AppConstants.ordersTable)
           .select()
           .eq('userId', userId)
           .order('date', ascending: false);
@@ -48,7 +56,7 @@ class OrderRepository {
   Future<List<OrderModel>> getOrdersByShop(String shopId) async {
     try {
       final response = await _supabase
-          .from(_table)
+          .from(AppConstants.ordersTable)
           .select()
           .eq('shopId', shopId)
           .order('date', ascending: false);
@@ -61,7 +69,7 @@ class OrderRepository {
   Future<List<OrderModel>> getAllOrders() async {
     try {
       final response = await _supabase
-          .from(_table)
+          .from(AppConstants.ordersTable)
           .select()
           .order('date', ascending: false);
       return (response as List).map((json) => OrderModel.fromJson(json)).toList();
@@ -71,23 +79,30 @@ class OrderRepository {
   }
 
   Future<void> updateOrderStatus(String orderId, String status) async {
-    await _supabase.from(_table).update({'status': status}).eq('id', orderId);
+    await _supabase
+        .from(AppConstants.ordersTable)
+        .update({'status': status})
+        .eq('id', orderId);
   }
 
   Future<void> updateDeliveryLocation(String orderId, double lat, double lng) async {
-    await _supabase.from(_table).update({
+    await _supabase.from(AppConstants.ordersTable).update({
       'deliveryLatitude': lat,
       'deliveryLongitude': lng,
     }).eq('id', orderId);
   }
 
   Future<void> deleteOrder(String orderId) async {
-    await _supabase.from(_table).delete().eq('id', orderId);
+    await _supabase.from(AppConstants.ordersTable).delete().eq('id', orderId);
   }
 
   Future<bool> cancelOrder(OrderModel order) async {
     try {
-      final response = await _supabase.from(_table).select('status').eq('id', order.id).single();
+      final response = await _supabase
+          .from(AppConstants.ordersTable)
+          .select('status')
+          .eq('id', order.id)
+          .single();
       if (response['status'] != 'Pending') return false;
 
       await updateOrderStatus(order.id, 'Cancelled');
@@ -95,9 +110,16 @@ class OrderRepository {
       for (var item in order.items) {
         final productId = item.product.id;
         final quantity = item.quantity;
-        final productData = await _supabase.from('products').select('stock').eq('id', productId).single();
+        final productData = await _supabase
+            .from(AppConstants.productsTable)
+            .select('stock')
+            .eq('id', productId)
+            .single();
         final currentStock = productData['stock'] as int;
-        await _supabase.from('products').update({'stock': currentStock + quantity}).eq('id', productId);
+        await _supabase
+            .from(AppConstants.productsTable)
+            .update({'stock': currentStock + quantity})
+            .eq('id', productId);
       }
       return true;
     } catch (e) {
@@ -107,7 +129,7 @@ class OrderRepository {
 
   Stream<List<OrderModel>> streamAvailableOrders() {
     return _supabase
-        .from(_table)
+        .from(AppConstants.ordersTable)
         .stream(primaryKey: ['id'])
         .map((maps) {
           return maps
@@ -120,7 +142,7 @@ class OrderRepository {
 
   Stream<List<OrderModel>> streamMyDeliveries(String deliveryManId) {
     return _supabase
-        .from(_table)
+        .from(AppConstants.ordersTable)
         .stream(primaryKey: ['id'])
         .map((maps) {
           return maps
@@ -132,7 +154,7 @@ class OrderRepository {
   }
 
   Future<void> acceptOrder(String orderId, UserModel deliveryMan) async {
-    await _supabase.from(_table).update({
+    await _supabase.from(AppConstants.ordersTable).update({
       'deliveryManId': deliveryMan.uid,
       'deliveryManName': deliveryMan.name,
       'deliveryManPhone': deliveryMan.phoneNumber,
@@ -143,7 +165,7 @@ class OrderRepository {
 
   Stream<List<OrderModel>> streamMyCompletedDeliveries(String deliveryManId) {
     return _supabase
-        .from(_table)
+        .from(AppConstants.ordersTable)
         .stream(primaryKey: ['id'])
         .map((maps) {
           return maps
@@ -156,7 +178,7 @@ class OrderRepository {
 
   Stream<List<OrderModel>> streamUserOrders(String userId) {
     return _supabase
-        .from(_table)
+        .from(AppConstants.ordersTable)
         .stream(primaryKey: ['id'])
         .map((maps) {
           return maps
@@ -167,3 +189,7 @@ class OrderRepository {
         });
   }
 }
+
+final orderRepositoryProvider = Provider<OrderRepository>((ref) {
+  return OrderRepository(ref.watch(supabaseClientProvider));
+});

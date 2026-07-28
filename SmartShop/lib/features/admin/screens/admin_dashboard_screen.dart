@@ -9,6 +9,7 @@ import '../../notification/riverpod/notification_notifier.dart';
 import '../../support/riverpod/support_notifier.dart';
 import '../../user/riverpod/user_notifier.dart';
 import '../../auth/riverpod/auth_notifier.dart';
+import '../riverpod/activity_log_notifier.dart';
 import '../../../routes/app_routes.dart';
 import '../../../core/app_strings.dart';
 import '../../../widgets/custom_app_bar.dart';
@@ -36,6 +37,8 @@ class _AdminDashboardScreenState extends ConsumerState<AdminDashboardScreen> {
       ref.read(orderNotifierProvider.notifier).loadOrders();
       ref.read(userNotifierProvider.notifier).loadUsers();
       ref.read(categoryNotifierProvider.notifier).loadCategories();
+      ref.read(activityLogNotifierProvider.notifier).loadLogs();
+      ref.read(notificationNotifierProvider.notifier).loadNotifications();
     });
   }
 

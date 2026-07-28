@@ -14,6 +14,8 @@ import '../../notification/riverpod/notification_notifier.dart';
 import '../../support/riverpod/support_notifier.dart';
 import '../../banner/riverpod/banner_notifier.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import '../../../core/constants/constants.dart';
+import '../../../core/providers.dart';
 import '../../../widgets/product_card.dart';
 import '../../../widgets/custom_app_bar.dart';
 import '../../../widgets/app_card.dart';
@@ -103,7 +105,11 @@ class DashboardScreen extends ConsumerWidget {
                       }
 
                       return FutureBuilder<Map<String, dynamic>?>(
-                        future: Supabase.instance.client.from('shops').select('name').eq('id', shopId).maybeSingle(),
+                        future: ref.read(supabaseClientProvider)
+                            .from(AppConstants.shopsTable)
+                            .select('name')
+                            .eq('id', shopId)
+                            .maybeSingle(),
                         builder: (context, snapshot) {
                           String shopName = "Smart Shop";
                           if (snapshot.hasData && snapshot.data != null) {

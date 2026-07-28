@@ -1,35 +1,61 @@
+import 'dart:async';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../../core/providers.dart';
+import '../../auth/riverpod/auth_notifier.dart';
+import '../../product/models/product_model.dart';
+import '../repositories/wishlist_repository.dart';
 
-// Dummy implementation for now to satisfy imports and compiler errors
-final wishlistNotifierProvider = AsyncNotifierProvider<WishlistNotifier, List<dynamic>>(() {
+final wishlistRepositoryProvider = Provider<WishlistRepository>((ref) {
+  return WishlistRepository(ref.watch(supabaseClientProvider));
+});
+
+final wishlistNotifierProvider = AsyncNotifierProvider<WishlistNotifier, List<ProductModel>>(() {
   return WishlistNotifier();
 });
 
-class WishlistNotifier extends AsyncNotifier<List<dynamic>> {
+class WishlistNotifier extends AsyncNotifier<List<ProductModel>> {
+  late WishlistRepository _repository;
+
   @override
-  Future<List<dynamic>> build() async {
-    return [];
+  FutureOr<List<ProductModel>> build() async {
+    _repository = ref.watch(wishlistRepositoryProvider);
+    return await _fetchWishlist();
   }
 
-  Future<void> fetchWishlist(String userId) async {
-    state = const AsyncLoading();
+  Future<List<ProductModel>> _fetchWishlist() async {
+    final user = ref.read(authNotifierProvider).value;
+    if (user == null) return [];
     try {
-      // In a real implementation, fetch from Supabase
-      state = const AsyncData([]);
-    } catch (e, st) {
-      state = AsyncError(e, st);
+      return await _repository.getWishlist(user.uid);
+    } catch (e) {
+      return [];
     }
   }
 
-  Future<void> toggleWishlist(String userId, String productId) async {
-    if (state.value != null) {
-      final currentList = List<String>.from(state.value!);
-      if (currentList.contains(productId)) {
-        currentList.remove(productId);
+  Future<void> loadWishlist() async {
+    state = const AsyncLoading();
+    state = await AsyncValue.guard(() => _fetchWishlist());
+  }
+
+  Future<void> toggleWishlist(String productId) async {
+    final user = ref.read(authNotifierProvider).value;
+    if (user == null) return;
+
+    final isExist = state.value?.any((p) => p.id == productId) ?? false;
+
+    try {
+      if (isExist) {
+        await _repository.removeFromWishlist(user.uid, productId);
       } else {
-        currentList.add(productId);
+        await _repository.addToWishlist(user.uid, productId);
       }
-      state = AsyncData(currentList);
+      await loadWishlist();
+    } catch (e) {
+      // Toggle failed
     }
+  }
+
+  bool isInWishlist(String productId) {
+    return state.value?.any((p) => p.id == productId) ?? false;
   }
 }

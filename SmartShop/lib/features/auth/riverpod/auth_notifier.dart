@@ -1,6 +1,8 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:supabase_flutter/supabase_flutter.dart' as sb;
 import 'package:firebase_messaging/firebase_messaging.dart';
+import '../../../core/constants/constants.dart';
+import '../../../core/providers.dart';
 import '../repositories/auth_repository.dart';
 import '../../user/models/user_model.dart';
 
@@ -26,9 +28,10 @@ class AuthNotifier extends AsyncNotifier<UserModel?> {
   }
 
   Future<UserModel> _fetchUserData(sb.User user) async {
+    final supabase = ref.read(supabaseClientProvider);
     try {
-      final response = await sb.Supabase.instance.client
-          .from('users')
+      final response = await supabase
+          .from(AppConstants.usersTable)
           .select()
           .eq('id', user.id)
           .maybeSingle();
@@ -42,7 +45,6 @@ class AuthNotifier extends AsyncNotifier<UserModel?> {
       // print('Error fetching user data from DB: $e');
     }
     
-    // Fallback to auth metadata if DB row not found
     // Fallback to auth metadata if DB row not found
     final metadata = user.userMetadata ?? {};
     final newUser = UserModel(
@@ -59,7 +61,7 @@ class AuthNotifier extends AsyncNotifier<UserModel?> {
     
     // Auto-insert the missing user into the database
     try {
-      await sb.Supabase.instance.client.from('users').insert({
+      await supabase.from(AppConstants.usersTable).insert({
         'id': newUser.uid,
         'email': newUser.email,
         'name': newUser.name,
@@ -85,8 +87,8 @@ class AuthNotifier extends AsyncNotifier<UserModel?> {
     try {
       final fcmToken = await FirebaseMessaging.instance.getToken();
       if (fcmToken != null) {
-        await sb.Supabase.instance.client
-            .from('users')
+        await ref.read(supabaseClientProvider)
+            .from(AppConstants.usersTable)
             .update({'fcm_token': fcmToken})
             .eq('id', userId);
       }
@@ -168,8 +170,8 @@ class AuthNotifier extends AsyncNotifier<UserModel?> {
     final user = state.value;
     if (user != null) {
       try {
-        await sb.Supabase.instance.client
-            .from('users')
+        await ref.read(supabaseClientProvider)
+            .from(AppConstants.usersTable)
             .update({'isAvailable': isAvailable})
             .eq('id', user.uid);
             

@@ -9,6 +9,7 @@ import '../../cart/riverpod/cart_notifier.dart';
 import '../../wishlist/riverpod/wishlist_notifier.dart';
 import '../../auth/riverpod/auth_notifier.dart';
 import '../../../core/app_strings.dart';
+import '../../../core/extensions/context_extension.dart';
 
 class ProductDetailsScreen extends ConsumerWidget {
   final ProductModel product;
@@ -39,21 +40,16 @@ class ProductDetailsScreen extends ConsumerWidget {
                 padding: const EdgeInsets.all(8.0),
                 child: Consumer(
                   builder: (context, ref, child) {
-                    final wishlistState = ref.watch(wishlistNotifierProvider);
-                    final isFav = wishlistState.value?.contains(product.id) ?? false;
+                    final isFav = ref.watch(wishlistNotifierProvider.notifier).isInWishlist(product.id);
                     return CircleAvatar(
                       backgroundColor: Colors.white.withValues(alpha: 0.9),
                       child: IconButton(
                         icon: Icon(
                           isFav ? Icons.favorite_rounded : Icons.favorite_border_rounded,
-                          color: isFav ? const Color(0xFF2D958E) : Colors.black,
+                          color: isFav ? Colors.red : Colors.black,
                         ),
                         onPressed: () {
-                          // TODO: Replace with actual user ID from auth when integrated
-                          final auth = ref.read(authNotifierProvider).value;
-                          if (auth != null) {
-                            ref.read(wishlistNotifierProvider.notifier).toggleWishlist(auth.uid, product.id);
-                          }
+                          ref.read(wishlistNotifierProvider.notifier).toggleWishlist(product.id);
                         },
                       ),
                     );
@@ -63,7 +59,7 @@ class ProductDetailsScreen extends ConsumerWidget {
             ],
             flexibleSpace: FlexibleSpaceBar(
               background: Hero(
-                tag: heroTag ?? 'product_\${product.id}',
+                tag: heroTag ?? 'product_${product.id}',
                 child: Container(
                   color: Colors.white,
                   child: Stack(
@@ -216,21 +212,7 @@ class ProductDetailsScreen extends ConsumerWidget {
                 child: ElevatedButton(
                   onPressed: product.stock > 0 ? () {
                     ref.read(cartNotifierProvider.notifier).addToCart(product);
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        content: Row(
-                          children: [
-                            const Icon(Icons.check_circle_rounded, color: Colors.white),
-                            const SizedBox(width: 10),
-                            const Text("Added to your cart!", style: TextStyle(fontWeight: FontWeight.bold)),
-                          ],
-                        ),
-                        behavior: SnackBarBehavior.floating,
-                        backgroundColor: primaryColor,
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
-                        margin: const EdgeInsets.all(20),
-                      )
-                    );
+                    context.showSnackBar("Added to your cart!");
                   } : null,
                   style: ElevatedButton.styleFrom(
                     backgroundColor: primaryColor,

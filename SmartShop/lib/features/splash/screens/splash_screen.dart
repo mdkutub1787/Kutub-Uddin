@@ -37,7 +37,6 @@ class _SplashScreenState extends ConsumerState<SplashScreen> with SingleTickerPr
     await Future.delayed(const Duration(seconds: 2));
     if (!mounted) return;
 
-    // Wait for auth initialization to complete
     UserModel? user;
     try {
       user = await ref.read(authNotifierProvider.future);
@@ -56,10 +55,9 @@ class _SplashScreenState extends ConsumerState<SplashScreen> with SingleTickerPr
         return;
       }
 
-      ref.read(wishlistNotifierProvider.notifier).fetchWishlist(user.uid);
+      ref.read(wishlistNotifierProvider.notifier).loadWishlist();
       ref.read(navigationNotifierProvider.notifier).setIndex(0);
       
-      // Redirect based on role
       if (user.role == 'admin' || user.role == 'super_admin' || user.role == 'owner') {
         Navigator.pushReplacementNamed(context, AppRoutes.adminDashboard);
       } else if (user.role == 'delivery_man') {
@@ -91,7 +89,6 @@ class _SplashScreenState extends ConsumerState<SplashScreen> with SingleTickerPr
       backgroundColor: Colors.white,
       body: Stack(
         children: [
-          // Elegant Background Curves
           Positioned(
             top: -100,
             right: -50,
@@ -114,7 +111,6 @@ class _SplashScreenState extends ConsumerState<SplashScreen> with SingleTickerPr
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  // Logo with a premium glass-morphism effect
                   Container(
                     padding: const EdgeInsets.all(25),
                     decoration: BoxDecoration(
@@ -171,4 +167,3 @@ class _SplashScreenState extends ConsumerState<SplashScreen> with SingleTickerPr
     );
   }
 }
-

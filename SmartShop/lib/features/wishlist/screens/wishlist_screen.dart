@@ -20,12 +20,7 @@ class WishlistScreen extends ConsumerWidget {
     final primaryColor = Theme.of(context).primaryColor;
     final size = MediaQuery.of(context).size;
 
-    final featuredProducts = productState.featuredProducts ?? [];
-    final wishlistProductIds = wishlistState.value ?? [];
-    
-    final favoriteProducts = featuredProducts
-        .where((p) => wishlistProductIds.contains(p.id))
-        .toList();
+    final favoriteProducts = wishlistState.value ?? [];
 
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
@@ -34,7 +29,6 @@ class WishlistScreen extends ConsumerWidget {
       ),
       body: Stack(
         children: [
-          // Decorative Background Elements
           Positioned(
             top: -size.height * 0.1,
             right: -size.width * 0.2,
@@ -54,10 +48,7 @@ class WishlistScreen extends ConsumerWidget {
           
           RefreshIndicator(
             onRefresh: () async {
-              final auth = ref.read(authNotifierProvider).value;
-              if (auth != null) {
-                ref.read(wishlistNotifierProvider.notifier).fetchWishlist(auth.uid);
-              }
+              await ref.read(wishlistNotifierProvider.notifier).loadWishlist();
             },
             child: favoriteProducts.isEmpty
                 ? EmptyStateWidget(
@@ -81,26 +72,16 @@ class WishlistScreen extends ConsumerWidget {
                             IconButton(
                               icon: const Icon(Icons.add_shopping_cart_rounded, color: Colors.blue),
                               onPressed: () {
-                                // Dummy true for added to cart
-                                bool added = true; // ref.read(cartNotifierProvider.notifier).addItem(product);
-                                if (added) {
-                                  ScaffoldMessenger.of(context).showSnackBar(
-                                    SnackBar(content: Text(AppStrings.addedToCart.tr()), duration: const Duration(seconds: 1), behavior: SnackBarBehavior.floating),
-                                  );
-                                } else {
-                                  ScaffoldMessenger.of(context).showSnackBar(
-                                    const SnackBar(content: Text("Out of stock!"), backgroundColor: Colors.red, behavior: SnackBarBehavior.floating),
-                                  );
-                                }
+                                ref.read(cartNotifierProvider.notifier).addToCart(product);
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(content: Text(AppStrings.addedToCart.tr()), duration: const Duration(seconds: 1), behavior: SnackBarBehavior.floating),
+                                );
                               },
                             ),
                             IconButton(
                               icon: const Icon(Icons.delete_outline_rounded, color: Colors.red),
                               onPressed: () {
-                                final auth = ref.read(authNotifierProvider).value;
-                                if (auth != null) {
-                                  ref.read(wishlistNotifierProvider.notifier).toggleWishlist(auth.uid, product.id);
-                                }
+                                ref.read(wishlistNotifierProvider.notifier).toggleWishlist(product.id);
                               },
                             ),
                           ],

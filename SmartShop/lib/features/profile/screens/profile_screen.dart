@@ -21,14 +21,14 @@ class ProfileScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final authState = ref.watch(authNotifierProvider);
     final settings = ref.watch(settingsProvider);
-    final cartItems = ref.watch(cartNotifierProvider) ?? [];
-    final cartCount = cartItems.fold(0, (sum, item) => sum + item.quantity);
+    final cart = ref.watch(cartNotifierProvider);
+    final cartCount = cart.items.fold(0, (sum, item) => sum + item.quantity);
     
-    final wishlistItems = ref.watch(wishlistNotifierProvider).value ?? [] ?? [];
+    final wishlistItems = ref.watch(wishlistNotifierProvider).value ?? [];
     final orderItems = ref.watch(orderNotifierProvider).value ?? [];
     
-    final unreadNotifCount = ref.watch(notificationNotifierProvider).value?.length ?? 0; // Dummy
-    final unreadSupportCount = ref.watch(supportNotifierProvider).value?.length ?? 0; // Dummy
+    final unreadNotifCount = ref.watch(notificationNotifierProvider).value?.length ?? 0;
+    final unreadSupportCount = ref.watch(supportNotifierProvider).value?.length ?? 0;
     
     final user = authState.value;
     final isAdmin = user?.role == 'admin' || user?.role == 'super_admin';
@@ -94,15 +94,11 @@ class ProfileScreen extends ConsumerWidget {
               _menuItem(Icons.lock_reset_rounded, AppStrings.changePassword.tr(), () => _showChangePasswordDialog(context, ref)),
               _menuItem(Icons.mail_lock_rounded, AppStrings.resetViaEmail.tr(), () async {
                 if (user?.email != null) {
-                  // await authViewModel.forgotPassword(user!.email);
-                  // if (context.mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(AppStrings.resetEmailSent.tr())));
                 }
               }),
             ]),
 
             const SizedBox(height: 24),
-
-
 
             const SizedBox(height: 12),
             Text("${AppStrings.appVersion.tr()} 1.0.0", style: TextStyle(color: Colors.grey[400], fontSize: 11)),
@@ -224,7 +220,6 @@ class ProfileScreen extends ConsumerWidget {
         clipBehavior: Clip.none,
         alignment: Alignment.center,
         children: [
-          // Subtle background decoration
           Positioned(
             top: -40,
             right: -20,
@@ -464,7 +459,6 @@ class ProfileScreen extends ConsumerWidget {
         borderRadius: 20,
         child: Column(
           children: [
-            // Dark Mode
             ListTile(
               leading: Icon(settings.themeMode == ThemeMode.dark ? Icons.dark_mode_rounded : Icons.light_mode_rounded),
               title: Text(AppStrings.appearance.tr(), style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w500)),
@@ -477,7 +471,6 @@ class ProfileScreen extends ConsumerWidget {
               ),
             ),
             const Divider(height: 1, indent: 55),
-            // Language
             ListTile(
               leading: const Icon(Icons.translate_rounded),
               title: Text(AppStrings.language.tr(), style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w500)),
@@ -494,7 +487,6 @@ class ProfileScreen extends ConsumerWidget {
               },
             ),
             const Divider(height: 1, indent: 55),
-            // Theme Color
             ListTile(
               leading: const Icon(Icons.palette_outlined),
               title: Text(AppStrings.themeColor.tr(), style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w500)),
@@ -708,8 +700,6 @@ class ProfileScreen extends ConsumerWidget {
     );
   }
 
-
-
   void _showChangePasswordDialog(BuildContext context, WidgetRef ref) {
     final oldController = TextEditingController();
     final newController = TextEditingController();
@@ -758,7 +748,6 @@ class ProfileScreen extends ConsumerWidget {
                 ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Passwords do not match")));
                 return;
               }
-              // TODO: Add Change password
             },
             child: const Text("Update"),
           )

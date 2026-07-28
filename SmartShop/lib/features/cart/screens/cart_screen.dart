@@ -11,6 +11,8 @@ import '../../order/models/order_model.dart';
 import '../../../models/coupon_model.dart';
 import '../../../core/app_strings.dart';
 import '../../../routes/app_routes.dart';
+import '../../../core/constants/constants.dart';
+import '../../../core/providers.dart';
 import '../../../widgets/custom_app_bar.dart';
 import '../../../widgets/empty_state_widget.dart';
 import '../../../widgets/product_list_item.dart';
@@ -31,24 +33,12 @@ class _CartScreenState extends ConsumerState<CartScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final cartItems = ref.watch(cartNotifierProvider) ?? [];
-    // Dummy cart logic properties
+    final cart = ref.watch(cartNotifierProvider);
+    final cartItems = cart.items;
+    
     final int cartItemCount = cartItems.fold(0, (sum, item) => sum + item.quantity);
-    final double totalOriginalPrice = cartItems.fold(0.0, (sum, item) => sum + (item.product.originalPrice ?? item.product.price) * item.quantity);
-    final double subtotal = cartItems.fold(0.0, (sum, item) => sum + item.product.price * item.quantity);
-    final double totalProductDiscount = totalOriginalPrice - subtotal;
-    
-    // Delivery info (dummy state for now, assuming standard inside dhaka)
-    bool isInsideDhaka = true; 
-    DeliveryMethod deliveryMethod = DeliveryMethod.standard;
-    double deliveryFee = isInsideDhaka ? (deliveryMethod == DeliveryMethod.express ? 100 : 60) : (deliveryMethod == DeliveryMethod.express ? 250 : 150);
-    
-    // Coupon (dummy state)
-    CouponModel? appliedCoupon = null;
-    double couponDiscount = 0.0;
-    String appliedCouponDetails = '';
-
-    double totalAmount = subtotal + deliveryFee - couponDiscount;
+    final double totalOriginalPrice = cartItems.fold(0.0, (sum, item) => sum + (item.product.originalPrice) * item.quantity);
+    final double totalProductDiscount = totalOriginalPrice - cart.subtotal;
 
     final settings = ref.watch(settingsProvider);
     final auth = ref.watch(authNotifierProvider).value;
@@ -89,10 +79,10 @@ class _CartScreenState extends ConsumerState<CartScreen> {
                   child: Column(
                     children: [
                       _buildAddressSection(context, auth, settings),
-                      _buildDeliverySection(context, isInsideDhaka, deliveryMethod, settings),
+                      _buildDeliverySection(context, cart, settings),
                       _buildItemsList(context, cartItems, settings),
-                      _buildCouponSection(context, appliedCoupon, settings),
-                      _buildOrderSummary(context, cartItemCount, totalOriginalPrice, totalProductDiscount, subtotal, deliveryFee, couponDiscount, appliedCoupon, appliedCouponDetails, totalAmount, settings),
+                      _buildCouponSection(context, cart.appliedCoupon, settings),
+                      _buildOrderSummary(context, cartItemCount, totalOriginalPrice, totalProductDiscount, cart, settings),
                       const SizedBox(height: 120),
                     ],
                   ),
@@ -100,17 +90,17 @@ class _CartScreenState extends ConsumerState<CartScreen> {
           
           if (cartItems.isNotEmpty)
             Positioned(
-              bottom: 90, // To stay above the MainScreen's floating bottom navigation bar
+              bottom: 90, 
               left: 0,
               right: 0,
-              child: _buildCheckoutButton(context, cartItems, totalAmount, deliveryFee, settings),
+              child: _buildCheckoutButton(context, cartItems, cart.totalAmount, cart.deliveryFee, settings),
             ),
         ],
       ),
     );
   }
 
-  Widget _buildDeliverySection(BuildContext context, bool isInsideDhaka, DeliveryMethod deliveryMethod, dynamic settings) {
+  Widget _buildDeliverySection(BuildContext context, CartState cart, dynamic settings) {
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
       padding: const EdgeInsets.all(16),
@@ -144,10 +134,8 @@ class _CartScreenState extends ConsumerState<CartScreen> {
               Expanded(
                 child: _selectableChip(
                   label: AppStrings.insideDhaka.tr(),
-                  isSelected: isInsideDhaka,
-                  onTap: () {
-                     // ref.read(cartNotifierProvider.notifier).setInsideDhaka(true);
-                  },
+                  isSelected: cart.isInsideDhaka,
+                  onTap: () => ref.read(cartNotifierProvider.notifier).setInsideDhaka(true),
                   settings: settings,
                 ),
               ),
@@ -155,10 +143,8 @@ class _CartScreenState extends ConsumerState<CartScreen> {
               Expanded(
                 child: _selectableChip(
                   label: AppStrings.outsideDhaka.tr(),
-                  isSelected: !isInsideDhaka,
-                  onTap: () {
-                     // ref.read(cartNotifierProvider.notifier).setInsideDhaka(false);
-                  },
+                  isSelected: !cart.isInsideDhaka,
+                  onTap: () => ref.read(cartNotifierProvider.notifier).setInsideDhaka(false),
                   settings: settings,
                 ),
               ),
@@ -172,21 +158,21 @@ class _CartScreenState extends ConsumerState<CartScreen> {
           const SizedBox(height: 12),
           _deliveryMethodCard(
             context,
-            method: DeliveryMethod.standard,
+            method: 'standard',
             title: AppStrings.standardDelivery.tr(),
             subtitle: "3-5 Business Days",
-            price: isInsideDhaka ? "60" : "150",
-            currentMethod: deliveryMethod,
+            price: cart.isInsideDhaka ? "60" : "150",
+            currentMethod: cart.deliveryMethod,
             settings: settings,
           ),
           const SizedBox(height: 10),
           _deliveryMethodCard(
             context,
-            method: DeliveryMethod.express,
+            method: 'express',
             title: AppStrings.expressDelivery.tr(),
             subtitle: "1-2 Business Days",
-            price: isInsideDhaka ? "100" : "250",
-            currentMethod: deliveryMethod,
+            price: cart.isInsideDhaka ? "100" : "250",
+            currentMethod: cart.deliveryMethod,
             settings: settings,
           ),
         ],
@@ -217,12 +203,10 @@ class _CartScreenState extends ConsumerState<CartScreen> {
     );
   }
 
-  Widget _deliveryMethodCard(BuildContext context, {required DeliveryMethod method, required String title, required String subtitle, required String price, required DeliveryMethod currentMethod, required dynamic settings}) {
+  Widget _deliveryMethodCard(BuildContext context, {required String method, required String title, required String subtitle, required String price, required String currentMethod, required dynamic settings}) {
     bool isSelected = currentMethod == method;
     return InkWell(
-      onTap: () {
-         // ref.read(cartNotifierProvider.notifier).setDeliveryMethod(method);
-      },
+      onTap: () => ref.read(cartNotifierProvider.notifier).setDeliveryMethod(method),
       borderRadius: BorderRadius.circular(16),
       child: Container(
         padding: const EdgeInsets.all(16),
@@ -243,7 +227,7 @@ class _CartScreenState extends ConsumerState<CartScreen> {
                 shape: BoxShape.circle,
               ),
               child: Icon(
-                method == DeliveryMethod.express ? Icons.bolt_rounded : Icons.local_shipping_rounded,
+                method == 'express' ? Icons.bolt_rounded : Icons.local_shipping_rounded,
                 color: isSelected ? Colors.white : Colors.grey[600],
                 size: 20,
               ),
@@ -316,7 +300,7 @@ class _CartScreenState extends ConsumerState<CartScreen> {
     );
   }
 
-  Widget _buildItemsList(BuildContext context, List<dynamic> items, dynamic settings) {
+  Widget _buildItemsList(BuildContext context, List<CartItem> items, dynamic settings) {
     return ListView.builder(
       shrinkWrap: true,
       physics: const NeverScrollableScrollPhysics(),
@@ -334,7 +318,7 @@ class _CartScreenState extends ConsumerState<CartScreen> {
             child: Row(
               children: [
                 _qtyBtn(Icons.remove, () {
-                  ref.read(cartNotifierProvider.notifier).removeFromCart(item.product.id);
+                  ref.read(cartNotifierProvider.notifier).updateQuantity(item.product.id, item.quantity - 1);
                 }),
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 8),
@@ -402,9 +386,18 @@ class _CartScreenState extends ConsumerState<CartScreen> {
                 ),
               ),
               TextButton(
-                onPressed: () {
+                onPressed: () async {
                   if (_couponController.text.isEmpty) return;
-                  // Dummy coupon logic
+                  String result = await ref.read(cartNotifierProvider.notifier).applyCoupon(_couponController.text.trim());
+                  if (result == 'Success') {
+                    if (context.mounted) {
+                      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Coupon Applied!"), backgroundColor: Colors.green));
+                    }
+                  } else {
+                    if (context.mounted) {
+                      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(result), backgroundColor: Colors.red));
+                    }
+                  }
                 },
                 child: Text(AppStrings.apply.tr(), style: const TextStyle(fontWeight: FontWeight.bold)),
               ),
@@ -431,9 +424,7 @@ class _CartScreenState extends ConsumerState<CartScreen> {
                 ),
                 const SizedBox(width: 8),
                 GestureDetector(
-                  onTap: () {
-                     // ref.read(cartNotifierProvider.notifier).removeCoupon();
-                  },
+                  onTap: () => ref.read(cartNotifierProvider.notifier).removeCoupon(),
                   child: const Icon(Icons.cancel, color: Colors.green, size: 16),
                 ),
               ],
@@ -443,7 +434,7 @@ class _CartScreenState extends ConsumerState<CartScreen> {
     );
   }
 
-  Widget _buildOrderSummary(BuildContext context, int cartItemCount, double totalOriginalPrice, double totalProductDiscount, double subtotal, double deliveryFee, double couponDiscount, CouponModel? appliedCoupon, String appliedCouponDetails, double totalAmount, dynamic settings) {
+  Widget _buildOrderSummary(BuildContext context, int cartItemCount, double totalOriginalPrice, double totalProductDiscount, CartState cart, dynamic settings) {
     final currency = AppStrings.currency.tr();
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 15),
@@ -467,16 +458,16 @@ class _CartScreenState extends ConsumerState<CartScreen> {
             _summaryRow(AppStrings.productDiscount.tr(), "-$currency ${NumberFormat('#,##,###').format(totalProductDiscount.toInt())}", color: Colors.green),
             const SizedBox(height: 12),
           ],
-          _summaryRow(AppStrings.subtotal.tr(), "$currency ${NumberFormat('#,##,###').format(subtotal.toInt())}"),
+          _summaryRow(AppStrings.subtotal.tr(), "$currency ${NumberFormat('#,##,###').format(cart.subtotal.toInt())}"),
           const SizedBox(height: 12),
-          _summaryRow(AppStrings.deliveryFee.tr(), "$currency ${NumberFormat('#,##,###').format(deliveryFee.toInt())}"),
+          _summaryRow(AppStrings.deliveryFee.tr(), "$currency ${NumberFormat('#,##,###').format(cart.deliveryFee.toInt())}"),
           const SizedBox(height: 12),
-          if (couponDiscount > 0 || appliedCoupon?.type == CouponType.freeDelivery) ...[
+          if (cart.couponDiscount > 0 || cart.appliedCoupon?.type == CouponType.freeDelivery) ...[
             _summaryRow(
-              "${AppStrings.couponDiscount.tr()} ${appliedCouponDetails.isNotEmpty ? '($appliedCouponDetails)' : ''}", 
-              appliedCoupon?.type == CouponType.freeDelivery 
+              AppStrings.couponDiscount.tr(), 
+              cart.appliedCoupon?.type == CouponType.freeDelivery 
                   ? "FREE" 
-                  : "-$currency ${NumberFormat('#,##,###').format(couponDiscount.toInt())}", 
+                  : "-$currency ${NumberFormat('#,##,###').format(cart.couponDiscount.toInt())}", 
               color: Colors.green
             ),
             const SizedBox(height: 12),
@@ -498,7 +489,7 @@ class _CartScreenState extends ConsumerState<CartScreen> {
                       style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: settings.primaryColor),
                     ),
                     TextSpan(
-                      text: NumberFormat('#,##,###').format(totalAmount.toInt()),
+                      text: NumberFormat('#,##,###').format(cart.totalAmount.toInt()),
                       style: TextStyle(
                         fontSize: 24,
                         fontWeight: FontWeight.w900,
@@ -532,11 +523,10 @@ class _CartScreenState extends ConsumerState<CartScreen> {
     );
   }
 
-  Widget _buildCheckoutButton(BuildContext context, List<dynamic> cartItems, double totalAmount, double deliveryFee, dynamic settings) {
+  Widget _buildCheckoutButton(BuildContext context, List<CartItem> cartItems, double totalAmount, double deliveryFee, dynamic settings) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
       child: SafeArea(
-        bottom: false, // Main screen already handles bottom safe area for floating bar
         child: SizedBox(
           width: double.infinity,
           height: 60,
@@ -565,7 +555,7 @@ class _CartScreenState extends ConsumerState<CartScreen> {
     );
   }
 
-  void _handleCheckout(BuildContext context, List<dynamic> cartItems, double totalAmount, double deliveryFee) async {
+  void _handleCheckout(BuildContext context, List<CartItem> cartItems, double totalAmount, double deliveryFee) async {
     final auth = ref.read(authNotifierProvider).value;
     if (auth == null) {
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(AppStrings.pleaseLogin.tr())));
@@ -574,7 +564,6 @@ class _CartScreenState extends ConsumerState<CartScreen> {
 
     LoadingOverlay.show(context);
 
-    // Auto-fetch Location
     double? lat;
     double? lng;
     try {
@@ -590,9 +579,7 @@ class _CartScreenState extends ConsumerState<CartScreen> {
           lng = position.longitude;
         }
       }
-    } catch (e) {
-      // ignore location fetch error
-    }
+    } catch (e) { }
 
     final shopId = cartItems.isNotEmpty ? cartItems.first.product.shopId : '';
     String? shopName;
@@ -602,8 +589,9 @@ class _CartScreenState extends ConsumerState<CartScreen> {
     
     try {
       if (shopId.isNotEmpty) {
-        final shopRes = await Supabase.instance.client
-            .from('shops')
+        final supabase = ref.read(supabaseClientProvider);
+        final shopRes = await supabase
+            .from(AppConstants.shopsTable)
             .select()
             .eq('id', shopId)
             .maybeSingle();
@@ -614,9 +602,7 @@ class _CartScreenState extends ConsumerState<CartScreen> {
           shopLongitude = shopRes['longitude'] != null ? (shopRes['longitude'] as num).toDouble() : null;
         }
       }
-    } catch (e) {
-      // ignore shop fetch error
-    }
+    } catch (e) { }
 
     final newOrder = OrderModel(
       id: '',
@@ -625,7 +611,7 @@ class _CartScreenState extends ConsumerState<CartScreen> {
       userName: auth.name,
       userPhone: auth.phoneNumber ?? '',
       userAddress: auth.address ?? '',
-      items: cartItems.map((item) => item as CartItem).toList(),
+      items: cartItems,
       totalAmount: totalAmount,
       deliveryFee: deliveryFee,
       date: DateTime.now(),
@@ -638,16 +624,13 @@ class _CartScreenState extends ConsumerState<CartScreen> {
       shopLongitude: shopLongitude,
     );
     
-    // Place order via Supabase
     bool success = await ref.read(orderNotifierProvider.notifier).placeOrder(newOrder);
     
     LoadingOverlay.hide(context);
     if (success) {
       ref.read(cartNotifierProvider.notifier).clearCart();
       if (context.mounted) {
-        // Switch to "My Orders" tab (Index 1)
         ref.read(navigationNotifierProvider.notifier).setIndex(1);
-        
         showDialog(
           context: context,
           builder: (ctx) => AlertDialog(
@@ -676,6 +659,3 @@ class _CartScreenState extends ConsumerState<CartScreen> {
     }
   }
 }
-
-// Dummy DeliveryMethod enum if not imported properly
-enum DeliveryMethod { standard, express }

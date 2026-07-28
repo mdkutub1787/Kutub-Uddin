@@ -1,41 +1,95 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../models/cart_model.dart';
 import '../../product/models/product_model.dart';
+import '../../../models/coupon_model.dart';
+import '../../offers/riverpod/coupon_notifier.dart';
 
-final cartNotifierProvider = NotifierProvider<CartNotifier, List<CartItem>>(() {
+class CartState {
+  final List<CartItem> items;
+  final CouponModel? appliedCoupon;
+  final bool isInsideDhaka;
+  final String deliveryMethod; // 'standard', 'express'
+
+  CartState({
+    this.items = const [],
+    this.appliedCoupon,
+    this.isInsideDhaka = true,
+    this.deliveryMethod = 'standard',
+  });
+
+  CartState copyWith({
+    List<CartItem>? items,
+    CouponModel? appliedCoupon,
+    bool? isInsideDhaka,
+    String? deliveryMethod,
+  }) {
+    return CartState(
+      items: items ?? this.items,
+      appliedCoupon: appliedCoupon ?? this.appliedCoupon,
+      isInsideDhaka: isInsideDhaka ?? this.isInsideDhaka,
+      deliveryMethod: deliveryMethod ?? this.deliveryMethod,
+    );
+  }
+
+  double get subtotal => items.fold(0, (sum, item) => sum + item.totalPrice);
+  
+  double get deliveryFee {
+    if (appliedCoupon?.type == CouponType.freeDelivery) return 0;
+    
+    if (isInsideDhaka) {
+      return deliveryMethod == 'express' ? 100 : 60;
+    } else {
+      return deliveryMethod == 'express' ? 250 : 150;
+    }
+  }
+
+  double get couponDiscount {
+    if (appliedCoupon == null) return 0;
+    if (appliedCoupon!.type == CouponType.freeDelivery) return 0; // Handled in deliveryFee
+    
+    if (appliedCoupon!.type == CouponType.percentage) {
+      return (subtotal * appliedCoupon!.discountValue) / 100;
+    } else {
+      return appliedCoupon!.discountValue;
+    }
+  }
+
+  double get totalAmount => subtotal + deliveryFee - couponDiscount;
+}
+
+final cartNotifierProvider = NotifierProvider<CartNotifier, CartState>(() {
   return CartNotifier();
 });
 
-class CartNotifier extends Notifier<List<CartItem>> {
+class CartNotifier extends Notifier<CartState> {
   @override
-  List<CartItem> build() {
-    return [];
+  CartState build() {
+    return CartState();
   }
 
   void addToCart(ProductModel product, {int quantity = 1}) {
-    var currentState = state;
+    final currentState = state.items;
     
-    // Check if cart has items from a different shop
     if (currentState.isNotEmpty && currentState.first.product.shopId != product.shopId) {
-      // Clear the cart if adding product from a different shop
-      currentState = [];
+      state = state.copyWith(items: [CartItem(product: product, quantity: quantity)]);
+      return;
     }
 
     final index = currentState.indexWhere((item) => item.product.id == product.id);
 
     if (index != -1) {
-      // Product already in cart, increment quantity
-      final updatedCart = List<CartItem>.from(currentState);
-      updatedCart[index].quantity += quantity;
-      state = updatedCart;
+      final updatedItems = List<CartItem>.from(currentState);
+      updatedItems[index].quantity += quantity;
+      state = state.copyWith(items: updatedItems);
     } else {
-      // Add new product
-      state = [...currentState, CartItem(product: product, quantity: quantity)];
+      state = state.copyWith(items: [...currentState, CartItem(product: product, quantity: quantity)]);
     }
   }
 
   void removeFromCart(String productId) {
-    state = state.where((item) => item.product.id != productId).toList();
+    state = state.copyWith(
+      items: state.items.where((item) => item.product.id != productId).toList()
+    );
   }
 
   void updateQuantity(String productId, int newQuantity) {
@@ -44,21 +98,41 @@ class CartNotifier extends Notifier<List<CartItem>> {
       return;
     }
 
-    final currentState = state;
-    final index = currentState.indexWhere((item) => item.product.id == productId);
-
+    final index = state.items.indexWhere((item) => item.product.id == productId);
     if (index != -1) {
-      final updatedCart = List<CartItem>.from(currentState);
-      updatedCart[index].quantity = newQuantity;
-      state = updatedCart;
+      final updatedItems = List<CartItem>.from(state.items);
+      updatedItems[index].quantity = newQuantity;
+      state = state.copyWith(items: updatedItems);
     }
   }
 
-  void clearCart() {
-    state = [];
+  Future<String> applyCoupon(String code) async {
+    final repository = ref.read(couponRepositoryProvider);
+    final coupon = await repository.getCouponByCode(code);
+    
+    if (coupon == null) return "Invalid Coupon Code";
+    if (coupon.isExpired) return "Coupon has expired";
+    if (state.subtotal < coupon.minPurchase) {
+      return "Minimum purchase of ৳${coupon.minPurchase.toInt()} required";
+    }
+
+    state = state.copyWith(appliedCoupon: coupon);
+    return "Success";
   }
 
-  double get totalAmount {
-    return state.fold(0, (sum, item) => sum + item.totalPrice);
+  void removeCoupon() {
+    state = state.copyWith(appliedCoupon: null);
+  }
+
+  void setInsideDhaka(bool value) {
+    state = state.copyWith(isInsideDhaka: value);
+  }
+
+  void setDeliveryMethod(String method) {
+    state = state.copyWith(deliveryMethod: method);
+  }
+
+  void clearCart() {
+    state = CartState();
   }
 }

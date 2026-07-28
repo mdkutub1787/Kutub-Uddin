@@ -69,8 +69,10 @@ class CustomAppBar extends ConsumerWidget implements PreferredSizeWidget {
               top: 8,
               child: Consumer(
                 builder: (context, ref, child) {
-                  final cartItems = ref.watch(cartNotifierProvider) ?? [];
-                  final itemCount = cartItems.fold(0, (sum, item) => sum + item.quantity);
+                  final cart = ref.watch(cartNotifierProvider);
+                  // Added explicit items list to avoid Object.fold error
+                  final items = cart.items;
+                  final itemCount = items.fold(0, (sum, item) => sum + item.quantity);
                   
                   return itemCount > 0
                       ? Container(
@@ -188,8 +190,9 @@ class CustomSliverAppBar extends ConsumerWidget {
               top: 8,
               child: Consumer(
                 builder: (context, ref, child) {
-                  final cartItems = ref.watch(cartNotifierProvider) ?? [];
-                  final itemCount = cartItems.fold(0, (sum, item) => sum + item.quantity);
+                  final cart = ref.watch(cartNotifierProvider);
+                  final items = cart.items;
+                  final itemCount = items.fold(0, (sum, item) => sum + item.quantity);
                   
                   return itemCount > 0
                       ? Container(
