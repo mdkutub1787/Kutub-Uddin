@@ -27,6 +27,7 @@ class _OffersScreenState extends ConsumerState<OffersScreen> {
     final settings = ref.watch(settingsProvider);
     final couponState = ref.watch(couponNotifierProvider);
     final cart = ref.watch(cartNotifierProvider);
+    final currency = settings.currencySymbol;
 
     return Scaffold(
       appBar: AppBar(
@@ -44,7 +45,7 @@ class _OffersScreenState extends ConsumerState<OffersScreen> {
                   bool isApplied = cart.appliedCoupon?.code == coupon.code;
                   bool canApply = cart.subtotal >= coupon.minPurchase;
                   
-                  return _buildCouponCard(context, ref, coupon, settings, isApplied, canApply);
+                  return _buildCouponCard(context, ref, coupon, settings, isApplied, canApply, currency);
                 },
               ),
         loading: () => const Center(child: CircularProgressIndicator()),
@@ -53,7 +54,7 @@ class _OffersScreenState extends ConsumerState<OffersScreen> {
     );
   }
 
-  Widget _buildCouponCard(BuildContext context, WidgetRef ref, CouponModel coupon, dynamic settings, bool isApplied, bool canApply) {
+  Widget _buildCouponCard(BuildContext context, WidgetRef ref, CouponModel coupon, dynamic settings, bool isApplied, bool canApply, String currency) {
     return Container(
       margin: const EdgeInsets.only(bottom: 16),
       decoration: BoxDecoration(
@@ -81,7 +82,7 @@ class _OffersScreenState extends ConsumerState<OffersScreen> {
                     Text(
                       coupon.type == CouponType.percentage 
                         ? "${coupon.discountValue.toInt()}%" 
-                        : coupon.type == CouponType.freeDelivery ? "FREE" : "৳${coupon.discountValue.toInt()}",
+                        : coupon.type == CouponType.freeDelivery ? "FREE" : "$currency${coupon.discountValue.toInt()}",
                       style: TextStyle(
                         fontSize: 24, 
                         fontWeight: FontWeight.bold, 
@@ -119,7 +120,7 @@ class _OffersScreenState extends ConsumerState<OffersScreen> {
                       const SizedBox(height: 8),
                       if (!canApply && coupon.minPurchase > 0)
                         Text(
-                          "Min. Purchase: ৳${coupon.minPurchase.toInt()}",
+                          "Min. Purchase: $currency${coupon.minPurchase.toInt()}",
                           style: const TextStyle(color: Colors.orange, fontSize: 10, fontWeight: FontWeight.bold),
                         ),
                       const Spacer(),

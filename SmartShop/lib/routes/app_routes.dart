@@ -5,6 +5,7 @@ import '../features/home/screens/main_screen.dart';
 import '../features/home/screens/dashboard_screen.dart';
 import '../features/shop/screens/shop_details_screen.dart';
 import '../features/product/screens/product_details_screen.dart';
+import '../features/product/screens/all_products_screen.dart';
 import '../features/cart/screens/cart_screen.dart';
 import '../features/profile/screens/profile_screen.dart';
 import '../features/order/screens/my_orders_screen.dart';
@@ -33,6 +34,7 @@ class AppRoutes {
   static const String main = '/main';
   static const String dashboard = '/dashboard';
   static const String productDetails = '/product-details';
+  static const String allProducts = '/all-products';
   static const String orderDetails = '/order-details';
   static const String cart = '/cart';
   static const String profile = '/profile';
@@ -92,6 +94,14 @@ class AppRoutes {
         );
       case support:
         return MaterialPageRoute(builder: (_) => const SupportScreen());
+      case allProducts:
+        final args = settings.arguments as Map<String, dynamic>;
+        return MaterialPageRoute(
+          builder: (_) => AllProductsScreen(
+            title: args['title'] as String,
+            categoryId: args['categoryId'] as String?,
+          ),
+        );
       case productDetails:
         if (settings.arguments is ProductModel) {
           final product = settings.arguments as ProductModel;

@@ -7,7 +7,8 @@ import '../../../core/riverpod/settings_notifier.dart';
 import '../../auth/riverpod/auth_notifier.dart';
 import '../../admin/riverpod/activity_log_notifier.dart';
 import '../../order/repositories/order_repository.dart';
-import 'package:smart_shop/core/app_strings.dart';
+import '../../../core/app_strings.dart';
+import '../../../core/services/pdf_service.dart';
 import 'package:easy_localization/easy_localization.dart';
 import '../../../widgets/custom_app_bar.dart';
 
@@ -19,6 +20,7 @@ class OrderDetailsScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final settings = ref.watch(settingsProvider);
     final auth = ref.watch(authNotifierProvider).value;
+    final String currentCurrency = settings.currencySymbol;
     
     bool isAdminView = auth?.role == 'admin' || auth?.role == 'super_admin';
     bool isSuperAdmin = auth?.role == 'super_admin';
@@ -28,6 +30,11 @@ class OrderDetailsScreen extends ConsumerWidget {
       appBar: CustomAppBar(
         title: AppStrings.orderDetails.tr(),
         actions: [
+          IconButton(
+            icon: const Icon(Icons.picture_as_pdf_rounded, color: Colors.white),
+            onPressed: () => PdfService.generateOrderInvoice(order, currency: currentCurrency),
+            tooltip: "Download Invoice",
+          ),
           if (isSuperAdmin)
             IconButton(
               icon: const Icon(Icons.delete_forever_rounded, color: Colors.white),
@@ -48,9 +55,9 @@ class OrderDetailsScreen extends ConsumerWidget {
             ],
             Text(AppStrings.orderedItems.tr(), style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w900, letterSpacing: -0.5)),
             const SizedBox(height: 10),
-            _buildItemsList(context, settings),
+            _buildItemsList(context, settings, currentCurrency),
             const SizedBox(height: 20),
-            _buildPriceSummary(context, settings),
+            _buildPriceSummary(context, settings, currentCurrency),
             const SizedBox(height: 30),
             if (!isAdminView && order.status == 'Pending')
               _buildCancelButton(context, ref),
@@ -108,7 +115,6 @@ class OrderDetailsScreen extends ConsumerWidget {
   Future<void> _updateStatus(BuildContext context, String newStatus, WidgetRef ref, dynamic auth) async {
     await ref.read(orderNotifierProvider.notifier).updateOrderStatus(order.id, newStatus);
     if (context.mounted && auth != null) {
-      
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Order status updated to $newStatus")));
       Navigator.pop(context);
     }
@@ -126,7 +132,6 @@ class OrderDetailsScreen extends ConsumerWidget {
             onPressed: () async {
               await ref.read(orderNotifierProvider.notifier).deleteOrder(order.id);
               if (context.mounted && auth != null) {
-                
                 Navigator.pop(ctx);
                 Navigator.pop(context);
                 ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Order deleted permanently")));
@@ -163,7 +168,7 @@ class OrderDetailsScreen extends ConsumerWidget {
             Row(
               children: [
                 Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [Text(AppStrings.date.tr(), style: const TextStyle(color: Colors.grey, fontSize: 13)), Text(DateFormat('dd MMM yyyy, hh:mm a').format(order.date), style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 14))])),
-                Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [Text(AppStrings.paymentMethod.tr(), style: const TextStyle(color: Colors.grey, fontSize: 13)), Text(AppStrings.cashOnDelivery.tr(), style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 14))])),
+                Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [Text(AppStrings.paymentMethod.tr(), style: const TextStyle(color: Colors.grey, fontSize: 13)), Text(order.paymentMethod, style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 14))])),
               ],
             ),
             const Divider(height: 24),
@@ -183,7 +188,7 @@ class OrderDetailsScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildItemsList(BuildContext context, dynamic settings) {
+  Widget _buildItemsList(BuildContext context, dynamic settings, String currency) {
     return ListView.builder(
       shrinkWrap: true,
       physics: const NeverScrollableScrollPhysics(),
@@ -198,8 +203,8 @@ class OrderDetailsScreen extends ConsumerWidget {
             children: [
               ClipRRect(borderRadius: BorderRadius.circular(8), child: Image.network(item.product.imageUrl, width: 50, height: 50, fit: BoxFit.cover, errorBuilder: (context, error, stackTrace) => Container(width: 50, height: 50, color: Colors.grey[200], child: const Icon(Icons.image_not_supported, size: 20)))),
               const SizedBox(width: 12),
-              Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [Text(item.product.name, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14), maxLines: 1, overflow: TextOverflow.ellipsis), Text("${AppStrings.currency.tr()} ${NumberFormat('#,##,###').format(item.product.price.toInt())} x ${item.quantity}", style: const TextStyle(color: Colors.grey, fontSize: 12))])),
-              Text("${AppStrings.currency.tr()} ${NumberFormat('#,##,###').format((item.product.price * item.quantity).toInt())}", style: TextStyle(fontWeight: FontWeight.w900, fontSize: 15, color: settings.primaryColor)),
+              Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [Text(item.product.name, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14), maxLines: 1, overflow: TextOverflow.ellipsis), Text("$currency ${NumberFormat('#,##,###').format(item.product.price.toInt())} x ${item.quantity}", style: const TextStyle(color: Colors.grey, fontSize: 12))])),
+              Text("$currency ${NumberFormat('#,##,###').format((item.product.price * item.quantity).toInt())}", style: TextStyle(fontWeight: FontWeight.w900, fontSize: 15, color: settings.primaryColor)),
             ],
           ),
         );
@@ -207,24 +212,24 @@ class OrderDetailsScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildPriceSummary(BuildContext context, dynamic settings) {
+  Widget _buildPriceSummary(BuildContext context, dynamic settings, String currency) {
     final double subtotal = order.totalAmount - order.deliveryFee;
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(color: settings.primaryColor.withValues(alpha: 0.05), borderRadius: BorderRadius.circular(16)),
       child: Column(
         children: [
-          _sumRow(AppStrings.subtotal.tr(), subtotal.toInt()),
+          _sumRow(AppStrings.subtotal.tr(), subtotal.toInt(), currency),
           const SizedBox(height: 8),
-          _sumRow(AppStrings.deliveryFee.tr(), order.deliveryFee.toInt()),
+          _sumRow(AppStrings.deliveryFee.tr(), order.deliveryFee.toInt(), currency),
           const Divider(height: 24),
-          Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [Text(AppStrings.totalAmount.tr(), style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)), Text("${AppStrings.currency.tr()} ${order.totalAmount.toInt()}", style: TextStyle(fontSize: 20, fontWeight: FontWeight.w900, color: settings.primaryColor))]),
+          Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [Text(AppStrings.totalAmount.tr(), style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)), Text("$currency ${order.totalAmount.toInt()}", style: TextStyle(fontSize: 20, fontWeight: FontWeight.w900, color: settings.primaryColor))]),
         ],
       ),
     );
   }
 
-  Widget _sumRow(String label, int val) => Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [Text(label, style: const TextStyle(fontSize: 14, color: Colors.black54)), Text("${AppStrings.currency.tr()} $val", style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold))]);
+  Widget _sumRow(String label, int val, String currency) => Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [Text(label, style: const TextStyle(fontSize: 14, color: Colors.black54)), Text("$currency $val", style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold))]);
 
   Widget _buildCancelButton(BuildContext context, WidgetRef ref) {
     return SizedBox(width: double.infinity, height: 55, child: OutlinedButton(onPressed: () => _showCancelDialog(context, ref), style: OutlinedButton.styleFrom(foregroundColor: Colors.red, side: const BorderSide(color: Colors.red), shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15))), child: Text(AppStrings.cancelOrder.tr(), style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16))));

@@ -10,33 +10,28 @@ class OrderRepository {
 
   OrderRepository(this._supabase);
 
-  Future<bool> placeOrder(OrderModel order) async {
+  Future<List<OrderModel>> fetchOrders() async {
     try {
-      // 1. Insert order
-      await _supabase.from(AppConstants.ordersTable).insert(order.toJson());
-
-      // 2. Adjust stock
-      for (var item in order.items) {
-        final productId = item.product.id;
-        final quantity = item.quantity;
-        
-        final productData = await _supabase
-            .from(AppConstants.productsTable)
-            .select('stock')
-            .eq('id', productId)
-            .single();
-        final currentStock = productData['stock'] as int;
-        
-        if (currentStock >= quantity) {
-          await _supabase
-              .from(AppConstants.productsTable)
-              .update({'stock': currentStock - quantity})
-              .eq('id', productId);
-        }
-      }
-      return true;
+      final response = await _supabase
+          .from(AppConstants.ordersTable)
+          .select()
+          .order('date', ascending: false);
+      return (response as List).map((json) => OrderModel.fromJson(json)).toList();
     } catch (e) {
-      return false;
+      return [];
+    }
+  }
+
+  Future<String?> createOrder(OrderModel order) async {
+    try {
+      final response = await _supabase
+          .from(AppConstants.ordersTable)
+          .insert(order.toJson())
+          .select('id')
+          .single();
+      return response['id']?.toString();
+    } catch (e) {
+      return null;
     }
   }
 
@@ -66,18 +61,6 @@ class OrderRepository {
     }
   }
 
-  Future<List<OrderModel>> getAllOrders() async {
-    try {
-      final response = await _supabase
-          .from(AppConstants.ordersTable)
-          .select()
-          .order('date', ascending: false);
-      return (response as List).map((json) => OrderModel.fromJson(json)).toList();
-    } catch (e) {
-      return [];
-    }
-  }
-
   Future<void> updateOrderStatus(String orderId, String status) async {
     await _supabase
         .from(AppConstants.ordersTable)
@@ -96,48 +79,21 @@ class OrderRepository {
     await _supabase.from(AppConstants.ordersTable).delete().eq('id', orderId);
   }
 
-  Future<bool> cancelOrder(OrderModel order) async {
-    try {
-      final response = await _supabase
-          .from(AppConstants.ordersTable)
-          .select('status')
-          .eq('id', order.id)
-          .single();
-      if (response['status'] != 'Pending') return false;
-
-      await updateOrderStatus(order.id, 'Cancelled');
-
-      for (var item in order.items) {
-        final productId = item.product.id;
-        final quantity = item.quantity;
-        final productData = await _supabase
-            .from(AppConstants.productsTable)
-            .select('stock')
-            .eq('id', productId)
-            .single();
-        final currentStock = productData['stock'] as int;
-        await _supabase
-            .from(AppConstants.productsTable)
-            .update({'stock': currentStock + quantity})
-            .eq('id', productId);
-      }
-      return true;
-    } catch (e) {
-      return false;
-    }
-  }
-
   Stream<List<OrderModel>> streamAvailableOrders() {
     return _supabase
         .from(AppConstants.ordersTable)
         .stream(primaryKey: ['id'])
         .map((maps) {
-          return maps
-              .map((map) => OrderModel.fromJson(map))
-              .where((o) => (o.status == 'Pending' || o.status == 'Confirmed') && o.deliveryManId == null && o.orderType != 'pos')
-              .toList()
-            ..sort((a, b) => b.date.compareTo(a.date));
-        });
+      return maps
+          .map((map) => OrderModel.fromJson(map))
+          .where((o) =>
+            (o.status == 'Pending' || o.status == 'Confirmed') &&
+            o.deliveryManId == null &&
+            o.orderType != 'pos'
+          )
+          .toList()
+        ..sort((a, b) => b.date.compareTo(a.date));
+    });
   }
 
   Stream<List<OrderModel>> streamMyDeliveries(String deliveryManId) {

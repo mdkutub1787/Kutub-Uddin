@@ -24,6 +24,7 @@ class ProductCard extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final settings = ref.watch(settingsProvider);
+    final currency = settings.currencySymbol;
     
     return Container(
       width: width,
@@ -134,7 +135,7 @@ class ProductCard extends ConsumerWidget {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Text(
-                        "৳${product.price.toInt()}",
+                        "$currency${product.price.toInt()}",
                         style: const TextStyle(
                           color: Color(0xFF2D958E),
                           fontWeight: FontWeight.w900,

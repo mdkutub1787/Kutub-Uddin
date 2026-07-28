@@ -2,8 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:intl/intl.dart';
-
+import 'package:share_plus/share_plus.dart';
+import '../../../core/riverpod/settings_notifier.dart';
 import '../models/product_model.dart';
+import '../../../models/review_model.dart';
+import '../riverpod/review_notifier.dart';
 import '../../category/riverpod/category_notifier.dart';
 import '../../cart/riverpod/cart_notifier.dart';
 import '../../wishlist/riverpod/wishlist_notifier.dart';
@@ -20,6 +23,8 @@ class ProductDetailsScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final primaryColor = Theme.of(context).primaryColor;
+    final settings = ref.watch(settingsProvider);
+    final currency = settings.currencySymbol;
 
     return Scaffold(
       body: CustomScrollView(
@@ -67,7 +72,7 @@ class ProductDetailsScreen extends ConsumerWidget {
                     children: [
                       Image.network(
                         product.imageUrl,
-                        fit: BoxFit.cover,
+                        fit: BoxFit.contain,
                         height: double.infinity,
                         width: double.infinity,
                         errorBuilder: (context, error, stackTrace) =>
@@ -125,15 +130,15 @@ class ProductDetailsScreen extends ConsumerWidget {
                       spacing: 12,
                       runSpacing: 8,
                       children: [
-                        Text("৳ ${NumberFormat('#,##,###').format(product.price.toInt())}", style: TextStyle(fontSize: 32, fontWeight: FontWeight.w900, color: primaryColor)),
+                        Text("$currency ${NumberFormat('#,##,###').format(product.price.toInt())}", style: TextStyle(fontSize: 32, fontWeight: FontWeight.w900, color: primaryColor)),
                         if (product.hasDiscount) ...[
-                          Text("৳ ${NumberFormat('#,##,###').format(product.originalPrice.toInt())}", style: const TextStyle(fontSize: 18, color: Colors.grey, decoration: TextDecoration.lineThrough)),
+                          Text("$currency ${NumberFormat('#,##,###').format(product.originalPrice.toInt())}", style: const TextStyle(fontSize: 18, color: Colors.grey, decoration: TextDecoration.lineThrough)),
                           Container(
                             padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                             decoration: BoxDecoration(color: Colors.red, borderRadius: BorderRadius.circular(8)),
                             child: Text(
                               AppStrings.offLabel.tr(args: [
-                                product.discountType == 'percentage' ? "${product.discountValue.toInt()}%" : "৳ ${product.discountValue.toInt()}"
+                                product.discountType == 'percentage' ? "${product.discountValue.toInt()}%" : "$currency ${product.discountValue.toInt()}"
                               ]),
                               style: const TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.bold),
                             ),
@@ -162,6 +167,8 @@ class ProductDetailsScreen extends ConsumerWidget {
                     Text(AppStrings.description.tr(), style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
                     const SizedBox(height: 12),
                     Text(product.description, style: TextStyle(fontSize: 16, color: Colors.grey[700], height: 1.6)),
+                    const SizedBox(height: 30),
+                    _buildReviewsSection(context, ref),
                     const SizedBox(height: 120),
                   ],
                 ),
@@ -170,11 +177,105 @@ class ProductDetailsScreen extends ConsumerWidget {
           ),
         ],
       ),
-      bottomSheet: _buildBottomBar(context, ref),
+      bottomSheet: _buildBottomBar(context, ref, currency),
     );
   }
 
-  Widget _buildBottomBar(BuildContext context, WidgetRef ref) {
+  Widget _buildReviewsSection(BuildContext context, WidgetRef ref) {
+    final reviewState = ref.watch(reviewNotifierProvider(product.id));
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            const Text("Customer Reviews", style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+            TextButton(onPressed: () => _showAddReviewDialog(context, ref), child: const Text("Write a Review")),
+          ],
+        ),
+        const SizedBox(height: 12),
+        reviewState.when(
+          data: (reviews) => reviews.isEmpty
+              ? const Center(child: Text("No reviews yet. Be the first!"))
+              : ListView.builder(
+                  shrinkWrap: true,
+                  physics: const NeverScrollableScrollPhysics(),
+                  itemCount: reviews.length,
+                  itemBuilder: (context, index) {
+                    final review = reviews[index];
+                    return ListTile(
+                      contentPadding: EdgeInsets.zero,
+                      leading: CircleAvatar(
+                        backgroundImage: review.userImageUrl != null && review.userImageUrl!.isNotEmpty ? NetworkImage(review.userImageUrl!) : null,
+                        child: review.userImageUrl == null || review.userImageUrl!.isEmpty ? const Icon(Icons.person) : null,
+                      ),
+                      title: Text(review.userName, style: const TextStyle(fontWeight: FontWeight.bold)),
+                      subtitle: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(
+                            children: List.generate(5, (i) => Icon(Icons.star_rounded, size: 14, color: i < review.rating ? Colors.amber : Colors.grey[300])),
+                          ),
+                          Text(review.comment),
+                        ],
+                      ),
+                    );
+                  },
+                ),
+          loading: () => const Center(child: CircularProgressIndicator()),
+          error: (e, st) => Text("Error: $e"),
+        ),
+      ],
+    );
+  }
+
+  void _showAddReviewDialog(BuildContext context, WidgetRef ref) {
+    final commentCtrl = TextEditingController();
+    double rating = 5;
+
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Text("Submit Review"),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const Text("Rate this product:"),
+            StatefulBuilder(builder: (context, setState) => Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: List.generate(5, (i) => IconButton(
+                onPressed: () => setState(() => rating = i + 1.0),
+                icon: Icon(Icons.star_rounded, color: i < rating ? Colors.amber : Colors.grey[300]),
+              )),
+            )),
+            TextField(controller: commentCtrl, decoration: const InputDecoration(hintText: "Your comment...")),
+          ],
+        ),
+        actions: [
+          TextButton(onPressed: () => Navigator.pop(ctx), child: const Text("CANCEL")),
+          ElevatedButton(
+            onPressed: () async {
+              final auth = ref.read(authNotifierProvider).value;
+              if (auth == null) return;
+
+              final review = ReviewModel(
+                id: '', productId: product.id, userId: auth.uid,
+                userName: auth.name, userImageUrl: auth.imageUrl,
+                rating: rating, comment: commentCtrl.text.trim(),
+                createdAt: DateTime.now(),
+              );
+              await ref.read(reviewNotifierProvider(product.id).notifier).submitReview(review);
+              Navigator.pop(ctx);
+            },
+            child: const Text("SUBMIT"),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildBottomBar(BuildContext context, WidgetRef ref, String currency) {
     final primaryColor = Theme.of(context).primaryColor;
     return Container(
       padding: const EdgeInsets.fromLTRB(25, 15, 25, 15),
@@ -202,7 +303,12 @@ class ProductDetailsScreen extends ConsumerWidget {
               ),
               child: IconButton(
                 icon: Icon(Icons.share_rounded, color: Colors.grey[700]), 
-                onPressed: () {}
+                onPressed: () {
+                  Share.share(
+                    'Check out this ${product.name} on Smart Shop!\nPrice: $currency ${product.price.toInt()}\n${product.imageUrl}',
+                    subject: 'Check out this product',
+                  );
+                }
               ),
             ),
             const SizedBox(width: 20),

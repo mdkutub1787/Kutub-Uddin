@@ -6,10 +6,12 @@ import 'package:flutter_callkit_incoming/entities/call_kit_params.dart';
 import 'package:flutter_callkit_incoming/entities/android_params.dart';
 import 'package:flutter_callkit_incoming/entities/ios_params.dart';
 import 'package:flutter_callkit_incoming/entities/notification_params.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:uuid/uuid.dart';
 import 'package:flutter/material.dart';
 import 'package:audioplayers/audioplayers.dart';
-import '../main.dart'; // To access navigatorKey
+import '../main.dart';
+import '../core/constants/constants.dart';
 
 @pragma('vm:entry-point')
 Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
@@ -26,7 +28,6 @@ class PushNotificationService {
   final FirebaseMessaging _firebaseMessaging = FirebaseMessaging.instance;
 
   Future<void> init() async {
-    // Request permissions for iOS
     NotificationSettings settings = await _firebaseMessaging.requestPermission(
       alert: true,
       badge: true,
@@ -34,24 +35,19 @@ class PushNotificationService {
     );
     debugPrint('User granted permission: ${settings.authorizationStatus}');
 
-    // Background messaging handler
     FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
 
-    // Foreground messaging handler
     FirebaseMessaging.onMessage.listen((RemoteMessage message) {
       debugPrint('Got a message whilst in the foreground!');
       handleIncomingMessage(message, isForeground: true);
     });
 
-    // Listen to call events
     FlutterCallkitIncoming.onEvent.listen((CallEvent? event) {
       if (event == null) return;
       if (event is CallEventActionCallAccept) {
         debugPrint('Call Accepted: ${event.callKitParams.extra}');
       } else if (event is CallEventActionCallDecline) {
         debugPrint('Call Declined: ${event.callKitParams.extra}');
-      } else if (event is CallEventActionCallTimeout) {
-        debugPrint('Call Timeout');
       }
     });
   }
@@ -59,10 +55,29 @@ class PushNotificationService {
   static Future<void> handleIncomingMessage(RemoteMessage message, {bool isForeground = false}) async {
     debugPrint("Message data: ${message.data}");
     
-    // Check if the message is a new order for a rider
+    // Safety check: Only show delivery dialog to users with 'delivery_man' role
+    final currentUser = Supabase.instance.client.auth.currentUser;
+    if (currentUser == null) return;
+
+    // Fetch user role from DB to verify if they should see rider alerts
+    final userRes = await Supabase.instance.client
+        .from(AppConstants.usersTable)
+        .select('role')
+        .eq('id', currentUser.id)
+        .maybeSingle();
+
+    if (userRes == null || userRes['role'] != 'delivery_man') {
+      debugPrint("Skipping rider dialog: User is not a delivery man.");
+      return;
+    }
+
     if (message.data['type'] == 'new_order') {
       final orderId = message.data['orderId'] ?? 'Unknown Order';
       final shopName = message.data['shopName'] ?? 'Smart Shop';
+      final orderType = message.data['orderType'] ?? 'online';
+
+      // Strictly skip if order type is POS (it should be delivered instantly by admin)
+      if (orderType == 'pos') return;
       
       if (isForeground) {
         _showInAppIncomingOrderDialog(orderId: orderId, shopName: shopName);
@@ -77,11 +92,6 @@ class PushNotificationService {
     if (context == null) return;
 
     final player = AudioPlayer();
-    await player.setReleaseMode(ReleaseMode.loop);
-    // You can replace this with a local asset ringtone if you have one, e.g. player.play(AssetSource('ringtone.mp3'));
-    // For now we try to play a default alarm or just vibrate, since we don't know if 'ringtone.mp3' exists.
-    // Let's assume there's a need to play sound, we'll just try to play a default tone or leave it for the user to add the asset later.
-    // We will just vibrate and print a message for now, or play a silent sound if no asset is available.
     
     showDialog(
       context: context,
@@ -93,9 +103,9 @@ class PushNotificationService {
           children: [
             const Icon(Icons.delivery_dining, size: 60, color: Colors.green),
             const SizedBox(height: 10),
-            Text(
+            const Text(
               "New Delivery Request!",
-              style: const TextStyle(fontWeight: FontWeight.w900, color: Colors.green),
+              style: TextStyle(fontWeight: FontWeight.w900, color: Colors.green),
               textAlign: TextAlign.center,
             ),
           ],
@@ -119,7 +129,6 @@ class PushNotificationService {
             onPressed: () {
               player.stop();
               Navigator.pop(ctx);
-              debugPrint('In-app call declined: $orderId');
             },
             child: const Text("Decline"),
           ),
@@ -132,8 +141,7 @@ class PushNotificationService {
             onPressed: () {
               player.stop();
               Navigator.pop(ctx);
-              debugPrint('In-app call accepted: $orderId');
-              // Navigate to delivery dashboard or order details
+              // Logic to accept order via repository
             },
             child: const Text("Accept"),
           ),

@@ -13,9 +13,11 @@ import '../../../core/riverpod/navigation_notifier.dart';
 import '../../auth/riverpod/auth_notifier.dart';
 import '../../support/riverpod/support_notifier.dart';
 import '../../order/riverpod/order_notifier.dart';
+import '../../../core/providers.dart';
 import '../../order/models/order_model.dart';
 import '../../../core/app_strings.dart';
 import '../../../core/utils/exit_dialog_helper.dart';
+import '../../../core/services/connectivity_service.dart';
 import '../../../services/notification_service.dart';
 
 class MainScreen extends ConsumerStatefulWidget {
@@ -75,6 +77,7 @@ class _MainScreenState extends ConsumerState<MainScreen> {
     final cartItems = cart.items;
     final cartItemCount = cartItems.fold(0, (sum, item) => sum + item.quantity);
     final selectedIndex = ref.watch(navigationNotifierProvider);
+    final connectivity = ref.watch(connectivityProvider);
 
     return PopScope(
       canPop: false,
@@ -84,9 +87,29 @@ class _MainScreenState extends ConsumerState<MainScreen> {
       },
       child: Scaffold(
         backgroundColor: const Color(0xFFF5F7FA),
-        body: IndexedStack(
-          index: selectedIndex,
-          children: _screens,
+        body: Column(
+          children: [
+            if (connectivity == ConnectivityStatus.isDisconnected)
+              SafeArea(
+                bottom: false,
+                child: Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.symmetric(vertical: 4),
+                  color: Colors.red,
+                  child: const Text(
+                    "No Internet Connection",
+                    textAlign: TextAlign.center,
+                    style: TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.bold),
+                  ),
+                ),
+              ),
+            Expanded(
+              child: IndexedStack(
+                index: selectedIndex,
+                children: _screens,
+              ),
+            ),
+          ],
         ),
         bottomNavigationBar: Container(
           decoration: BoxDecoration(

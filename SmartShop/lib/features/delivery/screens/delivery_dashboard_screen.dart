@@ -70,10 +70,9 @@ class _DeliveryDashboardScreenState extends ConsumerState<DeliveryDashboardScree
     _positionStreamSubscription = Geolocator.getPositionStream(
       locationSettings: const LocationSettings(
         accuracy: LocationAccuracy.high,
-        distanceFilter: 10, // Only update if moved by 10 meters
+        distanceFilter: 10, 
       ),
     ).listen((Position position) {
-      // Find all active orders for this user and update their location
       final myDeliveries = ref.read(myDeliveriesProvider(user.uid));
       if (myDeliveries.value != null) {
         for (var order in myDeliveries.value!) {
@@ -93,12 +92,10 @@ class _DeliveryDashboardScreenState extends ConsumerState<DeliveryDashboardScree
 
   @override
   Widget build(BuildContext context) {
-    // Listen to available orders for ringtone
     ref.listen<AsyncValue<List<OrderModel>>>(availableOrdersProvider, (previous, next) {
       if (next.hasValue && next.value != null) {
         final currentCount = next.value!.length;
         if (currentCount > _previousOrdersCount) {
-          // Play ringtone when a new order arrives
           _playRingtone();
         }
         _previousOrdersCount = currentCount;
@@ -108,11 +105,11 @@ class _DeliveryDashboardScreenState extends ConsumerState<DeliveryDashboardScree
     final authState = ref.watch(authNotifierProvider);
     final settings = ref.watch(settingsProvider);
     final primaryColor = settings.primaryColor;
+    final currency = settings.currencySymbol;
     final user = authState.value;
 
     if (user == null) return const Scaffold(body: Center(child: CircularProgressIndicator()));
 
-    // Start or stop location tracking based on availability
     if (user.isAvailable == true && !_isTrackingStarted) {
       _startLocationTracking(user);
     } else if (user.isAvailable != true) {
@@ -120,7 +117,6 @@ class _DeliveryDashboardScreenState extends ConsumerState<DeliveryDashboardScree
       _stopRingtone();
     }
 
-    // Get completed deliveries
     final completedOrdersAsync = ref.watch(myCompletedDeliveriesProvider(user.uid));
     int totalDeliveries = 0;
     double totalEarnings = 0;
@@ -140,7 +136,6 @@ class _DeliveryDashboardScreenState extends ConsumerState<DeliveryDashboardScree
         backgroundColor: Colors.grey[100],
         body: Column(
           children: [
-            // Professional Rider Header
             Container(
               padding: EdgeInsets.only(top: MediaQuery.of(context).padding.top + 10, left: 20, right: 20, bottom: 20),
               decoration: BoxDecoration(
@@ -152,7 +147,6 @@ class _DeliveryDashboardScreenState extends ConsumerState<DeliveryDashboardScree
               ),
               child: Column(
                 children: [
-                  // Top Row: Avatar & Status
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
@@ -187,7 +181,6 @@ class _DeliveryDashboardScreenState extends ConsumerState<DeliveryDashboardScree
                           ),
                         ),
                       ),
-                      // Online Toggle
                       Container(
                         padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                         decoration: BoxDecoration(
@@ -221,7 +214,6 @@ class _DeliveryDashboardScreenState extends ConsumerState<DeliveryDashboardScree
                   ),
                   const SizedBox(height: 20),
                   
-                  // Stats Row
                   Row(
                     children: [
                       Expanded(
@@ -246,7 +238,7 @@ class _DeliveryDashboardScreenState extends ConsumerState<DeliveryDashboardScree
                             children: [
                               const Text("Total Earnings", style: TextStyle(color: Colors.white70, fontSize: 11)),
                               const SizedBox(height: 4),
-                              Text("৳${NumberFormat('#,##,###').format(totalEarnings.toInt())}", style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w900, fontSize: 20)),
+                              Text("$currency${NumberFormat('#,##,###').format(totalEarnings.toInt())}", style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w900, fontSize: 20)),
                             ],
                           ),
                         ),
@@ -270,13 +262,12 @@ class _DeliveryDashboardScreenState extends ConsumerState<DeliveryDashboardScree
               ),
             ),
             
-            // Tab Views
             Expanded(
               child: TabBarView(
                 controller: _tabController,
                 children: [
-                  _buildNewRequestsTab(user, primaryColor),
-                  _buildMyDeliveriesTab(user, primaryColor),
+                  _buildNewRequestsTab(user, primaryColor, currency),
+                  _buildMyDeliveriesTab(user, primaryColor, currency),
                 ],
               ),
             ),
@@ -287,10 +278,7 @@ class _DeliveryDashboardScreenState extends ConsumerState<DeliveryDashboardScree
   }
 
   void _playRingtone() async {
-    // Make sure we have a ringtone file in assets or use system default
     try {
-      // You can add a specific asset like: await _audioPlayer.play(AssetSource('audio/ringtone.mp3'));
-      // Using a generic beep for now, in a real app add an mp3 to assets
     } catch (e) {
       debugPrint("Error playing ringtone: $e");
     }
@@ -300,7 +288,7 @@ class _DeliveryDashboardScreenState extends ConsumerState<DeliveryDashboardScree
     _audioPlayer.stop();
   }
 
-  Widget _buildNewRequestsTab(UserModel user, Color primaryColor) {
+  Widget _buildNewRequestsTab(UserModel user, Color primaryColor, String currency) {
     if (!(user.isAvailable ?? false)) {
       return _emptyState("You are offline", "Go online to receive delivery requests", Icons.offline_bolt_rounded);
     }
@@ -315,7 +303,7 @@ class _DeliveryDashboardScreenState extends ConsumerState<DeliveryDashboardScree
         return ListView.builder(
           padding: const EdgeInsets.all(16),
           itemCount: orders.length,
-          itemBuilder: (context, index) => _buildPoolOrderCard(context, orders[index], primaryColor, user),
+          itemBuilder: (context, index) => _buildPoolOrderCard(context, orders[index], primaryColor, user, currency),
         );
       },
       loading: () => const Center(child: CircularProgressIndicator()),
@@ -323,7 +311,7 @@ class _DeliveryDashboardScreenState extends ConsumerState<DeliveryDashboardScree
     );
   }
 
-  Widget _buildMyDeliveriesTab(UserModel user, Color primaryColor) {
+  Widget _buildMyDeliveriesTab(UserModel user, Color primaryColor, String currency) {
     final myDeliveries = ref.watch(myDeliveriesProvider(user.uid));
 
     return myDeliveries.when(
@@ -334,7 +322,7 @@ class _DeliveryDashboardScreenState extends ConsumerState<DeliveryDashboardScree
         return ListView.builder(
           padding: const EdgeInsets.all(16),
           itemCount: orders.length,
-          itemBuilder: (context, index) => _buildActiveOrderCard(context, orders[index], primaryColor),
+          itemBuilder: (context, index) => _buildActiveOrderCard(context, orders[index], primaryColor, currency),
         );
       },
       loading: () => const Center(child: CircularProgressIndicator()),
@@ -357,7 +345,7 @@ class _DeliveryDashboardScreenState extends ConsumerState<DeliveryDashboardScree
     );
   }
 
-  Widget _buildPoolOrderCard(BuildContext context, OrderModel order, Color primaryColor, UserModel user) {
+  Widget _buildPoolOrderCard(BuildContext context, OrderModel order, Color primaryColor, UserModel user, String currency) {
     return Container(
       margin: const EdgeInsets.only(bottom: 20),
       decoration: BoxDecoration(
@@ -387,7 +375,7 @@ class _DeliveryDashboardScreenState extends ConsumerState<DeliveryDashboardScree
                   ],
                 ),
                 Text(
-                  "৳ ${NumberFormat('#,##,###').format(order.deliveryFee.toInt())}",
+                  "$currency ${NumberFormat('#,##,###').format(order.deliveryFee.toInt())}",
                   style: const TextStyle(fontWeight: FontWeight.w900, fontSize: 20, color: Colors.green),
                 ),
               ],
@@ -434,7 +422,7 @@ class _DeliveryDashboardScreenState extends ConsumerState<DeliveryDashboardScree
     );
   }
 
-  Widget _buildActiveOrderCard(BuildContext context, OrderModel order, Color primaryColor) {
+  Widget _buildActiveOrderCard(BuildContext context, OrderModel order, Color primaryColor, String currency) {
     return Container(
       margin: const EdgeInsets.only(bottom: 20),
       decoration: BoxDecoration(
@@ -476,7 +464,7 @@ class _DeliveryDashboardScreenState extends ConsumerState<DeliveryDashboardScree
             const SizedBox(height: 16),
             _infoItem(Icons.location_on_rounded, "Delivery Address", order.userAddress),
             const SizedBox(height: 16),
-            _infoItem(Icons.attach_money_rounded, "Collect Amount", "৳ ${NumberFormat('#,##,###').format(order.totalAmount.toInt())}"),
+            _infoItem(Icons.attach_money_rounded, "Collect Amount", "$currency ${NumberFormat('#,##,###').format(order.totalAmount.toInt())}"),
             const SizedBox(height: 24),
             Row(
               children: [

@@ -25,6 +25,7 @@ class ProductListItem extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final settings = ref.watch(settingsProvider);
+    final currency = settings.currencySymbol;
 
     void navigateToDetails() {
       Navigator.pushNamed(
@@ -39,12 +40,10 @@ class ProductListItem extends ConsumerWidget {
 
     return AppCard(
       margin: const EdgeInsets.only(bottom: 12),
-      // Removed onTap from here to disable whole card click
       child: Padding(
         padding: const EdgeInsets.all(12),
         child: Row(
           children: [
-            // Image is clickable
             GestureDetector(
               onTap: navigateToDetails,
               child: Hero(
@@ -82,7 +81,7 @@ class ProductListItem extends ConsumerWidget {
                     Row(
                       children: [
                         Text(
-                          "৳${NumberFormat('#,##,###').format(product.originalPrice?.toInt() ?? product.price.toInt())}",
+                          "$currency${NumberFormat('#,##,###').format(product.originalPrice?.toInt() ?? product.price.toInt())}",
                           style: const TextStyle(
                             color: Colors.grey,
                             decoration: TextDecoration.lineThrough,
@@ -93,13 +92,13 @@ class ProductListItem extends ConsumerWidget {
                         Text(
                           product.discountType == 'percentage' 
                             ? "${product.discountValue.toInt()}% OFF" 
-                            : "৳${product.discountValue.toInt()} OFF",
+                            : "$currency${product.discountValue.toInt()} OFF",
                           style: const TextStyle(color: Colors.red, fontSize: 11, fontWeight: FontWeight.bold),
                         ),
                       ],
                     ),
                   Text(
-                    "৳${NumberFormat('#,##,###').format(product.price.toInt())}",
+                    "$currency${NumberFormat('#,##,###').format(product.price.toInt())}",
                     style: TextStyle(
                       color: settings.primaryColor,
                       fontWeight: FontWeight.w900,

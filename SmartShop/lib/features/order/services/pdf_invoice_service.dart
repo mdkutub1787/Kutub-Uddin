@@ -6,7 +6,7 @@ import 'package:intl/intl.dart';
 import '../models/order_model.dart';
 
 class PdfInvoiceService {
-  static Future<Uint8List> generateInvoicePdf(OrderModel order, String shopName) async {
+  static Future<Uint8List> generateInvoicePdf(OrderModel order, String shopName, {String currency = 'BDT'}) async {
     final pdf = pw.Document();
 
     pdf.addPage(
@@ -16,7 +16,6 @@ class PdfInvoiceService {
           return pw.Column(
             crossAxisAlignment: pw.CrossAxisAlignment.start,
             children: [
-              // Header
               pw.Row(
                 mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
                 children: [
@@ -26,7 +25,6 @@ class PdfInvoiceService {
               ),
               pw.SizedBox(height: 20),
               
-              // Order Info
               pw.Row(
                 mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
                 crossAxisAlignment: pw.CrossAxisAlignment.start,
@@ -43,7 +41,7 @@ class PdfInvoiceService {
                   pw.Column(
                     crossAxisAlignment: pw.CrossAxisAlignment.end,
                     children: [
-                      pw.Text('Invoice ID: #${order.id.substring(order.id.length > 8 ? order.id.length - 8 : 0)}', style: pw.TextStyle(fontWeight: pw.FontWeight.bold)),
+                      pw.Text('Invoice ID: #${order.id.length > 8 ? order.id.substring(order.id.length - 8) : order.id}', style: pw.TextStyle(fontWeight: pw.FontWeight.bold)),
                       pw.Text('Date: ${DateFormat('dd MMM yyyy, hh:mm a').format(order.date)}'),
                       pw.Text('Status: ${order.status.toUpperCase()}'),
                     ],
@@ -52,7 +50,6 @@ class PdfInvoiceService {
               ),
               pw.SizedBox(height: 30),
               
-              // Items Table
               pw.TableHelper.fromTextArray(
                 context: context,
                 border: const pw.TableBorder(
@@ -73,14 +70,13 @@ class PdfInvoiceService {
                   ...order.items.map((item) => [
                         item.product.name,
                         item.quantity.toString(),
-                        'BDT ${item.product.price.toStringAsFixed(2)}',
-                        'BDT ${(item.product.price * item.quantity).toStringAsFixed(2)}',
+                        '$currency ${item.product.price.toStringAsFixed(2)}',
+                        '$currency ${(item.product.price * item.quantity).toStringAsFixed(2)}',
                       ]),
                 ],
               ),
               pw.SizedBox(height: 20),
               
-              // Totals
               pw.Row(
                 mainAxisAlignment: pw.MainAxisAlignment.end,
                 children: [
@@ -88,16 +84,15 @@ class PdfInvoiceService {
                     crossAxisAlignment: pw.CrossAxisAlignment.end,
                     children: [
                       if (order.deliveryFee > 0)
-                        pw.Text('Delivery Fee: BDT ${order.deliveryFee.toStringAsFixed(2)}'),
+                        pw.Text('Delivery Fee: $currency ${order.deliveryFee.toStringAsFixed(2)}'),
                       pw.SizedBox(height: 5),
-                      pw.Text('Total Amount: BDT ${order.totalAmount.toStringAsFixed(2)}', style: pw.TextStyle(fontSize: 18, fontWeight: pw.FontWeight.bold, color: PdfColors.teal)),
+                      pw.Text('Total Amount: $currency ${order.totalAmount.toStringAsFixed(2)}', style: pw.TextStyle(fontSize: 18, fontWeight: pw.FontWeight.bold, color: PdfColors.teal)),
                     ],
                   ),
                 ],
               ),
               pw.SizedBox(height: 40),
               
-              // Footer
               pw.Center(
                 child: pw.Text('Thank you for shopping with $shopName!', style: pw.TextStyle(color: PdfColors.grey600, fontStyle: pw.FontStyle.italic)),
               ),

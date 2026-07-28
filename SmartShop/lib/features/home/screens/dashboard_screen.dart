@@ -20,6 +20,7 @@ import '../../../widgets/product_card.dart';
 import '../../../widgets/custom_app_bar.dart';
 import '../../../widgets/app_card.dart';
 import '../../../widgets/shop_card.dart';
+import '../../../widgets/shimmer_loading.dart';
 import '../../../theme/app_colors.dart';
 import '../../shop/riverpod/shop_notifier.dart';
 
@@ -29,14 +30,13 @@ class DashboardScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final settings = ref.watch(settingsProvider);
-    final authState = ref.watch(authNotifierProvider);
+    final currency = settings.currencySymbol;
     final size = MediaQuery.of(context).size;
     
     return Scaffold(
       drawer: _buildDrawer(context, ref),
       body: Stack(
         children: [
-          // Decorative Background Elements
           Positioned(
             top: -size.height * 0.1,
             right: -size.width * 0.2,
@@ -56,7 +56,9 @@ class DashboardScreen extends ConsumerWidget {
           
           RefreshIndicator(
             onRefresh: () async {
-              ref.read(categoryNotifierProvider.notifier).loadCategories();
+              await ref.read(categoryNotifierProvider.notifier).loadCategories();
+              await ref.read(bannerNotifierProvider.notifier).loadBanners();
+              await ref.read(shopNotifierProvider.notifier).loadShops();
             },
             child: CustomScrollView(
               physics: const BouncingScrollPhysics(parent: AlwaysScrollableScrollPhysics()),
@@ -182,8 +184,8 @@ class DashboardScreen extends ConsumerWidget {
                   actions: [
                     Consumer(
                       builder: (context, ref, _) {
-                        // Dummy count for now
-                        int totalUnread = 0; 
+                        final notificationState = ref.watch(notificationNotifierProvider);
+                        final totalUnread = notificationState.value?.length ?? 0;
                         return Stack(
                           children: [
                             IconButton(
@@ -215,7 +217,7 @@ class DashboardScreen extends ConsumerWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      _buildSearchBar(context, ref),
+                      _buildSearchBar(context, ref, currency),
                       Container(
                         decoration: const BoxDecoration(
                           color: Colors.white,
@@ -224,12 +226,14 @@ class DashboardScreen extends ConsumerWidget {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             const SizedBox(height: 10),
-                            _buildPromoBanner(context, ref), // Dynamic promo banners
+                            _buildPromoBanner(context, ref),
                             _buildSectionHeader(context, "Explore Shops", () {}),
                             _buildShopList(context, ref),
                             _buildSectionHeader(context, AppStrings.categoriesTitle.tr(), () {}),
                             _buildCategoryList(context, ref),
-                            _buildSectionHeader(context, AppStrings.featuredProductsTitle.tr(), () {}),
+                            _buildSectionHeader(context, AppStrings.featuredProductsTitle.tr(), () {
+                              Navigator.pushNamed(context, AppRoutes.allProducts, arguments: {'title': AppStrings.featuredProductsTitle.tr()});
+                            }),
                             _buildFeaturedProducts(context, ref),
                             const SizedBox(height: 12),
                             _buildCategorySections(context, ref),
@@ -248,7 +252,7 @@ class DashboardScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildSearchBar(BuildContext context, WidgetRef ref) {
+  Widget _buildSearchBar(BuildContext context, WidgetRef ref, String currency) {
     return Container(
       decoration: BoxDecoration(
         color: Theme.of(context).primaryColor,
@@ -270,17 +274,20 @@ class DashboardScreen extends ConsumerWidget {
             ),
             child: TextField(
               onChanged: (query) {
-                 // ref.read(productNotifierProvider.notifier).searchProducts(query);
+                ref.read(productNotifierProvider.notifier).searchProducts(query);
               },
               decoration: InputDecoration(
                 hintText: AppStrings.searchHint.tr(),
                 hintStyle: TextStyle(color: Colors.grey[400], fontSize: 14),
                 prefixIcon: Icon(Icons.search_rounded, color: Theme.of(context).primaryColor, size: 22),
-                suffixIcon: Container(
-                  margin: const EdgeInsets.all(6),
-                  padding: const EdgeInsets.all(8),
-                  decoration: BoxDecoration(color: Theme.of(context).primaryColor, borderRadius: BorderRadius.circular(12)),
-                  child: const Icon(Icons.tune_rounded, color: Colors.white, size: 18),
+                suffixIcon: GestureDetector(
+                  onTap: () => _showFilterBottomSheet(context, ref, currency),
+                  child: Container(
+                    margin: const EdgeInsets.all(6),
+                    padding: const EdgeInsets.all(8),
+                    decoration: BoxDecoration(color: Theme.of(context).primaryColor, borderRadius: BorderRadius.circular(12)),
+                    child: const Icon(Icons.tune_rounded, color: Colors.white, size: 18),
+                  ),
                 ),
                 border: OutlineInputBorder(borderRadius: BorderRadius.circular(20), borderSide: BorderSide.none),
                 filled: true,
@@ -293,6 +300,63 @@ class DashboardScreen extends ConsumerWidget {
     );
   }
 
+  void _showFilterBottomSheet(BuildContext context, WidgetRef ref, String currency) {
+    final productState = ref.watch(productNotifierProvider);
+    double min = productState.minPrice;
+    double max = productState.maxPrice;
+
+    showModalBottomSheet(
+      context: context,
+      shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(30))),
+      builder: (ctx) => StatefulBuilder(
+        builder: (context, setState) => Container(
+          padding: const EdgeInsets.all(24),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Text("Filter Products", style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+              const SizedBox(height: 20),
+              const Text("Price Range", style: TextStyle(fontWeight: FontWeight.bold)),
+              RangeSlider(
+                values: RangeValues(min, max),
+                min: 0,
+                max: 50000,
+                divisions: 50,
+                labels: RangeLabels('$currency\${min.toInt()}', '$currency\${max.toInt()}'),
+                onChanged: (values) {
+                  setState(() {
+                    min = values.start;
+                    max = values.end;
+                  });
+                },
+              ),
+              const SizedBox(height: 30),
+              SizedBox(
+                width: double.infinity,
+                height: 55,
+                child: ElevatedButton(
+                  onPressed: () {
+                    ref.read(productNotifierProvider.notifier).setPriceRange(min, max);
+                    Navigator.pop(ctx);
+                  },
+                  child: const Text("APPLY FILTERS"),
+                ),
+              ),
+              const SizedBox(height: 10),
+              TextButton(
+                onPressed: () {
+                  ref.read(productNotifierProvider.notifier).clearFilters();
+                  Navigator.pop(ctx);
+                },
+                child: const Center(child: Text("Clear All")),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
 
   Widget _buildPromoBanner(BuildContext context, WidgetRef ref) {
     final bannerState = ref.watch(bannerNotifierProvider);
@@ -300,7 +364,6 @@ class DashboardScreen extends ConsumerWidget {
     return bannerState.when(
       data: (banners) {
         if (banners.isEmpty) {
-          // Fallback to static if no dynamic banners available
           return _buildStaticBanner(context);
         }
 
@@ -389,7 +452,7 @@ class DashboardScreen extends ConsumerWidget {
         );
       },
       loading: () => const SizedBox(height: 160, child: Center(child: CircularProgressIndicator())),
-      error: (e, st) => _buildStaticBanner(context), // Fallback on error
+      error: (e, st) => _buildStaticBanner(context),
     );
   }
 
@@ -526,14 +589,12 @@ class DashboardScreen extends ConsumerWidget {
 
   Widget _buildCategoryList(BuildContext context, WidgetRef ref) {
     final categoryState = ref.watch(categoryNotifierProvider);
-    
+    final selectedCategoryId = ref.watch(productNotifierProvider).selectedCategoryId;
+
     return categoryState.when(
       data: (categories) {
         if (categories.isEmpty) return const SizedBox.shrink();
         
-        // For now we don't have selectedCategoryId in state, assume dummy
-        const String? selectedCategoryId = null; 
-
         return SizedBox(
           height: 115,
           child: ListView.builder(
@@ -544,12 +605,11 @@ class DashboardScreen extends ConsumerWidget {
               final cat = categories[index];
               bool isSelected = selectedCategoryId == cat.id;
               
-              // We'll use the category imageUrl if it exists, otherwise fallback to an icon.
               bool hasImage = cat.imageUrl.isNotEmpty && cat.imageUrl.startsWith('http');
               
               return GestureDetector(
                 onTap: () {
-                  // ref.read(productNotifierProvider.notifier).filterByCategory(cat.id);
+                  ref.read(productNotifierProvider.notifier).filterByCategory(cat.id);
                 },
                 child: Container(
                   width: 75,
@@ -587,7 +647,7 @@ class DashboardScreen extends ConsumerWidget {
                       ),
                       const SizedBox(height: 6),
                       Text(
-                        cat.name.tr(), 
+                        cat.name, 
                         style: TextStyle(
                           fontSize: 11, 
                           fontWeight: isSelected ? FontWeight.w900 : FontWeight.bold, 
@@ -605,7 +665,15 @@ class DashboardScreen extends ConsumerWidget {
           ),
         );
       },
-      loading: () => const SizedBox(height: 115, child: Center(child: CircularProgressIndicator())),
+      loading: () => SizedBox(
+        height: 115,
+        child: ListView.builder(
+          scrollDirection: Axis.horizontal,
+          padding: const EdgeInsets.symmetric(horizontal: 10),
+          itemCount: 5,
+          itemBuilder: (context, index) => const ShimmerCategoryItem(),
+        ),
+      ),
       error: (error, stack) => SizedBox(
         height: 115,
         child: Center(
@@ -622,10 +690,22 @@ class DashboardScreen extends ConsumerWidget {
 
   Widget _buildFeaturedProducts(BuildContext context, WidgetRef ref) {
     final productState = ref.watch(productNotifierProvider);
-    final products = productState.featuredProducts ?? [];
+    final products = productState.displayProducts;
     
     if (productState.isLoading && products.isEmpty) {
-      return const SizedBox(height: 250, child: Center(child: CircularProgressIndicator()));
+      return SizedBox(
+        height: 290,
+        child: ListView.builder(
+          scrollDirection: Axis.horizontal,
+          padding: const EdgeInsets.symmetric(horizontal: 10),
+          itemCount: 4,
+          itemBuilder: (context, index) => const ShimmerProductCard(),
+        ),
+      );
+    }
+
+    if (products.isEmpty) {
+      return const SizedBox(height: 100, child: Center(child: Text("No products found matching your filters")));
     }
     
     return SizedBox(
@@ -644,7 +724,7 @@ class DashboardScreen extends ConsumerWidget {
 
   Widget _buildCategorySections(BuildContext context, WidgetRef ref) {
     final categories = ref.watch(categoryNotifierProvider).value ?? [];
-    final products = ref.watch(productNotifierProvider).featuredProducts ?? [];
+    final products = ref.watch(productNotifierProvider).displayProducts;
 
     return Column(
       children: categories.take(3).map((category) {
@@ -653,7 +733,7 @@ class DashboardScreen extends ConsumerWidget {
         return Column(
           children: [
             _buildSectionHeader(context, category.name, () {
-               // ref.read(productNotifierProvider.notifier).filterByCategory(category.id);
+               Navigator.pushNamed(context, AppRoutes.allProducts, arguments: {'title': category.name, 'categoryId': category.id});
             }),
             SizedBox(
               height: 290,
@@ -676,6 +756,8 @@ class DashboardScreen extends ConsumerWidget {
     final primaryColor = settings.primaryColor;
     
     final isAdmin = auth?.role == 'admin' || auth?.role == 'super_admin';
+    final notificationCount = ref.watch(notificationNotifierProvider).value?.length ?? 0;
+    final supportCount = ref.watch(supportNotifierProvider).value?.length ?? 0;
 
     return Drawer(
       shape: const RoundedRectangleBorder(borderRadius: BorderRadius.horizontal(right: Radius.circular(30))),
@@ -727,7 +809,7 @@ class DashboardScreen extends ConsumerWidget {
                     Navigator.pushNamed(context, AppRoutes.notifications);
                   },
                   false,
-                  0 // Dummy count
+                  notificationCount
                 ),
                 _drawerItem(
                   context, 
@@ -738,7 +820,7 @@ class DashboardScreen extends ConsumerWidget {
                     Navigator.pushNamed(context, AppRoutes.support);
                   },
                   false,
-                  0 // Dummy count
+                  supportCount
                 ),
                 if (isAdmin)
                   _drawerItem(context, Icons.admin_panel_settings_rounded, AppStrings.adminPanel.tr(), () {
@@ -751,10 +833,9 @@ class DashboardScreen extends ConsumerWidget {
                   child: Text(AppStrings.appSettings.tr(), style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Colors.grey)),
                 ),
 
-                // Language Toggle
                 ListTile(
                   leading: const Icon(Icons.translate_rounded),
-                  title: Text(AppStrings.language.tr(), style: const TextStyle(fontWeight: FontWeight.w500)),
+                  title: Text(AppStrings.language.tr(), style: const TextStyle(fontWeight: FontWeight.bold)),
                   trailing: Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
@@ -765,10 +846,9 @@ class DashboardScreen extends ConsumerWidget {
                   ),
                 ),
 
-                // Dark Mode Toggle
                 ListTile(
                   leading: Icon(settings.themeMode == ThemeMode.dark ? Icons.dark_mode_rounded : Icons.light_mode_rounded),
-                  title: Text(AppStrings.darkMode.tr(), style: const TextStyle(fontWeight: FontWeight.w500)),
+                  title: Text(AppStrings.darkMode.tr(), style: const TextStyle(fontWeight: FontWeight.bold)),
                   trailing: Switch.adaptive(
                     value: settings.themeMode == ThemeMode.dark,
                     activeColor: primaryColor,
@@ -778,7 +858,6 @@ class DashboardScreen extends ConsumerWidget {
                   ),
                 ),
 
-                // Primary Color Picker
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
                   child: Column(
@@ -788,7 +867,7 @@ class DashboardScreen extends ConsumerWidget {
                         children: [
                           const Icon(Icons.palette_outlined, color: Colors.grey),
                           const SizedBox(width: 32),
-                          Text(AppStrings.themeColor.tr(), style: const TextStyle(fontWeight: FontWeight.w500)),
+                          Text(AppStrings.themeColor.tr(), style: const TextStyle(fontWeight: FontWeight.bold)),
                         ],
                       ),
                       const SizedBox(height: 12),
@@ -811,7 +890,7 @@ class DashboardScreen extends ConsumerWidget {
             leading: const Icon(Icons.logout_rounded, color: Colors.red),
             title: Text(AppStrings.logout.tr(), style: const TextStyle(color: Colors.red, fontWeight: FontWeight.bold)),
             onTap: () {
-              Navigator.pop(context); // Close drawer
+              Navigator.pop(context);
               _showLogoutConfirmation(context, ref);
             },
           ),

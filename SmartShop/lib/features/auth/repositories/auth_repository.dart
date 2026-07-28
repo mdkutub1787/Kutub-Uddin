@@ -54,6 +54,19 @@ class AuthRepository {
       debugPrint('❌ ERROR: Sign out failed -> $e');
     }
   }
+
+  // Change Password
+  Future<void> updatePassword(String newPassword) async {
+    try {
+      await _supabase.auth.updateUser(
+        UserAttributes(password: newPassword),
+      );
+      debugPrint('✅ SUCCESS: Password updated');
+    } catch (e) {
+      debugPrint('❌ ERROR: Password update failed -> $e');
+      rethrow;
+    }
+  }
 }
 
 // Provider for AuthRepository

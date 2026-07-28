@@ -10,6 +10,7 @@ import 'features/splash/screens/splash_screen.dart';
 import 'routes/app_routes.dart';
 import 'theme/app_theme.dart';
 import 'core/config/app_config.dart';
+import 'core/services/error_logger.dart';
 import 'services/notification_service.dart';
 import 'services/push_notification_service.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -31,7 +32,19 @@ void main() async {
 
   await NotificationService().init();
   
-  // Set up Error Widgets
+  // 1. Global Flutter Error Catcher
+  FlutterError.onError = (details) {
+    FlutterError.presentError(details);
+    ErrorLogger.logError(details.exception, details.stack, hint: 'Flutter Error');
+  };
+
+  // 2. Global Platform Error Catcher
+  PlatformDispatcher.instance.onError = (error, stack) {
+    ErrorLogger.logError(error, stack, hint: 'Platform Error');
+    return true;
+  };
+
+  // Set up Error Widgets UI
   ErrorWidget.builder = (FlutterErrorDetails details) {
     return Scaffold(
       body: Center(

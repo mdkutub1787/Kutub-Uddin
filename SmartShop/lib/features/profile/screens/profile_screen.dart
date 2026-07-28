@@ -301,7 +301,7 @@ class ProfileScreen extends ConsumerWidget {
               Text(
                 user?.name ?? "User Name", 
                 textAlign: TextAlign.center,
-                style: const TextStyle(fontSize: 22, fontWeight: FontWeight.w900, color: Colors.white, letterSpacing: -0.5)
+                style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: Colors.white, letterSpacing: -0.5)
               ),
               const SizedBox(height: 4),
               Text(
@@ -452,6 +452,15 @@ class ProfileScreen extends ConsumerWidget {
   }
 
   Widget _buildSettingsCard(BuildContext context, WidgetRef ref, dynamic settings) {
+    String currencyLabel = "Currency";
+    if (settings.currencySymbol == '৳') {
+      currencyLabel = "BDT (৳)";
+    } else if (settings.currencySymbol == '\$') {
+      currencyLabel = "USD (\$)";
+    } else {
+      currencyLabel = settings.currencySymbol;
+    }
+
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20),
       child: AppCard(
@@ -485,6 +494,16 @@ class ProfileScreen extends ConsumerWidget {
                   context.setLocale(const Locale('en', 'US'));
                 }
               },
+            ),
+            const Divider(height: 1, indent: 55),
+            ListTile(
+              leading: const Icon(Icons.monetization_on_outlined),
+              title: const Text("Currency", style: TextStyle(fontSize: 15, fontWeight: FontWeight.w500)),
+              trailing: Text(
+                currencyLabel,
+                style: TextStyle(color: settings.primaryColor, fontWeight: FontWeight.bold)
+              ),
+              onTap: () => _showCurrencyPicker(context, ref, settings),
             ),
             const Divider(height: 1, indent: 55),
             ListTile(
@@ -748,10 +767,68 @@ class ProfileScreen extends ConsumerWidget {
                 ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Passwords do not match")));
                 return;
               }
+              try {
+                await ref.read(authNotifierProvider.notifier).changePassword(newController.text.trim());
+                if (context.mounted) {
+                  Navigator.pop(ctx);
+                  ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Password updated successfully!"), backgroundColor: Colors.green));
+                }
+              } catch (e) {
+                if (context.mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Error: $e"), backgroundColor: Colors.red));
+              }
             },
             child: const Text("Update"),
           )
         ],
+      ),
+    );
+  }
+
+  void _showCurrencyPicker(BuildContext context, WidgetRef ref, dynamic settings) {
+    showModalBottomSheet(
+      context: context,
+      shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(25))),
+      builder: (context) => Container(
+        padding: const EdgeInsets.symmetric(vertical: 20),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const Text("Select Currency", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+            const SizedBox(height: 10),
+            ListTile(
+              title: const Text("BDT - Bangladeshi Taka"),
+              trailing: settings.currencySymbol == '৳' ? Icon(Icons.check_circle, color: settings.primaryColor) : null,
+              onTap: () {
+                ref.read(settingsProvider.notifier).setCurrency('৳');
+                Navigator.pop(context);
+              },
+            ),
+            ListTile(
+              title: const Text("USD - US Dollar"),
+              trailing: settings.currencySymbol == '\$' ? Icon(Icons.check_circle, color: settings.primaryColor) : null,
+              onTap: () {
+                ref.read(settingsProvider.notifier).setCurrency('\$');
+                Navigator.pop(context);
+              },
+            ),
+            ListTile(
+              title: const Text("INR - Indian Rupee"),
+              trailing: settings.currencySymbol == '₹' ? Icon(Icons.check_circle, color: settings.primaryColor) : null,
+              onTap: () {
+                ref.read(settingsProvider.notifier).setCurrency('₹');
+                Navigator.pop(context);
+              },
+            ),
+            ListTile(
+              title: const Text("AED - Dirham"),
+              trailing: settings.currencySymbol == 'د.إ' ? Icon(Icons.check_circle, color: settings.primaryColor) : null,
+              onTap: () {
+                ref.read(settingsProvider.notifier).setCurrency('د.إ');
+                Navigator.pop(context);
+              },
+            ),
+          ],
+        ),
       ),
     );
   }

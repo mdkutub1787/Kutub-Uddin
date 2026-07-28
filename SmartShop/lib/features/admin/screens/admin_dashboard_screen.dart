@@ -20,6 +20,7 @@ import 'admin_order_list_screen.dart';
 import 'admin_analytics_screen.dart';
 import 'admin_user_list_screen.dart';
 import 'admin_activity_log_screen.dart';
+import 'coupons/admin_coupon_screen.dart';
 import 'admin_pos_screen.dart';
 
 class AdminDashboardScreen extends ConsumerStatefulWidget {
@@ -65,6 +66,9 @@ class _AdminDashboardScreenState extends ConsumerState<AdminDashboardScreen> {
     final products = productState.featuredProducts ?? [];
     final categories = categoryState.value ?? [];
     final users = userState.value ?? [];
+    
+    // Inventory Health Check
+    final lowStockItems = products.where((p) => p.stock <= 5).length;
 
     return PopScope(
       canPop: false,
@@ -127,7 +131,7 @@ class _AdminDashboardScreenState extends ConsumerState<AdminDashboardScreen> {
                           }),
                         
                         if (isStaff)
-                          _buildAdminCard(context, AppStrings.products.tr(), Icons.inventory_2_rounded, Colors.blue, "${products.length} ${AppStrings.pieces.tr()}", () => Navigator.push(context, MaterialPageRoute(builder: (_) => const AdminProductListScreen()))),
+                          _buildAdminCard(context, AppStrings.products.tr(), Icons.inventory_2_rounded, Colors.blue, "${products.length} ${AppStrings.pieces.tr()}", () => Navigator.push(context, MaterialPageRoute(builder: (_) => const AdminProductListScreen())), badgeCount: lowStockItems),
                         
                         if (isManager)
                           _buildAdminCard(context, AppStrings.categoriesTitle.tr(), Icons.category_rounded, Colors.orange, "${categories.length} ${AppStrings.items.tr()}", () => Navigator.push(context, MaterialPageRoute(builder: (_) => const AdminCategoryListScreen()))),
@@ -146,6 +150,9 @@ class _AdminDashboardScreenState extends ConsumerState<AdminDashboardScreen> {
                         
                         if (isOwner)
                           _buildAdminCard(context, AppStrings.users.tr(), Icons.people_alt_rounded, Colors.indigo, "${users.length} Team Members", () => Navigator.push(context, MaterialPageRoute(builder: (_) => const AdminUserListScreen()))),
+                        
+                        if (isOwner)
+                          _buildAdminCard(context, "Coupons", Icons.confirmation_num_rounded, Colors.pink, "Manage discounts", () => Navigator.push(context, MaterialPageRoute(builder: (_) => const AdminCouponScreen()))),
                         
                         if (isSuperAdmin)
                           _buildAdminCard(context, "Activity Logs", Icons.history_rounded, Colors.blueGrey, "System audit", () => Navigator.push(context, MaterialPageRoute(builder: (_) => const AdminActivityLogScreen()))),

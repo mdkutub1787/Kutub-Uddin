@@ -9,6 +9,8 @@ import 'dart:io';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../../core/constants/constants.dart';
 import '../../../core/providers.dart';
+import '../../../core/utils/image_optimizer.dart';
+import '../../../core/riverpod/settings_notifier.dart';
 import '../../../widgets/custom_app_bar.dart';
 
 class AdminAddEditProductScreen extends ConsumerStatefulWidget {
@@ -58,7 +60,13 @@ class _AdminAddEditProductScreenState extends ConsumerState<AdminAddEditProductS
       if (pickedFile != null) {
         setState(() => _isSaving = true);
         
-        final file = File(pickedFile.path);
+        File file = File(pickedFile.path);
+        
+        final optimizedFile = await ImageOptimizer.compressImage(file);
+        if (optimizedFile != null) {
+          file = optimizedFile;
+        }
+
         final fileExt = pickedFile.path.split('.').last;
         final fileName = 'prod_${DateTime.now().millisecondsSinceEpoch}.$fileExt';
         final supabase = ref.read(supabaseClientProvider);
@@ -115,7 +123,9 @@ class _AdminAddEditProductScreenState extends ConsumerState<AdminAddEditProductS
     final categoryState = ref.watch(categoryNotifierProvider);
     final categories = categoryState.value ?? [];
     
-    final primaryColor = Theme.of(context).primaryColor;
+    final settings = ref.watch(settingsProvider);
+    final primaryColor = settings.primaryColor;
+    final currency = settings.currencySymbol;
     final size = MediaQuery.of(context).size;
 
     return Scaffold(
@@ -123,7 +133,6 @@ class _AdminAddEditProductScreenState extends ConsumerState<AdminAddEditProductS
       appBar: CustomAppBar(title: widget.product == null ? "Add Product" : "Edit Product"),
       body: Stack(
         children: [
-          // Decorative Background Elements
           Positioned(
             top: -size.height * 0.1,
             right: -size.width * 0.2,
@@ -150,15 +159,15 @@ class _AdminAddEditProductScreenState extends ConsumerState<AdminAddEditProductS
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      _field(_nameController, "Product Name", Icons.shopping_bag_outlined),
+                      _field(_nameController, "Product Name", Icons.shopping_bag_outlined, primaryColor),
                       const SizedBox(height: 20),
-                      _field(_descController, "Description", Icons.description_outlined, lines: 3),
+                      _field(_descController, "Description", Icons.description_outlined, primaryColor, lines: 3),
                       const SizedBox(height: 20),
                       Row(
                         children: [
-                          Expanded(child: _field(_priceController, "Price", Icons.attach_money_rounded, type: TextInputType.number)),
+                          Expanded(child: _field(_priceController, "Price", Icons.attach_money_rounded, primaryColor, type: TextInputType.number)),
                           const SizedBox(width: 15),
-                          Expanded(child: _field(_stockController, "Stock", Icons.inventory_2_outlined, type: TextInputType.number)),
+                          Expanded(child: _field(_stockController, "Stock", Icons.inventory_2_outlined, primaryColor, type: TextInputType.number)),
                         ],
                       ),
                       const SizedBox(height: 30),
@@ -168,7 +177,7 @@ class _AdminAddEditProductScreenState extends ConsumerState<AdminAddEditProductS
                       ),
                       const SizedBox(height: 15),
                       Container(
-                        decoration: _fieldDecoration(),
+                        decoration: _fieldDecoration(enabled: true),
                         child: DropdownButtonFormField<String>(
                           value: _discountType,
                           decoration: InputDecoration(
@@ -189,7 +198,7 @@ class _AdminAddEditProductScreenState extends ConsumerState<AdminAddEditProductS
                         ),
                       ),
                       const SizedBox(height: 20),
-                      _field(_discountController, "Discount Value", Icons.discount_outlined, type: TextInputType.number, enabled: _discountType != 'none'),
+                      _field(_discountController, "Discount Value", Icons.discount_outlined, primaryColor, type: TextInputType.number, enabled: _discountType != 'none'),
                       const SizedBox(height: 12),
                       Container(
                         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
@@ -198,12 +207,12 @@ class _AdminAddEditProductScreenState extends ConsumerState<AdminAddEditProductS
                           borderRadius: BorderRadius.circular(15),
                         ),
                         child: Text(
-                          "Final Price: ৳${_calculateFinalPrice().toStringAsFixed(2)}", 
+                          "Final Price: $currency${_calculateFinalPrice().toStringAsFixed(2)}", 
                           style: const TextStyle(fontWeight: FontWeight.w900, color: Colors.green, fontSize: 16)
                         ),
                       ),
                       const SizedBox(height: 30),
-                      _field(_imageController, "Image URL", Icons.link_rounded),
+                      _field(_imageController, "Image URL", Icons.link_rounded, primaryColor),
                       const SizedBox(height: 10),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.center,
@@ -215,7 +224,7 @@ class _AdminAddEditProductScreenState extends ConsumerState<AdminAddEditProductS
                       ),
                       const SizedBox(height: 30),
                       Container(
-                        decoration: _fieldDecoration(),
+                        decoration: _fieldDecoration(enabled: true),
                         child: DropdownButtonFormField<String>(
                           value: _selectedCategoryId,
                           decoration: InputDecoration(
@@ -324,7 +333,7 @@ class _AdminAddEditProductScreenState extends ConsumerState<AdminAddEditProductS
     }
   }
 
-  Widget _field(TextEditingController controller, String label, IconData icon, {int lines = 1, TextInputType type = TextInputType.text, bool enabled = true}) {
+  Widget _field(TextEditingController controller, String label, IconData icon, Color primaryColor, {int lines = 1, TextInputType type = TextInputType.text, bool enabled = true}) {
     return Container(
       decoration: _fieldDecoration(enabled: enabled),
       child: TextFormField(
@@ -335,7 +344,7 @@ class _AdminAddEditProductScreenState extends ConsumerState<AdminAddEditProductS
         style: const TextStyle(fontWeight: FontWeight.w500),
         decoration: InputDecoration(
           labelText: label, 
-          prefixIcon: Icon(icon, color: Theme.of(context).primaryColor), 
+          prefixIcon: Icon(icon, color: primaryColor),
           border: InputBorder.none,
           filled: false,
           contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 15),

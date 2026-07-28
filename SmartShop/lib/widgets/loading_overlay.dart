@@ -14,6 +14,8 @@ class LoadingOverlay {
   }
 
   static void hide(BuildContext context) {
-    Navigator.of(context, rootNavigator: true).pop();
+    if (Navigator.canPop(context)) {
+      Navigator.of(context, rootNavigator: true).pop();
+    }
   }
 }

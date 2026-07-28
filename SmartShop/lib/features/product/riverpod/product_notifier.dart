@@ -5,38 +5,53 @@ import '../../auth/riverpod/auth_notifier.dart';
 import '../../admin/riverpod/activity_log_notifier.dart';
 
 class ProductState {
-  final List<ProductModel> featuredProducts;
+  final List<ProductModel> allProducts;
   final List<ProductModel> filteredProducts;
   final String selectedCategoryId;
+  final String searchQuery;
+  final double minPrice;
+  final double maxPrice;
   final bool isLoading;
 
   ProductState({
-    this.featuredProducts = const [],
+    this.allProducts = const [],
     this.filteredProducts = const [],
     this.selectedCategoryId = '',
+    this.searchQuery = '',
+    this.minPrice = 0,
+    this.maxPrice = 1000000,
     this.isLoading = false,
   });
 
   ProductState copyWith({
-    List<ProductModel>? featuredProducts,
+    List<ProductModel>? allProducts,
     List<ProductModel>? filteredProducts,
     String? selectedCategoryId,
+    String? searchQuery,
+    double? minPrice,
+    double? maxPrice,
     bool? isLoading,
   }) {
     return ProductState(
-      featuredProducts: featuredProducts ?? this.featuredProducts,
+      allProducts: allProducts ?? this.allProducts,
       filteredProducts: filteredProducts ?? this.filteredProducts,
       selectedCategoryId: selectedCategoryId ?? this.selectedCategoryId,
+      searchQuery: searchQuery ?? this.searchQuery,
+      minPrice: minPrice ?? this.minPrice,
+      maxPrice: maxPrice ?? this.maxPrice,
       isLoading: isLoading ?? this.isLoading,
     );
   }
 
+  List<ProductModel> get featuredProducts => allProducts;
+
   List<ProductModel> get displayProducts {
-    List<ProductModel> products = selectedCategoryId.isEmpty
-        ? featuredProducts
-        : featuredProducts.where((p) => p.categoryId == selectedCategoryId).toList();
-    
-    return filteredProducts.isEmpty ? products : filteredProducts;
+    return allProducts.where((p) {
+      final matchesCategory = selectedCategoryId.isEmpty || p.categoryId == selectedCategoryId;
+      final matchesSearch = searchQuery.isEmpty || p.name.toLowerCase().contains(searchQuery.toLowerCase());
+      final matchesPrice = p.price >= minPrice && p.price <= maxPrice;
+      return matchesCategory && matchesSearch && matchesPrice;
+    }).toList();
   }
 }
 
@@ -47,7 +62,6 @@ class ProductNotifier extends Notifier<ProductState> {
   ProductState build() {
     _repository = ref.watch(productRepositoryProvider);
     
-    // Set up real-time listener based on user role
     final user = ref.watch(authNotifierProvider).value;
     String? filterShopId;
     
@@ -68,12 +82,11 @@ class ProductNotifier extends Notifier<ProductState> {
     final subscription = stream.listen(
       (products) {
         state = state.copyWith(
-          featuredProducts: products,
+          allProducts: products,
           isLoading: false,
         );
       },
       onError: (error) {
-        // Handle stream errors (Realtime disabled, JWT issues, etc.)
         state = state.copyWith(isLoading: false);
         if (error.toString().contains('JWT issued at future')) {
           Future.delayed(const Duration(seconds: 3), () => _initStream(shopId: shopId));
@@ -93,27 +106,24 @@ class ProductNotifier extends Notifier<ProductState> {
   }
 
   void searchProducts(String query) {
-    if (query.isEmpty) {
-      state = state.copyWith(filteredProducts: []);
-    } else {
-      final filtered = state.featuredProducts
-          .where((product) => product.name.toLowerCase().contains(query.toLowerCase()))
-          .toList();
-      state = state.copyWith(filteredProducts: filtered);
-    }
+    state = state.copyWith(searchQuery: query);
   }
 
-  void clearSearch() {
+  void setPriceRange(double min, double max) {
+    state = state.copyWith(minPrice: min, maxPrice: max);
+  }
+
+  void clearFilters() {
     state = state.copyWith(
-      filteredProducts: [],
+      searchQuery: '',
       selectedCategoryId: '',
+      minPrice: 0,
+      maxPrice: 1000000,
     );
   }
 
   Future<void> addProduct(ProductModel product) async {
     await _repository.addProduct(product);
-    
-    // Log Activity
     final admin = ref.read(authNotifierProvider).value;
     if (admin != null) {
       await ref.read(activityLogNotifierProvider.notifier).logAction(
@@ -124,13 +134,10 @@ class ProductNotifier extends Notifier<ProductState> {
         details: 'Product "${product.name}" was added to inventory.',
       );
     }
-    _initStream(); 
   }
 
   Future<void> updateProduct(ProductModel product) async {
     await _repository.updateProduct(product);
-
-    // Log Activity
     final admin = ref.read(authNotifierProvider).value;
     if (admin != null) {
       await ref.read(activityLogNotifierProvider.notifier).logAction(
@@ -141,13 +148,10 @@ class ProductNotifier extends Notifier<ProductState> {
         details: 'Product "${product.name}" details were updated.',
       );
     }
-    _initStream();
   }
 
   Future<void> deleteProduct(String productId) async {
     await _repository.deleteProduct(productId);
-
-    // Log Activity
     final admin = ref.read(authNotifierProvider).value;
     if (admin != null) {
       await ref.read(activityLogNotifierProvider.notifier).logAction(
@@ -158,7 +162,6 @@ class ProductNotifier extends Notifier<ProductState> {
         details: 'Product ID: $productId was removed from inventory.',
       );
     }
-    _initStream();
   }
 }
 

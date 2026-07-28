@@ -62,8 +62,9 @@ class _AdminPosScreenState extends ConsumerState<AdminPosScreen> {
     final productState = ref.watch(productNotifierProvider);
     final categoryState = ref.watch(categoryNotifierProvider);
     final settings = ref.watch(settingsProvider);
+    final currency = settings.currencySymbol;
 
-    final products = productState.featuredProducts ?? [];
+    final products = productState.featuredProducts;
     final categories = categoryState.value ?? [];
 
     final filteredProducts = products.where((p) {
@@ -98,10 +99,10 @@ class _AdminPosScreenState extends ConsumerState<AdminPosScreen> {
                       mainAxisSpacing: 12,
                     ),
                     itemCount: filteredProducts.length,
-                    itemBuilder: (context, index) => _buildProductCard(filteredProducts[index], settings.primaryColor),
+                    itemBuilder: (context, index) => _buildProductCard(filteredProducts[index], settings.primaryColor, currency),
                   ),
           ),
-          _buildBottomCartBar(settings.primaryColor),
+          _buildBottomCartBar(settings.primaryColor, currency),
         ],
       ),
     );
@@ -157,7 +158,7 @@ class _AdminPosScreenState extends ConsumerState<AdminPosScreen> {
     );
   }
 
-  Widget _buildProductCard(ProductModel product, Color primaryColor) {
+  Widget _buildProductCard(ProductModel product, Color primaryColor, String currency) {
     bool hasStock = product.stock > 0;
     int cartQty = _posCart[product.id]?.quantity ?? 0;
 
@@ -209,7 +210,7 @@ class _AdminPosScreenState extends ConsumerState<AdminPosScreen> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Text("৳${product.price.toInt()}", style: TextStyle(color: primaryColor, fontWeight: FontWeight.w900, fontSize: 14)),
+                    Text("$currency${product.price.toInt()}", style: TextStyle(color: primaryColor, fontWeight: FontWeight.w900, fontSize: 14)),
                     Text("Stk: ${product.stock}", style: TextStyle(color: hasStock ? Colors.grey : Colors.red, fontSize: 10)),
                   ],
                 ),
@@ -264,7 +265,7 @@ class _AdminPosScreenState extends ConsumerState<AdminPosScreen> {
     );
   }
 
-  Widget _buildBottomCartBar(Color primaryColor) {
+  Widget _buildBottomCartBar(Color primaryColor, String currency) {
     if (_posCart.isEmpty) return const SizedBox.shrink();
 
     return Container(
@@ -281,7 +282,7 @@ class _AdminPosScreenState extends ConsumerState<AdminPosScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text("${_posCart.length} Items", style: const TextStyle(color: Colors.grey, fontSize: 12, fontWeight: FontWeight.bold)),
-                Text("৳${_subtotal.toInt()}", style: TextStyle(color: primaryColor, fontSize: 20, fontWeight: FontWeight.w900)),
+                Text("$currency${_subtotal.toInt()}", style: TextStyle(color: primaryColor, fontSize: 20, fontWeight: FontWeight.w900)),
               ],
             ),
             const SizedBox(width: 20),
@@ -289,7 +290,7 @@ class _AdminPosScreenState extends ConsumerState<AdminPosScreen> {
               child: SizedBox(
                 height: 50,
                 child: ElevatedButton(
-                  onPressed: () => _showCheckoutSheet(primaryColor),
+                  onPressed: () => _showCheckoutSheet(primaryColor, currency),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: primaryColor,
                     foregroundColor: Colors.white,
@@ -305,7 +306,7 @@ class _AdminPosScreenState extends ConsumerState<AdminPosScreen> {
     );
   }
 
-  void _showCheckoutSheet(Color primaryColor) {
+  void _showCheckoutSheet(Color primaryColor, String currency) {
     final userState = ref.read(userNotifierProvider);
     final users = userState.value ?? [];
 
@@ -344,8 +345,8 @@ class _AdminPosScreenState extends ConsumerState<AdminPosScreen> {
                   children: _posCart.values.map((item) => ListTile(
                     contentPadding: EdgeInsets.zero,
                     title: Text(item.product.name, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
-                    subtitle: Text("৳${item.product.price.toInt()} x ${item.quantity}"),
-                    trailing: Text("৳${(item.product.price * item.quantity).toInt()}", style: const TextStyle(fontWeight: FontWeight.bold)),
+                    subtitle: Text("$currency${item.product.price.toInt()} x ${item.quantity}"),
+                    trailing: Text("$currency${(item.product.price * item.quantity).toInt()}", style: const TextStyle(fontWeight: FontWeight.bold)),
                   )).toList(),
                 ),
               ),
@@ -354,7 +355,7 @@ class _AdminPosScreenState extends ConsumerState<AdminPosScreen> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   const Text("Total Amount", style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
-                  Text("৳${_subtotal.toInt()}", style: TextStyle(fontSize: 24, fontWeight: FontWeight.w900, color: primaryColor)),
+                  Text("$currency${_subtotal.toInt()}", style: TextStyle(fontSize: 24, fontWeight: FontWeight.w900, color: primaryColor)),
                 ],
               ),
               const SizedBox(height: 20),
@@ -486,6 +487,8 @@ class _AdminPosScreenState extends ConsumerState<AdminPosScreen> {
       totalAmount: _subtotal,
       deliveryFee: 0, date: DateTime.now(),
       status: 'Delivered', orderType: 'pos',
+      paymentMethod: 'Cash', // Add this
+      isPaid: true, // Add this
     );
     bool success = await ref.read(orderNotifierProvider.notifier).placeOrder(order);
     if (success && mounted) {

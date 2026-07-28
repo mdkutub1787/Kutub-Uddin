@@ -4,6 +4,7 @@ import '../../product/riverpod/product_notifier.dart';
 import '../../product/models/product_model.dart';
 import '../../../widgets/custom_app_bar.dart';
 import '../../../widgets/app_card.dart';
+import '../../../core/riverpod/settings_notifier.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:smart_shop/core/app_strings.dart';
 import 'admin_add_edit_product_screen.dart';
@@ -15,8 +16,10 @@ class AdminProductListScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final productState = ref.watch(productNotifierProvider);
-    final products = productState.featuredProducts ?? [];
+    final products = productState.featuredProducts;
     final isLoading = productState.isLoading;
+    final settings = ref.watch(settingsProvider);
+    final currency = settings.currencySymbol;
 
     return Scaffold(
       appBar: const CustomAppBar(
@@ -33,7 +36,7 @@ class AdminProductListScreen extends ConsumerWidget {
                     itemCount: products.length,
                     itemBuilder: (context, index) {
                       final product = products[index];
-                      return _buildProductCard(context, ref, product);
+                      return _buildProductCard(context, ref, product, currency);
                     },
                   ),
                 ),
@@ -70,7 +73,7 @@ class AdminProductListScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildProductCard(BuildContext context, WidgetRef ref, ProductModel product) {
+  Widget _buildProductCard(BuildContext context, WidgetRef ref, ProductModel product, String currency) {
     return AppCard(
       margin: const EdgeInsets.only(bottom: 12),
       child: Padding(
@@ -103,7 +106,7 @@ class AdminProductListScreen extends ConsumerWidget {
                   ),
                   const SizedBox(height: 5),
                   Text(
-                    "৳${product.price.toInt()}",
+                    "$currency${product.price.toInt()}",
                     style: TextStyle(
                       color: Theme.of(context).primaryColor,
                       fontWeight: FontWeight.w900,

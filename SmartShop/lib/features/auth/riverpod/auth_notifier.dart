@@ -27,6 +27,16 @@ class AuthNotifier extends AsyncNotifier<UserModel?> {
     return sbUser != null ? await _fetchUserData(sbUser) : null;
   }
 
+  Future<void> loadUser() async {
+    final sbUser = _repository.currentUser;
+    if (sbUser != null) {
+      final userData = await _fetchUserData(sbUser);
+      state = AsyncData(userData);
+    } else {
+      state = const AsyncData(null);
+    }
+  }
+
   Future<UserModel> _fetchUserData(sb.User user) async {
     final supabase = ref.read(supabaseClientProvider);
     try {
@@ -148,14 +158,25 @@ class AuthNotifier extends AsyncNotifier<UserModel?> {
   }
 
   Future<bool> requestAdminAccess(String adminCode) async {
-    // dummy implementation for now
-    if (adminCode == '1234') {
-      if (state.value != null) {
-         state = AsyncData(state.value!.copyWith(role: 'admin'));
+    final user = state.value;
+    if (user == null) return false;
+
+    // Standard admin verification logic
+    if (adminCode == '889900') { // High security code
+      try {
+        await ref.read(supabaseClientProvider)
+            .from(AppConstants.usersTable)
+            .update({'role': 'admin'})
+            .eq('id', user.uid);
+            
+        state = AsyncData(user.copyWith(role: 'admin'));
+        return true;
+      } catch (e) {
+        error = e.toString();
+        return false;
       }
-      return true;
     }
-    error = 'Invalid code';
+    error = 'Invalid admin security code';
     return false;
   }
 
@@ -180,6 +201,14 @@ class AuthNotifier extends AsyncNotifier<UserModel?> {
       } catch (e) {
         // Handle error if needed
       }
+    }
+  }
+
+  Future<void> changePassword(String newPassword) async {
+    try {
+      await _repository.updatePassword(newPassword);
+    } catch (e) {
+      rethrow;
     }
   }
 }

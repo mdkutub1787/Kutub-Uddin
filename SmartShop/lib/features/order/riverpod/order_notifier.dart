@@ -1,174 +1,129 @@
-import 'dart:async';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../auth/riverpod/auth_notifier.dart';
-import '../../admin/riverpod/activity_log_notifier.dart';
-import '../../notification/riverpod/notification_notifier.dart';
-import '../../../core/providers.dart';
 import '../models/order_model.dart';
 import '../repositories/order_repository.dart';
-
-final orderRepositoryProvider = Provider<OrderRepository>((ref) {
-  return OrderRepository(ref.watch(supabaseClientProvider));
-});
+import '../../../core/constants/constants.dart';
+import '../../../core/providers.dart';
+import '../../admin/riverpod/activity_log_notifier.dart';
+import '../../auth/riverpod/auth_notifier.dart';
+import '../../user/models/user_model.dart';
 
 final orderNotifierProvider = AsyncNotifierProvider<OrderNotifier, List<OrderModel>>(() {
   return OrderNotifier();
 });
 
 final availableOrdersProvider = StreamProvider<List<OrderModel>>((ref) {
-  final repository = ref.read(orderRepositoryProvider);
-  return repository.streamAvailableOrders();
+  return ref.watch(orderRepositoryProvider).streamAvailableOrders();
 });
 
 final myDeliveriesProvider = StreamProvider.family<List<OrderModel>, String>((ref, deliveryManId) {
-  final repository = ref.read(orderRepositoryProvider);
-  return repository.streamMyDeliveries(deliveryManId);
+  return ref.watch(orderRepositoryProvider).streamMyDeliveries(deliveryManId);
 });
 
 final myCompletedDeliveriesProvider = StreamProvider.family<List<OrderModel>, String>((ref, deliveryManId) {
-  final repository = ref.read(orderRepositoryProvider);
-  return repository.streamMyCompletedDeliveries(deliveryManId);
-});
-
-final userOrdersStreamProvider = StreamProvider.family<List<OrderModel>, String>((ref, userId) {
-  final repository = ref.read(orderRepositoryProvider);
-  return repository.streamUserOrders(userId);
+  return ref.watch(orderRepositoryProvider).streamMyCompletedDeliveries(deliveryManId);
 });
 
 class OrderNotifier extends AsyncNotifier<List<OrderModel>> {
-  late OrderRepository _repository;
+  late final OrderRepository _repository;
 
   @override
-  FutureOr<List<OrderModel>> build() async {
-    _repository = ref.watch(orderRepositoryProvider);
-    return await _fetchOrders();
-  }
-
-  Future<List<OrderModel>> _fetchOrders() async {
-    final user = ref.read(authNotifierProvider).value;
-    if (user != null) {
-      if (user.role == 'super_admin' || user.role == 'admin') {
-        return await _repository.getAllOrders();
-      } else if (user.role == 'owner' || user.role == 'manager') {
-        if (user.shopId != null && user.shopId!.isNotEmpty) {
-          return await _repository.getOrdersByShop(user.shopId!);
-        } else {
-          return [];
-        }
-      } else {
-        return await _repository.getUserOrders(user.uid);
-      }
-    }
-    return [];
+  Future<List<OrderModel>> build() async {
+    _repository = ref.read(orderRepositoryProvider);
+    return _repository.fetchOrders();
   }
 
   Future<void> loadOrders() async {
-    state = const AsyncValue.loading();
-    try {
-      final orders = await _fetchOrders();
-      state = AsyncValue.data(orders);
-    } catch (e, stackTrace) {
-      state = AsyncValue.error(e, stackTrace);
-    }
+    state = const AsyncLoading();
+    state = await AsyncValue.guard(() => _repository.fetchOrders());
   }
 
   Future<bool> placeOrder(OrderModel order) async {
+    final client = ref.read(supabaseClientProvider);
+    
     try {
-      final success = await _repository.placeOrder(order);
-      if (success) {
-        // Notification
-        await ref.read(notificationNotifierProvider.notifier).sendNotification(
-          title: 'Order Placed!',
-          message: 'Your order #${order.id.isEmpty ? "" : order.id.substring(order.id.length - 8)} has been placed successfully.',
-        );
-        await loadOrders();
-      }
-      return success;
-    } catch (e) {
-      return false;
-    }
-  }
+      final orderId = await _repository.createOrder(order);
+      if (orderId == null) return false;
 
-  Future<void> updateOrderStatus(String orderId, String status) async {
-    try {
-      await _repository.updateOrderStatus(orderId, status);
-      
-      // Log Activity
-      final admin = ref.read(authNotifierProvider).value;
-      if (admin != null) {
-        await ref.read(activityLogNotifierProvider.notifier).logAction(
-          adminId: admin.uid,
-          adminName: admin.name,
-          action: 'Order Updated',
+      for (var item in order.items) {
+        final currentProduct = await client
+            .from(AppConstants.productsTable)
+            .select('stock')
+            .eq('id', item.product.id)
+            .maybeSingle();
+        
+        if (currentProduct != null) {
+          int newStock = (currentProduct['stock'] as int) - item.quantity;
+          await client
+              .from(AppConstants.productsTable)
+              .update({'stock': newStock})
+              .eq('id', item.product.id);
+        }
+      }
+
+      if (order.orderType == 'pos') {
+        final currentUser = ref.read(authNotifierProvider).value;
+        ref.read(activityLogNotifierProvider.notifier).logAction(
+          adminId: currentUser?.uid ?? 'unknown',
+          adminName: currentUser?.name ?? 'Admin',
+          action: 'POS Sale Created',
           targetId: orderId,
-          details: 'Order status changed to $status.',
+          details: 'Walk-in sale of ${order.items.length} items. Total: ${order.totalAmount}',
         );
       }
-
-      // Notification
-      await ref.read(notificationNotifierProvider.notifier).sendNotification(
-        title: 'Order $status',
-        message: 'Your order status has been updated to $status.',
-      );
 
       await loadOrders();
-    } catch (e) {
-      rethrow;
-    }
-  }
-
-  Future<bool> cancelOrder(OrderModel order) async {
-    try {
-      final success = await _repository.cancelOrder(order);
-      if (success) {
-        await ref.read(notificationNotifierProvider.notifier).sendNotification(
-          title: 'Order Cancelled',
-          message: 'Your order has been cancelled.',
-        );
-        await loadOrders();
-      }
-      return success;
-    } catch (e) {
-      return false;
-    }
-  }
-
-  Future<void> deleteOrder(String orderId) async {
-    try {
-      await _repository.deleteOrder(orderId);
-      
-      // Log Activity
-      final admin = ref.read(authNotifierProvider).value;
-      if (admin != null) {
-        await ref.read(activityLogNotifierProvider.notifier).logAction(
-          adminId: admin.uid,
-          adminName: admin.name,
-          action: 'Order Deleted',
-          targetId: orderId,
-          details: 'Order was permanently removed from system.',
-        );
-      }
-      
-      await loadOrders();
-    } catch (e) {
-      rethrow;
-    }
-  }
-
-  Future<bool> acceptOrder(OrderModel order, dynamic deliveryMan) async {
-    try {
-      await _repository.acceptOrder(order.id, deliveryMan);
       return true;
     } catch (e) {
       return false;
     }
   }
 
+  Future<void> updateOrderStatus(String orderId, String status) async {
+    await _repository.updateOrderStatus(orderId, status);
+    
+    final currentUser = ref.read(authNotifierProvider).value;
+    ref.read(activityLogNotifierProvider.notifier).logAction(
+      adminId: currentUser?.uid ?? 'unknown',
+      adminName: currentUser?.name ?? 'Admin',
+      action: 'Order Status Updated',
+      targetId: orderId,
+      details: 'Status changed to $status',
+    );
+    
+    await loadOrders();
+  }
+
   Future<void> updateOrderLocation(String orderId, double lat, double lng) async {
+    await _repository.updateDeliveryLocation(orderId, lat, lng);
+  }
+
+  Future<bool> acceptOrder(OrderModel order, UserModel deliveryMan) async {
     try {
-      await _repository.updateDeliveryLocation(orderId, lat, lng);
+      await _repository.acceptOrder(order.id, deliveryMan);
+      await loadOrders();
+      return true;
     } catch (e) {
-      // ignore
+      return false;
     }
+  }
+
+  Future<void> cancelOrder(OrderModel order) async {
+    await _repository.updateOrderStatus(order.id, 'Cancelled');
+    
+    final client = ref.read(supabaseClientProvider);
+    for (var item in order.items) {
+       final res = await client.from(AppConstants.productsTable).select('stock').eq('id', item.product.id).maybeSingle();
+       if (res != null) {
+         int restoredStock = (res['stock'] as int) + item.quantity;
+         await client.from(AppConstants.productsTable).update({'stock': restoredStock}).eq('id', item.product.id);
+       }
+    }
+    
+    await loadOrders();
+  }
+
+  Future<void> deleteOrder(String orderId) async {
+    await _repository.deleteOrder(orderId);
+    await loadOrders();
   }
 }

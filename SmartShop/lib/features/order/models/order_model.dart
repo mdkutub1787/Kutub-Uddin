@@ -12,9 +12,14 @@ class OrderModel {
   final double totalAmount;
   final double deliveryFee;
   final DateTime date;
-  final String status; // 'Pending', 'Confirmed', 'Assigned', 'PickedUp', 'OnTheWay', 'Delivered', 'Cancelled'
-  final String orderType; // 'online' or 'pos'
+  final String status; 
+  final String orderType; 
   
+  // Payment related
+  final String paymentMethod; // 'COD', 'Online'
+  final bool isPaid;
+  final String? transactionId;
+
   // Delivery related fields
   final String? deliveryManId;
   final String? deliveryManName;
@@ -46,6 +51,9 @@ class OrderModel {
     required this.date,
     required this.status,
     this.orderType = 'online',
+    required this.paymentMethod,
+    this.isPaid = false,
+    this.transactionId,
     this.deliveryManId,
     this.deliveryManName,
     this.deliveryManPhone,
@@ -79,6 +87,9 @@ class OrderModel {
       'date': date.toIso8601String(),
       'status': status,
       'orderType': orderType,
+      'paymentMethod': paymentMethod,
+      'isPaid': isPaid,
+      'transactionId': transactionId,
       'deliveryManId': deliveryManId,
       'deliveryManName': deliveryManName,
       'deliveryManPhone': deliveryManPhone,
@@ -121,7 +132,7 @@ class OrderModel {
         }
       }
     } catch (e) {
-      print('Error parsing order items: $e');
+      // ignore
     }
 
     return OrderModel(
@@ -137,6 +148,9 @@ class OrderModel {
       date: data['date'] != null ? DateTime.parse(data['date']) : (data['created_at'] != null ? DateTime.parse(data['created_at']) : DateTime.now()),
       status: data['status'] ?? 'Pending',
       orderType: data['orderType'] ?? 'online',
+      paymentMethod: data['paymentMethod'] ?? 'COD',
+      isPaid: data['isPaid'] ?? false,
+      transactionId: data['transactionId'],
       deliveryManId: data['deliveryManId']?.toString(),
       deliveryManName: data['deliveryManName'],
       deliveryManPhone: data['deliveryManPhone'],

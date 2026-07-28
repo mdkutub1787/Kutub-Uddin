@@ -13,6 +13,9 @@ class AppConstants {
   static const String notificationsTable = 'notifications';
   static const String couponsTable = 'coupons';
   static const String wishlistTable = 'wishlist';
+  static const String reviewsTable = 'reviews';
+  static const String systemConfigTable = 'system_config';
+  static const String errorLogsTable = 'error_logs';
   
   // Storage Buckets
   static const String categoryBucket = 'categories';
