@@ -508,19 +508,6 @@ class ProfileScreen extends ConsumerWidget {
               ),
               onTap: () => _showCurrencyPicker(context, ref, settings),
             ),
-            const Divider(height: 1, indent: 55),
-            ListTile(
-              leading: const Icon(Icons.palette_outlined),
-              title: Text(AppStrings.themeColor.tr(), style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w500)),
-              subtitle: Padding(
-                padding: const EdgeInsets.only(top: 8),
-                child: Wrap(
-                  spacing: 10,
-                  runSpacing: 10,
-                  children: AppColors.themePalette.map((color) => _colorDot(ref, settings, color)).toList(),
-                ),
-              ),
-            ),
           ],
         ),
       ),

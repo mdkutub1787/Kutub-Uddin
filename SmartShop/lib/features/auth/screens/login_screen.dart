@@ -228,6 +228,52 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                       ),
                     ],
                   ),
+                  const SizedBox(height: 32),
+                  Row(
+                    children: [
+                      Expanded(child: Divider(color: Theme.of(context).colorScheme.outlineVariant)),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 16),
+                        child: Text(
+                          context.tr("Quick Access"),
+                          style: Theme.of(context).textTheme.labelMedium?.copyWith(color: Theme.of(context).colorScheme.outline),
+                        ),
+                      ),
+                      Expanded(child: Divider(color: Theme.of(context).colorScheme.outlineVariant)),
+                    ],
+                  ),
+                  const SizedBox(height: 20),
+                  Wrap(
+                    alignment: WrapAlignment.center,
+                    spacing: 12,
+                    runSpacing: 12,
+                    children: [
+                      _buildQuickLoginButton(
+                        name: 'Admin',
+                        username: 'mdkutub150@gmail.com',
+                        password: '000000',
+                        theme: Theme.of(context),
+                      ),
+                      _buildQuickLoginButton(
+                        name: 'Owner',
+                        username: 'mdkutub15@gmail.com',
+                        password: '000000',
+                        theme: Theme.of(context),
+                      ),
+                      _buildQuickLoginButton(
+                        name: 'Customer',
+                        username: 'mdkutub1@gmail.com',
+                        password: '000000',
+                        theme: Theme.of(context),
+                      ),
+                      _buildQuickLoginButton(
+                        name: 'Rider',
+                        username: 'mdkutub@gmail.com',
+                        password: '000000',
+                        theme: Theme.of(context),
+                      ),
+                    ],
+                  ),
                   const SizedBox(height: 40),
                 ],
               ),
@@ -427,5 +473,25 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
         ),
       );
     }
+  }
+
+  Widget _buildQuickLoginButton({
+    required String name,
+    required String username,
+    required String password,
+    required ThemeData theme,
+  }) {
+    return ActionChip(
+      label: Text(name),
+      avatar: const Icon(Icons.person, size: 16),
+      onPressed: () {
+        _emailController.text = username;
+        _passwordController.text = password;
+        _handleLogin();
+      },
+      backgroundColor: theme.colorScheme.surface,
+      side: BorderSide(color: theme.colorScheme.outlineVariant),
+      labelStyle: theme.textTheme.labelMedium,
+    );
   }
 }

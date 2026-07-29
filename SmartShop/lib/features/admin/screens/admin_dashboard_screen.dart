@@ -23,6 +23,7 @@ import 'admin_activity_log_screen.dart';
 import 'coupons/admin_coupon_screen.dart';
 import 'admin_pos_screen.dart';
 import 'admin_shop_list_screen.dart';
+import 'admin_settings_screen.dart';
 import '../../../core/riverpod/admin_shop_filter_notifier.dart';
 import 'package:fl_chart/fl_chart.dart';
 import '../../order/models/order_model.dart';
@@ -289,6 +290,21 @@ class _AdminDashboardScreenState extends ConsumerState<AdminDashboardScreen> {
                               () => Navigator.pushNamed(
                                 context,
                                 AppRoutes.notifications,
+                              ),
+                            ),
+
+                          if (isSuperAdmin)
+                            _buildAdminCard(
+                              context,
+                              "Theme Settings",
+                              Icons.color_lens_rounded,
+                              Colors.pink,
+                              "Customize Global App Colors",
+                              () => Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (_) => const AdminSettingsScreen(),
+                                ),
                               ),
                             ),
 
