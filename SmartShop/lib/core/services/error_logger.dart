@@ -1,6 +1,5 @@
 import 'package:flutter/foundation.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-import '../constants/constants.dart';
 
 class ErrorLogger {
   static Future<void> logError(dynamic error, StackTrace? stackTrace, {String? hint}) async {
@@ -9,15 +8,17 @@ class ErrorLogger {
 
     try {
       final supabase = Supabase.instance.client;
+      final userId = supabase.auth.currentUser?.id;
+      
       await supabase.from('error_logs').insert({
-        'error': error.toString(),
+        'exception': error.toString(),
         'stack_trace': stackTrace?.toString() ?? 'No stack trace',
         'hint': hint ?? 'General Error',
-        'device_info': kIsWeb ? 'Web' : 'Mobile/Desktop',
+        'device_info': kIsWeb ? 'Web' : 'Mobile Device',
+        'user_id': userId,
         'timestamp': DateTime.now().toIso8601String(),
       });
     } catch (e) {
-      // Avoid infinite loop if logging fails
       debugPrint('Failed to log error to Supabase: $e');
     }
   }

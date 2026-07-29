@@ -7,6 +7,8 @@ import '../../../../core/providers.dart';
 import '../../../offers/riverpod/coupon_notifier.dart';
 import '../../../../widgets/custom_app_bar.dart';
 import '../../../../core/riverpod/settings_notifier.dart';
+import '../../../auth/riverpod/auth_notifier.dart';
+import '../../../../core/riverpod/admin_shop_filter_notifier.dart';
 
 class AdminCouponScreen extends ConsumerStatefulWidget {
   const AdminCouponScreen({super.key});
@@ -80,6 +82,16 @@ class _AdminCouponScreenState extends ConsumerState<AdminCouponScreen> {
         actions: [
           TextButton(onPressed: () => Navigator.pop(ctx), child: const Text("CANCEL")),
           ElevatedButton(onPressed: () async {
+            final user = ref.read(authNotifierProvider).value;
+            final adminShopId = ref.read(adminShopFilterProvider);
+            
+            String? targetShopId;
+            if (user?.role == 'owner') {
+              targetShopId = user?.shopId;
+            } else if (user?.role == 'admin' || user?.role == 'super_admin') {
+              targetShopId = adminShopId;
+            }
+
             final supabase = ref.read(supabaseClientProvider);
             await supabase.from(AppConstants.couponsTable).insert({
               'code': codeCtrl.text.toUpperCase(),
@@ -90,6 +102,7 @@ class _AdminCouponScreenState extends ConsumerState<AdminCouponScreen> {
               'minPurchase': 500,
               'expiryDate': DateTime.now().add(const Duration(days: 30)).toIso8601String(),
               'isActive': true,
+              if (targetShopId != null) 'shopId': targetShopId,
             });
             ref.read(couponNotifierProvider.notifier).loadCoupons();
             if (mounted) Navigator.pop(ctx);

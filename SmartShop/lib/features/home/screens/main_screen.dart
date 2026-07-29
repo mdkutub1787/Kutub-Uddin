@@ -13,7 +13,6 @@ import '../../../core/riverpod/navigation_notifier.dart';
 import '../../auth/riverpod/auth_notifier.dart';
 import '../../support/riverpod/support_notifier.dart';
 import '../../order/riverpod/order_notifier.dart';
-import '../../../core/providers.dart';
 import '../../order/models/order_model.dart';
 import '../../../core/app_strings.dart';
 import '../../../core/utils/exit_dialog_helper.dart';

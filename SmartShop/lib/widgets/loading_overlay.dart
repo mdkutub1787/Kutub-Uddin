@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../widgets/custom_loading.dart';
 
 class LoadingOverlay {
   static void show(BuildContext context) {
@@ -7,7 +8,7 @@ class LoadingOverlay {
       barrierDismissible: false,
       builder: (BuildContext context) {
         return const Center(
-          child: CircularProgressIndicator(),
+          child: CustomLoading(),
         );
       },
     );

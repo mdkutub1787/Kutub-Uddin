@@ -448,7 +448,20 @@ class _CartScreenState extends ConsumerState<CartScreen> {
                     ],
                   ),
                   const SizedBox(height: 20),
-                  _payTextField(cardNoController, "Card Number", Icons.credit_card, "XXXX XXXX XXXX XXXX"),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    const Text("Card Information", style: TextStyle(fontWeight: FontWeight.bold)),
+                    TextButton.icon(
+                      onPressed: () {
+                        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Launching Camera for Card OCR...")));
+                      },
+                      icon: const Icon(Icons.camera_enhance_rounded, size: 18),
+                      label: const Text("Scan Card", style: TextStyle(fontWeight: FontWeight.bold)),
+                    ),
+                  ],
+                ),
+                _payTextField(cardNoController, "Card Number", Icons.credit_card, "XXXX XXXX XXXX XXXX"),
                   const SizedBox(height: 15),
                   Row(
                     children: [

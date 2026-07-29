@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:easy_localization/easy_localization.dart';
@@ -226,10 +227,16 @@ class DashboardScreen extends ConsumerWidget {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             const SizedBox(height: 10),
+                            const FlashSaleTimer(),
+                            const SizedBox(height: 10),
                             _buildPromoBanner(context, ref),
-                            _buildSectionHeader(context, "Explore Shops", () {}),
+                            _buildSectionHeader(context, "Explore Shops", () {
+                              Navigator.pushNamed(context, AppRoutes.allShops);
+                            }),
                             _buildShopList(context, ref),
-                            _buildSectionHeader(context, AppStrings.categoriesTitle.tr(), () {}),
+                            _buildSectionHeader(context, AppStrings.categoriesTitle.tr(), () {
+                              Navigator.pushNamed(context, AppRoutes.allCategories);
+                            }),
                             _buildCategoryList(context, ref),
                             _buildSectionHeader(context, AppStrings.featuredProductsTitle.tr(), () {
                               Navigator.pushNamed(context, AppRoutes.allProducts, arguments: {'title': AppStrings.featuredProductsTitle.tr()});
@@ -280,14 +287,25 @@ class DashboardScreen extends ConsumerWidget {
                 hintText: AppStrings.searchHint.tr(),
                 hintStyle: TextStyle(color: Colors.grey[400], fontSize: 14),
                 prefixIcon: Icon(Icons.search_rounded, color: Theme.of(context).primaryColor, size: 22),
-                suffixIcon: GestureDetector(
-                  onTap: () => _showFilterBottomSheet(context, ref, currency),
-                  child: Container(
-                    margin: const EdgeInsets.all(6),
-                    padding: const EdgeInsets.all(8),
-                    decoration: BoxDecoration(color: Theme.of(context).primaryColor, borderRadius: BorderRadius.circular(12)),
-                    child: const Icon(Icons.tune_rounded, color: Colors.white, size: 18),
-                  ),
+                suffixIcon: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    IconButton(
+                      icon: Icon(Icons.mic_rounded, color: Theme.of(context).primaryColor),
+                      onPressed: () {
+                        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Listening... Speak product name")));
+                      },
+                    ),
+                    GestureDetector(
+                      onTap: () => _showFilterBottomSheet(context, ref, currency),
+                      child: Container(
+                        margin: const EdgeInsets.all(6),
+                        padding: const EdgeInsets.all(8),
+                        decoration: BoxDecoration(color: Theme.of(context).primaryColor, borderRadius: BorderRadius.circular(12)),
+                        child: const Icon(Icons.tune_rounded, color: Colors.white, size: 18),
+                      ),
+                    ),
+                  ],
                 ),
                 border: OutlineInputBorder(borderRadius: BorderRadius.circular(20), borderSide: BorderSide.none),
                 filled: true,
@@ -610,6 +628,7 @@ class DashboardScreen extends ConsumerWidget {
               return GestureDetector(
                 onTap: () {
                   ref.read(productNotifierProvider.notifier).filterByCategory(cat.id);
+                  Navigator.pushNamed(context, AppRoutes.allProducts, arguments: {'title': cat.name, 'categoryId': cat.id});
                 },
                 child: Container(
                   width: 75,
@@ -1032,6 +1051,95 @@ class DashboardScreen extends ConsumerWidget {
       selectedTileColor: Theme.of(context).primaryColor.withValues(alpha: 0.1),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
       contentPadding: const EdgeInsets.symmetric(horizontal: 20),
+    );
+  }
+}
+
+class FlashSaleTimer extends StatefulWidget {
+  const FlashSaleTimer({super.key});
+
+  @override
+  State<FlashSaleTimer> createState() => _FlashSaleTimerState();
+}
+
+class _FlashSaleTimerState extends State<FlashSaleTimer> {
+  late Timer _timer;
+  Duration _timeLeft = const Duration(hours: 2, minutes: 45, seconds: 12);
+
+  @override
+  void initState() {
+    super.initState();
+    _startTimer();
+  }
+
+  void _startTimer() {
+    _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
+      if (_timeLeft.inSeconds > 0) {
+        setState(() {
+          _timeLeft = _timeLeft - const Duration(seconds: 1);
+        });
+      } else {
+        _timer.cancel();
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    _timer.cancel();
+    super.dispose();
+  }
+
+  String _formatNumber(int number) {
+    return number.toString().padLeft(2, '0');
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      margin: const EdgeInsets.symmetric(horizontal: 16),
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        gradient: LinearGradient(colors: [Colors.orange[800]!, Colors.deepOrange]),
+        borderRadius: BorderRadius.circular(20),
+        boxShadow: [BoxShadow(color: Colors.orange.withValues(alpha: 0.3), blurRadius: 10, offset: const Offset(0, 5))],
+      ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          const Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text("FLASH SALE", style: TextStyle(color: Colors.white, fontWeight: FontWeight.w900, letterSpacing: 1)),
+              Text("Up to 70% OFF", style: TextStyle(color: Colors.white70, fontSize: 10, fontWeight: FontWeight.bold)),
+            ],
+          ),
+          Row(
+            children: [
+              _timerBox(_formatNumber(_timeLeft.inHours)),
+              _timerDivider(),
+              _timerBox(_formatNumber(_timeLeft.inMinutes.remainder(60))),
+              _timerDivider(),
+              _timerBox(_formatNumber(_timeLeft.inSeconds.remainder(60))),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _timerBox(String val) {
+    return Container(
+      padding: const EdgeInsets.all(8),
+      decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(8)),
+      child: Text(val, style: const TextStyle(fontWeight: FontWeight.w900, color: Colors.deepOrange, fontSize: 16)),
+    );
+  }
+
+  Widget _timerDivider() {
+    return const Padding(
+      padding: EdgeInsets.symmetric(horizontal: 4),
+      child: Text(":", style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 18)),
     );
   }
 }

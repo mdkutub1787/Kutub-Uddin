@@ -22,4 +22,8 @@ class ReviewRepository {
     
     // Update product average rating logic can be added here
   }
+
+  Future<void> addRiderReview(Map<String, dynamic> riderReviewJson) async {
+    await _supabase.from(AppConstants.riderReviewsTable).insert(riderReviewJson);
+  }
 }

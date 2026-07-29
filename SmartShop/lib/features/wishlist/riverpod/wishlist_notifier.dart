@@ -1,13 +1,7 @@
-import 'dart:async';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../../core/providers.dart';
-import '../../auth/riverpod/auth_notifier.dart';
 import '../../product/models/product_model.dart';
 import '../repositories/wishlist_repository.dart';
-
-final wishlistRepositoryProvider = Provider<WishlistRepository>((ref) {
-  return WishlistRepository(ref.watch(supabaseClientProvider));
-});
+import '../../auth/riverpod/auth_notifier.dart';
 
 final wishlistNotifierProvider = AsyncNotifierProvider<WishlistNotifier, List<ProductModel>>(() {
   return WishlistNotifier();
@@ -17,45 +11,49 @@ class WishlistNotifier extends AsyncNotifier<List<ProductModel>> {
   late WishlistRepository _repository;
 
   @override
-  FutureOr<List<ProductModel>> build() async {
+  Future<List<ProductModel>> build() async {
     _repository = ref.watch(wishlistRepositoryProvider);
-    return await _fetchWishlist();
-  }
-
-  Future<List<ProductModel>> _fetchWishlist() async {
-    final user = ref.read(authNotifierProvider).value;
+    final user = ref.watch(authNotifierProvider).value;
     if (user == null) return [];
-    try {
-      return await _repository.getWishlist(user.uid);
-    } catch (e) {
-      return [];
-    }
+    return _repository.getWishlist(user.uid);
   }
 
   Future<void> loadWishlist() async {
     state = const AsyncLoading();
-    state = await AsyncValue.guard(() => _fetchWishlist());
-  }
-
-  Future<void> toggleWishlist(String productId) async {
     final user = ref.read(authNotifierProvider).value;
-    if (user == null) return;
-
-    final isExist = state.value?.any((p) => p.id == productId) ?? false;
-
-    try {
-      if (isExist) {
-        await _repository.removeFromWishlist(user.uid, productId);
-      } else {
-        await _repository.addToWishlist(user.uid, productId);
-      }
-      await loadWishlist();
-    } catch (e) {
-      // Toggle failed
+    if (user != null) {
+      state = await AsyncValue.guard(() => _repository.getWishlist(user.uid));
     }
   }
 
   bool isInWishlist(String productId) {
-    return state.value?.any((p) => p.id == productId) ?? false;
+    final list = state.value ?? [];
+    return list.any((p) => p.id == productId);
+  }
+
+  Future<void> toggleWishlist(ProductModel product) async {
+    final user = ref.read(authNotifierProvider).value;
+    if (user == null) return;
+
+    final currentList = state.value ?? [];
+    bool exists = currentList.any((p) => p.id == product.id);
+
+    // Optimistic UI Update: change state immediately
+    if (exists) {
+      state = AsyncData(currentList.where((p) => p.id != product.id).toList());
+    } else {
+      state = AsyncData([...currentList, product]);
+    }
+
+    try {
+      if (exists) {
+        await _repository.removeFromWishlist(user.uid, product.id);
+      } else {
+        await _repository.addToWishlist(user.uid, product.id);
+      }
+    } catch (e) {
+      // Revert on error
+      state = AsyncData(currentList);
+    }
   }
 }

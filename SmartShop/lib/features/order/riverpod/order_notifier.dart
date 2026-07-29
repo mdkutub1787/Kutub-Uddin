@@ -6,6 +6,7 @@ import '../../../core/providers.dart';
 import '../../admin/riverpod/activity_log_notifier.dart';
 import '../../auth/riverpod/auth_notifier.dart';
 import '../../user/models/user_model.dart';
+import '../../../core/riverpod/admin_shop_filter_notifier.dart';
 
 final orderNotifierProvider = AsyncNotifierProvider<OrderNotifier, List<OrderModel>>(() {
   return OrderNotifier();
@@ -23,18 +24,54 @@ final myCompletedDeliveriesProvider = StreamProvider.family<List<OrderModel>, St
   return ref.watch(orderRepositoryProvider).streamMyCompletedDeliveries(deliveryManId);
 });
 
+final userOrdersStreamProvider = StreamProvider.family<List<OrderModel>, String>((ref, userId) {
+  return ref.watch(orderRepositoryProvider).streamUserOrders(userId);
+});
+
+
+
 class OrderNotifier extends AsyncNotifier<List<OrderModel>> {
-  late final OrderRepository _repository;
+  late OrderRepository _repository;
 
   @override
   Future<List<OrderModel>> build() async {
     _repository = ref.read(orderRepositoryProvider);
+    final user = ref.read(authNotifierProvider).value;
+    final adminShopId = ref.read(adminShopFilterProvider);
+
+    final isAdmin = (user?.role == 'super_admin' || user?.role == 'admin');
+
+    if (isAdmin && adminShopId != null) {
+      return _repository.getOrdersByShop(adminShopId);
+    }
+    if (user != null && user.role == 'owner') {
+      if (user.shopId != null && user.shopId!.isNotEmpty) {
+        return _repository.getOrdersByShop(user.shopId!);
+      }
+      return [];
+    }
     return _repository.fetchOrders();
   }
 
   Future<void> loadOrders() async {
     state = const AsyncLoading();
-    state = await AsyncValue.guard(() => _repository.fetchOrders());
+    final user = ref.read(authNotifierProvider).value;
+    final adminShopId = ref.read(adminShopFilterProvider);
+    
+    final isAdmin = (user?.role == 'super_admin' || user?.role == 'admin');
+
+    if (isAdmin && adminShopId != null) {
+      state = await AsyncValue.guard(() => _repository.getOrdersByShop(adminShopId));
+    } else if (user != null && user.role == 'owner') {
+      if (user.shopId != null && user.shopId!.isNotEmpty) {
+        state = await AsyncValue.guard(() => _repository.getOrdersByShop(user.shopId!));
+      } else {
+        state = const AsyncData([]); // No shop, no orders
+      }
+    } else {
+      // Super Admin sees everything
+      state = await AsyncValue.guard(() => _repository.fetchOrders());
+    }
   }
 
   Future<bool> placeOrder(OrderModel order) async {

@@ -1,6 +1,7 @@
-class ReviewModel {
+class RiderReviewModel {
   final String id;
-  final String productId;
+  final String riderId;
+  final String orderId;
   final String userId;
   final String userName;
   final String? userImageUrl;
@@ -8,9 +9,10 @@ class ReviewModel {
   final String comment;
   final DateTime createdAt;
 
-  ReviewModel({
+  RiderReviewModel({
     required this.id,
-    required this.productId,
+    required this.riderId,
+    required this.orderId,
     required this.userId,
     required this.userName,
     this.userImageUrl,
@@ -19,10 +21,11 @@ class ReviewModel {
     required this.createdAt,
   });
 
-  factory ReviewModel.fromJson(Map<String, dynamic> json) {
-    return ReviewModel(
+  factory RiderReviewModel.fromJson(Map<String, dynamic> json) {
+    return RiderReviewModel(
       id: json['id'].toString(),
-      productId: json['productId'],
+      riderId: json['riderId'],
+      orderId: json['orderId'],
       userId: json['userId'],
       userName: json['userName'] ?? 'User',
       userImageUrl: json['userImageUrl'],
@@ -35,7 +38,8 @@ class ReviewModel {
   Map<String, dynamic> toJson() {
     return {
       'id': id,
-      'productId': productId,
+      'riderId': riderId,
+      'orderId': orderId,
       'userId': userId,
       'userName': userName,
       'userImageUrl': userImageUrl,

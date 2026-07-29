@@ -3,10 +3,10 @@ import '../models/product_model.dart';
 import '../repositories/product_repository.dart';
 import '../../auth/riverpod/auth_notifier.dart';
 import '../../admin/riverpod/activity_log_notifier.dart';
+import '../../../core/riverpod/admin_shop_filter_notifier.dart';
 
 class ProductState {
   final List<ProductModel> allProducts;
-  final List<ProductModel> filteredProducts;
   final String selectedCategoryId;
   final String searchQuery;
   final double minPrice;
@@ -15,7 +15,6 @@ class ProductState {
 
   ProductState({
     this.allProducts = const [],
-    this.filteredProducts = const [],
     this.selectedCategoryId = '',
     this.searchQuery = '',
     this.minPrice = 0,
@@ -25,7 +24,6 @@ class ProductState {
 
   ProductState copyWith({
     List<ProductModel>? allProducts,
-    List<ProductModel>? filteredProducts,
     String? selectedCategoryId,
     String? searchQuery,
     double? minPrice,
@@ -34,7 +32,6 @@ class ProductState {
   }) {
     return ProductState(
       allProducts: allProducts ?? this.allProducts,
-      filteredProducts: filteredProducts ?? this.filteredProducts,
       selectedCategoryId: selectedCategoryId ?? this.selectedCategoryId,
       searchQuery: searchQuery ?? this.searchQuery,
       minPrice: minPrice ?? this.minPrice,
@@ -61,36 +58,35 @@ class ProductNotifier extends Notifier<ProductState> {
   @override
   ProductState build() {
     _repository = ref.watch(productRepositoryProvider);
-    
-    final user = ref.watch(authNotifierProvider).value;
-    String? filterShopId;
-    
-    if (user != null && (user.role == 'owner' || user.role == 'manager')) {
-      filterShopId = user.shopId;
-    }
-    
-    _initStream(shopId: filterShopId);
-    
+    _initStream();
     return ProductState(isLoading: true);
   }
 
-  void _initStream({String? shopId}) {
-    final stream = shopId != null 
-        ? _repository.getProductsByShop(shopId)
-        : _repository.getAllProducts();
-        
+  void _initStream() {
+    final user = ref.watch(authNotifierProvider).value;
+    final adminShopId = ref.watch(adminShopFilterProvider);
+    
+    // PROFESSIONAL ROLE LOGIC
+    // Super Admin/Admin: Sees EVERYTHING (unless adminShopId is set)
+    // Customer/User: Sees EVERYTHING
+    // Owner/Manager/Staff: Sees ONLY their shop products. If they have no shopId, they see nothing.
+    final isAdmin = (user?.role == 'super_admin' || user?.role == 'admin');
+    final isCustomer = (user?.role == 'user' || user?.role == 'customer' || user == null);
+    
+    final stream = (isAdmin && adminShopId != null) 
+        ? _repository.getProductsByShop(adminShopId)
+        : (isAdmin || isCustomer)
+            ? _repository.getAllProducts()
+            : (user.shopId != null && user.shopId!.isNotEmpty) 
+                ? _repository.getProductsByShop(user.shopId!)
+                : Stream.value(<ProductModel>[]); // Fallback for owners with no shop assigned yet
+            
     final subscription = stream.listen(
       (products) {
-        state = state.copyWith(
-          allProducts: products,
-          isLoading: false,
-        );
+        state = state.copyWith(allProducts: products, isLoading: false);
       },
       onError: (error) {
         state = state.copyWith(isLoading: false);
-        if (error.toString().contains('JWT issued at future')) {
-          Future.delayed(const Duration(seconds: 3), () => _initStream(shopId: shopId));
-        }
       },
     );
 
@@ -98,11 +94,7 @@ class ProductNotifier extends Notifier<ProductState> {
   }
 
   void filterByCategory(String categoryId) {
-    if (state.selectedCategoryId == categoryId) {
-      state = state.copyWith(selectedCategoryId: '');
-    } else {
-      state = state.copyWith(selectedCategoryId: categoryId);
-    }
+    state = state.copyWith(selectedCategoryId: state.selectedCategoryId == categoryId ? '' : categoryId);
   }
 
   void searchProducts(String query) {
@@ -124,44 +116,14 @@ class ProductNotifier extends Notifier<ProductState> {
 
   Future<void> addProduct(ProductModel product) async {
     await _repository.addProduct(product);
-    final admin = ref.read(authNotifierProvider).value;
-    if (admin != null) {
-      await ref.read(activityLogNotifierProvider.notifier).logAction(
-        adminId: admin.uid,
-        adminName: admin.name,
-        action: 'Product Added',
-        targetId: product.name,
-        details: 'Product "${product.name}" was added to inventory.',
-      );
-    }
   }
 
   Future<void> updateProduct(ProductModel product) async {
     await _repository.updateProduct(product);
-    final admin = ref.read(authNotifierProvider).value;
-    if (admin != null) {
-      await ref.read(activityLogNotifierProvider.notifier).logAction(
-        adminId: admin.uid,
-        adminName: admin.name,
-        action: 'Product Updated',
-        targetId: product.name,
-        details: 'Product "${product.name}" details were updated.',
-      );
-    }
   }
 
   Future<void> deleteProduct(String productId) async {
     await _repository.deleteProduct(productId);
-    final admin = ref.read(authNotifierProvider).value;
-    if (admin != null) {
-      await ref.read(activityLogNotifierProvider.notifier).logAction(
-        adminId: admin.uid,
-        adminName: admin.name,
-        action: 'Product Deleted',
-        targetId: productId,
-        details: 'Product ID: $productId was removed from inventory.',
-      );
-    }
   }
 }
 

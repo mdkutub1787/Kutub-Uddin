@@ -5,10 +5,13 @@ import '../../admin/riverpod/activity_log_notifier.dart';
 import '../../../core/providers.dart';
 import '../models/category_model.dart';
 import '../repositories/category_repository.dart';
+import '../../../core/riverpod/admin_shop_filter_notifier.dart';
 
 final categoryNotifierProvider = AsyncNotifierProvider<CategoryNotifier, List<CategoryModel>>(() {
   return CategoryNotifier();
 });
+
+
 
 class CategoryNotifier extends AsyncNotifier<List<CategoryModel>> {
   @override
@@ -18,7 +21,14 @@ class CategoryNotifier extends AsyncNotifier<List<CategoryModel>> {
 
   Future<List<CategoryModel>> _fetchCategories() async {
     final user = ref.read(authNotifierProvider).value;
+    final adminShopId = ref.read(adminShopFilterProvider);
     final repository = ref.watch(categoryRepositoryProvider);
+    
+    final isAdmin = (user?.role == 'super_admin' || user?.role == 'admin');
+    
+    if (isAdmin && adminShopId != null) {
+      return await repository.getCategoriesByShop(adminShopId);
+    }
     
     if (user != null && (user.role == 'owner' || user.role == 'manager') && user.shopId != null && user.shopId!.isNotEmpty) {
       try {

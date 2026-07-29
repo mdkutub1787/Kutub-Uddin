@@ -14,6 +14,7 @@ class AppConstants {
   static const String couponsTable = 'coupons';
   static const String wishlistTable = 'wishlist';
   static const String reviewsTable = 'reviews';
+  static const String riderReviewsTable = 'rider_reviews';
   static const String systemConfigTable = 'system_config';
   static const String errorLogsTable = 'error_logs';
   

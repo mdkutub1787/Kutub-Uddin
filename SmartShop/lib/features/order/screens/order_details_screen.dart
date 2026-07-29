@@ -26,7 +26,7 @@ class OrderDetailsScreen extends ConsumerWidget {
     bool isSuperAdmin = auth?.role == 'super_admin';
 
     return Scaffold(
-      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+      backgroundColor: Colors.grey[50],
       appBar: CustomAppBar(
         title: AppStrings.orderDetails.tr(),
         actions: [
@@ -49,6 +49,8 @@ class OrderDetailsScreen extends ConsumerWidget {
           children: [
             _buildOrderInfoCard(context, settings),
             const SizedBox(height: 20),
+            _buildTrackingTimeline(context, settings),
+            const SizedBox(height: 20),
             if (isAdminView) ...[
               _buildAdminActionSection(context, settings, ref, auth),
               const SizedBox(height: 20),
@@ -64,6 +66,79 @@ class OrderDetailsScreen extends ConsumerWidget {
             const SizedBox(height: 40),
           ],
         ),
+      ),
+    );
+  }
+
+  Widget _buildTrackingTimeline(BuildContext context, dynamic settings) {
+    final List<String> statuses = ['Pending', 'Confirmed', 'Shipped', 'Delivered'];
+    int currentIndex = statuses.indexOf(order.status);
+    if (order.status == 'Cancelled') currentIndex = -1;
+
+    return Container(
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(20),
+        boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.03), blurRadius: 10)],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Text("TRACK ORDER", style: TextStyle(fontWeight: FontWeight.w900, fontSize: 12, color: Colors.grey, letterSpacing: 1)),
+          const SizedBox(height: 20),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: List.generate(statuses.length, (index) {
+              bool isCompleted = index <= currentIndex;
+              bool isLast = index == statuses.length - 1;
+              return Expanded(
+                child: Row(
+                  children: [
+                    Column(
+                      children: [
+                        Container(
+                          width: 30,
+                          height: 30,
+                          decoration: BoxDecoration(
+                            color: isCompleted ? settings.primaryColor : Colors.grey[200],
+                            shape: BoxShape.circle,
+                          ),
+                          child: Icon(
+                            isCompleted ? Icons.check : Icons.circle,
+                            size: 14,
+                            color: isCompleted ? Colors.white : Colors.grey[400],
+                          ),
+                        ),
+                        const SizedBox(height: 8),
+                        Text(statuses[index], style: TextStyle(fontSize: 10, fontWeight: isCompleted ? FontWeight.bold : FontWeight.normal, color: isCompleted ? Colors.black87 : Colors.grey)),
+                      ],
+                    ),
+                    if (!isLast)
+                      Expanded(
+                        child: Container(
+                          height: 2,
+                          margin: const EdgeInsets.only(bottom: 20),
+                          color: index < currentIndex ? settings.primaryColor : Colors.grey[200],
+                        ),
+                      ),
+                  ],
+                ),
+              );
+            }),
+          ),
+          if (order.status == 'Cancelled')
+            Padding(
+              padding: const EdgeInsets.only(top: 20),
+              child: Row(
+                children: [
+                  const Icon(Icons.cancel, color: Colors.red, size: 20),
+                  const SizedBox(width: 8),
+                  const Text("This order has been cancelled.", style: TextStyle(color: Colors.red, fontWeight: FontWeight.bold)),
+                ],
+              ),
+            ),
+        ],
       ),
     );
   }

@@ -101,10 +101,11 @@ class ProductCard extends ConsumerWidget {
                     right: 15,
                     child: Consumer(
                       builder: (context, ref, child) {
-                        final isFav = ref.watch(wishlistNotifierProvider.notifier).isInWishlist(product.id);
+                        final wishlist = ref.watch(wishlistNotifierProvider).value ?? [];
+                        final isFav = wishlist.any((p) => p.id == product.id);
                         return GestureDetector(
                           onTap: () {
-                            ref.read(wishlistNotifierProvider.notifier).toggleWishlist(product.id);
+                            ref.read(wishlistNotifierProvider.notifier).toggleWishlist(product);
                           },
                           child: Icon(
                             isFav ? Icons.favorite_rounded : Icons.favorite_border_rounded,

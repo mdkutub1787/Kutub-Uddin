@@ -3,6 +3,8 @@ import '../features/auth/screens/login_screen.dart';
 import '../features/auth/screens/register_screen.dart';
 import '../features/home/screens/main_screen.dart';
 import '../features/home/screens/dashboard_screen.dart';
+import '../features/category/screens/all_categories_screen.dart';
+import '../features/shop/screens/all_shops_screen.dart';
 import '../features/shop/screens/shop_details_screen.dart';
 import '../features/product/screens/product_details_screen.dart';
 import '../features/product/screens/all_products_screen.dart';
@@ -35,6 +37,8 @@ class AppRoutes {
   static const String dashboard = '/dashboard';
   static const String productDetails = '/product-details';
   static const String allProducts = '/all-products';
+  static const String allCategories = '/all-categories';
+  static const String allShops = '/all-shops';
   static const String orderDetails = '/order-details';
   static const String cart = '/cart';
   static const String profile = '/profile';
@@ -92,6 +96,10 @@ class AppRoutes {
         return MaterialPageRoute(
           builder: (_) => NotificationDetailsScreen(notification: notification),
         );
+      case allCategories:
+        return MaterialPageRoute(builder: (_) => const AllCategoriesScreen());
+      case allShops:
+        return MaterialPageRoute(builder: (_) => const AllShopsScreen());
       case support:
         return MaterialPageRoute(builder: (_) => const SupportScreen());
       case allProducts:

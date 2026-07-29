@@ -10,6 +10,7 @@ class CouponModel {
   final double minPurchase;
   final DateTime expiryDate;
   final bool isActive;
+  final String? shopId;
 
   CouponModel({
     required this.id,
@@ -21,6 +22,7 @@ class CouponModel {
     required this.minPurchase,
     required this.expiryDate,
     this.isActive = true,
+    this.shopId,
   });
 
   bool get isExpired => DateTime.now().isAfter(expiryDate);
@@ -39,6 +41,7 @@ class CouponModel {
       minPurchase: (map['minPurchase'] ?? 0).toDouble(),
       expiryDate: (map['expiryDate'] as DateTime),
       isActive: map['isActive'] ?? true,
+      shopId: map['shopId'],
     );
   }
 
@@ -52,6 +55,8 @@ class CouponModel {
       'minPurchase': minPurchase,
       'expiryDate': expiryDate,
       'isActive': isActive,
+      'shopId': shopId,
     };
   }
 }
+

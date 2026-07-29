@@ -15,7 +15,22 @@ class CouponRepository {
         .order('expiryDate', ascending: true);
     
     return (response as List).map((json) {
-      // Handle the case where expiryDate might be a string from Supabase
+      final data = Map<String, dynamic>.from(json);
+      if (data['expiryDate'] is String) {
+        data['expiryDate'] = DateTime.parse(data['expiryDate']);
+      }
+      return CouponModel.fromMap(data, data['id'].toString());
+    }).toList();
+  }
+
+  Future<List<CouponModel>> getCouponsByShop(String shopId) async {
+    final response = await _supabase
+        .from(AppConstants.couponsTable)
+        .select()
+        .eq('shopId', shopId)
+        .order('expiryDate', ascending: true);
+    
+    return (response as List).map((json) {
       final data = Map<String, dynamic>.from(json);
       if (data['expiryDate'] is String) {
         data['expiryDate'] = DateTime.parse(data['expiryDate']);

@@ -22,6 +22,10 @@ import 'admin_user_list_screen.dart';
 import 'admin_activity_log_screen.dart';
 import 'coupons/admin_coupon_screen.dart';
 import 'admin_pos_screen.dart';
+import 'admin_shop_list_screen.dart';
+import '../../../core/riverpod/admin_shop_filter_notifier.dart';
+
+import '../../shop/riverpod/shop_notifier.dart';
 
 class AdminDashboardScreen extends ConsumerStatefulWidget {
   const AdminDashboardScreen({super.key});
@@ -115,7 +119,27 @@ class _AdminDashboardScreenState extends ConsumerState<AdminDashboardScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text("Management Console", style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.grey[800])),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text("Management Console", style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.grey[800])),
+                        if (ref.watch(adminShopFilterProvider) != null)
+                          TextButton.icon(
+                            icon: const Icon(Icons.clear_rounded, size: 16),
+                            label: const Text("Clear Shop Filter", style: TextStyle(fontSize: 12)),
+                            style: TextButton.styleFrom(foregroundColor: Colors.red, padding: EdgeInsets.zero, minimumSize: Size.zero),
+                            onPressed: () {
+                              ref.read(adminShopFilterProvider.notifier).state = null;
+                              ref.read(adminShopFilterNameProvider.notifier).state = null;
+                            },
+                          ),
+                      ],
+                    ),
+                    if (ref.watch(adminShopFilterNameProvider) != null)
+                      Padding(
+                        padding: const EdgeInsets.only(top: 4.0),
+                        child: Text("Viewing: ${ref.watch(adminShopFilterNameProvider)}", style: const TextStyle(color: Colors.blue, fontWeight: FontWeight.bold)),
+                      ),
                     const SizedBox(height: 12),
                     GridView.count(
                       shrinkWrap: true,
@@ -142,18 +166,21 @@ class _AdminDashboardScreenState extends ConsumerState<AdminDashboardScreen> {
                         if (isManager)
                           _buildAdminCard(context, AppStrings.analytics.tr(), Icons.analytics_rounded, Colors.purple, AppStrings.viewReports.tr(), () => Navigator.push(context, MaterialPageRoute(builder: (_) => const AdminAnalyticsScreen()))),
                         
-                        if (isOwner)
+                        if (isSuperAdmin)
                           _buildAdminCard(context, AppStrings.notices.tr(), Icons.notification_add_rounded, Colors.red, "${noticeState.value?.length ?? 0} ${AppStrings.active.tr()}", () => Navigator.pushNamed(context, AppRoutes.notifications)),
                         
                         if (isManager)
                           _buildAdminCard(context, AppStrings.support.tr(), Icons.support_agent_rounded, Colors.cyan, AppStrings.customerChat.tr(), () => Navigator.pushNamed(context, AppRoutes.support), badgeCount: supportState.value?.length ?? 0),
                         
-                        if (isOwner)
+                        if (isSuperAdmin)
                           _buildAdminCard(context, AppStrings.users.tr(), Icons.people_alt_rounded, Colors.indigo, "${users.length} Team Members", () => Navigator.push(context, MaterialPageRoute(builder: (_) => const AdminUserListScreen()))),
                         
                         if (isOwner)
                           _buildAdminCard(context, "Coupons", Icons.confirmation_num_rounded, Colors.pink, "Manage discounts", () => Navigator.push(context, MaterialPageRoute(builder: (_) => const AdminCouponScreen()))),
                         
+                        if (isSuperAdmin)
+                          _buildAdminCard(context, "Manage Shops", Icons.storefront_rounded, Colors.deepPurple, "View & Manage Shops", () => Navigator.push(context, MaterialPageRoute(builder: (_) => const AdminShopListScreen()))),
+                          
                         if (isSuperAdmin)
                           _buildAdminCard(context, "Activity Logs", Icons.history_rounded, Colors.blueGrey, "System audit", () => Navigator.push(context, MaterialPageRoute(builder: (_) => const AdminActivityLogScreen()))),
                       ],
@@ -169,8 +196,19 @@ class _AdminDashboardScreenState extends ConsumerState<AdminDashboardScreen> {
   }
 
   Widget _buildAdminHero(BuildContext context, Color color, String userName, String role) {
-    final user = ref.read(authNotifierProvider).value;
+    final user = ref.watch(authNotifierProvider).value;
     final shopId = user?.shopId;
+    
+    String shopName = "My Shop";
+    if (shopId != null) {
+      final shopsState = ref.watch(shopNotifierProvider);
+      if (shopsState.value != null) {
+        try {
+          final shop = shopsState.value!.firstWhere((s) => s.id == shopId);
+          shopName = shop.name;
+        } catch (_) {}
+      }
+    }
 
     return Container(
       width: double.infinity,
@@ -216,7 +254,7 @@ class _AdminDashboardScreenState extends ConsumerState<AdminDashboardScreen> {
                     children: [
                       Icon(Icons.storefront_rounded, size: 16, color: color),
                       const SizedBox(width: 8),
-                      Text("My Shop", style: TextStyle(color: color, fontWeight: FontWeight.w900, fontSize: 13, letterSpacing: 0.5)),
+                      Text(shopName, style: TextStyle(color: color, fontWeight: FontWeight.w900, fontSize: 13, letterSpacing: 0.5)),
                     ],
                   ),
                 ),
