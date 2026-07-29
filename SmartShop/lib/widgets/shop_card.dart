@@ -17,24 +17,20 @@ class ShopCard extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final primaryColor = ref.watch(settingsProvider).primaryColor;
-    
-    // Check if shop has a valid image URL
     bool hasImage = shop.imageUrl != null && shop.imageUrl!.isNotEmpty && shop.imageUrl!.startsWith('http');
 
     return GestureDetector(
-      onTap: () {
-        Navigator.pushNamed(context, AppRoutes.shopDetails, arguments: shop);
-      },
+      onTap: () => Navigator.pushNamed(context, AppRoutes.shopDetails, arguments: shop),
       child: Container(
         width: width,
-        margin: const EdgeInsets.only(bottom: 16),
+        margin: const EdgeInsets.only(bottom: 12),
         decoration: BoxDecoration(
           color: Colors.white,
-          borderRadius: BorderRadius.circular(20),
+          borderRadius: BorderRadius.circular(24),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withValues(alpha: 0.05),
-              blurRadius: 15,
+              color: primaryColor.withValues(alpha: 0.04),
+              blurRadius: 16,
               offset: const Offset(0, 8),
             ),
           ],
@@ -46,13 +42,13 @@ class ShopCard extends ConsumerWidget {
             Hero(
               tag: 'shop_image_${shop.id}',
               child: Container(
-                height: 160,
+                height: 100,
                 width: double.infinity,
                 decoration: BoxDecoration(
-                  color: Colors.grey[200],
+                  color: Colors.grey[100],
                   borderRadius: const BorderRadius.only(
-                    topLeft: Radius.circular(20),
-                    topRight: Radius.circular(20),
+                    topLeft: Radius.circular(24),
+                    topRight: Radius.circular(24),
                   ),
                   image: hasImage
                       ? DecorationImage(
@@ -64,9 +60,9 @@ class ShopCard extends ConsumerWidget {
                 child: !hasImage
                     ? Center(
                         child: Icon(
-                          Icons.restaurant_rounded,
-                          size: 60,
-                          color: Colors.grey[400],
+                          Icons.storefront_rounded,
+                          size: 40,
+                          color: primaryColor.withValues(alpha: 0.3),
                         ),
                       )
                     : null,
@@ -75,7 +71,7 @@ class ShopCard extends ConsumerWidget {
             
             // Shop Details
             Padding(
-              padding: const EdgeInsets.all(16),
+              padding: const EdgeInsets.all(12),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -86,59 +82,43 @@ class ShopCard extends ConsumerWidget {
                         child: Text(
                           shop.name,
                           style: const TextStyle(
-                            fontSize: 18,
+                            fontSize: 15,
                             fontWeight: FontWeight.w900,
-                            letterSpacing: -0.5,
+                            letterSpacing: -0.3,
+                            color: Colors.black87,
                           ),
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
                         ),
                       ),
-                      if (shop.isOnlineOrderEnabled)
-                        Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                          decoration: BoxDecoration(
-                            color: Colors.green.withValues(alpha: 0.1),
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                          child: const Text(
-                            "OPEN",
-                            style: TextStyle(
-                              color: Colors.green,
-                              fontSize: 10,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        )
-                      else
-                        Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                          decoration: BoxDecoration(
-                            color: Colors.red.withValues(alpha: 0.1),
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                          child: const Text(
-                            "CLOSED",
-                            style: TextStyle(
-                              color: Colors.red,
-                              fontSize: 10,
-                              fontWeight: FontWeight.bold,
-                            ),
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 3),
+                        decoration: BoxDecoration(
+                          color: shop.isOnlineOrderEnabled ? Colors.green.withValues(alpha: 0.1) : Colors.red.withValues(alpha: 0.1),
+                          borderRadius: BorderRadius.circular(6),
+                        ),
+                        child: Text(
+                          shop.isOnlineOrderEnabled ? "OPEN" : "CLOSED",
+                          style: TextStyle(
+                            color: shop.isOnlineOrderEnabled ? Colors.green : Colors.red,
+                            fontSize: 9,
+                            fontWeight: FontWeight.bold,
                           ),
                         ),
+                      ),
                     ],
                   ),
                   const SizedBox(height: 6),
                   Row(
                     children: [
-                      Icon(Icons.location_on_rounded, size: 14, color: Colors.grey[500]),
+                      Icon(Icons.location_on_rounded, size: 12, color: Colors.grey[400]),
                       const SizedBox(width: 4),
                       Expanded(
                         child: Text(
                           shop.address.isNotEmpty ? shop.address : "Location unavailable",
                           style: TextStyle(
-                            fontSize: 12,
-                            color: Colors.grey[600],
+                            fontSize: 11,
+                            color: Colors.grey[500],
                             fontWeight: FontWeight.w500,
                           ),
                           maxLines: 1,
@@ -147,29 +127,38 @@ class ShopCard extends ConsumerWidget {
                       ),
                     ],
                   ),
-                  const SizedBox(height: 12),
+                  const SizedBox(height: 10),
                   Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Icon(Icons.delivery_dining_rounded, size: 16, color: primaryColor),
-                      const SizedBox(width: 4),
-                      Text(
-                        "Delivery Available",
-                        style: TextStyle(
-                          fontSize: 12,
-                          color: primaryColor,
-                          fontWeight: FontWeight.bold,
-                        ),
+                      Row(
+                        children: [
+                          Icon(Icons.delivery_dining_rounded, size: 14, color: primaryColor),
+                          const SizedBox(width: 4),
+                          Text(
+                            "Delivery",
+                            style: TextStyle(
+                              fontSize: 11,
+                              color: primaryColor,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ],
                       ),
-                      const Spacer(),
-                      const Icon(Icons.star_rounded, size: 16, color: Colors.orange),
-                      const SizedBox(width: 4),
-                      const Text(
-                        "4.8",
-                        style: TextStyle(
-                          fontSize: 12,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
+                      Row(
+                        children: [
+                          const Icon(Icons.star_rounded, size: 14, color: Colors.orange),
+                          const SizedBox(width: 4),
+                          const Text(
+                            "4.8",
+                            style: TextStyle(
+                              fontSize: 11,
+                              fontWeight: FontWeight.w800,
+                              color: Colors.black87,
+                            ),
+                          ),
+                        ],
+                      )
                     ],
                   ),
                 ],

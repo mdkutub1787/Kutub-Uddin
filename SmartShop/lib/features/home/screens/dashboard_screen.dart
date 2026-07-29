@@ -559,23 +559,23 @@ class DashboardScreen extends ConsumerWidget {
         if (shops.isEmpty) return const SizedBox.shrink();
 
         return SizedBox(
-          height: 250,
+          height: 215,
           child: ListView.builder(
-            padding: const EdgeInsets.symmetric(horizontal: 8),
+            padding: const EdgeInsets.symmetric(horizontal: 12),
             scrollDirection: Axis.horizontal,
             itemCount: shops.length,
             itemBuilder: (context, index) {
               return Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 8),
-                child: ShopCard(shop: shops[index], width: 220),
+                padding: const EdgeInsets.symmetric(horizontal: 4),
+                child: ShopCard(shop: shops[index], width: 170),
               );
             },
           ),
         );
       },
-      loading: () => const SizedBox(height: 250, child: Center(child: CircularProgressIndicator())),
+      loading: () => const SizedBox(height: 215, child: Center(child: CircularProgressIndicator())),
       error: (error, stack) => SizedBox(
-        height: 250,
+        height: 215,
         child: Center(
           child: Text(
             error.toString().contains('JWT issued at future') 
@@ -637,41 +637,40 @@ class DashboardScreen extends ConsumerWidget {
                     children: [
                       AnimatedContainer(
                         duration: const Duration(milliseconds: 300),
-                        height: 65,
-                        width: 65,
+                        height: 60,
+                        width: 60,
                         decoration: BoxDecoration(
                           color: isSelected ? Theme.of(context).primaryColor : Colors.white,
-                          borderRadius: BorderRadius.circular(18),
+                          borderRadius: BorderRadius.circular(20),
                           image: hasImage 
                             ? DecorationImage(image: NetworkImage(cat.imageUrl), fit: BoxFit.cover)
                             : null,
                           boxShadow: [
                             BoxShadow(
                               color: isSelected 
-                                ? Theme.of(context).primaryColor.withValues(alpha: 0.2) 
-                                : Colors.black.withValues(alpha: 0.03),
-                              blurRadius: 10,
-                              offset: const Offset(0, 5),
+                                ? Theme.of(context).primaryColor.withValues(alpha: 0.25) 
+                                : Colors.black.withValues(alpha: 0.05),
+                              blurRadius: 12,
+                              offset: const Offset(0, 6),
                             )
                           ],
-                          border: isSelected ? null : Border.all(color: Colors.grey[100]!),
                         ),
                         child: !hasImage 
                           ? Icon(
-                              Icons.category,
+                              Icons.category_rounded,
                               color: isSelected ? Colors.white : Theme.of(context).primaryColor, 
-                              size: 28
+                              size: 24
                             )
                           : null,
                       ),
-                      const SizedBox(height: 6),
+                      const SizedBox(height: 10),
                       Text(
                         cat.name, 
                         style: TextStyle(
-                          fontSize: 11, 
-                          fontWeight: isSelected ? FontWeight.w900 : FontWeight.bold, 
-                          color: isSelected ? Theme.of(context).primaryColor : Colors.grey[600],
-                          letterSpacing: -0.2,
+                          fontSize: 12, 
+                          fontWeight: isSelected ? FontWeight.w900 : FontWeight.w600, 
+                          color: isSelected ? Theme.of(context).primaryColor : Colors.grey[700],
+                          letterSpacing: -0.3,
                         ), 
                         maxLines: 1, 
                         overflow: TextOverflow.ellipsis
@@ -713,7 +712,7 @@ class DashboardScreen extends ConsumerWidget {
     
     if (productState.isLoading && products.isEmpty) {
       return SizedBox(
-        height: 290,
+        height: 240,
         child: ListView.builder(
           scrollDirection: Axis.horizontal,
           padding: const EdgeInsets.symmetric(horizontal: 10),
@@ -728,14 +727,14 @@ class DashboardScreen extends ConsumerWidget {
     }
     
     return SizedBox(
-      height: 290,
+      height: 240,
       child: ListView.builder(
         padding: const EdgeInsets.symmetric(horizontal: 8),
         scrollDirection: Axis.horizontal,
         itemCount: products.length,
         itemBuilder: (context, index) {
           final product = products[index];
-          return ProductCard(product: product, heroTag: 'featured-${product.id}', width: 160);
+          return ProductCard(product: product, heroTag: 'featured-${product.id}', width: 140);
         },
       ),
     );

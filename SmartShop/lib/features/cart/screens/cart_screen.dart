@@ -411,8 +411,8 @@ class _CartScreenState extends ConsumerState<CartScreen> {
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
       builder: (ctx) => StatefulBuilder(
-        builder: (context, setModalState) => Container(
-          padding: EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom, left: 20, right: 20, top: 20),
+        builder: (sheetContext, setModalState) => Container(
+          padding: EdgeInsets.only(bottom: MediaQuery.of(sheetContext).viewInsets.bottom, left: 20, right: 20, top: 20),
           decoration: const BoxDecoration(color: Colors.white, borderRadius: BorderRadius.vertical(top: Radius.circular(30))),
           child: SingleChildScrollView(
             child: Column(
@@ -454,7 +454,7 @@ class _CartScreenState extends ConsumerState<CartScreen> {
                     const Text("Card Information", style: TextStyle(fontWeight: FontWeight.bold)),
                     TextButton.icon(
                       onPressed: () {
-                        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Launching Camera for Card OCR...")));
+                        ScaffoldMessenger.of(sheetContext).showSnackBar(const SnackBar(content: Text("Launching Camera for Card OCR...")));
                       },
                       icon: const Icon(Icons.camera_enhance_rounded, size: 18),
                       label: const Text("Scan Card", style: TextStyle(fontWeight: FontWeight.bold)),
@@ -492,9 +492,9 @@ class _CartScreenState extends ConsumerState<CartScreen> {
                   child: ElevatedButton(
                     onPressed: () {
                       if (selectedProvider == 'Card') {
-                         if (cardNoController.text.length < 12) { ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Enter valid card details"))); return; }
+                         if (cardNoController.text.length < 12) { ScaffoldMessenger.of(sheetContext).showSnackBar(const SnackBar(content: Text("Enter valid card details"))); return; }
                       } else {
-                         if (numberController.text.length < 11) { ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Enter valid wallet number"))); return; }
+                         if (numberController.text.length < 11) { ScaffoldMessenger.of(sheetContext).showSnackBar(const SnackBar(content: Text("Enter valid wallet number"))); return; }
                       }
                       Navigator.pop(ctx);
                       _processOrder(context, cartItems, totalAmount, deliveryFee, auth, 'Online', true, transactionId: 'TRX${DateTime.now().millisecondsSinceEpoch}');
