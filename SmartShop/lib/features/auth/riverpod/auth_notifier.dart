@@ -37,7 +37,15 @@ class AuthNotifier extends AsyncNotifier<UserModel?> {
     }
   }
 
-  Future<UserModel> _fetchUserData(sb.User user) async {
+  Future<UserModel>? _fetchUserFuture;
+
+  Future<UserModel> _fetchUserData(sb.User user) {
+    if (_fetchUserFuture != null) return _fetchUserFuture!;
+    _fetchUserFuture = _doFetchUserData(user).whenComplete(() => _fetchUserFuture = null);
+    return _fetchUserFuture!;
+  }
+
+  Future<UserModel> _doFetchUserData(sb.User user) async {
     final supabase = ref.read(supabaseClientProvider);
     try {
       final response = await supabase
@@ -72,48 +80,59 @@ class AuthNotifier extends AsyncNotifier<UserModel?> {
     // Auto-create shop if role is owner and shopId is missing
     if (newUser.role == 'owner' && newUser.shopId == null) {
       try {
-        final shopName = (newUser.shopName != null && newUser.shopName!.isNotEmpty) 
-            ? newUser.shopName! 
-            : '${newUser.name}\'s Shop';
-        final shopData = {
-           'ownerId': newUser.uid,
-           'name': shopName,
-           'address': newUser.address.isNotEmpty ? newUser.address : 'Default Address',
-           'phone': newUser.phoneNumber.isNotEmpty ? newUser.phoneNumber : 'N/A',
-           'isOnlineOrderEnabled': true,
-           'isPosEnabled': true,
-           'latitude': metadata['latitude'] ?? 23.8103, // Default to Dhaka if not provided
-           'longitude': metadata['longitude'] ?? 90.4125, // Default to Dhaka if not provided
-           'createdAt': DateTime.now().toIso8601String(),
-        };
-        final insertedShop = await supabase.from(AppConstants.shopsTable).insert(shopData).select().single();
-        newUser = newUser.copyWith(
-          shopId: insertedShop['id'],
-          shopName: insertedShop['name'],
-        );
+        final existingShop = await supabase
+            .from(AppConstants.shopsTable)
+            .select('id, name')
+            .eq('ownerId', newUser.uid)
+            .maybeSingle();
+
+        if (existingShop != null) {
+          newUser = newUser.copyWith(
+            shopId: existingShop['id'],
+            shopName: existingShop['name'],
+          );
+        } else {
+          final shopName = (newUser.shopName != null && newUser.shopName!.isNotEmpty) 
+              ? newUser.shopName! 
+              : '${newUser.name}\'s Shop';
+          final shopData = {
+             'ownerId': newUser.uid,
+             'name': shopName,
+             'address': newUser.address.isNotEmpty ? newUser.address : 'Default Address',
+             'phone': newUser.phoneNumber.isNotEmpty ? newUser.phoneNumber : 'N/A',
+             'isOnlineOrderEnabled': true,
+             'isPosEnabled': true,
+             'latitude': metadata['latitude'] ?? 23.8103, 
+             'longitude': metadata['longitude'] ?? 90.4125, 
+             'createdAt': DateTime.now().toIso8601String(),
+          };
+          final insertedShop = await supabase.from(AppConstants.shopsTable).insert(shopData).select().single();
+          newUser = newUser.copyWith(
+            shopId: insertedShop['id'],
+            shopName: insertedShop['name'],
+          );
+        }
       } catch (e) {
         // Ignore shop creation failure
       }
     }
     
-    // Auto-insert the missing user into the database
+    // Auto-insert or update the user in the database
     try {
-      await supabase.from(AppConstants.usersTable).insert({
+      await supabase.from(AppConstants.usersTable).upsert({
         'id': newUser.uid,
-        'email': newUser.email,
         'name': newUser.name,
         'phoneNumber': newUser.phoneNumber,
         'address': newUser.address,
         'role': newUser.role,
-        'shopId': newUser.shopId,
         'shopName': newUser.shopName,
         'imageUrl': newUser.imageUrl,
         'isActive': true,
         'isAvailable': false,
-        'created_at': DateTime.now().toIso8601String(),
       });
     } catch (e) {
-      // Ignore if it fails due to RLS or other reasons
+      print('Error inserting/updating user in database: $e');
+      rethrow;
     }
     
     await _updateFcmToken(newUser.uid);

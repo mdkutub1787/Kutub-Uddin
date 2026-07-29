@@ -197,12 +197,20 @@ class _AdminUserListScreenState extends ConsumerState<AdminUserListScreen> {
                                               activeColor: Colors.green,
                                               onChanged: (val) async {
                                                 try {
-                                                  final updatedUser = user.copyWith(isActive: val);
-                                                  await ref.read(userNotifierProvider.notifier).updateUser(updatedUser);
+                                                  await ref.read(userNotifierProvider.notifier).toggleUserStatus(user.uid, val);
+                                                  if (context.mounted) {
+                                                    ScaffoldMessenger.of(context).showSnackBar(
+                                                      SnackBar(
+                                                        content: Text(val ? "User Unblocked" : "User Blocked"),
+                                                        backgroundColor: val ? Colors.green : Colors.red,
+                                                        duration: const Duration(seconds: 1),
+                                                      ),
+                                                    );
+                                                  }
                                                 } catch (e) {
                                                   if (context.mounted) {
                                                     ScaffoldMessenger.of(context).showSnackBar(
-                                                      SnackBar(content: Text('Failed to update user: $e'), backgroundColor: Colors.red),
+                                                      SnackBar(content: Text('Error: $e'), backgroundColor: Colors.red),
                                                     );
                                                   }
                                                 }

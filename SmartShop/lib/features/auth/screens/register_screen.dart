@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../riverpod/auth_notifier.dart';
 import '../../../theme/app_colors.dart';
@@ -408,15 +409,16 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
       // Go to Login Page
       Navigator.pushNamedAndRemoveUntil(context, AppRoutes.login, (route) => false);
 
+    } on AuthException catch (e) {
+      if (!mounted) return;
+      String msg = e.message;
+      if (msg.toLowerCase().contains('already registered') || e.code == 'user_already_exists') {
+        msg = "This email is already registered! Please login.";
+      }
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(msg), backgroundColor: AppColors.error, behavior: SnackBarBehavior.floating));
     } catch (e) {
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(AppStrings.registrationFailed.tr(args: [e.toString().split(':').last.trim()])),
-          backgroundColor: AppColors.error,
-          behavior: SnackBarBehavior.floating,
-        ),
-      );
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(AppStrings.registrationFailed.tr(args: [e.toString()])), backgroundColor: AppColors.error, behavior: SnackBarBehavior.floating));
     }
   }
 }

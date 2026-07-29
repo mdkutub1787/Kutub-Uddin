@@ -28,47 +28,32 @@ class UserNotifier extends AsyncNotifier<List<UserModel>> {
 
   Future<void> loadUsers() async {
     state = const AsyncValue.loading();
-    try {
-      final users = await _fetchAllUsers();
-      state = AsyncValue.data(users);
-    } catch (e, stackTrace) {
-      state = AsyncValue.error(e, stackTrace);
-    }
+    state = await AsyncValue.guard(() => _fetchAllUsers());
   }
 
-  Future<void> updateUser(UserModel user) async {
+  Future<void> toggleUserStatus(String uid, bool isActive) async {
     final supabase = ref.read(supabaseClientProvider);
-    final previousState = state.value;
-    
-    // Optimistic UI update
-    if (previousState != null) {
-      state = AsyncData(previousState.map((e) => e.uid == user.uid ? user : e).toList());
-    }
-
     try {
-      await supabase.from(AppConstants.usersTable).update(user.toJson()).eq('id', user.uid);
+      await supabase.from(AppConstants.usersTable).update({'isActive': isActive}).eq('id', uid);
+      
+      // Update local state for instant UI change
+      if (state.value != null) {
+        state = AsyncData(state.value!.map((u) => u.uid == uid ? u.copyWith(isActive: isActive) : u).toList());
+      }
       
       // Log Activity
       final admin = ref.read(authNotifierProvider).value;
       if (admin != null) {
-        try {
-          await ref.read(activityLogNotifierProvider.notifier).logAction(
-            adminId: admin.uid,
-            adminName: admin.name,
-            action: 'User Updated',
-            targetId: user.name,
-            details: 'User "${user.name}" status or role was changed to ${user.isActive ? "Active" : "Inactive"}.',
-          );
-        } catch (_) {
-          // Ignore log action failures
-        }
+        ref.read(activityLogNotifierProvider.notifier).logAction(
+          adminId: admin.uid,
+          adminName: admin.name,
+          action: isActive ? 'User Unblocked' : 'User Blocked',
+          targetId: uid,
+          details: 'User status changed to ${isActive ? "Active" : "Inactive"}',
+        );
       }
     } catch (e) {
-      // Revert Optimistic UI update
-      if (previousState != null) {
-        state = AsyncData(previousState);
-      }
-      rethrow;
+      // Revert or show error
     }
   }
 
@@ -76,20 +61,7 @@ class UserNotifier extends AsyncNotifier<List<UserModel>> {
     final supabase = ref.read(supabaseClientProvider);
     try {
       await supabase.from(AppConstants.usersTable).delete().eq('id', uid);
-
-      // Log Activity
-      final admin = ref.read(authNotifierProvider).value;
-      if (admin != null) {
-        await ref.read(activityLogNotifierProvider.notifier).logAction(
-          adminId: admin.uid,
-          adminName: admin.name,
-          action: 'User Deleted',
-          targetId: uid,
-          details: 'User with UID: $uid was permanently deleted.',
-        );
-      }
-
-      await loadUsers(); // Refresh the list
+      await loadUsers();
     } catch (e) {
       rethrow;
     }

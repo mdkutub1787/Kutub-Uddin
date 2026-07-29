@@ -14,7 +14,7 @@ class ErrorLogger {
         'exception': error.toString(),
         'stack_trace': stackTrace?.toString() ?? 'No stack trace',
         'hint': hint ?? 'General Error',
-        'device_info': kIsWeb ? 'Web' : 'Mobile Device',
+        // 'device_info': kIsWeb ? 'Web' : 'Mobile Device', // Removed as it is not in the schema
         'user_id': userId,
         'timestamp': DateTime.now().toIso8601String(),
       });

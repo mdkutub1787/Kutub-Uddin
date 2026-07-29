@@ -4,6 +4,12 @@ import '../repositories/product_repository.dart';
 import '../../auth/riverpod/auth_notifier.dart';
 import '../../admin/riverpod/activity_log_notifier.dart';
 import '../../../core/riverpod/admin_shop_filter_notifier.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
+import '../../../core/providers.dart';
+
+final productRepositoryProvider = Provider<ProductRepository>((ref) {
+  return ProductRepository(ref.watch(supabaseClientProvider));
+});
 
 class ProductState {
   final List<ProductModel> allProducts;

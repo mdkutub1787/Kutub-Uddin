@@ -10,6 +10,19 @@ class OrderRepository {
 
   OrderRepository(this._supabase);
 
+  Future<List<OrderModel>> getOrdersByShop(String shopId) async {
+    try {
+      final response = await _supabase
+          .from(AppConstants.ordersTable)
+          .select()
+          .eq('shopId', shopId)
+          .order('date', ascending: false);
+      return (response as List).map((json) => OrderModel.fromJson(json)).toList();
+    } catch (e) {
+      return [];
+    }
+  }
+
   Future<List<OrderModel>> fetchOrders() async {
     try {
       final response = await _supabase
@@ -32,32 +45,6 @@ class OrderRepository {
       return response['id']?.toString();
     } catch (e) {
       return null;
-    }
-  }
-
-  Future<List<OrderModel>> getUserOrders(String userId) async {
-    try {
-      final response = await _supabase
-          .from(AppConstants.ordersTable)
-          .select()
-          .eq('userId', userId)
-          .order('date', ascending: false);
-      return (response as List).map((json) => OrderModel.fromJson(json)).toList();
-    } catch (e) {
-      return [];
-    }
-  }
-
-  Future<List<OrderModel>> getOrdersByShop(String shopId) async {
-    try {
-      final response = await _supabase
-          .from(AppConstants.ordersTable)
-          .select()
-          .eq('shopId', shopId)
-          .order('date', ascending: false);
-      return (response as List).map((json) => OrderModel.fromJson(json)).toList();
-    } catch (e) {
-      return [];
     }
   }
 
@@ -84,16 +71,12 @@ class OrderRepository {
         .from(AppConstants.ordersTable)
         .stream(primaryKey: ['id'])
         .map((maps) {
-      return maps
-          .map((map) => OrderModel.fromJson(map))
-          .where((o) =>
-            (o.status == 'Pending' || o.status == 'Confirmed') &&
-            o.deliveryManId == null &&
-            o.orderType != 'pos'
-          )
-          .toList()
-        ..sort((a, b) => b.date.compareTo(a.date));
-    });
+          return maps
+              .map((map) => OrderModel.fromJson(map))
+              .where((o) => (o.status == 'Pending' || o.status == 'Confirmed') && o.deliveryManId == null && o.orderType != 'pos')
+              .toList()
+            ..sort((a, b) => b.date.compareTo(a.date));
+        });
   }
 
   Stream<List<OrderModel>> streamMyDeliveries(String deliveryManId) {
