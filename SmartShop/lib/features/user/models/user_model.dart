@@ -34,7 +34,7 @@ class UserModel {
       phoneNumber: data['phoneNumber'] ?? data['phone_number'] ?? '',
       address: data['address'] ?? '',
       role: data['role'] ?? 'user',
-      shopId: data['shopId']?.toString(),
+      shopId: data['shopId']?.toString() ?? data['shop_id']?.toString(),
       shopName: data['shop_name'] ?? data['shopName'],
       imageUrl: data['imageUrl'] ?? data['image_url'] ?? data['avatar_url'],
       isActive: data['isActive'] ?? true,

@@ -67,7 +67,6 @@ class ProductModel {
       'discountValue': discountValue,
       'discountType': discountType,
       'imageUrl': imageUrl,
-      'images': images,
       'categoryId': categoryId,
       'rating': rating,
       'stock': stock,

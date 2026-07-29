@@ -83,15 +83,15 @@ class ProductNotifier extends Notifier<ProductState> {
         ? _repository.getProductsByShop(adminShopId)
         : (isAdmin || isCustomer)
             ? _repository.getAllProducts()
-            : (user.shopId != null && user.shopId!.isNotEmpty) 
-                ? _repository.getProductsByShop(user.shopId!)
-                : Stream.value(<ProductModel>[]); // Fallback for owners with no shop assigned yet
+            : _repository.getProductsByShop(user?.shopId ?? '');
             
     final subscription = stream.listen(
       (products) {
+        print('✅ Product Stream: Loaded ${products.length} products for shop ${user?.shopId}');
         state = state.copyWith(allProducts: products, isLoading: false);
       },
       onError: (error) {
+        print('❌ Product Stream Error: $error');
         state = state.copyWith(isLoading: false);
       },
     );
@@ -121,7 +121,8 @@ class ProductNotifier extends Notifier<ProductState> {
   }
 
   Future<void> addProduct(ProductModel product) async {
-    await _repository.addProduct(product);
+    final createdProduct = await _repository.addProduct(product);
+    state = state.copyWith(allProducts: [...state.allProducts, createdProduct]);
   }
 
   Future<void> updateProduct(ProductModel product) async {

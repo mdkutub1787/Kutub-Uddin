@@ -24,15 +24,13 @@ class ProductRepository {
         .map((data) => data.map((json) => ProductModel.fromJson(json)).toList());
   }
 
-  Future<void> addProduct(ProductModel product) async {
+  Future<ProductModel> addProduct(ProductModel product) async {
     final uuid = const Uuid().v4();
     final json = product.toJson();
-    json['id'] = uuid; // Auto-generate UUID for new product
-    
-    // Ensure images is at least an empty list
-    if (json['images'] == null) json['images'] = [];
+    json['id'] = uuid; 
 
     await _supabase.from(AppConstants.productsTable).insert(json);
+    return ProductModel.fromJson(json);
   }
 
   Future<void> updateProduct(ProductModel product) async {

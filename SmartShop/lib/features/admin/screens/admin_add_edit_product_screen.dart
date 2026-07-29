@@ -149,11 +149,8 @@ class _AdminAddEditProductScreenState extends ConsumerState<AdminAddEditProductS
               backgroundColor: primaryColor.withValues(alpha: 0.05),
             ),
           ),
-          
-          _isSaving 
-            ? const Center(child: CircularProgressIndicator()) 
-            : SingleChildScrollView(
-                padding: const EdgeInsets.all(28),
+          SingleChildScrollView(
+            padding: const EdgeInsets.all(28),
                 child: Form(
                   key: _formKey,
                   child: Column(
@@ -264,6 +261,11 @@ class _AdminAddEditProductScreenState extends ConsumerState<AdminAddEditProductS
                   ),
                 ),
               ),
+          if (_isSaving)
+            Container(
+              color: Theme.of(context).scaffoldBackgroundColor.withValues(alpha: 0.7),
+              child: const Center(child: CircularProgressIndicator()),
+            ),
         ],
       ),
     );

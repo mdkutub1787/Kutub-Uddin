@@ -55,7 +55,29 @@ class AuthNotifier extends AsyncNotifier<UserModel?> {
           .maybeSingle();
 
       if (response != null) {
-        final existingUser = UserModel.fromJson(response);
+        var existingUser = UserModel.fromJson(response);
+        
+        if (existingUser.role == 'owner' && (existingUser.shopId == null || existingUser.shopId!.isEmpty || existingUser.shopId == 'EMPTY')) {
+          try {
+            final existingShop = await supabase
+                .from(AppConstants.shopsTable)
+                .select('id, name')
+                .eq('ownerId', existingUser.uid)
+                .maybeSingle();
+
+            if (existingShop != null) {
+              existingUser = existingUser.copyWith(
+                shopId: existingShop['id'],
+                shopName: existingShop['name'],
+              );
+              await supabase.from(AppConstants.usersTable).update({
+                'shopId': existingShop['id'],
+                'shopName': existingShop['name'],
+              }).eq('id', existingUser.uid);
+            }
+          } catch (_) {}
+        }
+
         await _updateFcmToken(user.id);
         return existingUser;
       }
@@ -125,6 +147,7 @@ class AuthNotifier extends AsyncNotifier<UserModel?> {
         'phoneNumber': newUser.phoneNumber,
         'address': newUser.address,
         'role': newUser.role,
+        'shopId': newUser.shopId,
         'shopName': newUser.shopName,
         'imageUrl': newUser.imageUrl,
         'isActive': true,
