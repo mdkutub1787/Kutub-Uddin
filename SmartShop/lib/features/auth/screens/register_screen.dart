@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:easy_localization/easy_localization.dart';
+import 'package:geolocator/geolocator.dart';
 
 import '../riverpod/auth_notifier.dart';
 import '../../../theme/app_colors.dart';
@@ -360,7 +361,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
     }
 
     try {
-      final metadata = {
+      final Map<String, dynamic> metadata = {
         'full_name': _nameController.text.trim(),
         'phone_number': _phoneController.text.trim(),
         'address': _addressController.text.trim(),
@@ -369,6 +370,23 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
       
       if (_isShopOwner) {
         metadata['shopName'] = _shopNameController.text.trim();
+        
+        try {
+          bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
+          if (serviceEnabled) {
+            LocationPermission permission = await Geolocator.checkPermission();
+            if (permission == LocationPermission.denied) {
+              permission = await Geolocator.requestPermission();
+            }
+            if (permission == LocationPermission.always || permission == LocationPermission.whileInUse) {
+              Position position = await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
+              metadata['latitude'] = position.latitude;
+              metadata['longitude'] = position.longitude;
+            }
+          }
+        } catch (e) {
+          // ignore location fetch errors
+        }
       }
 
       await ref.read(authNotifierProvider.notifier).signUp(

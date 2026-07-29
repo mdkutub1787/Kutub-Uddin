@@ -16,6 +16,7 @@ import '../features/wishlist/screens/wishlist_screen.dart';
 import '../features/profile/screens/edit_profile_screen.dart';
 import '../features/admin/screens/admin_dashboard_screen.dart';
 import '../features/delivery/screens/delivery_dashboard_screen.dart';
+import '../features/delivery/screens/delivery_main_screen.dart';
 import '../features/offers/screens/offers_screen.dart';
 import '../features/notification/screens/notification_screen.dart';
 import '../features/notification/screens/notification_details_screen.dart';
@@ -86,7 +87,7 @@ class AppRoutes {
       case adminDashboard:
         return MaterialPageRoute(builder: (_) => const AdminDashboardScreen());
       case deliveryDashboard:
-        return MaterialPageRoute(builder: (_) => const DeliveryDashboardScreen());
+        return MaterialPageRoute(builder: (_) => const DeliveryMainScreen());
       case offers:
         return MaterialPageRoute(builder: (_) => const OffersScreen());
       case notifications:

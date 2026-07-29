@@ -57,7 +57,7 @@ class AuthNotifier extends AsyncNotifier<UserModel?> {
     
     // Fallback to auth metadata if DB row not found
     final metadata = user.userMetadata ?? {};
-    final newUser = UserModel(
+    var newUser = UserModel(
       uid: user.id,
       email: user.email ?? '',
       name: metadata['full_name'] ?? metadata['name'] ?? '',
@@ -68,6 +68,33 @@ class AuthNotifier extends AsyncNotifier<UserModel?> {
       shopName: metadata['shop_name'] ?? metadata['shopName'],
       imageUrl: metadata['image_url'] ?? metadata['imageUrl'] ?? metadata['avatar_url'],
     );
+    
+    // Auto-create shop if role is owner and shopId is missing
+    if (newUser.role == 'owner' && newUser.shopId == null) {
+      try {
+        final shopName = (newUser.shopName != null && newUser.shopName!.isNotEmpty) 
+            ? newUser.shopName! 
+            : '${newUser.name}\'s Shop';
+        final shopData = {
+           'ownerId': newUser.uid,
+           'name': shopName,
+           'address': newUser.address.isNotEmpty ? newUser.address : 'Default Address',
+           'phone': newUser.phoneNumber.isNotEmpty ? newUser.phoneNumber : 'N/A',
+           'isOnlineOrderEnabled': true,
+           'isPosEnabled': true,
+           'latitude': metadata['latitude'] ?? 23.8103, // Default to Dhaka if not provided
+           'longitude': metadata['longitude'] ?? 90.4125, // Default to Dhaka if not provided
+           'createdAt': DateTime.now().toIso8601String(),
+        };
+        final insertedShop = await supabase.from(AppConstants.shopsTable).insert(shopData).select().single();
+        newUser = newUser.copyWith(
+          shopId: insertedShop['id'],
+          shopName: insertedShop['name'],
+        );
+      } catch (e) {
+        // Ignore shop creation failure
+      }
+    }
     
     // Auto-insert the missing user into the database
     try {

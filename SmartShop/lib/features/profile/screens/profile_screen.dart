@@ -13,6 +13,7 @@ import '../../support/riverpod/support_notifier.dart';
 import '../../../widgets/custom_app_bar.dart';
 import '../../../widgets/app_card.dart';
 import '../../../theme/app_colors.dart';
+import '../../../core/riverpod/navigation_notifier.dart';
 
 class ProfileScreen extends ConsumerWidget {
   const ProfileScreen({super.key});
@@ -31,7 +32,7 @@ class ProfileScreen extends ConsumerWidget {
     final unreadSupportCount = ref.watch(supportNotifierProvider).value?.length ?? 0;
     
     final user = authState.value;
-    final isAdmin = user?.role == 'admin' || user?.role == 'super_admin';
+    final isAdmin = user?.role == 'admin' || user?.role == 'super_admin' || user?.role == 'owner';
     final isDeliveryMan = user?.role == 'delivery_man';
 
     return Scaffold(
@@ -52,19 +53,20 @@ class ProfileScreen extends ConsumerWidget {
             const SizedBox(height: 16),
 
             // Stats Row
-            _buildStatsRow(context, cartCount, wishlistItems.length, orderItems.length),
+            if (!isDeliveryMan) ...[
+              _buildStatsRow(context, cartCount, wishlistItems.length, orderItems.length),
+              const SizedBox(height: 16),
+            ],
             
             if (isAdmin) ...[
-              const SizedBox(height: 16),
               _buildAdminCard(context, settings),
+              const SizedBox(height: 16),
             ],
 
             if (isDeliveryMan) ...[
+              _buildDeliveryCard(context, ref, settings),
               const SizedBox(height: 16),
-              _buildDeliveryCard(context, settings),
             ],
-
-            const SizedBox(height: 20),
 
             // User Info Section
             _buildSectionHeader(AppStrings.personalInfo.tr()),
@@ -78,16 +80,17 @@ class ProfileScreen extends ConsumerWidget {
 
             const SizedBox(height: 20),
 
-            // Main Menu
-            _buildSectionHeader(AppStrings.shoppingActivity.tr()),
-            _buildMenuCard(context, [
-              _menuItem(Icons.shopping_bag_outlined, AppStrings.myOrdersMenu.tr(), () => Navigator.pushNamed(context, AppRoutes.myOrders)),
-              _menuItem(Icons.favorite_outline, AppStrings.wishlistMenu.tr(), () => Navigator.pushNamed(context, AppRoutes.wishlist)),
-              _menuItem(Icons.notifications_outlined, AppStrings.notices.tr(), () => Navigator.pushNamed(context, AppRoutes.notifications), badge: unreadNotifCount),
-              _menuItem(Icons.help_outline_rounded, AppStrings.support.tr(), () => Navigator.pushNamed(context, AppRoutes.support), badge: unreadSupportCount),
-            ]),
-
-            const SizedBox(height: 20),
+            // Main Menu (Hidden for riders)
+            if (!isDeliveryMan) ...[
+              _buildSectionHeader(AppStrings.shoppingActivity.tr()),
+              _buildMenuCard(context, [
+                _menuItem(Icons.shopping_bag_outlined, AppStrings.myOrdersMenu.tr(), () => Navigator.pushNamed(context, AppRoutes.myOrders)),
+                _menuItem(Icons.favorite_outline, AppStrings.wishlistMenu.tr(), () => Navigator.pushNamed(context, AppRoutes.wishlist)),
+                _menuItem(Icons.notifications_outlined, AppStrings.notices.tr(), () => Navigator.pushNamed(context, AppRoutes.notifications), badge: unreadNotifCount),
+                _menuItem(Icons.help_outline_rounded, AppStrings.support.tr(), () => Navigator.pushNamed(context, AppRoutes.support), badge: unreadSupportCount),
+              ]),
+              const SizedBox(height: 20),
+            ],
 
             _buildSectionHeader(AppStrings.accountSecurity.tr()),
             _buildMenuCard(context, [
@@ -612,13 +615,15 @@ class ProfileScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildDeliveryCard(BuildContext context, dynamic settings) {
+  Widget _buildDeliveryCard(BuildContext context, WidgetRef ref, dynamic settings) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20),
       child: AppCard(
         color: Colors.blueAccent,
         borderRadius: 20,
-        onTap: () => Navigator.pushNamed(context, AppRoutes.deliveryDashboard),
+        onTap: () {
+          ref.read(navigationNotifierProvider.notifier).setIndex(0);
+        },
         child: Padding(
           padding: const EdgeInsets.all(20),
           child: Row(

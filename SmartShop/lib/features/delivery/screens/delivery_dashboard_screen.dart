@@ -99,13 +99,7 @@ class _DeliveryDashboardScreenState extends ConsumerState<DeliveryDashboardScree
     int totalDeliveries = completedOrdersAsync.value?.length ?? 0;
     double totalEarnings = completedOrdersAsync.value?.fold(0.0, (sum, item) => sum! + item.deliveryFee) ?? 0.0;
 
-    return PopScope(
-      canPop: false,
-      onPopInvokedWithResult: (didPop, result) async {
-        if (didPop) return;
-        await ExitDialogHelper.showExitDialog(context);
-      },
-      child: Scaffold(
+    return Scaffold(
         backgroundColor: Colors.grey[100],
         body: Column(
           children: [
@@ -186,7 +180,6 @@ class _DeliveryDashboardScreenState extends ConsumerState<DeliveryDashboardScree
             ),
           ],
         ),
-      ),
     );
   }
 

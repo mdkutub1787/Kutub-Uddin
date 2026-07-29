@@ -24,7 +24,8 @@ import 'coupons/admin_coupon_screen.dart';
 import 'admin_pos_screen.dart';
 import 'admin_shop_list_screen.dart';
 import '../../../core/riverpod/admin_shop_filter_notifier.dart';
-
+import 'package:fl_chart/fl_chart.dart';
+import '../../order/models/order_model.dart';
 import '../../shop/riverpod/shop_notifier.dart';
 
 class AdminDashboardScreen extends ConsumerStatefulWidget {
@@ -141,6 +142,8 @@ class _AdminDashboardScreenState extends ConsumerState<AdminDashboardScreen> {
                         child: Text("Viewing: ${ref.watch(adminShopFilterNameProvider)}", style: const TextStyle(color: Colors.blue, fontWeight: FontWeight.bold)),
                       ),
                     const SizedBox(height: 12),
+                    if (orders.isNotEmpty) _buildOrderPieChart(orders, settings.primaryColor),
+                    const SizedBox(height: 16),
                     GridView.count(
                       shrinkWrap: true,
                       physics: const NeverScrollableScrollPhysics(),
@@ -329,6 +332,140 @@ class _AdminDashboardScreenState extends ConsumerState<AdminDashboardScreen> {
                 child: Text('$badgeCount', style: const TextStyle(color: Colors.white, fontSize: 10, fontWeight: FontWeight.bold), textAlign: TextAlign.center)
               ),
             ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildOrderPieChart(List<OrderModel> orders, Color primaryColor) {
+    int pending = 0;
+    int processing = 0;
+    int outForDelivery = 0;
+    int delivered = 0;
+    int cancelled = 0;
+
+    for (var o in orders) {
+      if (o.status == 'Pending') pending++;
+      else if (o.status == 'Processing') processing++;
+      else if (o.status == 'Out for Delivery') outForDelivery++;
+      else if (o.status == 'Delivered') delivered++;
+      else if (o.status == 'Cancelled') cancelled++;
+    }
+
+    final total = orders.length;
+
+    List<PieChartSectionData> sections = [];
+    if (pending > 0) {
+      sections.add(PieChartSectionData(
+        value: pending.toDouble(),
+        title: '${(pending / total * 100).toStringAsFixed(0)}%',
+        color: Colors.orange,
+        radius: 40,
+        titleStyle: const TextStyle(fontSize: 10, fontWeight: FontWeight.bold, color: Colors.white),
+      ));
+    }
+    if (processing > 0) {
+      sections.add(PieChartSectionData(
+        value: processing.toDouble(),
+        title: '${(processing / total * 100).toStringAsFixed(0)}%',
+        color: Colors.blue,
+        radius: 40,
+        titleStyle: const TextStyle(fontSize: 10, fontWeight: FontWeight.bold, color: Colors.white),
+      ));
+    }
+    if (outForDelivery > 0) {
+      sections.add(PieChartSectionData(
+        value: outForDelivery.toDouble(),
+        title: '${(outForDelivery / total * 100).toStringAsFixed(0)}%',
+        color: Colors.purple,
+        radius: 40,
+        titleStyle: const TextStyle(fontSize: 10, fontWeight: FontWeight.bold, color: Colors.white),
+      ));
+    }
+    if (delivered > 0) {
+      sections.add(PieChartSectionData(
+        value: delivered.toDouble(),
+        title: '${(delivered / total * 100).toStringAsFixed(0)}%',
+        color: Colors.green,
+        radius: 45,
+        titleStyle: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Colors.white),
+      ));
+    }
+    if (cancelled > 0) {
+      sections.add(PieChartSectionData(
+        value: cancelled.toDouble(),
+        title: '${(cancelled / total * 100).toStringAsFixed(0)}%',
+        color: Colors.red,
+        radius: 35,
+        titleStyle: const TextStyle(fontSize: 9, fontWeight: FontWeight.bold, color: Colors.white),
+      ));
+    }
+
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.04),
+            blurRadius: 10,
+            offset: const Offset(0, 4),
+          ),
+        ],
+        border: Border.all(color: Colors.grey.withValues(alpha: 0.1)),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text("Order Analytics", style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.grey[800])),
+          const SizedBox(height: 16),
+          SizedBox(
+            height: 150,
+            child: Row(
+              children: [
+                Expanded(
+                  flex: 1,
+                  child: PieChart(
+                    PieChartData(
+                      sectionsSpace: 2,
+                      centerSpaceRadius: 30,
+                      sections: sections.isEmpty ? [PieChartSectionData(value: 1, color: Colors.grey[200]!, title: '')] : sections,
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 16),
+                Expanded(
+                  flex: 1,
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      _buildLegend("Pending", Colors.orange, pending),
+                      _buildLegend("Processing", Colors.blue, processing),
+                      _buildLegend("Out for Delivery", Colors.purple, outForDelivery),
+                      _buildLegend("Delivered", Colors.green, delivered),
+                      _buildLegend("Cancelled", Colors.red, cancelled),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildLegend(String title, Color color, int count) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 4.0),
+      child: Row(
+        children: [
+          Container(width: 10, height: 10, decoration: BoxDecoration(color: color, shape: BoxShape.circle)),
+          const SizedBox(width: 6),
+          Expanded(child: Text(title, style: TextStyle(fontSize: 11, color: Colors.grey[700]), overflow: TextOverflow.ellipsis)),
+          Text(count.toString(), style: const TextStyle(fontSize: 11, fontWeight: FontWeight.bold)),
         ],
       ),
     );

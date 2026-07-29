@@ -38,23 +38,36 @@ class UserNotifier extends AsyncNotifier<List<UserModel>> {
 
   Future<void> updateUser(UserModel user) async {
     final supabase = ref.read(supabaseClientProvider);
+    final previousState = state.value;
+    
+    // Optimistic UI update
+    if (previousState != null) {
+      state = AsyncData(previousState.map((e) => e.uid == user.uid ? user : e).toList());
+    }
+
     try {
       await supabase.from(AppConstants.usersTable).update(user.toJson()).eq('id', user.uid);
       
       // Log Activity
       final admin = ref.read(authNotifierProvider).value;
       if (admin != null) {
-        await ref.read(activityLogNotifierProvider.notifier).logAction(
-          adminId: admin.uid,
-          adminName: admin.name,
-          action: 'User Updated',
-          targetId: user.name,
-          details: 'User "${user.name}" status or role was changed to ${user.isActive ? "Active" : "Inactive"}.',
-        );
+        try {
+          await ref.read(activityLogNotifierProvider.notifier).logAction(
+            adminId: admin.uid,
+            adminName: admin.name,
+            action: 'User Updated',
+            targetId: user.name,
+            details: 'User "${user.name}" status or role was changed to ${user.isActive ? "Active" : "Inactive"}.',
+          );
+        } catch (_) {
+          // Ignore log action failures
+        }
       }
-      
-      await loadUsers(); // Refresh the list
     } catch (e) {
+      // Revert Optimistic UI update
+      if (previousState != null) {
+        state = AsyncData(previousState);
+      }
       rethrow;
     }
   }
