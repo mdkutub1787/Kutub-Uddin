@@ -66,7 +66,11 @@ class _OrderFeedbackScreenState extends ConsumerState<OrderFeedbackScreen> {
           comment: _riderCommentController.text.trim(),
           createdAt: DateTime.now(),
         );
-        await reviewRepo.addRiderReview(riderReview.toJson());
+        try {
+          await reviewRepo.addRiderReview(riderReview.toJson());
+        } catch (e) {
+          debugPrint('Failed to submit rider review: $e');
+        }
       }
 
       // 2. Submit Product Reviews
@@ -82,7 +86,13 @@ class _OrderFeedbackScreenState extends ConsumerState<OrderFeedbackScreen> {
           comment: _productCommentControllers[pId]?.text.trim() ?? '',
           createdAt: DateTime.now(),
         );
-        await reviewRepo.addReview(review);
+        if (pId.isEmpty) continue; // Skip if productId is empty to avoid UUID errors
+        
+        try {
+          await reviewRepo.addReview(review);
+        } catch (e) {
+          debugPrint('Failed to submit product review for $pId: $e');
+        }
       }
 
       if (mounted) {
@@ -115,17 +125,28 @@ class _OrderFeedbackScreenState extends ConsumerState<OrderFeedbackScreen> {
                   _buildSectionTitle("Rate the Products"),
                   ...widget.order.items.map((item) => _buildProductReviewCard(item.product.id, item.product.name, item.product.imageUrl)).toList(),
                   const SizedBox(height: 32),
-                  SizedBox(
+                  Container(
                     width: double.infinity,
-                    height: 50,
+                    height: 55,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(16),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.teal.withValues(alpha: 0.3),
+                          blurRadius: 12,
+                          offset: const Offset(0, 6),
+                        )
+                      ]
+                    ),
                     child: ElevatedButton(
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.teal,
                         foregroundColor: Colors.white,
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                        elevation: 0,
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
                       ),
                       onPressed: _submitFeedback,
-                      child: const Text("Submit Feedback", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+                      child: const Text("SUBMIT FEEDBACK", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16, letterSpacing: 1.2)),
                     ),
                   ),
                   const SizedBox(height: 32),
@@ -143,11 +164,16 @@ class _OrderFeedbackScreenState extends ConsumerState<OrderFeedbackScreen> {
   }
 
   Widget _buildRiderReviewCard() {
-    return Card(
-      elevation: 2,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(20),
+        boxShadow: [
+          BoxShadow(color: Colors.black.withValues(alpha: 0.04), blurRadius: 15, offset: const Offset(0, 8)),
+        ],
+      ),
       child: Padding(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.all(20),
         child: Column(
           children: [
             Row(
@@ -198,22 +224,27 @@ class _OrderFeedbackScreenState extends ConsumerState<OrderFeedbackScreen> {
   }
 
   Widget _buildProductReviewCard(String pId, String pName, String pImage) {
-    return Card(
-      margin: const EdgeInsets.only(bottom: 16),
-      elevation: 2,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+    return Container(
+      margin: const EdgeInsets.only(bottom: 20),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(20),
+        boxShadow: [
+          BoxShadow(color: Colors.black.withValues(alpha: 0.04), blurRadius: 15, offset: const Offset(0, 8)),
+        ],
+      ),
       child: Padding(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.all(20),
         child: Column(
           children: [
             Row(
               children: [
                 ClipRRect(
-                  borderRadius: BorderRadius.circular(8),
-                  child: Image.network(pImage, width: 50, height: 50, fit: BoxFit.cover, errorBuilder: (_,__,___) => const Icon(Icons.image, size: 50)),
+                  borderRadius: BorderRadius.circular(12),
+                  child: Image.network(pImage, width: 60, height: 60, fit: BoxFit.cover, errorBuilder: (_,__,___) => Container(width: 60, height: 60, color: Colors.grey[100], child: const Icon(Icons.image_outlined, size: 30, color: Colors.grey))),
                 ),
                 const SizedBox(width: 16),
-                Expanded(child: Text(pName, style: const TextStyle(fontWeight: FontWeight.bold))),
+                Expanded(child: Text(pName, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16))),
               ],
             ),
             const SizedBox(height: 16),

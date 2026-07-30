@@ -122,8 +122,9 @@ class MyParcelsScreen extends ConsumerWidget {
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () => Navigator.pushNamed(context, '/create-parcel'),
         backgroundColor: settings.primaryColor,
+        foregroundColor: Colors.white,
         icon: const Icon(Icons.add),
-        label: const Text("Send Parcel"),
+        label: const Text("Send Parcel", style: TextStyle(fontWeight: FontWeight.bold)),
       ),
     );
   }

@@ -93,16 +93,16 @@ class ParcelModel {
       'delivery_address': dropoffAddress,
       'delivery_latitude': dropoffLatitude,
       'delivery_longitude': dropoffLongitude,
-      'delivery_zone_id': deliveryZoneId,
+      'delivery_zone_id': deliveryZoneId.isEmpty ? null : deliveryZoneId,
       'item_description': parcelType,
       'weight_kg': weightKg,
       'delivery_charge': deliveryCharge,
       'status': status,
-      'delivery_man_id': deliveryManId,
+      'delivery_man_id': (deliveryManId == null || deliveryManId!.isEmpty) ? null : deliveryManId,
       'delivery_man_name': deliveryManName,
       'delivery_man_phone': deliveryManPhone,
       'created_at': createdAt.toIso8601String(),
-      'updated_at': updatedAt?.toIso8601String(),
+      'updated_at': updatedAt != null ? updatedAt!.toIso8601String() : DateTime.now().toIso8601String(),
     };
   }
 }
