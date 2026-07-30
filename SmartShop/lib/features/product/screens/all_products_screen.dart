@@ -33,8 +33,8 @@ class AllProductsScreen extends ConsumerWidget {
               padding: const EdgeInsets.all(16),
               gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                 crossAxisCount: 2,
-                childAspectRatio: 0.68,
-                crossAxisSpacing: 16,
+                childAspectRatio: 0.78,
+                crossAxisSpacing: 10,
                 mainAxisSpacing: 16,
               ),
               itemCount: products.length,

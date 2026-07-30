@@ -83,18 +83,22 @@ class OrderNotifier extends AsyncNotifier<List<OrderModel>> {
       if (orderId == null) return false;
 
       for (var item in order.items) {
-        final currentProduct = await client
-            .from(AppConstants.productsTable)
-            .select('stock')
-            .eq('id', item.product.id)
-            .maybeSingle();
-        
-        if (currentProduct != null) {
-          int newStock = (currentProduct['stock'] as int) - item.quantity;
-          await client
+        try {
+          final currentProduct = await client
               .from(AppConstants.productsTable)
-              .update({'stock': newStock})
-              .eq('id', item.product.id);
+              .select('stock')
+              .eq('id', item.product.id)
+              .maybeSingle();
+          
+          if (currentProduct != null) {
+            int newStock = (currentProduct['stock'] as int) - item.quantity;
+            await client
+                .from(AppConstants.productsTable)
+                .update({'stock': newStock})
+                .eq('id', item.product.id);
+          }
+        } catch (e) {
+          print('Error updating stock for product ${item.product.id}: $e');
         }
       }
 
@@ -112,6 +116,7 @@ class OrderNotifier extends AsyncNotifier<List<OrderModel>> {
       await loadOrders();
       return true;
     } catch (e) {
+      print('PlaceOrder Exception: $e');
       return false;
     }
   }

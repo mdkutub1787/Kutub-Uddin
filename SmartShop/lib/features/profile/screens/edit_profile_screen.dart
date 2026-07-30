@@ -75,8 +75,8 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
           'address': _addressController.text.trim(),
           'shopName': _shopNameController.text.trim(),
           'role': user.role,
-          'deliveryZoneId': _selectedZoneId,
-          'deliveryZoneName': _selectedZoneName,
+          'delivery_zone_id': _selectedZoneId,
+          'delivery_zone_name': _selectedZoneName,
         };
         
         if (imageUrl != null) updateData['imageUrl'] = imageUrl;

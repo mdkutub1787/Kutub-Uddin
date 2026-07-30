@@ -44,6 +44,7 @@ class OrderRepository {
           .single();
       return response['id']?.toString();
     } catch (e) {
+      print('Error creating order: $e');
       return null;
     }
   }

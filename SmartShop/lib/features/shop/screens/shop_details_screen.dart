@@ -169,7 +169,7 @@ class _ShopDetailsScreenState extends ConsumerState<ShopDetailsScreen> {
                 : SliverGrid(
                     gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                       crossAxisCount: 2,
-                      childAspectRatio: 0.68, // Matched from previous ProductGrid
+                      childAspectRatio: 0.78,
                       crossAxisSpacing: 10,
                       mainAxisSpacing: 10,
                     ),

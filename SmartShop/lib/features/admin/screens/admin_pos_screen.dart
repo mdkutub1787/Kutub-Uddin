@@ -94,8 +94,8 @@ class _AdminPosScreenState extends ConsumerState<AdminPosScreen> {
                     padding: const EdgeInsets.symmetric(horizontal: 16),
                     gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                       crossAxisCount: 2,
-                      childAspectRatio: 0.68,
-                      crossAxisSpacing: 12,
+                      childAspectRatio: 0.78,
+                      crossAxisSpacing: 16,
                       mainAxisSpacing: 12,
                     ),
                     itemCount: filteredProducts.length,
@@ -269,34 +269,70 @@ class _AdminPosScreenState extends ConsumerState<AdminPosScreen> {
     if (_posCart.isEmpty) return const SizedBox.shrink();
 
     return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: const BoxDecoration(
+      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 20),
+      decoration: BoxDecoration(
         color: Colors.white,
-        boxShadow: [BoxShadow(color: Colors.black12, blurRadius: 10, offset: Offset(0, -5))],
+        borderRadius: const BorderRadius.vertical(top: Radius.circular(30)),
+        boxShadow: [
+          BoxShadow(
+            color: primaryColor.withValues(alpha: 0.15), 
+            blurRadius: 25, 
+            offset: const Offset(0, -5)
+          )
+        ],
       ),
       child: SafeArea(
         child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Column(
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text("${_posCart.length} Items", style: const TextStyle(color: Colors.grey, fontSize: 12, fontWeight: FontWeight.bold)),
-                Text("$currency${_subtotal.toInt()}", style: TextStyle(color: primaryColor, fontSize: 20, fontWeight: FontWeight.w900)),
+                Text(
+                  "Total (${_posCart.length} Items)", 
+                  style: TextStyle(color: Colors.grey[500], fontSize: 13, fontWeight: FontWeight.w600)
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  "$currency${_subtotal.toInt()}", 
+                  style: TextStyle(color: primaryColor, fontSize: 24, fontWeight: FontWeight.w900, letterSpacing: -0.5)
+                ),
               ],
             ),
-            const SizedBox(width: 20),
+            const SizedBox(width: 24),
             Expanded(
-              child: SizedBox(
-                height: 50,
+              child: Container(
+                height: 55,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(16),
+                  boxShadow: [
+                    BoxShadow(color: primaryColor.withValues(alpha: 0.4), blurRadius: 15, offset: const Offset(0, 8))
+                  ],
+                ),
                 child: ElevatedButton(
                   onPressed: () => _showCheckoutSheet(primaryColor, currency),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: primaryColor,
                     foregroundColor: Colors.white,
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                    elevation: 0,
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
                   ),
-                  child: const Text("PROCEED TO CHECKOUT", style: TextStyle(fontWeight: FontWeight.bold, letterSpacing: 1)),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      const Text("CHECKOUT", style: TextStyle(fontWeight: FontWeight.w900, fontSize: 15, letterSpacing: 1.2)),
+                      const SizedBox(width: 8),
+                      Container(
+                        padding: const EdgeInsets.all(4),
+                        decoration: BoxDecoration(
+                          color: Colors.white.withValues(alpha: 0.2),
+                          shape: BoxShape.circle
+                        ),
+                        child: const Icon(Icons.arrow_forward_ios_rounded, size: 14, color: Colors.white),
+                      )
+                    ],
+                  ),
                 ),
               ),
             ),
@@ -318,10 +354,11 @@ class _AdminPosScreenState extends ConsumerState<AdminPosScreen> {
       builder: (context) => StatefulBuilder(
         builder: (ctx, setModalState) => Padding(
           padding: EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom, left: 20, right: 20, top: 20),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
+          child: SingleChildScrollView(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
@@ -371,6 +408,7 @@ class _AdminPosScreenState extends ConsumerState<AdminPosScreen> {
               const SizedBox(height: 30),
             ],
           ),
+        ),
         ),
       ),
     );
