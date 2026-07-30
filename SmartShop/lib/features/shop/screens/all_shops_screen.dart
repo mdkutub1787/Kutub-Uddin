@@ -5,6 +5,7 @@ import '../riverpod/shop_notifier.dart';
 import '../../../widgets/shop_card.dart';
 import '../../../widgets/custom_app_bar.dart';
 import '../../../core/riverpod/settings_notifier.dart';
+import 'package:smart_shop/widgets/custom_loading.dart';
 
 class AllShopsScreen extends ConsumerWidget {
   const AllShopsScreen({super.key});
@@ -34,7 +35,7 @@ class AllShopsScreen extends ConsumerWidget {
             },
           );
         },
-        loading: () => const Center(child: CircularProgressIndicator()),
+        loading: () => const Center(child: CustomLoading()),
         error: (e, st) => Center(child: Text("Error: $e")),
       ),
     );

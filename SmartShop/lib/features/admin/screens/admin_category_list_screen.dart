@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../../core/constants/constants.dart';
+import '../../../widgets/loading_overlay.dart';
 import '../../../core/providers.dart';
 import '../../category/riverpod/category_notifier.dart';
 import '../../auth/riverpod/auth_notifier.dart';
@@ -91,7 +92,6 @@ class _AdminCategoryListScreenState extends ConsumerState<AdminCategoryListScree
   void _showCategoryDialog(BuildContext context, {CategoryModel? category}) {
     final nameController = TextEditingController(text: category?.name ?? '');
     final imageController = TextEditingController(text: category?.imageUrl ?? '');
-    bool isUploading = false;
 
     showModalBottomSheet(
       context: context,
@@ -108,7 +108,7 @@ class _AdminCategoryListScreenState extends ConsumerState<AdminCategoryListScree
                 imageQuality: 80,
               );
               if (pickedFile != null) {
-                setModalState(() => isUploading = true);
+                LoadingOverlay.show(context);
                 final file = File(pickedFile.path);
                 final fileName = 'cat_${DateTime.now().millisecondsSinceEpoch}.jpg';
                 final supabase = ref.read(supabaseClientProvider);
@@ -123,11 +123,11 @@ class _AdminCategoryListScreenState extends ConsumerState<AdminCategoryListScree
                 
                 setModalState(() {
                   imageController.text = publicUrl;
-                  isUploading = false;
                 });
+                LoadingOverlay.hide(context);
               }
             } catch (e) {
-              setModalState(() => isUploading = false);
+              LoadingOverlay.hide(context);
               if (mounted) {
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(content: Text("Upload failed: $e")),
@@ -161,15 +161,9 @@ class _AdminCategoryListScreenState extends ConsumerState<AdminCategoryListScree
                 const SizedBox(height: 20),
                 TextField(
                   controller: imageController,
-                  decoration: InputDecoration(
+                  decoration: const InputDecoration(
                     labelText: "Image URL",
-                    border: const OutlineInputBorder(),
-                    suffixIcon: isUploading 
-                        ? const Padding(
-                            padding: EdgeInsets.all(12.0),
-                            child: CircularProgressIndicator(strokeWidth: 2),
-                          )
-                        : null,
+                    border: OutlineInputBorder(),
                   ),
                 ),
                 const SizedBox(height: 10),
@@ -177,19 +171,19 @@ class _AdminCategoryListScreenState extends ConsumerState<AdminCategoryListScree
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     TextButton.icon(
-                      onPressed: isUploading ? null : () => pickAndUploadImage(ImageSource.camera),
+                      onPressed: () => pickAndUploadImage(ImageSource.camera),
                       icon: const Icon(Icons.camera_alt_rounded),
                       label: const Text("Camera"),
                     ),
                     const SizedBox(width: 20),
                     TextButton.icon(
-                      onPressed: isUploading ? null : () => pickAndUploadImage(ImageSource.gallery),
+                      onPressed: () => pickAndUploadImage(ImageSource.gallery),
                       icon: const Icon(Icons.image_rounded),
                       label: const Text("Gallery"),
                     ),
                   ],
                 ),
-                if (imageController.text.isNotEmpty && !isUploading)
+                if (imageController.text.isNotEmpty)
                   Padding(
                     padding: const EdgeInsets.symmetric(vertical: 10),
                     child: ClipRRect(
@@ -208,7 +202,7 @@ class _AdminCategoryListScreenState extends ConsumerState<AdminCategoryListScree
                   width: double.infinity,
                   height: 55,
                   child: ElevatedButton(
-                    onPressed: isUploading ? null : () async {
+                    onPressed: () async {
                       if (nameController.text.isEmpty) {
                         ScaffoldMessenger.of(context).showSnackBar(
                           const SnackBar(content: Text("Please enter a name")),
@@ -216,23 +210,34 @@ class _AdminCategoryListScreenState extends ConsumerState<AdminCategoryListScree
                         return;
                       }
                       
-                      final authUser = ref.read(authNotifierProvider).value;
-                      final shopId = authUser?.shopId ?? '';
-                      
-                      final newCat = CategoryModel(
-                        id: category?.id ?? '',
-                        shopId: shopId,
-                        name: nameController.text.trim(),
-                        imageUrl: imageController.text.trim(),
-                      );
-                      
-                      if (category == null) {
-                        await ref.read(categoryNotifierProvider.notifier).addCategory(newCat);
-                      } else {
-                        await ref.read(categoryNotifierProvider.notifier).updateCategory(newCat);
+                      LoadingOverlay.show(context);
+                      try {
+                        final authUser = ref.read(authNotifierProvider).value;
+                        final shopId = authUser?.shopId ?? '';
+                        
+                        final newCat = CategoryModel(
+                          id: category?.id ?? '',
+                          shopId: shopId,
+                          name: nameController.text.trim(),
+                          imageUrl: imageController.text.trim(),
+                        );
+                        
+                        if (category == null) {
+                          await ref.read(categoryNotifierProvider.notifier).addCategory(newCat);
+                        } else {
+                          await ref.read(categoryNotifierProvider.notifier).updateCategory(newCat);
+                        }
+                        
+                        if (mounted) {
+                          LoadingOverlay.hide(context);
+                          Navigator.pop(ctx);
+                        }
+                      } catch(e) {
+                        if (mounted) {
+                          LoadingOverlay.hide(context);
+                          ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Error: $e"), backgroundColor: Colors.red));
+                        }
                       }
-                      
-                      if (mounted) Navigator.pop(ctx);
                     },
                     child: Text(category == null ? "SAVE CATEGORY" : "UPDATE CATEGORY"),
                   ),

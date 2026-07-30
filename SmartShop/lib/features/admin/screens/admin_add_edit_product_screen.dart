@@ -11,6 +11,7 @@ import '../../../core/constants/constants.dart';
 import '../../../core/providers.dart';
 import '../../../core/utils/image_optimizer.dart';
 import '../../../core/riverpod/settings_notifier.dart';
+import '../../../widgets/loading_overlay.dart';
 import '../../../widgets/custom_app_bar.dart';
 
 class AdminAddEditProductScreen extends ConsumerStatefulWidget {
@@ -58,7 +59,7 @@ class _AdminAddEditProductScreenState extends ConsumerState<AdminAddEditProductS
       final picker = ImagePicker();
       final XFile? pickedFile = await picker.pickImage(source: source, maxWidth: 800, imageQuality: 80);
       if (pickedFile != null) {
-        setState(() => _isSaving = true);
+        LoadingOverlay.show(context);
         
         File file = File(pickedFile.path);
         
@@ -82,17 +83,17 @@ class _AdminAddEditProductScreenState extends ConsumerState<AdminAddEditProductS
               
           setState(() {
             _imageController.text = publicUrl;
-            _isSaving = false;
           });
           
           if (mounted) {
+            LoadingOverlay.hide(context);
             ScaffoldMessenger.of(context).showSnackBar(
               const SnackBar(content: Text("Image uploaded successfully!")),
             );
           }
         } catch (e) {
-          setState(() => _isSaving = false);
           if (mounted) {
+            LoadingOverlay.hide(context);
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(content: Text("Upload failed. Error: $e")),
             );
@@ -101,7 +102,7 @@ class _AdminAddEditProductScreenState extends ConsumerState<AdminAddEditProductS
       }
     } catch (e) {
       if (mounted) {
-        setState(() => _isSaving = false);
+        LoadingOverlay.hide(context);
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text("Error picking image: $e")),
         );
@@ -261,11 +262,6 @@ class _AdminAddEditProductScreenState extends ConsumerState<AdminAddEditProductS
                   ),
                 ),
               ),
-          if (_isSaving)
-            Container(
-              color: Theme.of(context).scaffoldBackgroundColor.withValues(alpha: 0.7),
-              child: const Center(child: CircularProgressIndicator()),
-            ),
         ],
       ),
     );
@@ -301,7 +297,7 @@ class _AdminAddEditProductScreenState extends ConsumerState<AdminAddEditProductS
 
   void _saveForm() async {
     if (_formKey.currentState!.validate()) {
-      setState(() => _isSaving = true);
+      LoadingOverlay.show(context);
       try {
         final authState = ref.read(authNotifierProvider);
         final shopId = authState.value?.shopId ?? '';
@@ -326,11 +322,15 @@ class _AdminAddEditProductScreenState extends ConsumerState<AdminAddEditProductS
         } else {
           await ref.read(productNotifierProvider.notifier).updateProduct(newProduct);
         }
-        if (mounted) Navigator.pop(context);
+        if (mounted) {
+          LoadingOverlay.hide(context);
+          Navigator.pop(context);
+        }
       } catch (e) {
-        if (mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Error: $e")));
-      } finally {
-        if (mounted) setState(() => _isSaving = false);
+        if (mounted) {
+          LoadingOverlay.hide(context);
+          ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Error: $e")));
+        }
       }
     }
   }

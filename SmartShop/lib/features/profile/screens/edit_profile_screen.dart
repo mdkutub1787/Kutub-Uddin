@@ -7,6 +7,7 @@ import '../../../core/constants/constants.dart';
 import '../../../core/providers.dart';
 import '../../auth/riverpod/auth_notifier.dart';
 import '../../../widgets/custom_app_bar.dart';
+import '../../../widgets/loading_overlay.dart';
 
 class EditProfileScreen extends ConsumerStatefulWidget {
   const EditProfileScreen({super.key});
@@ -17,7 +18,6 @@ class EditProfileScreen extends ConsumerStatefulWidget {
 
 class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
   late TextEditingController _nameController, _phoneController, _addressController, _shopNameController;
-  bool _isSaving = false;
   File? _imageFile;
   final _picker = ImagePicker();
 
@@ -55,7 +55,7 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
 
   Future<void> _updateProfile() async {
     FocusManager.instance.primaryFocus?.unfocus();
-    setState(() => _isSaving = true);
+    LoadingOverlay.show(context);
     try {
       final user = ref.read(authNotifierProvider).value;
       final supabase = ref.read(supabaseClientProvider);
@@ -89,12 +89,18 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
         );
 
         await ref.read(authNotifierProvider.notifier).refreshUserData();
-        if (mounted) Navigator.pop(context);
+        if (mounted) {
+          LoadingOverlay.hide(context);
+          Navigator.pop(context);
+        }
+      } else {
+        if (mounted) LoadingOverlay.hide(context);
       }
     } catch (e) {
-      if (mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Error: $e")));
-    } finally {
-      if (mounted) setState(() => _isSaving = false);
+      if (mounted) {
+        LoadingOverlay.hide(context);
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Error: $e")));
+      }
     }
   }
 
@@ -129,93 +135,91 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
             ),
           ),
           
-          _isSaving 
-            ? const Center(child: CircularProgressIndicator()) 
-            : SingleChildScrollView(
-                padding: const EdgeInsets.symmetric(horizontal: 28, vertical: 20),
-                child: Column(
-                  children: [
-                    // Profile Image Picker
-                    Center(
-                      child: Stack(
-                        children: [
-                          Container(
+          SingleChildScrollView(
+            padding: const EdgeInsets.symmetric(horizontal: 28, vertical: 20),
+            child: Column(
+              children: [
+                // Profile Image Picker
+                Center(
+                  child: Stack(
+                    children: [
+                      Container(
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          border: Border.all(color: primaryColor.withValues(alpha: 0.2), width: 4),
+                        ),
+                        child: CircleAvatar(
+                          radius: 60,
+                          backgroundColor: Colors.grey[200],
+                          backgroundImage: _imageFile != null 
+                            ? FileImage(_imageFile!) 
+                            : (user?.imageUrl != null ? NetworkImage(user!.imageUrl!) : null) as ImageProvider?,
+                          child: _imageFile == null && user?.imageUrl == null 
+                            ? Icon(Icons.person, size: 60, color: Colors.grey[400]) 
+                            : null,
+                        ),
+                      ),
+                      Positioned(
+                        bottom: 0,
+                        right: 0,
+                        child: GestureDetector(
+                          onTap: _pickImage,
+                          child: Container(
+                            padding: const EdgeInsets.all(8),
                             decoration: BoxDecoration(
+                              color: primaryColor,
                               shape: BoxShape.circle,
-                              border: Border.all(color: primaryColor.withValues(alpha: 0.2), width: 4),
+                              boxShadow: [BoxShadow(color: Colors.black26, blurRadius: 10)],
                             ),
-                            child: CircleAvatar(
-                              radius: 60,
-                              backgroundColor: Colors.grey[200],
-                              backgroundImage: _imageFile != null 
-                                ? FileImage(_imageFile!) 
-                                : (user?.imageUrl != null ? NetworkImage(user!.imageUrl!) : null) as ImageProvider?,
-                              child: _imageFile == null && user?.imageUrl == null 
-                                ? Icon(Icons.person, size: 60, color: Colors.grey[400]) 
-                                : null,
-                            ),
+                            child: const Icon(Icons.camera_alt, color: Colors.white, size: 20),
                           ),
-                          Positioned(
-                            bottom: 0,
-                            right: 0,
-                            child: GestureDetector(
-                              onTap: _pickImage,
-                              child: Container(
-                                padding: const EdgeInsets.all(8),
-                                decoration: BoxDecoration(
-                                  color: primaryColor,
-                                  shape: BoxShape.circle,
-                                  boxShadow: [BoxShadow(color: Colors.black26, blurRadius: 10)],
-                                ),
-                                child: const Icon(Icons.camera_alt, color: Colors.white, size: 20),
-                              ),
-                            ),
-                          ),
-                        ],
+                        ),
                       ),
-                    ),
-                    const SizedBox(height: 30),
-                    
-                    _field(_nameController, "Full Name", Icons.person_outline_rounded, autofillHints: [AutofillHints.name]),
-                    const SizedBox(height: 20),
-                    
-                    if (user?.role == 'owner' || user?.role == 'admin' || _shopNameController.text.isNotEmpty) ...[
-                      _field(_shopNameController, "Shop Name", Icons.store_rounded),
-                      const SizedBox(height: 20),
                     ],
-                    
-                    _field(_phoneController, "Phone Number", Icons.phone_android_rounded, keyboardType: TextInputType.phone, autofillHints: [AutofillHints.telephoneNumber]),
-                    const SizedBox(height: 20),
-                    _field(_addressController, "Full Address", Icons.location_on_outlined, lines: 2, autofillHints: [AutofillHints.fullStreetAddress]),
-                    const SizedBox(height: 40),
-                    
-                    SizedBox(
-                      width: double.infinity,
-                      height: 60,
-                      child: ElevatedButton(
-                        onPressed: _updateProfile,
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: primaryColor,
-                          foregroundColor: Colors.white,
-                          elevation: 8,
-                          shadowColor: primaryColor.withValues(alpha: 0.4),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(20),
-                          ),
-                        ),
-                        child: const Text(
-                          "SAVE CHANGES",
-                          style: TextStyle(
-                            fontSize: 18, 
-                            fontWeight: FontWeight.w900,
-                            letterSpacing: 1.2
-                          ),
-                        ),
+                  ),
+                ),
+                const SizedBox(height: 30),
+                
+                _field(_nameController, "Full Name", Icons.person_outline_rounded, autofillHints: [AutofillHints.name]),
+                const SizedBox(height: 20),
+                
+                if (user?.role == 'owner' || user?.role == 'admin' || _shopNameController.text.isNotEmpty) ...[
+                  _field(_shopNameController, "Shop Name", Icons.store_rounded),
+                  const SizedBox(height: 20),
+                ],
+                
+                _field(_phoneController, "Phone Number", Icons.phone_android_rounded, keyboardType: TextInputType.phone, autofillHints: [AutofillHints.telephoneNumber]),
+                const SizedBox(height: 20),
+                _field(_addressController, "Full Address", Icons.location_on_outlined, lines: 2, autofillHints: [AutofillHints.fullStreetAddress]),
+                const SizedBox(height: 40),
+                
+                SizedBox(
+                  width: double.infinity,
+                  height: 60,
+                  child: ElevatedButton(
+                    onPressed: _updateProfile,
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: primaryColor,
+                      foregroundColor: Colors.white,
+                      elevation: 8,
+                      shadowColor: primaryColor.withValues(alpha: 0.4),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(20),
                       ),
                     ),
-                  ],
+                    child: const Text(
+                      "SAVE CHANGES",
+                      style: TextStyle(
+                        fontSize: 18, 
+                        fontWeight: FontWeight.w900,
+                        letterSpacing: 1.2
+                      ),
+                    ),
+                  ),
                 ),
-              ),
+              ],
+            ),
+          ),
         ],
       ),
     );
@@ -234,7 +238,7 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
           )
         ],
       ),
-      child: TextField(
+      child: TextFormField(
         controller: controller,
         maxLines: lines,
         keyboardType: keyboardType,
@@ -243,13 +247,9 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
         decoration: InputDecoration(
           labelText: label,
           prefixIcon: Icon(icon, color: Theme.of(context).primaryColor),
-          border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(20),
-            borderSide: BorderSide.none,
-          ),
-          filled: true,
-          fillColor: Colors.transparent,
-          contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
+          border: InputBorder.none,
+          filled: false,
+          contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 15),
         ),
       ),
     );

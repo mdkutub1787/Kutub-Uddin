@@ -6,6 +6,7 @@ import '../../product/riverpod/product_notifier.dart';
 import '../../../routes/app_routes.dart';
 import '../../../widgets/custom_app_bar.dart';
 import '../../../core/riverpod/settings_notifier.dart';
+import 'package:smart_shop/widgets/custom_loading.dart';
 
 class AllCategoriesScreen extends ConsumerWidget {
   const AllCategoriesScreen({super.key});
@@ -83,7 +84,7 @@ class AllCategoriesScreen extends ConsumerWidget {
             },
           );
         },
-        loading: () => const Center(child: CircularProgressIndicator()),
+        loading: () => const Center(child: CustomLoading()),
         error: (e, st) => Center(child: Text("Error: $e")),
       ),
     );

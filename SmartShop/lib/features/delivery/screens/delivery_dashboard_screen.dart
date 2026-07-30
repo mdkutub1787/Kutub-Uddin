@@ -4,6 +4,7 @@ import 'package:geolocator/geolocator.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 import '../../order/models/order_model.dart';
+import '../../../widgets/loading_overlay.dart';
 import '../../order/riverpod/order_notifier.dart';
 import '../../user/models/user_model.dart';
 import '../../auth/riverpod/auth_notifier.dart';
@@ -14,6 +15,7 @@ import 'rider_map_tracking_screen.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:audioplayers/audioplayers.dart';
 import '../../../routes/app_routes.dart';
+import 'package:smart_shop/widgets/custom_loading.dart';
 
 class DeliveryDashboardScreen extends ConsumerStatefulWidget {
   const DeliveryDashboardScreen({super.key});
@@ -87,7 +89,7 @@ class _DeliveryDashboardScreenState extends ConsumerState<DeliveryDashboardScree
     final currency = settings.currencySymbol;
     final user = authState.value;
 
-    if (user == null) return const Scaffold(body: Center(child: CircularProgressIndicator()));
+    if (user == null) return const Scaffold(body: Center(child: CustomLoading()));
 
     if (user.isAvailable == true && !_isTrackingStarted) {
       _startLocationTracking(user);
@@ -204,7 +206,7 @@ class _DeliveryDashboardScreenState extends ConsumerState<DeliveryDashboardScree
     final availableOrders = ref.watch(availableOrdersProvider);
     return availableOrders.when(
       data: (orders) => orders.isEmpty ? _emptyState("No new requests", "Searching for nearby orders...", Icons.radar_rounded) : ListView.builder(padding: const EdgeInsets.all(16), itemCount: orders.length, itemBuilder: (context, index) => _buildOrderCard(orders[index], primaryColor, true, user, currency)),
-      loading: () => const Center(child: CircularProgressIndicator()),
+      loading: () => const Center(child: CustomLoading()),
       error: (e, _) => Center(child: Text("Error: $e")),
     );
   }
@@ -213,7 +215,7 @@ class _DeliveryDashboardScreenState extends ConsumerState<DeliveryDashboardScree
     final myDeliveries = ref.watch(myDeliveriesProvider(user.uid));
     return myDeliveries.when(
       data: (orders) => orders.isEmpty ? _emptyState("No active deliveries", "Accept an order to start delivering", Icons.delivery_dining_rounded) : ListView.builder(padding: const EdgeInsets.all(16), itemCount: orders.length, itemBuilder: (context, index) => _buildOrderCard(orders[index], primaryColor, false, user, currency)),
-      loading: () => const Center(child: CircularProgressIndicator()),
+      loading: () => const Center(child: CustomLoading()),
       error: (e, _) => Center(child: Text("Error: $e")),
     );
   }
@@ -246,7 +248,20 @@ class _DeliveryDashboardScreenState extends ConsumerState<DeliveryDashboardScree
                 if (isPool)
                   Expanded(
                     child: ElevatedButton(
-                      onPressed: () => ref.read(orderNotifierProvider.notifier).acceptOrder(order, user),
+                      onPressed: () async {
+                        LoadingOverlay.show(context);
+                        try {
+                          await ref.read(orderNotifierProvider.notifier).acceptOrder(order, user);
+                          if (context.mounted) {
+                            LoadingOverlay.hide(context);
+                          }
+                        } catch(e) {
+                          if (context.mounted) {
+                            LoadingOverlay.hide(context);
+                            ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Error accepting order"), backgroundColor: Colors.red));
+                          }
+                        }
+                      },
                       style: ElevatedButton.styleFrom(backgroundColor: primaryColor, foregroundColor: Colors.white, shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)), padding: const EdgeInsets.symmetric(vertical: 14)),
                       child: const Text("ACCEPT REQUEST", style: TextStyle(fontWeight: FontWeight.bold)),
                     ),

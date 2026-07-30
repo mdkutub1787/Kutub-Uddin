@@ -12,6 +12,7 @@ import '../../../widgets/empty_state_widget.dart';
 import 'package:intl/intl.dart';
 import 'order_tracking_screen.dart';
 import 'order_feedback_screen.dart';
+import 'package:smart_shop/widgets/custom_loading.dart';
 
 class MyOrdersScreen extends ConsumerStatefulWidget {
   const MyOrdersScreen({super.key});
@@ -63,7 +64,7 @@ class _MyOrdersScreenState extends ConsumerState<MyOrdersScreen> {
               }
             },
             child: orderState.isLoading && (orderState.value?.isEmpty ?? true)
-                ? const Center(child: CircularProgressIndicator())
+                ? const Center(child: CustomLoading())
                 : (orderState.value?.isEmpty ?? true)
                     ? EmptyStateWidget(
                         icon: Icons.receipt_long_outlined,

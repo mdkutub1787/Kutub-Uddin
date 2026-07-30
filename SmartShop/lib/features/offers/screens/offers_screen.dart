@@ -5,6 +5,7 @@ import '../riverpod/coupon_notifier.dart';
 import '../../../core/riverpod/settings_notifier.dart';
 import '../../../models/coupon_model.dart';
 import 'package:intl/intl.dart';
+import 'package:smart_shop/widgets/custom_loading.dart';
 
 class OffersScreen extends ConsumerStatefulWidget {
   const OffersScreen({super.key});
@@ -48,7 +49,7 @@ class _OffersScreenState extends ConsumerState<OffersScreen> {
                   return _buildCouponCard(context, ref, coupon, settings, isApplied, canApply, currency);
                 },
               ),
-        loading: () => const Center(child: CircularProgressIndicator()),
+        loading: () => const Center(child: CustomLoading()),
         error: (e, st) => Center(child: Text("Error: $e")),
       ),
     );

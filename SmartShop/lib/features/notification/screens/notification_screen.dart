@@ -8,6 +8,7 @@ import '../../auth/riverpod/auth_notifier.dart';
 import '../../../core/app_strings.dart';
 import '../../../routes/app_routes.dart';
 import '../../support/screens/support_screen.dart';
+import 'package:smart_shop/widgets/custom_loading.dart';
 
 class NotificationScreen extends ConsumerStatefulWidget {
   const NotificationScreen({super.key});
@@ -155,7 +156,7 @@ class _NotificationScreenState extends ConsumerState<NotificationScreen> with Si
                 },
               ),
             ),
-      loading: () => const Center(child: CircularProgressIndicator()),
+      loading: () => const Center(child: CustomLoading()),
       error: (e, st) => Center(child: Text("Error: $e")),
     );
   }

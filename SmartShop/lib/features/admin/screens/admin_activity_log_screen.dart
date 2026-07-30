@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 import '../../admin/riverpod/activity_log_notifier.dart';
 import '../../../widgets/custom_app_bar.dart';
+import 'package:smart_shop/widgets/custom_loading.dart';
 
 class AdminActivityLogScreen extends ConsumerStatefulWidget {
   const AdminActivityLogScreen({super.key});
@@ -74,7 +75,7 @@ class _AdminActivityLogScreenState extends ConsumerState<AdminActivityLogScreen>
                   },
                 ),
               ),
-        loading: () => const Center(child: CircularProgressIndicator()),
+        loading: () => const Center(child: CustomLoading()),
         error: (e, st) => Center(child: Text("Error: $e")),
       ),
     );

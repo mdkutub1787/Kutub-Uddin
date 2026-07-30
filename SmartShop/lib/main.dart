@@ -15,6 +15,7 @@ import 'services/notification_service.dart';
 import 'services/push_notification_service.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
+import './widgets/custom_loading.dart';
 
 final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
@@ -140,10 +141,7 @@ class MyApp extends ConsumerWidget {
                       child: Column(
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          CircularProgressIndicator(
-                            color: settings.primaryColor,
-                            strokeWidth: 4,
-                          ),
+                          CustomLoading(),
                           if (loading.message.isNotEmpty) ...[
                             const SizedBox(height: 20),
                             Material(

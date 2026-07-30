@@ -14,6 +14,7 @@ import '../../../widgets/custom_app_bar.dart';
 import '../../../widgets/app_card.dart';
 import '../../../theme/app_colors.dart';
 import '../../../core/riverpod/navigation_notifier.dart';
+import '../../../widgets/loading_overlay.dart';
 
 class ProfileScreen extends ConsumerWidget {
   const ProfileScreen({super.key});
@@ -170,9 +171,18 @@ class ProfileScreen extends ConsumerWidget {
                     child: ElevatedButton(
                       onPressed: () async {
                         Navigator.pop(ctx);
-                        await ref.read(authNotifierProvider.notifier).signOut();
-                        if (context.mounted) {
-                          Navigator.pushNamedAndRemoveUntil(context, AppRoutes.login, (route) => false);
+                        LoadingOverlay.show(context);
+                        try {
+                          await ref.read(authNotifierProvider.notifier).signOut();
+                          if (context.mounted) {
+                            LoadingOverlay.hide(context);
+                            Navigator.pushNamedAndRemoveUntil(context, AppRoutes.login, (route) => false);
+                          }
+                        } catch (e) {
+                          if (context.mounted) {
+                            LoadingOverlay.hide(context);
+                            ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Error: $e")));
+                          }
                         }
                       },
                       style: ElevatedButton.styleFrom(

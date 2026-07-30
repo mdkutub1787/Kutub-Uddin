@@ -4,6 +4,7 @@ import '../../auth/riverpod/auth_notifier.dart';
 import '../../../core/riverpod/settings_notifier.dart';
 import '../../../core/app_strings.dart';
 import 'package:easy_localization/easy_localization.dart';
+import '../../../widgets/loading_overlay.dart';
 
 class AdminVerificationScreen extends ConsumerStatefulWidget {
   const AdminVerificationScreen({super.key});
@@ -30,15 +31,24 @@ class _AdminVerificationScreenState extends ConsumerState<AdminVerificationScree
       return;
     }
 
-    final success = await ref.read(authNotifierProvider.notifier).requestAdminAccess(adminCode);
+    LoadingOverlay.show(context);
+    try {
+      final success = await ref.read(authNotifierProvider.notifier).requestAdminAccess(adminCode);
 
-    if (mounted) {
-      if (success) {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(AppStrings.adminAccessGranted.tr())));
-        Navigator.pop(context, true);
-      } else {
-        final error = ref.read(authNotifierProvider.notifier).error;
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(error ?? 'Invalid code')));
+      if (mounted) {
+        LoadingOverlay.hide(context);
+        if (success) {
+          ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(AppStrings.adminAccessGranted.tr())));
+          Navigator.pop(context, true);
+        } else {
+          final error = ref.read(authNotifierProvider.notifier).error;
+          ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(error ?? 'Invalid code')));
+        }
+      }
+    } catch(e) {
+      if (mounted) {
+        LoadingOverlay.hide(context);
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Error: $e")));
       }
     }
   }
@@ -163,7 +173,7 @@ class _AdminVerificationScreenState extends ConsumerState<AdminVerificationScree
                     width: double.infinity,
                     height: 60,
                     child: ElevatedButton(
-                      onPressed: authState.isLoading ? null : () => _submitAdminCode(context),
+                      onPressed: () => _submitAdminCode(context),
                       style: ElevatedButton.styleFrom(
                         backgroundColor: primaryColor,
                         foregroundColor: Colors.white,
@@ -173,20 +183,14 @@ class _AdminVerificationScreenState extends ConsumerState<AdminVerificationScree
                           borderRadius: BorderRadius.circular(20),
                         ),
                       ),
-                      child: authState.isLoading 
-                        ? const SizedBox(
-                            height: 24,
-                            width: 24,
-                            child: CircularProgressIndicator(color: Colors.white, strokeWidth: 3),
-                          )
-                        : const Text(
-                            "VERIFY CODE",
-                            style: TextStyle(
-                              fontSize: 18, 
-                              fontWeight: FontWeight.w900,
-                              letterSpacing: 1.2
-                            ),
-                          ),
+                      child: const Text(
+                        "VERIFY CODE",
+                        style: TextStyle(
+                          fontSize: 18, 
+                          fontWeight: FontWeight.w900,
+                          letterSpacing: 1.2
+                        ),
+                      ),
                     ),
                   ),
                 ],

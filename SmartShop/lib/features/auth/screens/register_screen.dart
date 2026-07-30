@@ -10,6 +10,7 @@ import '../../../theme/app_colors.dart';
 import '../../../core/app_strings.dart';
 import '../../../routes/app_routes.dart';
 import '../../../core/widgets/curved_header.dart';
+import '../../../widgets/loading_overlay.dart';
 
 class RegisterScreen extends ConsumerStatefulWidget {
   const RegisterScreen({super.key});
@@ -234,9 +235,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                                   borderRadius: BorderRadius.circular(30),
                                 ),
                               ),
-                              child: isLoading
-                                  ? const CircularProgressIndicator(color: Colors.white)
-                                  : const Text(
+                              child: const Text(
                                       "Create Account", 
                                       style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold)
                                     ),
@@ -362,6 +361,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
     }
 
     try {
+      LoadingOverlay.show(context);
       final Map<String, dynamic> metadata = {
         'full_name': _nameController.text.trim(),
         'phone_number': _phoneController.text.trim(),
@@ -396,9 +396,13 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
         metadata,
       );
       
-      if (!mounted) return;
+      if (!mounted) {
+        LoadingOverlay.hide(context);
+        return;
+      }
       TextInput.finishAutofillContext();
       
+      if (context.mounted) LoadingOverlay.hide(context);
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text("Account created successfully! Please login."),
@@ -411,6 +415,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
 
     } on AuthException catch (e) {
       if (!mounted) return;
+      LoadingOverlay.hide(context);
       String msg = e.message;
       if (msg.toLowerCase().contains('already registered') || e.code == 'user_already_exists') {
         msg = "This email is already registered! Please login.";
@@ -418,6 +423,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(msg), backgroundColor: AppColors.error, behavior: SnackBarBehavior.floating));
     } catch (e) {
       if (!mounted) return;
+      LoadingOverlay.hide(context);
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(AppStrings.registrationFailed.tr(args: [e.toString()])), backgroundColor: AppColors.error, behavior: SnackBarBehavior.floating));
     }
   }

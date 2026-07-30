@@ -10,6 +10,7 @@ import '../../auth/riverpod/auth_notifier.dart';
 import '../../../core/riverpod/settings_notifier.dart';
 import '../../../models/support_ticket_model.dart';
 import '../../../core/app_strings.dart';
+import 'package:smart_shop/widgets/custom_loading.dart';
 
 class SupportScreen extends ConsumerStatefulWidget {
   final bool isEmbedded;
@@ -50,7 +51,7 @@ class _SupportScreenState extends ConsumerState<SupportScreen> {
         data: (data) => isAdmin 
           ? _buildAdminTicketList(data)
           : _buildChatInterface(data, authState.value, settings),
-        loading: () => const Center(child: CircularProgressIndicator()),
+        loading: () => const Center(child: CustomLoading()),
         error: (e, st) => Center(child: Text(e.toString())),
       ),
     );
@@ -322,7 +323,7 @@ class _AdminChatDetailState extends ConsumerState<AdminChatDetail> {
         stream: _messagesStream,
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(child: CircularProgressIndicator());
+            return const Center(child: CustomLoading());
           }
           if (snapshot.hasError) {
             return Center(child: Text(snapshot.error.toString()));

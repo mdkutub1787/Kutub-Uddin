@@ -8,6 +8,7 @@ import '../../../models/review_model.dart';
 import '../../delivery/models/rider_review_model.dart';
 import '../../../core/providers.dart';
 import '../../auth/riverpod/auth_notifier.dart';
+import '../../../widgets/loading_overlay.dart';
 
 
 class OrderFeedbackScreen extends ConsumerStatefulWidget {
@@ -25,8 +26,6 @@ class _OrderFeedbackScreenState extends ConsumerState<OrderFeedbackScreen> {
   // Product Ratings {productId: rating}
   final Map<String, double> _productRatings = {};
   final Map<String, TextEditingController> _productCommentControllers = {};
-
-  bool _isSubmitting = false;
 
   @override
   void initState() {
@@ -47,13 +46,13 @@ class _OrderFeedbackScreenState extends ConsumerState<OrderFeedbackScreen> {
   }
 
   Future<void> _submitFeedback() async {
-    setState(() => _isSubmitting = true);
     final user = ref.read(authNotifierProvider).value;
     if (user == null) return;
 
     final reviewRepo = ReviewRepository(ref.read(supabaseClientProvider));
 
     try {
+      LoadingOverlay.show(context);
       // 1. Submit Rider Review
       if (widget.order.deliveryManId != null) {
         final riderReview = RiderReviewModel(
@@ -87,15 +86,15 @@ class _OrderFeedbackScreenState extends ConsumerState<OrderFeedbackScreen> {
       }
 
       if (mounted) {
+        LoadingOverlay.hide(context);
         ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Thank you for your feedback!'), backgroundColor: Colors.green));
         Navigator.pop(context);
       }
     } catch (e) {
       if (mounted) {
+        LoadingOverlay.hide(context);
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Failed to submit: $e'), backgroundColor: Colors.red));
       }
-    } finally {
-      if (mounted) setState(() => _isSubmitting = false);
     }
   }
 
@@ -103,9 +102,7 @@ class _OrderFeedbackScreenState extends ConsumerState<OrderFeedbackScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: const Text("Order Feedback")),
-      body: _isSubmitting 
-          ? const Center(child: CircularProgressIndicator())
-          : SingleChildScrollView(
+      body: SingleChildScrollView(
               padding: const EdgeInsets.all(16),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,

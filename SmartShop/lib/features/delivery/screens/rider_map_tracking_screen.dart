@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:geolocator/geolocator.dart';
 import '../../order/models/order_model.dart';
 import '../../order/riverpod/order_notifier.dart';
+import 'package:smart_shop/widgets/custom_loading.dart';
 
 class RiderMapTrackingScreen extends ConsumerStatefulWidget {
   final OrderModel order;
@@ -64,7 +65,7 @@ class _RiderMapTrackingScreenState extends ConsumerState<RiderMapTrackingScreen>
         foregroundColor: Colors.white,
       ),
       body: _currentPosition == null
-          ? const Center(child: CircularProgressIndicator())
+          ? const Center(child: CustomLoading())
           : GoogleMap(
               initialCameraPosition: CameraPosition(
                 target: LatLng(_currentPosition!.latitude, _currentPosition!.longitude),

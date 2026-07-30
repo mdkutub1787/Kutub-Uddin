@@ -6,6 +6,7 @@ import '../../../widgets/product_list_item.dart';
 import '../../../widgets/custom_app_bar.dart';
 import '../../../widgets/empty_state_widget.dart';
 import '../../../core/riverpod/navigation_notifier.dart';
+import 'package:smart_shop/widgets/custom_loading.dart';
 
 class WishlistScreen extends ConsumerWidget {
   const WishlistScreen({super.key});
@@ -43,7 +44,7 @@ class WishlistScreen extends ConsumerWidget {
             },
           );
         },
-        loading: () => const Center(child: CircularProgressIndicator()),
+        loading: () => const Center(child: CustomLoading()),
         error: (e, st) => Center(child: Text("Error: $e")),
       ),
     );

@@ -9,6 +9,7 @@ import '../../../routes/app_routes.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:intl/intl.dart';
 import '../riverpod/review_provider.dart';
+import 'package:smart_shop/widgets/custom_loading.dart';
 
 class ProductDetailsScreen extends ConsumerStatefulWidget {
   final ProductModel product;
@@ -199,7 +200,7 @@ class _ProductDetailsScreenState extends ConsumerState<ProductDetailsScreen> {
                                 )).toList(),
                               );
                             },
-                            loading: () => const Center(child: CircularProgressIndicator()),
+                            loading: () => const Center(child: CustomLoading()),
                             error: (e, _) => Text("Failed to load reviews", style: TextStyle(color: Colors.red[300])),
                           );
                         },

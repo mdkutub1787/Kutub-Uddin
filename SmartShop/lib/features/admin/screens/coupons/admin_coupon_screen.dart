@@ -9,6 +9,8 @@ import '../../../../widgets/custom_app_bar.dart';
 import '../../../../core/riverpod/settings_notifier.dart';
 import '../../../auth/riverpod/auth_notifier.dart';
 import '../../../../core/riverpod/admin_shop_filter_notifier.dart';
+import 'package:smart_shop/widgets/custom_loading.dart';
+import '../../../../widgets/loading_overlay.dart';
 
 class AdminCouponScreen extends ConsumerStatefulWidget {
   const AdminCouponScreen({super.key});
@@ -82,30 +84,41 @@ class _AdminCouponScreenState extends ConsumerState<AdminCouponScreen> {
         actions: [
           TextButton(onPressed: () => Navigator.pop(ctx), child: const Text("CANCEL")),
           ElevatedButton(onPressed: () async {
-            final user = ref.read(authNotifierProvider).value;
-            final adminShopId = ref.read(adminShopFilterProvider);
-            
-            String? targetShopId;
-            if (user?.role == 'owner') {
-              targetShopId = user?.shopId;
-            } else if (user?.role == 'admin' || user?.role == 'super_admin') {
-              targetShopId = adminShopId;
-            }
+            LoadingOverlay.show(context);
+            try {
+              final user = ref.read(authNotifierProvider).value;
+              final adminShopId = ref.read(adminShopFilterProvider);
+              
+              String? targetShopId;
+              if (user?.role == 'owner') {
+                targetShopId = user?.shopId;
+              } else if (user?.role == 'admin' || user?.role == 'super_admin') {
+                targetShopId = adminShopId;
+              }
 
-            final supabase = ref.read(supabaseClientProvider);
-            await supabase.from(AppConstants.couponsTable).insert({
-              'code': codeCtrl.text.toUpperCase(),
-              'title': 'Special Offer',
-              'description': 'Enjoy a special discount',
-              'discountValue': double.parse(discCtrl.text),
-              'type': 'percentage',
-              'minPurchase': 500,
-              'expiryDate': DateTime.now().add(const Duration(days: 30)).toIso8601String(),
-              'isActive': true,
-              if (targetShopId != null) 'shopId': targetShopId,
-            });
-            ref.read(couponNotifierProvider.notifier).loadCoupons();
-            if (mounted) Navigator.pop(ctx);
+              final supabase = ref.read(supabaseClientProvider);
+              await supabase.from(AppConstants.couponsTable).insert({
+                'code': codeCtrl.text.toUpperCase(),
+                'title': 'Special Offer',
+                'description': 'Enjoy a special discount',
+                'discountValue': double.parse(discCtrl.text),
+                'type': 'percentage',
+                'minPurchase': 500,
+                'expiryDate': DateTime.now().add(const Duration(days: 30)).toIso8601String(),
+                'isActive': true,
+                if (targetShopId != null) 'shopId': targetShopId,
+              });
+              ref.read(couponNotifierProvider.notifier).loadCoupons();
+              if (mounted) {
+                LoadingOverlay.hide(context);
+                Navigator.pop(ctx);
+              }
+            } catch(e) {
+              if (mounted) {
+                LoadingOverlay.hide(context);
+                ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Error: $e")));
+              }
+            }
           }, child: const Text("SAVE")),
         ],
       ),

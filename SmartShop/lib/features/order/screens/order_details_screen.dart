@@ -9,6 +9,7 @@ import '../../admin/riverpod/activity_log_notifier.dart';
 import '../../order/repositories/order_repository.dart';
 import '../../../core/app_strings.dart';
 import '../../../core/services/pdf_service.dart';
+import '../../../widgets/loading_overlay.dart';
 import 'package:easy_localization/easy_localization.dart';
 import '../../../widgets/custom_app_bar.dart';
 
@@ -188,10 +189,19 @@ class OrderDetailsScreen extends ConsumerWidget {
   }
 
   Future<void> _updateStatus(BuildContext context, String newStatus, WidgetRef ref, dynamic auth) async {
-    await ref.read(orderNotifierProvider.notifier).updateOrderStatus(order.id, newStatus);
-    if (context.mounted && auth != null) {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Order status updated to $newStatus")));
-      Navigator.pop(context);
+    LoadingOverlay.show(context);
+    try {
+      await ref.read(orderNotifierProvider.notifier).updateOrderStatus(order.id, newStatus);
+      if (context.mounted && auth != null) {
+        LoadingOverlay.hide(context);
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Order status updated to $newStatus")));
+        Navigator.pop(context);
+      }
+    } catch(e) {
+      if (context.mounted) {
+        LoadingOverlay.hide(context);
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Error updating status"), backgroundColor: Colors.red));
+      }
     }
   }
 
@@ -205,11 +215,20 @@ class OrderDetailsScreen extends ConsumerWidget {
           TextButton(onPressed: () => Navigator.pop(ctx), child: const Text("CANCEL")),
           TextButton(
             onPressed: () async {
-              await ref.read(orderNotifierProvider.notifier).deleteOrder(order.id);
-              if (context.mounted && auth != null) {
-                Navigator.pop(ctx);
-                Navigator.pop(context);
-                ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Order deleted permanently")));
+              Navigator.pop(ctx);
+              LoadingOverlay.show(context);
+              try {
+                await ref.read(orderNotifierProvider.notifier).deleteOrder(order.id);
+                if (context.mounted && auth != null) {
+                  LoadingOverlay.hide(context);
+                  Navigator.pop(context);
+                  ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Order deleted permanently")));
+                }
+              } catch(e) {
+                if (context.mounted) {
+                  LoadingOverlay.hide(context);
+                  ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Error deleting order", style: TextStyle(color: Colors.white)), backgroundColor: Colors.red));
+                }
               }
             },
             child: const Text("DELETE", style: TextStyle(color: Colors.red)),
@@ -321,6 +340,42 @@ class OrderDetailsScreen extends ConsumerWidget {
   }
 
   void _showCancelDialog(BuildContext context, WidgetRef ref) {
-    showDialog(context: context, builder: (ctx) => AlertDialog(title: Text(AppStrings.cancelConfirmTitle.tr()), content: Text(AppStrings.cancelConfirmMsg.tr()), actions: [TextButton(onPressed: () => Navigator.pop(ctx), child: Text(AppStrings.no.tr())), TextButton(onPressed: () async { await ref.read(orderNotifierProvider.notifier).cancelOrder(order); if (context.mounted) { Navigator.pop(ctx); Navigator.pop(context); ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(AppStrings.cancelSuccess.tr()))); } }, child: Text(AppStrings.yesCancel.tr(), style: const TextStyle(color: Colors.red)))]));
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: Text(AppStrings.cancelConfirmTitle.tr()),
+        content: Text(AppStrings.cancelConfirmMsg.tr()),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx),
+            child: Text(AppStrings.no.tr()),
+          ),
+          TextButton(
+            onPressed: () async {
+              Navigator.pop(ctx); // Close dialog first
+              LoadingOverlay.show(context);
+              try {
+                await ref.read(orderNotifierProvider.notifier).cancelOrder(order);
+                if (context.mounted) {
+                  LoadingOverlay.hide(context);
+                  Navigator.pop(context); // Go back from details
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text(AppStrings.cancelSuccess.tr())),
+                  );
+                }
+              } catch(e) {
+                if (context.mounted) {
+                  LoadingOverlay.hide(context);
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text("Error cancelling order")),
+                  );
+                }
+              }
+            },
+            child: Text(AppStrings.yesCancel.tr(), style: const TextStyle(color: Colors.red)),
+          )
+        ],
+      ),
+    );
   }
 }

@@ -9,6 +9,7 @@ import '../../../core/app_strings.dart';
 import '../../../widgets/custom_app_bar.dart';
 import '../../auth/riverpod/auth_notifier.dart';
 import '../../../core/riverpod/settings_notifier.dart';
+import 'package:smart_shop/widgets/custom_loading.dart';
 
 class AdminAnalyticsScreen extends ConsumerWidget { 
   const AdminAnalyticsScreen({super.key});
@@ -143,7 +144,7 @@ class AdminAnalyticsScreen extends ConsumerWidget {
     final orderState = ref.watch(orderNotifierProvider);
     
     if (orderState.isLoading) {
-      return const Center(child: CircularProgressIndicator());
+      return const Center(child: CustomLoading());
     }
     
     final allOrders = orderState.value ?? [];
@@ -198,7 +199,7 @@ class AdminAnalyticsScreen extends ConsumerWidget {
     final orderState = ref.watch(orderNotifierProvider);
     
     if (orderState.isLoading) {
-      return const Center(child: CircularProgressIndicator());
+      return const Center(child: CustomLoading());
     }
 
     final allOrders = orderState.value ?? [];

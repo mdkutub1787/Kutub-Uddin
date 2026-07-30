@@ -14,6 +14,7 @@ import '../../../core/app_strings.dart';
 import '../../../routes/app_routes.dart';
 import '../../../core/constants/constants.dart';
 import '../../../core/providers.dart';
+import '../../../widgets/loading_overlay.dart';
 import '../../../widgets/custom_app_bar.dart';
 import '../../../widgets/empty_state_widget.dart';
 import '../../../widgets/product_list_item.dart';
@@ -347,8 +348,20 @@ class _CartScreenState extends ConsumerState<CartScreen> {
               suffixIcon: TextButton(
                 onPressed: () async {
                   if (_couponController.text.isEmpty) return;
-                  String res = await ref.read(cartNotifierProvider.notifier).applyCoupon(_couponController.text.trim());
-                  ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(res == 'Success' ? "Coupon Applied!" : res), backgroundColor: res == 'Success' ? Colors.green : Colors.red));
+                  FocusScope.of(context).unfocus();
+                  LoadingOverlay.show(context);
+                  try {
+                    String res = await ref.read(cartNotifierProvider.notifier).applyCoupon(_couponController.text.trim());
+                    if (context.mounted) {
+                      LoadingOverlay.hide(context);
+                      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(res == 'Success' ? "Coupon Applied!" : res), backgroundColor: res == 'Success' ? Colors.green : Colors.red));
+                    }
+                  } catch(e) {
+                    if (context.mounted) {
+                      LoadingOverlay.hide(context);
+                      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Error applying coupon"), backgroundColor: Colors.red));
+                    }
+                  }
                 },
                 child: const Text("Apply"),
               ),

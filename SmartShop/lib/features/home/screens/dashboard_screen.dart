@@ -24,6 +24,7 @@ import '../../../widgets/shop_card.dart';
 import '../../../widgets/shimmer_loading.dart';
 import '../../../theme/app_colors.dart';
 import '../../shop/riverpod/shop_notifier.dart';
+import 'package:smart_shop/widgets/custom_loading.dart';
 
 class DashboardScreen extends ConsumerWidget {
   const DashboardScreen({super.key});
@@ -469,7 +470,7 @@ class DashboardScreen extends ConsumerWidget {
           ),
         );
       },
-      loading: () => const SizedBox(height: 160, child: Center(child: CircularProgressIndicator())),
+      loading: () => const SizedBox(height: 160, child: Center(child: CustomLoading())),
       error: (e, st) => _buildStaticBanner(context),
     );
   }
@@ -573,7 +574,7 @@ class DashboardScreen extends ConsumerWidget {
           ),
         );
       },
-      loading: () => const SizedBox(height: 215, child: Center(child: CircularProgressIndicator())),
+      loading: () => const SizedBox(height: 215, child: Center(child: CustomLoading())),
       error: (error, stack) => SizedBox(
         height: 215,
         child: Center(

@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../shop/riverpod/shop_notifier.dart';
 import '../../../core/riverpod/admin_shop_filter_notifier.dart';
 import '../../../core/riverpod/settings_notifier.dart';
+import 'package:smart_shop/widgets/custom_loading.dart';
 
 class AdminShopListScreen extends ConsumerWidget {
   const AdminShopListScreen({super.key});
@@ -69,7 +70,7 @@ class AdminShopListScreen extends ConsumerWidget {
             ),
           );
         },
-        loading: () => Center(child: CircularProgressIndicator(color: settings.primaryColor)),
+        loading: () => const Center(child: CustomLoading()),
         error: (err, stack) => Center(child: Text("Failed to load shops", style: TextStyle(color: Colors.red[300]))),
       ),
     );

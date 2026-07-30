@@ -12,6 +12,7 @@ import '../../order/services/pdf_invoice_service.dart';
 import 'admin_invoice_preview_screen.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../../order/screens/order_tracking_screen.dart';
+import 'package:smart_shop/widgets/custom_loading.dart';
 
 class AdminOrderListScreen extends ConsumerStatefulWidget {
   const AdminOrderListScreen({super.key});
@@ -129,7 +130,7 @@ class _AdminOrderListScreenState extends ConsumerState<AdminOrderListScreen> wit
         ),
       ),
       body: isLoading && allOrders.isEmpty
-          ? const Center(child: CircularProgressIndicator())
+          ? const Center(child: CustomLoading())
           : allOrders.isEmpty
               ? _emptyState()
               : TabBarView(
@@ -177,7 +178,7 @@ class _AdminOrderListScreenState extends ConsumerState<AdminOrderListScreen> wit
               child: Consumer(
                 builder: (context, ref, child) {
                   final userState = ref.watch(userNotifierProvider);
-                  if (userState.isLoading) return const Center(child: CircularProgressIndicator());
+                  if (userState.isLoading) return const Center(child: CustomLoading());
                   
                   final users = userState.value ?? [];
                   final deliveryMen = users.where((u) => u.role == 'delivery_man' && u.isActive).toList();

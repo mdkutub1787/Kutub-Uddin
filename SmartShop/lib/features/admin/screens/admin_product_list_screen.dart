@@ -9,6 +9,7 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:smart_shop/core/app_strings.dart';
 import 'admin_add_edit_product_screen.dart';
 import 'package:smart_shop/theme/app_colors.dart';
+import 'package:smart_shop/widgets/custom_loading.dart';
 
 class AdminProductListScreen extends ConsumerWidget {
   const AdminProductListScreen({super.key});
@@ -26,7 +27,7 @@ class AdminProductListScreen extends ConsumerWidget {
         title: "Product Management",
       ),
       body: isLoading && products.isEmpty
-          ? const Center(child: CircularProgressIndicator())
+          ? const Center(child: CustomLoading())
           : Column(
               children: [
                 _buildHeader(context, products.length),

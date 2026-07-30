@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:smart_shop/widgets/custom_loading.dart';
 
 class RiderGlobalMapScreen extends ConsumerStatefulWidget {
   const RiderGlobalMapScreen({super.key});
@@ -53,7 +54,7 @@ class _RiderGlobalMapScreenState extends ConsumerState<RiderGlobalMapScreen> {
         centerTitle: true,
       ),
       body: _currentPosition == null
-          ? const Center(child: CircularProgressIndicator())
+          ? const Center(child: CustomLoading())
           : GoogleMap(
               initialCameraPosition: CameraPosition(
                 target: LatLng(_currentPosition!.latitude, _currentPosition!.longitude),
