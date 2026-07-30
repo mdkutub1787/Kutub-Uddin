@@ -24,11 +24,19 @@ class ActivityLogModel {
       'action': action,
       'targetId': targetId,
       'details': details,
-      'timestamp': timestamp.millisecondsSinceEpoch,
+      'timestamp': timestamp.toIso8601String(),
     };
   }
 
   factory ActivityLogModel.fromMap(Map<dynamic, dynamic> map, String id) {
+    DateTime parsedTimestamp = DateTime.now();
+    if (map['timestamp'] != null) {
+      if (map['timestamp'] is int) {
+        parsedTimestamp = DateTime.fromMillisecondsSinceEpoch(map['timestamp']);
+      } else if (map['timestamp'] is String) {
+        parsedTimestamp = DateTime.parse(map['timestamp']);
+      }
+    }
     return ActivityLogModel(
       id: id,
       adminId: map['adminId'] ?? '',
@@ -36,7 +44,7 @@ class ActivityLogModel {
       action: map['action'] ?? '',
       targetId: map['targetId'] ?? '',
       details: map['details'] ?? '',
-      timestamp: DateTime.fromMillisecondsSinceEpoch(map['timestamp'] ?? DateTime.now().millisecondsSinceEpoch),
+      timestamp: parsedTimestamp,
     );
   }
 }

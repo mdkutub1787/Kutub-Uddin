@@ -25,6 +25,9 @@ import '../models/shop_model.dart';
 import '../features/product/models/product_model.dart';
 import '../features/order/models/order_model.dart';
 import '../models/notification_model.dart';
+import '../features/admin/screens/admin_zone_management_screen.dart';
+import '../features/parcel/screens/create_parcel_screen.dart';
+import '../features/parcel/screens/my_parcels_screen.dart';
 
 import '../features/splash/screens/splash_screen.dart';
 import '../features/splash/screens/onboarding_screen.dart';
@@ -53,6 +56,9 @@ class AppRoutes {
   static const String notificationDetails = '/notification-details';
   static const String support = '/support';
   static const String shopDetails = '/shop-details';
+  static const String adminZoneManagement = '/admin-zone-management';
+  static const String createParcel = '/create-parcel';
+  static const String myParcels = '/my-parcels';
 
   static Route<dynamic> generateRoute(RouteSettings settings) {
     switch (settings.name) {
@@ -86,6 +92,12 @@ class AppRoutes {
         return MaterialPageRoute(builder: (_) => const EditProfileScreen());
       case adminDashboard:
         return MaterialPageRoute(builder: (_) => const AdminDashboardScreen());
+      case adminZoneManagement:
+        return MaterialPageRoute(builder: (_) => const AdminZoneManagementScreen());
+      case createParcel:
+        return MaterialPageRoute(builder: (_) => const CreateParcelScreen());
+      case myParcels:
+        return MaterialPageRoute(builder: (_) => const MyParcelsScreen());
       case deliveryDashboard:
         return MaterialPageRoute(builder: (_) => const DeliveryMainScreen());
       case offers:

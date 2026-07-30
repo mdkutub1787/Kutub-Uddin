@@ -1,3 +1,5 @@
+import '../../delivery/models/delivery_zone_model.dart';
+import '../../delivery/riverpod/zone_notifier.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:easy_localization/easy_localization.dart';
@@ -88,7 +90,7 @@ class _CartScreenState extends ConsumerState<CartScreen> {
           if (cartItems.isNotEmpty)
             Positioned(
               bottom: 0, left: 0, right: 0,
-              child: _buildFloatingCheckoutDock(context, cartItems, cart.totalAmount, cart.deliveryFee, settings, currency),
+              child: _buildFloatingCheckoutDock(context, cartItems, cart.totalAmount, cart.deliveryFee, settings, currency, cart),
             ),
         ],
       ),
@@ -129,7 +131,7 @@ class _CartScreenState extends ConsumerState<CartScreen> {
     return Expanded(child: Container(height: 2, margin: const EdgeInsets.only(left: 8, right: 8, bottom: 15), color: isActive ? settings.primaryColor : Colors.grey[200]));
   }
 
-  Widget _buildFloatingCheckoutDock(BuildContext context, List<CartItem> cartItems, double totalAmount, double deliveryFee, dynamic settings, String currency) {
+  Widget _buildFloatingCheckoutDock(BuildContext context, List<CartItem> cartItems, double totalAmount, double deliveryFee, dynamic settings, String currency, CartState cart) {
     return Container(
       padding: const EdgeInsets.fromLTRB(20, 16, 20, 32),
       decoration: BoxDecoration(color: Colors.white, borderRadius: const BorderRadius.vertical(top: Radius.circular(30)), boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.1), blurRadius: 20, offset: const Offset(0, -5))]),
@@ -152,7 +154,7 @@ class _CartScreenState extends ConsumerState<CartScreen> {
             child: SizedBox(
               height: 55,
               child: ElevatedButton(
-                onPressed: () => _handleCheckout(context, cartItems, totalAmount, deliveryFee),
+                onPressed: () => _handleCheckout(context, cartItems, totalAmount, deliveryFee, cart),
                 style: ElevatedButton.styleFrom(backgroundColor: settings.primaryColor, foregroundColor: Colors.white, elevation: 5, shadowColor: settings.primaryColor.withValues(alpha: 0.3), shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18))),
                 child: const Row(
                   mainAxisAlignment: MainAxisAlignment.center,
@@ -225,6 +227,8 @@ class _CartScreenState extends ConsumerState<CartScreen> {
 
   Widget _buildDeliverySection(BuildContext context, CartState cart, dynamic settings, String currency) {
     final arrivalDate = DateFormat('dd MMM').format(DateTime.now().add(Duration(days: cart.deliveryMethod == 'express' ? 2 : 5)));
+    final activeZones = ref.watch(activeZonesProvider);
+    
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
       padding: const EdgeInsets.all(16),
@@ -240,19 +244,59 @@ class _CartScreenState extends ConsumerState<CartScreen> {
             ],
           ),
           const SizedBox(height: 12),
-          Row(
-            children: [
-              Expanded(child: _selectableChip(label: AppStrings.insideDhaka.tr(), isSelected: cart.isInsideDhaka, onTap: () => ref.read(cartNotifierProvider.notifier).setInsideDhaka(true), settings: settings)),
-              const SizedBox(width: 10),
-              Expanded(child: _selectableChip(label: AppStrings.outsideDhaka.tr(), isSelected: !cart.isInsideDhaka, onTap: () => ref.read(cartNotifierProvider.notifier).setInsideDhaka(false), settings: settings)),
-            ],
+          
+          activeZones.when(
+            data: (zones) {
+              if (zones.isEmpty) {
+                // Fallback to Dhaka options if no zones exist
+                return Row(
+                  children: [
+                    Expanded(child: _selectableChip(label: AppStrings.insideDhaka.tr(), isSelected: cart.isInsideDhaka, onTap: () { ref.read(cartNotifierProvider.notifier).setInsideDhaka(true); }, settings: settings)),
+                    const SizedBox(width: 10),
+                    Expanded(child: _selectableChip(label: AppStrings.outsideDhaka.tr(), isSelected: !cart.isInsideDhaka, onTap: () { ref.read(cartNotifierProvider.notifier).setInsideDhaka(false); }, settings: settings)),
+                  ],
+                );
+              }
+              
+              // Zone selection dropdown
+              return Container(
+                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+                decoration: BoxDecoration(
+                  color: Colors.grey[100],
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(color: Colors.grey.withValues(alpha: 0.2))
+                ),
+                child: DropdownButtonHideUnderline(
+                  child: DropdownButton<String>(
+                    isExpanded: true,
+                    hint: const Text("Select Delivery Area"),
+                    value: cart.selectedZone?.id,
+                    items: zones.map((zone) {
+                      return DropdownMenuItem<String>(
+                        value: zone.id,
+                        child: Text(zone.zoneName, style: const TextStyle(fontWeight: FontWeight.bold)),
+                      );
+                    }).toList(),
+                    onChanged: (val) {
+                      if (val != null) {
+                        final selected = zones.firstWhere((z) => z.id == val);
+                        ref.read(cartNotifierProvider.notifier).setZone(selected);
+                      }
+                    },
+                  ),
+                ),
+              );
+            },
+            loading: () => const Center(child: CircularProgressIndicator()),
+            error: (err, st) => Text("Error loading zones", style: TextStyle(color: Colors.red[300])),
           ),
+          
           const SizedBox(height: 20),
           Text(AppStrings.deliveryMethod.tr(), style: const TextStyle(fontWeight: FontWeight.w900, fontSize: 15, color: Colors.grey)),
           const SizedBox(height: 12),
-          _deliveryMethodCard(context, method: 'standard', title: AppStrings.standardDelivery.tr(), subtitle: "3-5 Business Days", price: cart.isInsideDhaka ? "60" : "150", currentMethod: cart.deliveryMethod, settings: settings, currency: currency),
+          _deliveryMethodCard(context, method: 'standard', title: AppStrings.standardDelivery.tr(), subtitle: "3-5 Business Days", price: cart.selectedZone != null ? "${cart.selectedZone!.baseDeliveryCharge}" : (cart.isInsideDhaka ? "60" : "150"), currentMethod: cart.deliveryMethod, settings: settings, currency: currency),
           const SizedBox(height: 10),
-          _deliveryMethodCard(context, method: 'express', title: AppStrings.expressDelivery.tr(), subtitle: "1-2 Business Days", price: cart.isInsideDhaka ? "100" : "250", currentMethod: cart.deliveryMethod, settings: settings, currency: currency),
+          _deliveryMethodCard(context, method: 'express', title: AppStrings.expressDelivery.tr(), subtitle: "1-2 Business Days", price: cart.selectedZone != null ? "${cart.selectedZone!.baseDeliveryCharge + 40}" : (cart.isInsideDhaka ? "100" : "250"), currentMethod: cart.deliveryMethod, settings: settings, currency: currency),
         ],
       ),
     );
@@ -404,14 +448,18 @@ class _CartScreenState extends ConsumerState<CartScreen> {
     return Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [Text(label, style: const TextStyle(color: Colors.grey)), Text(value, style: TextStyle(fontWeight: FontWeight.bold, color: color))]);
   }
 
-  void _handleCheckout(BuildContext context, List<CartItem> cartItems, double totalAmount, double deliveryFee) async {
+  void _handleCheckout(BuildContext context, List<CartItem> cartItems, double totalAmount, double deliveryFee, CartState cart) {
+    if (cartItems.isEmpty) return;
     final auth = ref.read(authNotifierProvider).value;
     if (auth == null) { ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(AppStrings.pleaseLogin.tr()))); return; }
-    if (_paymentMethod == 'Online') { _showOnlinePaymentDummy(context, cartItems, totalAmount, deliveryFee, auth); return; }
-    _processOrder(context, cartItems, totalAmount, deliveryFee, auth, 'COD', false);
+    if (_paymentMethod == 'COD') {
+      _processOrder(context, cartItems, totalAmount, deliveryFee, auth, 'COD', false, zone: cart.selectedZone);
+    } else {
+      _showOnlinePaymentSheet(context, cartItems, totalAmount, deliveryFee, auth, cart.selectedZone);
+    }
   }
 
-  void _showOnlinePaymentDummy(BuildContext context, List<CartItem> cartItems, double totalAmount, double deliveryFee, UserModel auth) {
+  void _showOnlinePaymentSheet(BuildContext context, List<CartItem> cartItems, double totalAmount, double deliveryFee, UserModel auth, DeliveryZoneModel? zone) {
     String selectedProvider = 'bKash';
     String cardType = 'Visa';
     final numberController = TextEditingController(text: auth.phoneNumber);
@@ -510,7 +558,7 @@ class _CartScreenState extends ConsumerState<CartScreen> {
                          if (numberController.text.length < 11) { ScaffoldMessenger.of(sheetContext).showSnackBar(const SnackBar(content: Text("Enter valid wallet number"))); return; }
                       }
                       Navigator.pop(ctx);
-                      _processOrder(context, cartItems, totalAmount, deliveryFee, auth, 'Online', true, transactionId: 'TRX${DateTime.now().millisecondsSinceEpoch}');
+                      _processOrder(context, cartItems, totalAmount, deliveryFee, auth, 'Online', true, transactionId: 'TRX${DateTime.now().millisecondsSinceEpoch}', zone: zone);
                     },
                     style: ElevatedButton.styleFrom(backgroundColor: Colors.blue[700], foregroundColor: Colors.white, shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)), elevation: 4),
                     child: Text("PAY NOW WITH ${selectedProvider == 'Card' ? cardType : selectedProvider}".toUpperCase(), style: const TextStyle(fontWeight: FontWeight.w900, fontSize: 16)),
@@ -577,7 +625,7 @@ class _CartScreenState extends ConsumerState<CartScreen> {
     );
   }
 
-  void _processOrder(BuildContext context, List<CartItem> cartItems, double totalAmount, double deliveryFee, UserModel auth, String method, bool isPaid, {String? transactionId}) async {
+  void _processOrder(BuildContext context, List<CartItem> cartItems, double totalAmount, double deliveryFee, UserModel auth, String method, bool isPaid, {String? transactionId, DeliveryZoneModel? zone}) async {
     LoadingOverlay.show(context);
     double? lat; double? lng;
     try {
@@ -594,7 +642,7 @@ class _CartScreenState extends ConsumerState<CartScreen> {
       }
     } catch (e) { }
 
-    final newOrder = OrderModel(id: '', shopId: shopId, userId: auth.uid, userName: auth.name, userPhone: auth.phoneNumber, userAddress: auth.address, items: cartItems, totalAmount: totalAmount, deliveryFee: deliveryFee, date: DateTime.now(), status: 'Pending', paymentMethod: method, isPaid: isPaid, transactionId: transactionId, customerLatitude: lat, customerLongitude: lng, shopName: shopName, shopAddress: shopAddress);
+    final newOrder = OrderModel(id: '', shopId: shopId, userId: auth.uid, userName: auth.name, userPhone: auth.phoneNumber, userAddress: auth.address, items: cartItems, totalAmount: totalAmount, deliveryFee: deliveryFee, date: DateTime.now(), status: 'Pending', paymentMethod: method, isPaid: isPaid, transactionId: transactionId, customerLatitude: lat, customerLongitude: lng, shopName: shopName, shopAddress: shopAddress, deliveryZoneId: zone?.id, deliveryZoneName: zone?.zoneName);
     
     bool success = await ref.read(orderNotifierProvider.notifier).placeOrder(newOrder);
     if (context.mounted) LoadingOverlay.hide(context);

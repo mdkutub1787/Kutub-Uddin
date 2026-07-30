@@ -86,6 +86,7 @@ class ProfileScreen extends ConsumerWidget {
               _buildSectionHeader(AppStrings.shoppingActivity.tr()),
               _buildMenuCard(context, [
                 _menuItem(Icons.shopping_bag_outlined, AppStrings.myOrdersMenu.tr(), () => Navigator.pushNamed(context, AppRoutes.myOrders)),
+                _menuItem(Icons.local_shipping_outlined, "My Parcels", () => Navigator.pushNamed(context, AppRoutes.myParcels)),
                 _menuItem(Icons.favorite_outline, AppStrings.wishlistMenu.tr(), () => Navigator.pushNamed(context, AppRoutes.wishlist)),
                 _menuItem(Icons.notifications_outlined, AppStrings.notices.tr(), () => Navigator.pushNamed(context, AppRoutes.notifications), badge: unreadNotifCount),
                 _menuItem(Icons.help_outline_rounded, AppStrings.support.tr(), () => Navigator.pushNamed(context, AppRoutes.support), badge: unreadSupportCount),

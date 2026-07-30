@@ -55,7 +55,9 @@ class AuthNotifier extends AsyncNotifier<UserModel?> {
           .maybeSingle();
 
       if (response != null) {
-        var existingUser = UserModel.fromJson(response);
+        var existingUser = UserModel.fromJson(response).copyWith(
+          email: user.email ?? '',
+        );
         
         if (existingUser.role == 'owner' && (existingUser.shopId == null || existingUser.shopId!.isEmpty || existingUser.shopId == 'EMPTY')) {
           try {

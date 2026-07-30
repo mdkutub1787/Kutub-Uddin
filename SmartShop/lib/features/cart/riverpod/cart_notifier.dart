@@ -1,3 +1,4 @@
+import '../../delivery/models/delivery_zone_model.dart';
 import 'dart:convert';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -11,12 +12,14 @@ class CartState {
   final CouponModel? appliedCoupon;
   final bool isInsideDhaka;
   final String deliveryMethod;
+  final DeliveryZoneModel? selectedZone;
 
   CartState({
     this.items = const [],
     this.appliedCoupon,
     this.isInsideDhaka = true,
     this.deliveryMethod = 'standard',
+    this.selectedZone,
   });
 
   CartState copyWith({
@@ -24,12 +27,14 @@ class CartState {
     CouponModel? appliedCoupon,
     bool? isInsideDhaka,
     String? deliveryMethod,
+    DeliveryZoneModel? selectedZone,
   }) {
     return CartState(
       items: items ?? this.items,
       appliedCoupon: appliedCoupon ?? this.appliedCoupon,
       isInsideDhaka: isInsideDhaka ?? this.isInsideDhaka,
       deliveryMethod: deliveryMethod ?? this.deliveryMethod,
+      selectedZone: selectedZone ?? this.selectedZone,
     );
   }
 
@@ -37,6 +42,12 @@ class CartState {
   
   double get deliveryFee {
     if (appliedCoupon?.type == CouponType.freeDelivery) return 0;
+    if (selectedZone != null) {
+       // if express is requested on a zone, we can add a premium e.g. +40
+       return selectedZone!.baseDeliveryCharge + (deliveryMethod == 'express' ? 40 : 0);
+    }
+    
+    // Fallback if no zone selected
     if (isInsideDhaka) {
       return deliveryMethod == 'express' ? 100 : 60;
     } else {
@@ -142,6 +153,11 @@ class CartNotifier extends Notifier<CartState> {
       state = state.copyWith(items: updatedItems);
       _saveCart();
     }
+  }
+
+  void setZone(DeliveryZoneModel zone) {
+    state = state.copyWith(selectedZone: zone);
+    _saveCart();
   }
 
   Future<String> applyCoupon(String code) async {

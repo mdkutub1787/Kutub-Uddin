@@ -366,6 +366,19 @@ class _AdminDashboardScreenState extends ConsumerState<AdminDashboardScreen> {
                                 ),
                               ),
                             ),
+                            
+                          if (isSuperAdmin)
+                            _buildAdminCard(
+                              context,
+                              "Delivery Zones",
+                              Icons.map_rounded,
+                              Colors.lightBlue,
+                              "Manage areas & charges",
+                              () => Navigator.pushNamed(
+                                context,
+                                AppRoutes.adminZoneManagement,
+                              ),
+                            ),
 
                           if (isSuperAdmin)
                             _buildAdminCard(

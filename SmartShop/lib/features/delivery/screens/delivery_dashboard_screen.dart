@@ -1,3 +1,5 @@
+import '../../parcel/riverpod/parcel_notifier.dart';
+import '../../parcel/models/parcel_model.dart';
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
@@ -203,20 +205,63 @@ class _DeliveryDashboardScreenState extends ConsumerState<DeliveryDashboardScree
 
   Widget _buildNewRequestsTab(UserModel user, Color primaryColor, String currency) {
     if (!(user.isAvailable ?? false)) return _emptyState("You are offline", "Go online to receive delivery requests", Icons.offline_bolt_rounded);
+    
     final availableOrders = ref.watch(availableOrdersProvider);
-    return availableOrders.when(
-      data: (orders) => orders.isEmpty ? _emptyState("No new requests", "Searching for nearby orders...", Icons.radar_rounded) : ListView.builder(padding: const EdgeInsets.all(16), itemCount: orders.length, itemBuilder: (context, index) => _buildOrderCard(orders[index], primaryColor, true, user, currency)),
-      loading: () => const Center(child: CustomLoading()),
-      error: (e, _) => Center(child: Text("Error: $e")),
+    final availableParcels = ref.watch(availableZoneParcelsProvider(user.deliveryZoneId ?? ''));
+    
+    return CustomScrollView(
+      slivers: [
+        SliverPadding(
+          padding: const EdgeInsets.all(16),
+          sliver: availableOrders.when(
+            data: (orders) => orders.isEmpty ? const SliverToBoxAdapter() : SliverList(
+              delegate: SliverChildBuilderDelegate((context, index) => _buildOrderCard(orders[index], primaryColor, true, user, currency), childCount: orders.length),
+            ),
+            loading: () => const SliverToBoxAdapter(child: Center(child: CustomLoading())),
+            error: (e, _) => SliverToBoxAdapter(child: Center(child: Text("Error: $e"))),
+          ),
+        ),
+        SliverPadding(
+          padding: const EdgeInsets.symmetric(horizontal: 16),
+          sliver: availableParcels.when(
+            data: (parcels) => parcels.isEmpty ? const SliverToBoxAdapter() : SliverList(
+              delegate: SliverChildBuilderDelegate((context, index) => _buildParcelCard(parcels[index], primaryColor, true, user, currency), childCount: parcels.length),
+            ),
+            loading: () => const SliverToBoxAdapter(child: Center(child: CustomLoading())),
+            error: (e, _) => SliverToBoxAdapter(child: Center(child: Text("Error: $e"))),
+          ),
+        ),
+      ],
     );
   }
 
   Widget _buildMyDeliveriesTab(UserModel user, Color primaryColor, String currency) {
     final myDeliveries = ref.watch(myDeliveriesProvider(user.uid));
-    return myDeliveries.when(
-      data: (orders) => orders.isEmpty ? _emptyState("No active deliveries", "Accept an order to start delivering", Icons.delivery_dining_rounded) : ListView.builder(padding: const EdgeInsets.all(16), itemCount: orders.length, itemBuilder: (context, index) => _buildOrderCard(orders[index], primaryColor, false, user, currency)),
-      loading: () => const Center(child: CustomLoading()),
-      error: (e, _) => Center(child: Text("Error: $e")),
+    final myParcels = ref.watch(riderParcelsProvider(user.uid));
+    
+    return CustomScrollView(
+      slivers: [
+        SliverPadding(
+          padding: const EdgeInsets.all(16),
+          sliver: myDeliveries.when(
+            data: (orders) => orders.isEmpty ? const SliverToBoxAdapter() : SliverList(
+              delegate: SliverChildBuilderDelegate((context, index) => _buildOrderCard(orders[index], primaryColor, false, user, currency), childCount: orders.length),
+            ),
+            loading: () => const SliverToBoxAdapter(child: Center(child: CustomLoading())),
+            error: (e, _) => SliverToBoxAdapter(child: Center(child: Text("Error: $e"))),
+          ),
+        ),
+        SliverPadding(
+          padding: const EdgeInsets.symmetric(horizontal: 16),
+          sliver: myParcels.when(
+            data: (parcels) => parcels.isEmpty ? const SliverToBoxAdapter() : SliverList(
+              delegate: SliverChildBuilderDelegate((context, index) => _buildParcelCard(parcels[index], primaryColor, false, user, currency), childCount: parcels.length),
+            ),
+            loading: () => const SliverToBoxAdapter(child: Center(child: CustomLoading())),
+            error: (e, _) => SliverToBoxAdapter(child: Center(child: Text("Error: $e"))),
+          ),
+        ),
+      ],
     );
   }
 
@@ -328,5 +373,101 @@ class _DeliveryDashboardScreenState extends ConsumerState<DeliveryDashboardScree
   void _callCustomer(String phone) async {
     final Uri url = Uri(scheme: 'tel', path: phone);
     if (await canLaunchUrl(url)) await launchUrl(url);
+  }
+
+  Widget _buildParcelCard(ParcelModel parcel, Color primaryColor, bool isPool, UserModel user, String currency) {
+    return Card(
+      margin: const EdgeInsets.only(bottom: 16),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
+      child: Padding(
+        padding: const EdgeInsets.all(20),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Row(
+                  children: [
+                    const Icon(Icons.inventory_2_outlined, color: Colors.purple, size: 18),
+                    const SizedBox(width: 4),
+                    Text("Parcel #${parcel.id.substring(parcel.id.length - 8)}", style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.purple)),
+                  ],
+                ),
+                _statusChip(parcel.status),
+              ],
+            ),
+            const SizedBox(height: 16),
+            _infoRow(Icons.person_rounded, "Sender", parcel.senderName),
+            const SizedBox(height: 8),
+            _infoRow(Icons.location_on_rounded, "Pickup", parcel.pickupAddress),
+            const SizedBox(height: 8),
+            _infoRow(Icons.location_on_outlined, "Drop", parcel.dropoffAddress),
+            const SizedBox(height: 8),
+            _infoRow(Icons.money, "Charge", "$currency${parcel.deliveryCharge.toInt()}"),
+            const SizedBox(height: 20),
+            Row(
+              children: [
+                if (isPool)
+                  Expanded(
+                    child: ElevatedButton(
+                      onPressed: () async {
+                        LoadingOverlay.show(context);
+                        try {
+                          await ref.read(parcelNotifierProvider.notifier).acceptParcel(parcel.id, user.uid, user.name, user.phoneNumber ?? "");
+                          if (context.mounted) {
+                            LoadingOverlay.hide(context);
+                          }
+                        } catch(e) {
+                          if (context.mounted) {
+                            LoadingOverlay.hide(context);
+                            ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Error accepting parcel"), backgroundColor: Colors.red));
+                          }
+                        }
+                      },
+                      style: ElevatedButton.styleFrom(backgroundColor: Colors.purple, foregroundColor: Colors.white, shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)), padding: const EdgeInsets.symmetric(vertical: 14)),
+                      child: const Text("ACCEPT PARCEL", style: TextStyle(fontWeight: FontWeight.bold)),
+                    ),
+                  )
+                else ...[
+                  Expanded(
+                    child: OutlinedButton.icon(
+                      onPressed: () => _callCustomer(parcel.senderPhone),
+                      icon: const Icon(Icons.call, size: 18),
+                      label: const Text("CALL"),
+                      style: OutlinedButton.styleFrom(shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12))),
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: ElevatedButton(
+                      onPressed: () async {
+                        final statuses = ['Picked_Up', 'In_Transit', 'Delivered'];
+                        String current = parcel.status;
+                        int nextIdx = statuses.indexOf(current) + 1;
+                        if (nextIdx < statuses.length) {
+                          LoadingOverlay.show(context);
+                          try {
+                            await ref.read(parcelNotifierProvider.notifier).updateParcelStatus(parcel.id, statuses[nextIdx]);
+                            if (context.mounted) LoadingOverlay.hide(context);
+                          } catch (e) {
+                            if (context.mounted) {
+                              LoadingOverlay.hide(context);
+                              ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Error: $e")));
+                            }
+                          }
+                        }
+                      },
+                      style: ElevatedButton.styleFrom(backgroundColor: Colors.purple, foregroundColor: Colors.white, shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12))),
+                      child: Text(parcel.status == 'Accepted' || parcel.status == 'Confirmed' ? 'PICK UP' : (parcel.status == 'Picked_Up' ? 'TRANSIT' : 'DELIVER')),
+                    ),
+                  ),
+                ],
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
   }
 }

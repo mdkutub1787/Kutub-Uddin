@@ -37,6 +37,10 @@ class OrderModel {
   // Customer Destination
   final double? customerLatitude;
   final double? customerLongitude;
+  
+  // Zone
+  final String? deliveryZoneId;
+  final String? deliveryZoneName;
 
   OrderModel({
     required this.id,
@@ -66,6 +70,8 @@ class OrderModel {
     this.shopAddress,
     this.shopLatitude,
     this.shopLongitude,
+    this.deliveryZoneId,
+    this.deliveryZoneName,
   });
 
   Map<String, dynamic> toJson() {
@@ -98,6 +104,8 @@ class OrderModel {
       'deliveryLongitude': deliveryLongitude,
       'customerLatitude': customerLatitude,
       'customerLongitude': customerLongitude,
+      'deliveryZoneId': deliveryZoneId,
+      'deliveryZoneName': deliveryZoneName,
       'shopName': shopName,
       'shopAddress': shopAddress,
       'shopLatitude': shopLatitude,
@@ -159,6 +167,8 @@ class OrderModel {
       deliveryLongitude: data['deliveryLongitude'] != null ? (data['deliveryLongitude'] as num).toDouble() : null,
       customerLatitude: data['customerLatitude'] != null ? (data['customerLatitude'] as num).toDouble() : null,
       customerLongitude: data['customerLongitude'] != null ? (data['customerLongitude'] as num).toDouble() : null,
+      deliveryZoneId: data['deliveryZoneId'] ?? data['delivery_zone_id'],
+      deliveryZoneName: data['deliveryZoneName'] ?? data['delivery_zone_name'],
       shopName: data['shopName'],
       shopAddress: data['shopAddress'],
       shopLatitude: data['shopLatitude'] != null ? (data['shopLatitude'] as num).toDouble() : null,

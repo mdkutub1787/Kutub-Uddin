@@ -11,6 +11,10 @@ class UserModel {
   final bool isActive;
   
   final bool? isAvailable;
+  
+  // Delivery Zone
+  final String? deliveryZoneId;
+  final String? deliveryZoneName;
 
   UserModel({
     required this.uid,
@@ -24,6 +28,8 @@ class UserModel {
     this.imageUrl,
     this.isActive = true,
     this.isAvailable,
+    this.deliveryZoneId,
+    this.deliveryZoneName,
   });
 
   factory UserModel.fromJson(Map<String, dynamic> data) {
@@ -39,6 +45,8 @@ class UserModel {
       imageUrl: data['imageUrl'] ?? data['image_url'] ?? data['avatar_url'],
       isActive: data['isActive'] ?? true,
       isAvailable: data['isAvailable'],
+      deliveryZoneId: data['deliveryZoneId'] ?? data['delivery_zone_id'],
+      deliveryZoneName: data['deliveryZoneName'] ?? data['delivery_zone_name'],
     );
   }
 
@@ -52,6 +60,8 @@ class UserModel {
       'imageUrl': imageUrl,
       'isActive': isActive,
       'isAvailable': isAvailable,
+      'deliveryZoneId': deliveryZoneId,
+      'deliveryZoneName': deliveryZoneName,
     };
     return data;
   }
@@ -68,6 +78,8 @@ class UserModel {
     String? imageUrl,
     bool? isActive,
     bool? isAvailable,
+    String? deliveryZoneId,
+    String? deliveryZoneName,
   }) {
     return UserModel(
       uid: uid ?? this.uid,
@@ -81,6 +93,8 @@ class UserModel {
       imageUrl: imageUrl ?? this.imageUrl,
       isActive: isActive ?? this.isActive,
       isAvailable: isAvailable ?? this.isAvailable,
+      deliveryZoneId: deliveryZoneId ?? this.deliveryZoneId,
+      deliveryZoneName: deliveryZoneName ?? this.deliveryZoneName,
     );
   }
 }

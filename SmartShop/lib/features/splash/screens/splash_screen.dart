@@ -114,29 +114,14 @@ class _SplashScreenState extends ConsumerState<SplashScreen> with SingleTickerPr
                   child: child,
                 );
               },
-              child: Container(
-                padding: const EdgeInsets.all(12),
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(28),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.teal.withValues(alpha: 0.15),
-                      blurRadius: 30,
-                      spreadRadius: 5,
-                      offset: const Offset(0, 10),
-                    )
-                  ],
-                ),
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(16),
-                  child: Image.asset(
-                    'assets/images/app_icon.png', 
-                    width: 90, 
-                    height: 90,
-                    fit: BoxFit.cover,
-                    errorBuilder: (_, __, ___) => const Icon(Icons.shopping_cart_rounded, size: 80, color: Colors.teal)
-                  ),
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(24),
+                child: Image.asset(
+                  'assets/images/app_icon.png', 
+                  width: 120, 
+                  height: 120,
+                  fit: BoxFit.cover,
+                  errorBuilder: (_, __, ___) => const Icon(Icons.shopping_cart_rounded, size: 80, color: Colors.teal)
                 ),
               ),
             ),

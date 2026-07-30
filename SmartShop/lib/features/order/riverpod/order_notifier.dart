@@ -13,7 +13,8 @@ final orderNotifierProvider = AsyncNotifierProvider<OrderNotifier, List<OrderMod
 });
 
 final availableOrdersProvider = StreamProvider<List<OrderModel>>((ref) {
-  return ref.watch(orderRepositoryProvider).streamAvailableOrders();
+  final user = ref.watch(authNotifierProvider).value;
+  return ref.watch(orderRepositoryProvider).streamAvailableOrders(zoneId: user?.deliveryZoneId);
 });
 
 final myDeliveriesProvider = StreamProvider.family<List<OrderModel>, String>((ref, deliveryManId) {

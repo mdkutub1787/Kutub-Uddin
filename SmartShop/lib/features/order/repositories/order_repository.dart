@@ -66,14 +66,14 @@ class OrderRepository {
     await _supabase.from(AppConstants.ordersTable).delete().eq('id', orderId);
   }
 
-  Stream<List<OrderModel>> streamAvailableOrders() {
+  Stream<List<OrderModel>> streamAvailableOrders({String? zoneId}) {
     return _supabase
         .from(AppConstants.ordersTable)
         .stream(primaryKey: ['id'])
         .map((maps) {
           return maps
               .map((map) => OrderModel.fromJson(map))
-              .where((o) => (o.status == 'Pending' || o.status == 'Confirmed') && o.deliveryManId == null && o.orderType != 'pos')
+              .where((o) => (o.status == 'Pending' || o.status == 'Confirmed') && o.deliveryManId == null && o.orderType != 'pos' && (zoneId == null || o.deliveryZoneId == zoneId))
               .toList()
             ..sort((a, b) => b.date.compareTo(a.date));
         });

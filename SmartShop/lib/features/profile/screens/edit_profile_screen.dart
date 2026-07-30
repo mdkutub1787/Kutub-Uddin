@@ -1,3 +1,5 @@
+import '../../delivery/riverpod/zone_notifier.dart';
+import '../../delivery/models/delivery_zone_model.dart';
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -20,6 +22,8 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
   late TextEditingController _nameController, _phoneController, _addressController, _shopNameController;
   File? _imageFile;
   final _picker = ImagePicker();
+  String? _selectedZoneId;
+  String? _selectedZoneName;
 
   @override
   void initState() {
@@ -29,6 +33,8 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
     _phoneController = TextEditingController(text: user?.phoneNumber ?? "");
     _addressController = TextEditingController(text: user?.address ?? "");
     _shopNameController = TextEditingController(text: user?.shopName ?? "");
+    _selectedZoneId = user?.deliveryZoneId;
+    _selectedZoneName = user?.deliveryZoneName;
   }
 
   Future<void> _pickImage() async {
@@ -69,6 +75,8 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
           'address': _addressController.text.trim(),
           'shopName': _shopNameController.text.trim(),
           'role': user.role,
+          'deliveryZoneId': _selectedZoneId,
+          'deliveryZoneName': _selectedZoneName,
         };
         
         if (imageUrl != null) updateData['imageUrl'] = imageUrl;
@@ -191,6 +199,8 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
                 _field(_phoneController, "Phone Number", Icons.phone_android_rounded, keyboardType: TextInputType.phone, autofillHints: [AutofillHints.telephoneNumber]),
                 const SizedBox(height: 20),
                 _field(_addressController, "Full Address", Icons.location_on_outlined, lines: 2, autofillHints: [AutofillHints.fullStreetAddress]),
+                const SizedBox(height: 20),
+                _buildZoneDropdown(primaryColor),
                 const SizedBox(height: 40),
                 
                 SizedBox(
@@ -251,6 +261,63 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
           filled: false,
           contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 15),
         ),
+      ),
+    );
+  }
+
+  Widget _buildZoneDropdown(Color primaryColor) {
+    final activeZones = ref.watch(activeZonesProvider);
+    return Container(
+      decoration: BoxDecoration(
+        color: Theme.of(context).cardColor,
+        borderRadius: BorderRadius.circular(20),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.03),
+            blurRadius: 15,
+            offset: const Offset(0, 5),
+          )
+        ],
+      ),
+      child: activeZones.when(
+        data: (zones) {
+          if (zones.isEmpty) return const SizedBox.shrink();
+          return Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 5),
+            child: Row(
+              children: [
+                Icon(Icons.map_outlined, color: primaryColor),
+                const SizedBox(width: 15),
+                Expanded(
+                  child: DropdownButtonHideUnderline(
+                    child: DropdownButton<String>(
+                      isExpanded: true,
+                      hint: const Text("Select your zone (optional)"),
+                      value: _selectedZoneId,
+                      items: zones.map((zone) {
+                        return DropdownMenuItem<String>(
+                          value: zone.id,
+                          child: Text(zone.zoneName, style: const TextStyle(fontWeight: FontWeight.w500)),
+                        );
+                      }).toList(),
+                      onChanged: (val) {
+                        if (val != null) {
+                          final selected = zones.firstWhere((z) => z.id == val);
+                          setState(() {
+                            _selectedZoneId = selected.id;
+                            _selectedZoneName = selected.zoneName;
+                          });
+                        }
+                      },
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          );
+        },
+        loading: () => const Padding(padding: EdgeInsets.all(15), child: Center(child: CircularProgressIndicator())),
+        error: (err, st) => Padding(padding: const EdgeInsets.all(15), child: Text("Failed to load zones", style: TextStyle(color: Colors.red[300]))),
       ),
     );
   }
