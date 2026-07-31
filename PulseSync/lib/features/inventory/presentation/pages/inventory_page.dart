@@ -89,13 +89,13 @@ class _InventoryView extends StatelessWidget {
                           child: Text(item.id),
                         ),
                         title: Text(item.name),
-                        subtitle: Text('\${item.category} - Qty: \${item.quantity}'),
-                        trailing: Text('\$\${item.price.toStringAsFixed(2)}'),
+                        subtitle: Text('${item.category} - Qty: ${item.quantity}'),
+                        trailing: Text('\$${item.price.toStringAsFixed(2)}'),
                       );
                     },
                   );
                 } else if (state is InventoryError) {
-                  return Center(child: Text('Error: \${state.message}'));
+                  return Center(child: Text('Error: ${state.message}'));
                 }
                 return const SizedBox.shrink();
               },

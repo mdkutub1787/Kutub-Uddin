@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:isolate';
+import 'package:flutter/foundation.dart';
 import 'package:injectable/injectable.dart';
 import '../../domain/entities/inventory_item.dart';
 import '../../domain/repositories/inventory_repository.dart';
@@ -23,13 +24,18 @@ class InventoryRepositoryImpl implements InventoryRepository {
   Future<List<InventoryItem>> searchInventory(String query) async {
     // We use Isolate.run to parse and filter the data in a background isolate
     // to prevent blocking the main thread when dealing with massive datasets.
-    return await Isolate.run(() => _parseAndFilter(_mockJsonData, query));
+    // However, Isolate is not supported on the web.
+    if (kIsWeb) {
+      return _parseAndFilter(_mockJsonData, query);
+    } else {
+      return await Isolate.run(() => _parseAndFilter(_mockJsonData, query));
+    }
   }
 
   static List<InventoryItem> _parseAndFilter(String jsonStr, String query) {
     // Simulate heavy computation/parsing delay
     // ignore: avoid_print
-    print('Isolate: Parsing JSON and filtering for "\$query"...');
+    print('Isolate: Parsing JSON and filtering for "$query"...');
     
     // Simulating delay for large dataset
     int i = 0;
