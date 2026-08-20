@@ -7,6 +7,7 @@ import '../../../asmaul_husna/presentation/pages/asmaul_husna_page.dart';
 import '../../../zakat/presentation/pages/zakat_calculator_page.dart';
 import '../../../kalima/presentation/pages/kalima_page.dart';
 import '../../../hadith/presentation/pages/hadith_page.dart';
+import '../../../quiz/presentation/pages/quiz_page.dart';
 import '../../../settings/presentation/pages/settings_page.dart';
 
 class HomePage extends ConsumerWidget {
@@ -258,6 +259,55 @@ class HomePage extends ConsumerWidget {
                               ),
                             ),
                           ],
+                        ),
+                        const SizedBox(height: 16),
+                        GestureDetector(
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(builder: (context) => const QuizPage()),
+                            );
+                          },
+                          child: Container(
+                            padding: const EdgeInsets.all(20),
+                            decoration: BoxDecoration(
+                              gradient: const LinearGradient(
+                                colors: [Color(0xFFFF595E), Color(0xFFFF924C)],
+                                begin: Alignment.topLeft,
+                                end: Alignment.bottomRight,
+                              ),
+                              borderRadius: BorderRadius.circular(16),
+                            ),
+                            child: const Row(
+                              children: [
+                                Icon(Icons.quiz, color: Colors.white, size: 36),
+                                SizedBox(width: 16),
+                                Expanded(
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        'Islamic Quiz',
+                                        style: TextStyle(
+                                          color: Colors.white,
+                                          fontSize: 18,
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                      ),
+                                      Text(
+                                        'Test your Islamic knowledge',
+                                        style: TextStyle(
+                                          color: Colors.white70,
+                                          fontSize: 14,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                                Icon(Icons.arrow_forward_ios, color: Colors.white),
+                              ],
+                            ),
+                          ),
                         ),
                         const SizedBox(height: 32),
                       ],
