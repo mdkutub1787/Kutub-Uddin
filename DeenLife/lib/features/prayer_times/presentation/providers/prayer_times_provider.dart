@@ -1,7 +1,7 @@
 import 'package:adhan/adhan.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:geolocator/geolocator.dart';
-import '../domain/models/prayer_data.dart';
+import '../../domain/models/prayer_data.dart';
 
 final locationProvider = FutureProvider<Position>((ref) async {
   bool serviceEnabled;

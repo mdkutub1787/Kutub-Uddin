@@ -3,6 +3,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../features/home/presentation/pages/home_page.dart';
 import '../../features/tasbeeh/presentation/pages/tasbeeh_page.dart';
 import '../../features/quran/presentation/pages/quran_page.dart';
+import '../../features/qibla/presentation/pages/qibla_page.dart';
+import '../../features/duas/presentation/pages/dua_page.dart';
 
 final selectedIndexProvider = StateProvider<int>((ref) => 0);
 
@@ -16,6 +18,8 @@ class MainLayout extends ConsumerWidget {
     final pages = [
       const HomePage(),
       const QuranPage(),
+      const QiblaPage(),
+      DuaPage(),
       const TasbeehPage(),
     ];
 
@@ -38,6 +42,16 @@ class MainLayout extends ConsumerWidget {
             label: 'Quran',
           ),
           NavigationDestination(
+            icon: Icon(Icons.explore_outlined),
+            selectedIcon: Icon(Icons.explore),
+            label: 'Qibla',
+          ),
+          NavigationDestination(
+            icon: Icon(Icons.favorite_outline),
+            selectedIcon: Icon(Icons.favorite),
+            label: 'Duas',
+          ),
+          NavigationDestination(
             icon: Icon(Icons.touch_app_outlined),
             selectedIcon: Icon(Icons.touch_app),
             label: 'Tasbeeh',
@@ -47,4 +61,5 @@ class MainLayout extends ConsumerWidget {
     );
   }
 }
+
 
