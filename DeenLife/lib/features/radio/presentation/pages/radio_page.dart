@@ -1,11 +1,19 @@
 import 'package:flutter/material.dart';
+import 'package:just_audio/just_audio.dart';
+import 'package:deen_life/core/localization/app_localizations.dart';
 
 class RadioStation {
   final String title;
   final String subtitle;
+  final String url;
   final bool isLive;
 
-  RadioStation({required this.title, required this.subtitle, this.isLive = false});
+  RadioStation({
+    required this.title,
+    required this.subtitle,
+    required this.url,
+    this.isLive = false,
+  });
 }
 
 class RadioPage extends StatefulWidget {
@@ -16,33 +24,113 @@ class RadioPage extends StatefulWidget {
 }
 
 class _RadioPageState extends State<RadioPage> {
+  late AudioPlayer _audioPlayer;
   int? _playingIndex;
   bool _isPlaying = false;
+  String? _loadingError;
 
   final List<RadioStation> stations = [
-    RadioStation(title: 'Makkah Live (Masjid al-Haram)', subtitle: '24/7 Live Broadcast', isLive: true),
-    RadioStation(title: 'Madinah Live (Al-Masjid an-Nabawi)', subtitle: '24/7 Live Broadcast', isLive: true),
-    RadioStation(title: 'Quran Radio - Mishary Alafasy', subtitle: 'Continuous Recitation'),
-    RadioStation(title: 'Quran Radio - Abdul Basit', subtitle: 'Continuous Recitation'),
-    RadioStation(title: 'Islamic Lectures (English)', subtitle: 'Various Scholars'),
+    RadioStation(
+      title: 'Makkah Live (Quran)',
+      subtitle: '24/7 Live Quran from Makkah',
+      url: 'https://qurango.net/radio/makkah',
+      isLive: true,
+    ),
+    RadioStation(
+      title: 'Madinah Live (Quran)',
+      subtitle: '24/7 Live Quran from Madinah',
+      url: 'https://qurango.net/radio/madinah',
+      isLive: true,
+    ),
+    RadioStation(
+      title: 'Quran Radio - Mishary Alafasy',
+      subtitle: 'Continuous Recitation',
+      url: 'https://stream.radiojar.com/8s5u8tp48vduv',
+    ),
+    RadioStation(
+      title: 'Quran Radio - English Translation',
+      subtitle: 'Quran with English Meaning',
+      url: 'https://stream.zeno.fm/3r77vwa8mreuv',
+    ),
+    RadioStation(
+      title: 'Quran Radio - Bangla Translation',
+      subtitle: 'আল-কুরআন (বাংলা অনুবাদসহ)',
+      url: 'https://qurango.net/radio/tarjumat_bangla',
+    ),
   ];
 
-  void _togglePlay(int index) {
-    setState(() {
-      if (_playingIndex == index) {
-        _isPlaying = !_isPlaying;
-      } else {
-        _playingIndex = index;
-        _isPlaying = true;
+  @override
+  void initState() {
+    super.initState();
+    _audioPlayer = AudioPlayer();
+    
+    // Listen to player state to update UI
+    _audioPlayer.playerStateStream.listen((state) {
+      if (mounted) {
+        setState(() {
+          _isPlaying = state.playing;
+          if (state.processingState == ProcessingState.completed) {
+            _playingIndex = null;
+          }
+        });
       }
+    }, onError: (Object e, StackTrace stackTrace) {
+      debugPrint('A stream error occurred: $e');
+      setState(() {
+        _loadingError = e.toString();
+      });
     });
+  }
+
+  @override
+  void dispose() {
+    _audioPlayer.dispose();
+    super.dispose();
+  }
+
+  Future<void> _togglePlay(int index) async {
+    try {
+      setState(() {
+        _loadingError = null;
+      });
+
+      if (_playingIndex == index) {
+        if (_isPlaying) {
+          await _audioPlayer.pause();
+        } else {
+          await _audioPlayer.play();
+        }
+      } else {
+        setState(() {
+          _playingIndex = index;
+          _isPlaying = true;
+        });
+        await _audioPlayer.stop();
+        await _audioPlayer.setUrl(stations[index].url);
+        await _audioPlayer.play();
+      }
+    } catch (e) {
+      debugPrint("Error playing radio: $e");
+      if (mounted) {
+        setState(() {
+          _loadingError = e.toString();
+          _isPlaying = false;
+        });
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Error playing radio: $e'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Islamic Radio'),
+        title: Text(context.tr('Islamic Radio')),
         centerTitle: true,
       ),
       body: Column(
@@ -50,16 +138,10 @@ class _RadioPageState extends State<RadioPage> {
           // Now Playing Header
           Container(
             padding: const EdgeInsets.all(24),
-            decoration: const BoxDecoration(
-              image: DecorationImage(
-                image: AssetImage('assets/radio_bg.jpg'),
-                fit: BoxFit.cover,
-                colorFilter: ColorFilter.mode(
-                  Colors.black54, // Dark overlay
-                  BlendMode.darken,
-                ),
-              ),
-              borderRadius: BorderRadius.only(
+            width: double.infinity,
+            decoration: BoxDecoration(
+              color: Theme.of(context).colorScheme.primary.withOpacity(0.9),
+              borderRadius: const BorderRadius.only(
                 bottomLeft: Radius.circular(32),
                 bottomRight: Radius.circular(32),
               ),
@@ -80,27 +162,36 @@ class _RadioPageState extends State<RadioPage> {
                 ),
                 const SizedBox(height: 24),
                 if (_playingIndex != null)
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      IconButton(
-                        onPressed: () {},
-                        icon: const Icon(Icons.skip_previous, size: 32, color: Colors.white),
-                      ),
-                      const SizedBox(width: 16),
-                      FloatingActionButton(
+                  StreamBuilder<PlayerState>(
+                    stream: _audioPlayer.playerStateStream,
+                    builder: (context, snapshot) {
+                      final processingState = snapshot.data?.processingState;
+                      if (processingState == ProcessingState.loading || processingState == ProcessingState.buffering) {
+                        return const CircularProgressIndicator(color: Colors.white);
+                      }
+                      
+                      if (_loadingError != null) {
+                        return IconButton(
+                          icon: const Icon(Icons.refresh, color: Colors.white, size: 40),
+                          onPressed: () => _togglePlay(_playingIndex!),
+                        );
+                      }
+
+                      return FloatingActionButton(
                         onPressed: () => _togglePlay(_playingIndex!),
-                        elevation: 0,
-                        backgroundColor: Theme.of(context).colorScheme.primary,
-                        foregroundColor: Colors.white,
+                        backgroundColor: Colors.white,
+                        foregroundColor: Theme.of(context).colorScheme.primary,
                         child: Icon(_isPlaying ? Icons.pause : Icons.play_arrow, size: 32),
-                      ),
-                      const SizedBox(width: 16),
-                      IconButton(
-                        onPressed: () {},
-                        icon: const Icon(Icons.skip_next, size: 32, color: Colors.white),
-                      ),
-                    ],
+                      );
+                    },
+                  ),
+                if (_loadingError != null)
+                  Padding(
+                    padding: const EdgeInsets.only(top: 8.0),
+                    child: Text(
+                      'Connection Error',
+                      style: TextStyle(color: Colors.red[100], fontSize: 12),
+                    ),
                   ),
               ],
             ),
@@ -116,6 +207,7 @@ class _RadioPageState extends State<RadioPage> {
 
                 return Card(
                   margin: const EdgeInsets.only(bottom: 12),
+                  elevation: isCurrentlyPlaying ? 4 : 1,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(16),
                     side: isCurrentlyPlaying
@@ -124,42 +216,28 @@ class _RadioPageState extends State<RadioPage> {
                   ),
                   child: ListTile(
                     contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                    leading: Container(
-                      padding: const EdgeInsets.all(12),
-                      decoration: BoxDecoration(
-                        color: isCurrentlyPlaying
-                            ? Theme.of(context).colorScheme.primary
-                            : Colors.grey[200],
-                        shape: BoxShape.circle,
-                      ),
+                    leading: CircleAvatar(
+                      backgroundColor: isCurrentlyPlaying ? Theme.of(context).colorScheme.primary : Colors.grey[200],
                       child: Icon(
                         isCurrentlyPlaying && _isPlaying ? Icons.pause : Icons.play_arrow,
                         color: isCurrentlyPlaying ? Colors.white : Colors.grey[700],
                       ),
                     ),
-                    title: Row(
-                      children: [
-                        Expanded(
-                          child: Text(
-                            station.title,
-                            style: const TextStyle(fontWeight: FontWeight.bold),
-                          ),
-                        ),
-                        if (station.isLive)
-                          Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                            decoration: BoxDecoration(
-                              color: Colors.red,
-                              borderRadius: BorderRadius.circular(4),
-                            ),
-                            child: const Text(
-                              'LIVE',
-                              style: TextStyle(color: Colors.white, fontSize: 10, fontWeight: FontWeight.bold),
-                            ),
-                          ),
-                      ],
+                    title: Text(
+                      station.title,
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        color: isCurrentlyPlaying ? Theme.of(context).colorScheme.primary : null,
+                      ),
                     ),
                     subtitle: Text(station.subtitle),
+                    trailing: station.isLive 
+                      ? Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                          decoration: BoxDecoration(color: Colors.red, borderRadius: BorderRadius.circular(4)),
+                          child: const Text('LIVE', style: TextStyle(color: Colors.white, fontSize: 10, fontWeight: FontWeight.bold)),
+                        )
+                      : null,
                     onTap: () => _togglePlay(index),
                   ),
                 );

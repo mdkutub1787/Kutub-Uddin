@@ -20,6 +20,13 @@ dependencies:
   intl: ^0.20.3
   url_launcher: ^6.3.2
   http: ^1.6.0
+  path_provider: ^2.1.6
+  just_audio: ^0.10.6
+  flutter_tts: ^4.2.5
+  flutter_widget_from_html: ^0.17.2
+  flutter_localizations:
+    sdk: flutter
+  shared_preferences: ^2.5.5
   
 dev_dependencies:
   flutter_test:
@@ -31,9 +38,12 @@ flutter:
   uses-material-design: true
   assets:
     - assets/
+    - assets/lang/
 
 flutter_launcher_icons:
-  android: true
+  android: "launcher_icon"
   ios: true
   image_path: "assets/icon.png"
   min_sdk_android: 21
+  adaptive_icon_background: "#ffffff"
+  adaptive_icon_foreground: "assets/icon.png"

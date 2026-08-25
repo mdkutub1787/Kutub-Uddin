@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:deen_life/core/localization/app_localizations.dart';
 
 class Dua {
   final String title;
@@ -48,10 +49,14 @@ class DuaPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Hisnul Muslim (Duas)'),
+        title: Text(context.tr('Daily Duas')),
         centerTitle: true,
       ),
-      body: ListView.builder(
+      body: RefreshIndicator(
+        onRefresh: () async {
+          await Future.delayed(const Duration(milliseconds: 1000));
+        },
+        child: ListView.builder(
         padding: const EdgeInsets.all(16.0),
         itemCount: duas.length,
         itemBuilder: (context, index) {
@@ -96,9 +101,9 @@ class DuaPage extends StatelessWidget {
                         style: const TextStyle(fontStyle: FontStyle.italic),
                       ),
                       const SizedBox(height: 12),
-                      const Text(
-                        'Meaning:',
-                        style: TextStyle(fontWeight: FontWeight.bold),
+                      Text(
+                        '${context.tr('Meaning')}:',
+                        style: const TextStyle(fontWeight: FontWeight.bold),
                       ),
                       const SizedBox(height: 4),
                       Text(dua.meaning),
@@ -109,6 +114,7 @@ class DuaPage extends StatelessWidget {
             ),
           );
         },
+        ),
       ),
     );
   }

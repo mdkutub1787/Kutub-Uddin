@@ -1,22 +1,27 @@
 import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:flutter_compass/flutter_compass.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:deen_life/core/localization/app_localizations.dart';
+import '../providers/qibla_provider.dart';
 
-class QiblaPage extends StatelessWidget {
+class QiblaPage extends ConsumerWidget {
   const QiblaPage({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final qiblaData = ref.watch(qiblaProvider);
+
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Qibla Compass'),
+        title: Text(context.tr('Qibla Compass')),
         centerTitle: true,
       ),
       body: StreamBuilder<CompassEvent>(
         stream: FlutterCompass.events,
         builder: (context, snapshot) {
-          if (snapshot.hasError) {
-            return Center(child: Text('Error reading compass: ${snapshot.error}'));
+          if (qiblaData.status == QiblaStatus.error) {
+            return Center(child: Text('${context.tr('Error')}: ${qiblaData.errorMsg}'));
           }
 
           if (snapshot.connectionState == ConnectionState.waiting) {
@@ -26,12 +31,10 @@ class QiblaPage extends StatelessWidget {
           double? heading = snapshot.data?.heading;
 
           if (heading == null) {
-            return const Center(child: Text('Device does not have compass sensors.'));
+            return Center(child: Text(context.tr('Device does not have compass sensors.')));
           }
 
-          // Qibla direction from Bangladesh is roughly 261 degrees (West-South-West)
-          // We can calculate this dynamically using geolocator in the future
-          const double qiblaDirection = 261.0; 
+          final double qiblaDirection = qiblaData.qiblaDirection;
           
           return Center(
             child: Column(
@@ -44,7 +47,16 @@ class QiblaPage extends StatelessWidget {
                     fontWeight: FontWeight.bold,
                   ),
                 ),
-                const SizedBox(height: 50),
+                const SizedBox(height: 10),
+                Text(
+                  context.tr('Qibla'),
+                  style: const TextStyle(
+                    fontSize: 24,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.green,
+                  ),
+                ),
+                const SizedBox(height: 20),
                 Stack(
                   alignment: Alignment.center,
                   children: [
@@ -97,12 +109,12 @@ class QiblaPage extends StatelessWidget {
                   ],
                 ),
                 const SizedBox(height: 50),
-                const Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 32.0),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 32.0),
                   child: Text(
-                    'Rotate your phone until the green arrow points to the top.',
+                    context.tr('Rotate your phone until the green arrow points to the top.'),
                     textAlign: TextAlign.center,
-                    style: TextStyle(color: Colors.grey, fontSize: 16),
+                    style: const TextStyle(color: Colors.grey, fontSize: 16),
                   ),
                 ),
               ],

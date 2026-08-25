@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:deen_life/core/localization/app_localizations.dart';
 
 final tasbeehCounterProvider = StateProvider<int>((ref) => 0);
 final tasbeehGoalProvider = StateProvider<int>((ref) => 33);
@@ -15,7 +16,7 @@ class TasbeehPage extends ConsumerWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Tasbeeh'),
+        title: Text(context.tr('Tasbeeh Counter')),
         centerTitle: true,
         actions: [
           IconButton(
@@ -32,7 +33,7 @@ class TasbeehPage extends ConsumerWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Text(
-              'Subhanallah', // Placeholder for current tasbeeh phrase
+              context.tr('Subhanallah'),
               style: TextStyle(
                 fontSize: 32,
                 fontWeight: FontWeight.bold,
@@ -41,7 +42,7 @@ class TasbeehPage extends ConsumerWidget {
             ),
             const SizedBox(height: 10),
             Text(
-              'Goal: $goal',
+              '${context.tr('Goal')}: $goal',
               style: const TextStyle(fontSize: 18, color: Colors.grey),
             ),
             const SizedBox(height: 50),
@@ -73,21 +74,34 @@ class TasbeehPage extends ConsumerWidget {
                   ],
                 ),
                 child: Center(
-                  child: Text(
-                    '$count',
-                    style: TextStyle(
-                      fontSize: 80,
-                      fontWeight: FontWeight.bold,
-                      color: Theme.of(context).colorScheme.primary,
-                    ),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                        '$count',
+                        style: TextStyle(
+                          fontSize: 80,
+                          fontWeight: FontWeight.bold,
+                          color: Theme.of(context).colorScheme.primary,
+                        ),
+                      ),
+                      Text(
+                        context.tr('Count'),
+                        style: TextStyle(
+                          fontSize: 18,
+                          color: Colors.grey.shade600,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ],
                   ),
                 ),
               ),
             ),
             const SizedBox(height: 50),
-            const Text(
-              'Tap the circle to count',
-              style: TextStyle(fontSize: 16, color: Colors.grey),
+            Text(
+              context.tr('Tap the circle to count'),
+              style: const TextStyle(fontSize: 16, color: Colors.grey),
             ),
           ],
         ),

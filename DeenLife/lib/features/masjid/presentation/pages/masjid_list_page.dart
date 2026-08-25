@@ -4,6 +4,7 @@ import 'package:url_launcher/url_launcher.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:geolocator/geolocator.dart';
+import 'package:deen_life/core/localization/app_localizations.dart';
 import '../../../prayer_times/presentation/providers/prayer_times_provider.dart';
 
 class Masjid {
@@ -32,15 +33,19 @@ final realMasjidsProvider = FutureProvider<List<Masjid>>((ref) async {
   final query = '''
     [out:json];
     (
-      node["amenity"="place_of_worship"]["religion"="muslim"](around:5000, ${position.latitude}, ${position.longitude});
-      way["amenity"="place_of_worship"]["religion"="muslim"](around:5000, ${position.latitude}, ${position.longitude});
+      node["amenity"="place_of_worship"]["religion"="muslim"](around:20000, ${position.latitude}, ${position.longitude});
+      way["amenity"="place_of_worship"]["religion"="muslim"](around:20000, ${position.latitude}, ${position.longitude});
     );
     out center;
   ''';
 
   final response = await http.post(
     Uri.parse('https://overpass-api.de/api/interpreter'),
-    body: query,
+    headers: {
+      'Content-Type': 'application/x-www-form-urlencoded',
+      'User-Agent': 'DeenLifeApp/1.0',
+    },
+    body: 'data=${Uri.encodeComponent(query)}',
   );
 
   if (response.statusCode == 200) {
@@ -85,13 +90,13 @@ class MasjidListPage extends ConsumerWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('My Masjid'),
+        title: Text(context.tr('Nearby Masjids')),
         centerTitle: true,
       ),
       body: masjidsAsync.when(
         data: (masjids) {
           if (masjids.isEmpty) {
-            return const Center(child: Text('No mosques found nearby (5km radius).'));
+            return Center(child: Text(context.tr('No mosques found nearby (5km radius).')));
           }
           return ListView.builder(
             padding: const EdgeInsets.all(16),
@@ -102,8 +107,17 @@ class MasjidListPage extends ConsumerWidget {
             },
           );
         },
-        loading: () => const Center(child: CircularProgressIndicator()),
-        error: (error, stack) => Center(child: Text('Error: $error')),
+        loading: () => Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              const CircularProgressIndicator(),
+              const SizedBox(height: 16),
+              Text(context.tr('Searching for nearby Masjids...')),
+            ],
+          ),
+        ),
+        error: (error, stack) => Center(child: Text('${context.tr('Error')}: $error')),
       ),
     );
   }

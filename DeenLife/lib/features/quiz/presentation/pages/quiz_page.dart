@@ -133,74 +133,82 @@ class _QuizPageState extends State<QuizPage> {
         title: const Text('Islamic Quiz'),
         centerTitle: true,
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(20.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            LinearProgressIndicator(
-              value: (_currentIndex + 1) / _questions.length,
-              backgroundColor: Colors.grey[300],
-              color: Theme.of(context).colorScheme.primary,
-              minHeight: 8,
-              borderRadius: BorderRadius.circular(4),
-            ),
-            const SizedBox(height: 24),
-            Text(
-              'Question ${_currentIndex + 1} of ${_questions.length}',
-              style: const TextStyle(
-                color: Colors.grey,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            const SizedBox(height: 12),
-            Text(
-              question.question,
-              style: const TextStyle(
-                fontSize: 24,
-                fontWeight: FontWeight.bold,
-                height: 1.4,
-              ),
-            ),
-            const SizedBox(height: 32),
-            ...List.generate(question.options.length, (index) {
-              Color buttonColor = Theme.of(context).cardColor;
-              Color textColor = Theme.of(context).textTheme.bodyLarge?.color ?? Colors.black;
-              
-              if (_answered) {
-                if (index == question.correctIndex) {
-                  buttonColor = Colors.green;
-                  textColor = Colors.white;
-                } else if (index == _selectedIndex) {
-                  buttonColor = Colors.red;
-                  textColor = Colors.white;
-                }
-              }
-
-              return Padding(
-                padding: const EdgeInsets.only(bottom: 16.0),
-                child: ElevatedButton(
-                  onPressed: () => _submitAnswer(index),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: buttonColor,
-                    foregroundColor: textColor,
-                    padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 20),
-                    alignment: Alignment.centerLeft,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(16),
-                      side: BorderSide(
-                        color: _answered ? Colors.transparent : Colors.grey.withOpacity(0.3),
-                      ),
-                    ),
-                  ),
-                  child: Text(
-                    question.options[index],
-                    style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
+      body: RefreshIndicator(
+        onRefresh: () async {
+          await Future.delayed(const Duration(milliseconds: 1000));
+        },
+        child: SingleChildScrollView(
+          physics: const AlwaysScrollableScrollPhysics(),
+          child: Padding(
+            padding: const EdgeInsets.all(20.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                LinearProgressIndicator(
+                  value: (_currentIndex + 1) / _questions.length,
+                  backgroundColor: Colors.grey[300],
+                  color: Theme.of(context).colorScheme.primary,
+                  minHeight: 8,
+                  borderRadius: BorderRadius.circular(4),
+                ),
+                const SizedBox(height: 24),
+                Text(
+                  'Question ${_currentIndex + 1} of ${_questions.length}',
+                  style: const TextStyle(
+                    color: Colors.grey,
+                    fontWeight: FontWeight.bold,
                   ),
                 ),
-              );
-            }),
-          ],
+                const SizedBox(height: 12),
+                Text(
+                  question.question,
+                  style: const TextStyle(
+                    fontSize: 24,
+                    fontWeight: FontWeight.bold,
+                    height: 1.4,
+                  ),
+                ),
+                const SizedBox(height: 32),
+                ...List.generate(question.options.length, (index) {
+                  Color buttonColor = Theme.of(context).cardColor;
+                  Color textColor = Theme.of(context).textTheme.bodyLarge?.color ?? Colors.black;
+                  
+                  if (_answered) {
+                    if (index == question.correctIndex) {
+                      buttonColor = Colors.green;
+                      textColor = Colors.white;
+                    } else if (index == _selectedIndex) {
+                      buttonColor = Colors.red;
+                      textColor = Colors.white;
+                    }
+                  }
+
+                  return Padding(
+                    padding: const EdgeInsets.only(bottom: 16.0),
+                    child: ElevatedButton(
+                      onPressed: () => _submitAnswer(index),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: buttonColor,
+                        foregroundColor: textColor,
+                        padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 20),
+                        alignment: Alignment.centerLeft,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(16),
+                          side: BorderSide(
+                            color: _answered ? Colors.transparent : Colors.grey.withOpacity(0.3),
+                          ),
+                        ),
+                      ),
+                      child: Text(
+                        question.options[index],
+                        style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
+                      ),
+                    ),
+                  );
+                }),
+              ],
+            ),
+          ),
         ),
       ),
     );

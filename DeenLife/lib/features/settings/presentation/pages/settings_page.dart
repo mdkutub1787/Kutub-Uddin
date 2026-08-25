@@ -3,7 +3,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:adhan/adhan.dart';
-import '../../../../core/providers/language_provider.dart';
+import 'package:deen_life/core/localization/app_localizations.dart';
+import 'package:deen_life/core/localization/language_provider.dart';
 import '../../../prayer_times/presentation/providers/prayer_times_provider.dart';
 
 class SettingsPage extends ConsumerWidget {
@@ -15,16 +16,16 @@ class SettingsPage extends ConsumerWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Settings'),
+        title: Text(context.tr('Settings')),
         centerTitle: true,
       ),
       body: ListView(
         children: [
-          const Padding(
-            padding: EdgeInsets.all(16.0),
+          Padding(
+            padding: const EdgeInsets.all(16.0),
             child: Text(
-              'App Configuration',
-              style: TextStyle(
+              context.tr('App Settings'),
+              style: const TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.bold,
                 color: Colors.grey,
@@ -33,8 +34,8 @@ class SettingsPage extends ConsumerWidget {
           ),
           ListTile(
             leading: const Icon(Icons.location_on),
-            title: const Text('Location Settings'),
-            subtitle: const Text('Manage location for prayer times'),
+            title: Text(context.tr('Location Settings')),
+            subtitle: Text(context.tr('Manage location for prayer times')),
             trailing: const Icon(Icons.arrow_forward_ios, size: 16),
             onTap: () async {
               await Geolocator.openLocationSettings();
@@ -42,7 +43,7 @@ class SettingsPage extends ConsumerWidget {
           ),
           ListTile(
             leading: const Icon(Icons.calculate),
-            title: const Text('Prayer Calculation Method'),
+            title: Text(context.tr('Prayer Calculation Method')),
             subtitle: Text(_getCalcMethodName(calcMethod)),
             trailing: const Icon(Icons.arrow_forward_ios, size: 16),
             onTap: () {
@@ -51,23 +52,24 @@ class SettingsPage extends ConsumerWidget {
           ),
           ListTile(
             leading: const Icon(Icons.notifications),
-            title: const Text('Azan Notifications'),
-            subtitle: const Text('Configure prayer alerts'),
+            title: Text(context.tr('Azan Notifications')),
+            subtitle: Text(context.tr('Configure prayer alerts')),
             trailing: Switch(
               value: true,
               onChanged: (val) {
                  ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('Notifications enabled.')),
+                  SnackBar(content: Text(context.tr('Notifications enabled.'))),
                 );
               },
             ),
           ),
           const Divider(),
-          const Padding(
-            padding: EdgeInsets.all(16.0),
+          const Divider(),
+          Padding(
+            padding: const EdgeInsets.all(16.0),
             child: Text(
-              'App Language',
-              style: TextStyle(
+              context.tr('Change Language'),
+              style: const TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.bold,
                 color: Colors.grey,
@@ -79,21 +81,20 @@ class SettingsPage extends ConsumerWidget {
               final currentLang = ref.watch(languageProvider);
               return Column(
                 children: [
-                  RadioListTile<AppLanguage>(
-                    title: const Text('English'),
-                    value: AppLanguage.english,
-                    groupValue: currentLang,
+                  RadioListTile<String>(
+                    title: Text(context.tr('English')),
+                    value: 'en',
+                    groupValue: currentLang.languageCode,
                     onChanged: (val) {
-                      if (val != null) ref.read(languageProvider.notifier).setLanguage(val);
+                      if (val != null) ref.read(languageProvider.notifier).changeLanguage(val);
                     },
                   ),
-                  RadioListTile<AppLanguage>(
-                    title: const Text('বাংলা (Bengali)'),
-                    subtitle: const Text('Foundation added. Translations pending.'),
-                    value: AppLanguage.bengali,
-                    groupValue: currentLang,
+                  RadioListTile<String>(
+                    title: Text(context.tr('Bengali')),
+                    value: 'bn',
+                    groupValue: currentLang.languageCode,
                     onChanged: (val) {
-                      if (val != null) ref.read(languageProvider.notifier).setLanguage(val);
+                      if (val != null) ref.read(languageProvider.notifier).changeLanguage(val);
                     },
                   ),
                 ],
@@ -101,11 +102,12 @@ class SettingsPage extends ConsumerWidget {
             },
           ),
           const Divider(),
-          const Padding(
-            padding: EdgeInsets.all(16.0),
+          const Divider(),
+          Padding(
+            padding: const EdgeInsets.all(16.0),
             child: Text(
-              'About',
-              style: TextStyle(
+              context.tr('About'),
+              style: const TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.bold,
                 color: Colors.grey,
@@ -114,12 +116,12 @@ class SettingsPage extends ConsumerWidget {
           ),
           ListTile(
             leading: const Icon(Icons.info),
-            title: const Text('DeenLife App'),
-            subtitle: const Text('Version 1.0.0'),
+            title: Text(context.tr('DeenLife App')),
+            subtitle: Text('${context.tr('Version')} 1.0.0'),
           ),
           ListTile(
             leading: const Icon(Icons.star),
-            title: const Text('Rate Us'),
+            title: Text(context.tr('Rate Us')),
             trailing: const Icon(Icons.open_in_new, size: 16),
             onTap: () async {
               final url = Uri.parse('https://play.google.com/store/apps');
@@ -130,7 +132,7 @@ class SettingsPage extends ConsumerWidget {
           ),
           ListTile(
             leading: const Icon(Icons.privacy_tip),
-            title: const Text('Privacy Policy'),
+            title: Text(context.tr('Privacy Policy')),
             trailing: const Icon(Icons.open_in_new, size: 16),
             onTap: () async {
                final url = Uri.parse('https://google.com');
