@@ -12,8 +12,16 @@ class QuranPage extends StatelessWidget {
         title: const Text('Al-Quran'),
         centerTitle: true,
       ),
-      body: ListView.builder(
-        itemCount: quran.totalSurahCount,
+      body: Container(
+        decoration: const BoxDecoration(
+          image: DecorationImage(
+            image: AssetImage('assets/quran_pattern.jpg'),
+            fit: BoxFit.cover,
+            opacity: 0.15, // Make it very faint like a watermark
+          ),
+        ),
+        child: ListView.builder(
+          itemCount: quran.totalSurahCount,
         itemBuilder: (context, index) {
           final surahNumber = index + 1;
           return ListTile(
@@ -54,6 +62,7 @@ class QuranPage extends StatelessWidget {
             },
           );
         },
+        ),
       ),
     );
   }

@@ -27,12 +27,16 @@ final locationProvider = FutureProvider<Position>((ref) async {
   return await Geolocator.getCurrentPosition();
 });
 
+final calculationMethodProvider = StateProvider<CalculationMethod>((ref) {
+  return CalculationMethod.karachi;
+});
+
 final prayerTimesProvider = FutureProvider<PrayerData>((ref) async {
   final position = await ref.watch(locationProvider.future);
+  final calcMethod = ref.watch(calculationMethodProvider);
   
   final coordinates = Coordinates(position.latitude, position.longitude);
-  final date = DateComponents.from(DateTime.now());
-  final params = CalculationMethod.karachi.getParameters();
+  final params = calcMethod.getParameters();
   params.madhab = Madhab.hanafi; // Defaulting to Hanafi for Bangladesh/South Asia
 
   final prayerTimes = PrayerTimes.today(coordinates, params);
