@@ -3,14 +3,17 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:deen_life/core/localization/app_localizations.dart';
 import 'package:deen_life/core/utils/dialog_helper.dart';
+
 import '../../features/home/presentation/pages/home_page.dart';
-import '../../features/tasbeeh/presentation/pages/tasbeeh_page.dart';
 import '../../features/quran/presentation/pages/quran_page.dart';
-import '../../features/qibla/presentation/pages/qibla_page.dart';
-import '../../features/duas/presentation/pages/dua_page.dart';
+import '../../features/masjid/presentation/pages/masjid_list_page.dart';
+import '../../features/explore/presentation/pages/explore_page.dart';
+import '../../features/settings/presentation/pages/settings_page.dart';
 
 final selectedIndexProvider = StateProvider<int>((ref) => 0);
-final lastPopTimeProvider = StateProvider<DateTime>((ref) => DateTime.now().subtract(const Duration(seconds: 2)));
+final lastPopTimeProvider = StateProvider<DateTime>(
+  (ref) => DateTime.now().subtract(const Duration(seconds: 2)),
+);
 
 class MainLayout extends ConsumerWidget {
   const MainLayout({super.key});
@@ -22,22 +25,24 @@ class MainLayout extends ConsumerWidget {
     final pages = [
       const HomePage(),
       const QuranPage(),
-      const QiblaPage(),
-      DuaPage(),
-      const TasbeehPage(),
+      const MasjidListPage(),
+      const ExplorePage(),
+      const SettingsPage(),
     ];
 
     return PopScope(
       canPop: false,
       onPopInvoked: (didPop) async {
         if (didPop) return;
-        
+
         if (selectedIndex != 0) {
           ref.read(selectedIndexProvider.notifier).state = 0;
           return;
         }
 
-        final bool shouldExit = await DialogHelper.showAppExitConfirmation(context);
+        final bool shouldExit = await DialogHelper.showAppExitConfirmation(
+          context,
+        );
         if (shouldExit && context.mounted) {
           SystemNavigator.pop();
         }
@@ -61,19 +66,19 @@ class MainLayout extends ConsumerWidget {
               label: context.tr('Quran'),
             ),
             NavigationDestination(
+              icon: const Icon(Icons.mosque_outlined),
+              selectedIcon: const Icon(Icons.mosque),
+              label: context.tr('Masjid'),
+            ),
+            NavigationDestination(
               icon: const Icon(Icons.explore_outlined),
               selectedIcon: const Icon(Icons.explore),
-              label: context.tr('Qibla'),
+              label: context.tr('Explore'),
             ),
             NavigationDestination(
-              icon: const Icon(Icons.favorite_outline),
-              selectedIcon: const Icon(Icons.favorite),
-              label: context.tr('Duas'),
-            ),
-            NavigationDestination(
-              icon: const Icon(Icons.touch_app_outlined),
-              selectedIcon: const Icon(Icons.touch_app),
-              label: context.tr('Tasbeeh'),
+              icon: const Icon(Icons.settings_outlined),
+              selectedIcon: const Icon(Icons.settings),
+              label: context.tr('Settings'),
             ),
           ],
         ),
@@ -81,5 +86,3 @@ class MainLayout extends ConsumerWidget {
     );
   }
 }
-
-

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:deen_life/core/localization/app_localizations.dart';
 
 class Kalima {
   final String title;
@@ -41,81 +42,108 @@ class KalimaPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: const Color(0xFFF8F9FA),
       appBar: AppBar(
-        title: const Text('Kalima Collection'),
+        title: Text(
+          context.tr('Kalima Collection'),
+          style: const TextStyle(fontWeight: FontWeight.bold),
+        ),
         centerTitle: true,
+        backgroundColor: const Color(0xFF1E3A5F),
+        foregroundColor: Colors.white,
       ),
       body: RefreshIndicator(
-        onRefresh: () async {
-          await Future.delayed(const Duration(milliseconds: 1000));
-        },
+        onRefresh: () async =>
+            await Future.delayed(const Duration(milliseconds: 1000)),
         child: ListView.builder(
-          padding: const EdgeInsets.all(16.0),
+          padding: const EdgeInsets.all(20.0),
           itemCount: kalimas.length,
           itemBuilder: (context, index) {
             final kalima = kalimas[index];
-            return Card(
-              elevation: 2,
-              margin: const EdgeInsets.only(bottom: 16),
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-              child: Padding(
-                padding: const EdgeInsets.all(20.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    Text(
-                      kalima.title,
-                      style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                        color: Theme.of(context).colorScheme.primary,
-                      ),
+            return Container(
+              margin: const EdgeInsets.only(bottom: 20),
+              padding: const EdgeInsets.all(24),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(16),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withAlpha(10),
+                    blurRadius: 10,
+                    offset: const Offset(0, 4),
+                  ),
+                ],
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  Text(
+                    kalima.title,
+                    style: const TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                      color: Color(0xFF1E3A5F),
                     ),
-                    const SizedBox(height: 16),
-                    Text(
-                      kalima.arabic,
-                      textAlign: TextAlign.right,
-                      style: const TextStyle(
-                        fontSize: 28,
-                        height: 1.8,
-                      ),
+                  ),
+                  const SizedBox(height: 20),
+                  Text(
+                    kalima.arabic,
+                    textAlign: TextAlign.center,
+                    style: const TextStyle(
+                      fontSize: 28,
+                      height: 1.8,
+                      fontWeight: FontWeight.bold,
+                      color: Color(0xFF1E3A5F),
                     ),
-                    const SizedBox(height: 16),
-                    Container(
-                      padding: const EdgeInsets.all(12),
-                      decoration: BoxDecoration(
-                        color: Theme.of(context).colorScheme.primary.withOpacity(0.05),
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          const Text(
-                            'Pronunciation:',
-                            style: TextStyle(fontWeight: FontWeight.bold),
-                          ),
-                          const SizedBox(height: 4),
-                          Text(
-                            kalima.pronunciation,
-                            style: const TextStyle(fontStyle: FontStyle.italic),
-                          ),
-                          const SizedBox(height: 12),
-                          const Text(
-                            'Meaning:',
-                            style: TextStyle(fontWeight: FontWeight.bold),
-                          ),
-                          const SizedBox(height: 4),
-                          Text(kalima.meaning),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
+                  ),
+                  const SizedBox(height: 20),
+                  const Divider(),
+                  const SizedBox(height: 20),
+                  _kalimaSection(
+                    context,
+                    'Pronunciation',
+                    kalima.pronunciation,
+                    italic: true,
+                  ),
+                  const SizedBox(height: 16),
+                  _kalimaSection(context, 'Meaning', kalima.meaning),
+                ],
               ),
             );
           },
         ),
       ),
+    );
+  }
+
+  Widget _kalimaSection(
+    BuildContext context,
+    String label,
+    String content, {
+    bool italic = false,
+  }) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          context.tr(label),
+          style: const TextStyle(
+            fontWeight: FontWeight.bold,
+            color: Colors.grey,
+            fontSize: 12,
+          ),
+        ),
+        const SizedBox(height: 6),
+        Text(
+          content,
+          style: TextStyle(
+            fontSize: 14,
+            height: 1.5,
+            fontStyle: italic ? FontStyle.italic : FontStyle.normal,
+            color: Colors.black87,
+          ),
+        ),
+      ],
     );
   }
 }

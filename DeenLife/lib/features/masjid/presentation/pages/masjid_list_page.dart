@@ -2,35 +2,20 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:http/http.dart' as http;
+
 import 'dart:convert';
+
 import 'package:geolocator/geolocator.dart';
 import 'package:deen_life/core/localization/app_localizations.dart';
+
 import '../../../prayer_times/presentation/providers/prayer_times_provider.dart';
-
-class Masjid {
-  final String nameEn;
-  final String nameBn;
-  final double distance;
-  final bool isVerified;
-  final String nextPrayer;
-  final String nextPrayerTime;
-  final String jumuahTime;
-
-  Masjid({
-    required this.nameEn,
-    required this.nameBn,
-    required this.distance,
-    this.isVerified = false,
-    this.nextPrayer = 'Asr',
-    this.nextPrayerTime = '4:30 PM',
-    this.jumuahTime = '1:30 PM',
-  });
-}
+import '../../domain/models/masjid.dart';
 
 final realMasjidsProvider = FutureProvider<List<Masjid>>((ref) async {
   final position = await ref.watch(locationProvider.future);
-  
-  final query = '''
+
+  final query =
+      '''
     [out:json];
     (
       node["amenity"="place_of_worship"]["religion"="muslim"](around:20000, ${position.latitude}, ${position.longitude});
@@ -57,23 +42,31 @@ final realMasjidsProvider = FutureProvider<List<Masjid>>((ref) async {
       final tags = el['tags'] ?? {};
       String name = tags['name:en'] ?? tags['name'] ?? 'Unnamed Mosque';
       String nameBn = tags['name:bn'] ?? tags['name'] ?? 'মসজিদ';
-      
+      String city = tags['addr:city'] ?? 'Unknown';
+
       double lat = el['lat'] ?? el['center']['lat'];
       double lon = el['lon'] ?? el['center']['lon'];
 
       double distanceInMeters = Geolocator.distanceBetween(
-        position.latitude, position.longitude,
-        lat, lon
+        position.latitude,
+        position.longitude,
+        lat,
+        lon,
       );
 
-      masjids.add(Masjid(
-        nameEn: name,
-        nameBn: nameBn,
-        distance: distanceInMeters / 1000.0, // km
-        isVerified: tags.containsKey('name'), // Just a dummy heuristic
-      ));
+      masjids.add(
+        Masjid(
+          nameEn: name,
+          nameBn: nameBn,
+          location: city,
+          distance: distanceInMeters / 1000.0, // km
+          isVerified: tags.containsKey('name'),
+          iqamahTime: '5:00 PM', // Placeholder
+          nextPrayer: 'Asr', // Placeholder
+        ),
+      );
     }
-    
+
     masjids.sort((a, b) => a.distance.compareTo(b.distance));
     return masjids.take(20).toList();
   } else {
@@ -90,21 +83,49 @@ class MasjidListPage extends ConsumerWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(context.tr('Nearby Masjids')),
+        title: Text(context.tr('Community & Masjids')),
         centerTitle: true,
+        backgroundColor: const Color(0xFF1E3A5F),
+        foregroundColor: Colors.white,
       ),
       body: masjidsAsync.when(
         data: (masjids) {
           if (masjids.isEmpty) {
-            return Center(child: Text(context.tr('No mosques found nearby (5km radius).')));
+            return Center(
+              child: Text(context.tr('No mosques found nearby (5km radius).')),
+            );
           }
-          return ListView.builder(
-            padding: const EdgeInsets.all(16),
-            itemCount: masjids.length,
-            itemBuilder: (context, index) {
-              final masjid = masjids[index];
-              return _buildMasjidCard(context, masjid);
-            },
+          return Column(
+            children: [
+              Container(
+                padding: const EdgeInsets.all(16),
+                color: Colors.blue.withAlpha(20),
+                width: double.infinity,
+                child: Column(
+                  children: [
+                    const Icon(Icons.people_alt, size: 40, color: Colors.blue),
+                    const SizedBox(height: 8),
+                    Text(
+                      context.tr(
+                        'Find your local masjid and stay connected to community events, announcements, and accurate Iqamah times.',
+                      ),
+                      textAlign: TextAlign.center,
+                      style: const TextStyle(color: Colors.blueGrey),
+                    ),
+                  ],
+                ),
+              ),
+              Expanded(
+                child: ListView.builder(
+                  padding: const EdgeInsets.all(16),
+                  itemCount: masjids.length,
+                  itemBuilder: (context, index) {
+                    final masjid = masjids[index];
+                    return _buildMasjidCard(context, masjid);
+                  },
+                ),
+              ),
+            ],
           );
         },
         loading: () => Center(
@@ -117,7 +138,8 @@ class MasjidListPage extends ConsumerWidget {
             ],
           ),
         ),
-        error: (error, stack) => Center(child: Text('${context.tr('Error')}: $error')),
+        error: (error, stack) =>
+            Center(child: Text('${context.tr('Error')}: $error')),
       ),
     );
   }
@@ -161,7 +183,10 @@ class MasjidListPage extends ConsumerWidget {
                   ),
                   if (masjid.isVerified)
                     Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 8,
+                        vertical: 4,
+                      ),
                       decoration: BoxDecoration(
                         color: Colors.green.withOpacity(0.1),
                         borderRadius: BorderRadius.circular(12),
@@ -185,14 +210,22 @@ class MasjidListPage extends ConsumerWidget {
                 children: [
                   Row(
                     children: [
-                      Icon(Icons.location_on, size: 16, color: Theme.of(context).colorScheme.primary),
+                      Icon(
+                        Icons.location_on,
+                        size: 16,
+                        color: Theme.of(context).colorScheme.primary,
+                      ),
                       const SizedBox(width: 4),
                       Text('${masjid.distance.toStringAsFixed(1)} km away'),
                     ],
                   ),
                   Row(
                     children: [
-                      Icon(Icons.access_time, size: 16, color: Theme.of(context).colorScheme.primary),
+                      Icon(
+                        Icons.access_time,
+                        size: 16,
+                        color: Theme.of(context).colorScheme.primary,
+                      ),
                       const SizedBox(width: 4),
                       Text('Jumu\'ah: ${masjid.jumuahTime}'),
                     ],
@@ -255,7 +288,7 @@ class MasjidListPage extends ConsumerWidget {
                 children: [
                   _buildIqamaRow('Fajr', '5:00 AM'),
                   _buildIqamaRow('Dhuhr', '1:15 PM'),
-                  _buildIqamaRow('Asr', '4:30 PM', isBold: true),
+                  _buildIqamaRow('Asr', masjid.iqamahTime, isBold: true),
                   _buildIqamaRow('Maghrib', '6:15 PM'),
                   _buildIqamaRow('Isha', '7:45 PM'),
                   const Divider(),
@@ -264,28 +297,59 @@ class MasjidListPage extends ConsumerWidget {
               ),
             ),
             const SizedBox(height: 24),
-            ElevatedButton.icon(
-              onPressed: () async {
-                Navigator.pop(context);
-                final query = Uri.encodeComponent(masjid.nameEn);
-                final url = Uri.parse('https://www.google.com/maps/search/?api=1&query=$query');
-                if (await canLaunchUrl(url)) {
-                  await launchUrl(url, mode: LaunchMode.externalApplication);
-                } else {
-                  if (context.mounted) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text('Could not launch maps')),
-                    );
-                  }
-                }
-              },
-              icon: const Icon(Icons.directions),
-              label: const Text('Get Directions'),
-              style: ElevatedButton.styleFrom(
-                minimumSize: const Size(double.infinity, 50),
-                backgroundColor: Theme.of(context).colorScheme.primary,
-                foregroundColor: Colors.white,
-              ),
+            Row(
+              children: [
+                Expanded(
+                  child: ElevatedButton.icon(
+                    onPressed: () {
+                      Navigator.pop(context);
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(content: Text('Following \${masjid.nameEn}')),
+                      );
+                    },
+                    icon: const Icon(Icons.favorite),
+                    label: const Text('Follow Masjid'),
+                    style: ElevatedButton.styleFrom(
+                      padding: const EdgeInsets.symmetric(vertical: 16),
+                      backgroundColor: Colors.green,
+                      foregroundColor: Colors.white,
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: ElevatedButton.icon(
+                    onPressed: () async {
+                      Navigator.pop(context);
+                      final query = Uri.encodeComponent(masjid.nameEn);
+                      final url = Uri.parse(
+                        'https://www.google.com/maps/search/?api=1&query=$query',
+                      );
+                      if (await canLaunchUrl(url)) {
+                        await launchUrl(
+                          url,
+                          mode: LaunchMode.externalApplication,
+                        );
+                      } else {
+                        if (context.mounted) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                              content: Text('Could not launch maps'),
+                            ),
+                          );
+                        }
+                      }
+                    },
+                    icon: const Icon(Icons.directions),
+                    label: const Text('Directions'),
+                    style: ElevatedButton.styleFrom(
+                      padding: const EdgeInsets.symmetric(vertical: 16),
+                      backgroundColor: Theme.of(context).colorScheme.primary,
+                      foregroundColor: Colors.white,
+                    ),
+                  ),
+                ),
+              ],
             ),
             const SizedBox(height: 32),
           ],

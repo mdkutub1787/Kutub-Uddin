@@ -22,7 +22,8 @@ class DuaPage extends StatelessWidget {
     Dua(
       title: 'Morning Dua',
       arabic: 'الْحَمْدُ لِلَّهِ الَّذِي أَحْيَانَا بَعْدَ مَا أَمَاتَنَا وَإِلَيْهِ النُّشُورُ',
-      pronunciation: 'Alhamdu lillahil-ladhi ahyana ba\'da ma amatana wa ilaihin-nushur',
+      pronunciation:
+          'Alhamdu lillahil-ladhi ahyana ba\'da ma amatana wa ilaihin-nushur',
       meaning: 'Praise is to Allah Who gives us life after He has caused us to die and to Him is the return.',
     ),
     Dua(
@@ -48,8 +49,14 @@ class DuaPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: const Color(0xFFF8F9FA),
       appBar: AppBar(
-        title: Text(context.tr('Daily Duas')),
+        title: Text(
+          context.tr('Daily Duas'),
+          style: const TextStyle(fontWeight: FontWeight.bold),
+        ),
+        backgroundColor: const Color(0xFF1E3A5F),
+        foregroundColor: Colors.white,
         centerTitle: true,
       ),
       body: RefreshIndicator(
@@ -57,65 +64,112 @@ class DuaPage extends StatelessWidget {
           await Future.delayed(const Duration(milliseconds: 1000));
         },
         child: ListView.builder(
-        padding: const EdgeInsets.all(16.0),
-        itemCount: duas.length,
-        itemBuilder: (context, index) {
-          final dua = duas[index];
-          return Card(
-            elevation: 2,
-            margin: const EdgeInsets.only(bottom: 16),
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-            child: ExpansionTile(
-              title: Text(
-                dua.title,
-                style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+          padding: const EdgeInsets.all(16.0),
+          itemCount: duas.length,
+          itemBuilder: (context, index) {
+            final dua = duas[index];
+            return Container(
+              margin: const EdgeInsets.only(bottom: 16),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(16),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withAlpha(10),
+                    blurRadius: 10,
+                    offset: const Offset(0, 4),
+                  ),
+                ],
               ),
-              childrenPadding: const EdgeInsets.all(16),
-              children: [
-                Text(
-                  dua.arabic,
-                  textAlign: TextAlign.right,
-                  style: const TextStyle(
-                    fontSize: 24,
-                    height: 1.8,
-                  ),
+              child: ExpansionTile(
+                tilePadding: const EdgeInsets.symmetric(
+                  horizontal: 20,
+                  vertical: 8,
                 ),
-                const SizedBox(height: 16),
-                Container(
-                  width: double.infinity,
-                  padding: const EdgeInsets.all(12),
+                shape: const RoundedRectangleBorder(
+                  borderRadius: BorderRadius.all(Radius.circular(16)),
+                ),
+                collapsedShape: const RoundedRectangleBorder(
+                  borderRadius: BorderRadius.all(Radius.circular(16)),
+                ),
+                leading: Container(
+                  padding: const EdgeInsets.all(8),
                   decoration: BoxDecoration(
-                    color: Theme.of(context).colorScheme.primary.withOpacity(0.05),
-                    borderRadius: BorderRadius.circular(8),
+                    color: const Color(0xFF1E3A5F).withAlpha(30),
+                    shape: BoxShape.circle,
                   ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const Text(
-                        'Pronunciation:',
-                        style: TextStyle(fontWeight: FontWeight.bold),
-                      ),
-                      const SizedBox(height: 4),
-                      Text(
-                        dua.pronunciation,
-                        style: const TextStyle(fontStyle: FontStyle.italic),
-                      ),
-                      const SizedBox(height: 12),
-                      Text(
-                        '${context.tr('Meaning')}:',
-                        style: const TextStyle(fontWeight: FontWeight.bold),
-                      ),
-                      const SizedBox(height: 4),
-                      Text(dua.meaning),
-                    ],
+                  child: const Icon(
+                    Icons.favorite,
+                    color: Color(0xFF1E3A5F),
+                    size: 20,
                   ),
                 ),
-              ],
-            ),
-          );
-        },
+                title: Text(
+                  dua.title,
+                  style: const TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 16,
+                    color: Color(0xFF1E3A5F),
+                  ),
+                ),
+                childrenPadding: const EdgeInsets.all(20),
+                children: [
+                  Text(
+                    dua.arabic,
+                    textAlign: TextAlign.center,
+                    style: const TextStyle(
+                      fontSize: 26,
+                      height: 1.8,
+                      fontWeight: FontWeight.bold,
+                      color: Color(0xFF1E3A5F),
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  _duaDetailSection(
+                    context,
+                    'Pronunciation',
+                    dua.pronunciation,
+                    italic: true,
+                  ),
+                  const SizedBox(height: 12),
+                  _duaDetailSection(context, 'Meaning', dua.meaning),
+                ],
+              ),
+            );
+          },
         ),
       ),
+    );
+  }
+
+  Widget _duaDetailSection(
+    BuildContext context,
+    String label,
+    String content, {
+    bool italic = false,
+  }) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          context.tr(label),
+          style: const TextStyle(
+            fontWeight: FontWeight.bold,
+            color: Colors.grey,
+            fontSize: 12,
+          ),
+        ),
+        const SizedBox(height: 4),
+        Text(
+          content,
+          style: TextStyle(
+            fontSize: 14,
+            height: 1.5,
+            fontStyle: italic ? FontStyle.italic : FontStyle.normal,
+            color: Colors.black87,
+          ),
+        ),
+      ],
     );
   }
 }

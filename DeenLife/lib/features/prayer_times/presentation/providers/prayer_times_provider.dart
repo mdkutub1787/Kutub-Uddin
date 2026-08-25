@@ -1,6 +1,9 @@
 import 'package:adhan/adhan.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:geocoding/geocoding.dart';
+import 'package:hijri/hijri_calendar.dart';
+
 import '../../domain/models/prayer_data.dart';
 
 final locationProvider = FutureProvider<Position>((ref) async {
@@ -21,7 +24,9 @@ final locationProvider = FutureProvider<Position>((ref) async {
   }
 
   if (permission == LocationPermission.deniedForever) {
-    throw Exception('Location permissions are permanently denied, we cannot request permissions.');
+    throw Exception(
+      'Location permissions are permanently denied, we cannot request permissions.',
+    );
   }
 
   return await Geolocator.getCurrentPosition();
@@ -34,12 +39,33 @@ final calculationMethodProvider = StateProvider<CalculationMethod>((ref) {
 final prayerTimesProvider = FutureProvider<PrayerData>((ref) async {
   final position = await ref.watch(locationProvider.future);
   final calcMethod = ref.watch(calculationMethodProvider);
-  
+
   final coordinates = Coordinates(position.latitude, position.longitude);
   final params = calcMethod.getParameters();
-  params.madhab = Madhab.hanafi; // Defaulting to Hanafi for Bangladesh/South Asia
+  params.madhab = Madhab.hanafi;
 
   final prayerTimes = PrayerTimes.today(coordinates, params);
+
+  // Get Hijri Date using hijri package
+  final hijri = HijriCalendar.now();
+  final hijriFormatted = "${hijri.hDay} ${hijri.longMonthName} ${hijri.hYear}";
+
+  // Get City Name
+  String city = "Unknown";
+  try {
+    List<Placemark> placemarks = await placemarkFromCoordinates(
+      position.latitude,
+      position.longitude,
+    );
+    if (placemarks.isNotEmpty) {
+      city =
+          placemarks.first.locality ??
+          placemarks.first.subAdministrativeArea ??
+          "Unknown";
+    }
+  } catch (e) {
+    city = "Location Error";
+  }
 
   String nextName = '';
   DateTime nextTime = DateTime.now();
@@ -70,8 +96,9 @@ final prayerTimesProvider = FutureProvider<PrayerData>((ref) async {
       nextTime = prayerTimes.isha;
       break;
     case Prayer.none:
-      // If after Isha, the next prayer is Fajr tomorrow
-      final tomorrow = DateComponents.from(DateTime.now().add(const Duration(days: 1)));
+      final tomorrow = DateComponents.from(
+        DateTime.now().add(const Duration(days: 1)),
+      );
       final tomorrowPrayerTimes = PrayerTimes(coordinates, tomorrow, params);
       nextName = 'Fajr';
       nextTime = tomorrowPrayerTimes.fajr;
@@ -87,5 +114,7 @@ final prayerTimesProvider = FutureProvider<PrayerData>((ref) async {
     sunrise: prayerTimes.sunrise,
     nextPrayerName: nextName,
     nextPrayerTime: nextTime,
+    city: city,
+    hijriDate: hijriFormatted,
   );
 });

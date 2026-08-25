@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:deen_life/core/localization/app_localizations.dart';
 
 class MoodResult {
   final String source;
   final String text;
   final String care;
-
   MoodResult({required this.source, required this.text, this.care = ''});
 }
 
@@ -12,13 +12,11 @@ class EmotionMood {
   final String id;
   final String nameEn;
   final List<MoodResult> results;
-
   EmotionMood({required this.id, required this.nameEn, required this.results});
 }
 
 class EmotionsPage extends StatefulWidget {
   const EmotionsPage({super.key});
-
   @override
   State<EmotionsPage> createState() => _EmotionsPageState();
 }
@@ -54,46 +52,48 @@ class _EmotionsPageState extends State<EmotionsPage> {
   void _onMoodSelected(String id) {
     setState(() {
       _activeMoodId = id;
-      if (!_moodIndices.containsKey(id)) {
-        _moodIndices[id] = 0;
-      }
+      if (!_moodIndices.containsKey(id)) _moodIndices[id] = 0;
     });
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: const Color(0xFFF8F9FA),
       appBar: AppBar(
-        title: const Text('How are you feeling?'),
+        title: Text(
+          context.tr('How are you feeling?'),
+          style: const TextStyle(fontWeight: FontWeight.bold),
+        ),
         centerTitle: true,
+        backgroundColor: const Color(0xFF1E3A5F),
+        foregroundColor: Colors.white,
       ),
-      body: RefreshIndicator(
-        onRefresh: () async {
-          await Future.delayed(const Duration(milliseconds: 1000));
-        },
-        child: SingleChildScrollView(
-          physics: const AlwaysScrollableScrollPhysics(),
-          padding: const EdgeInsets.all(16.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              Wrap(
-                spacing: 8,
-                runSpacing: 8,
-                alignment: WrapAlignment.center,
-                children: _moods.map((mood) {
-                  final isActive = _activeMoodId == mood.id;
-                  return ChoiceChip(
-                    label: Text(mood.nameEn),
-                    selected: isActive,
-                    onSelected: (_) => _onMoodSelected(mood.id),
-                  );
-                }).toList(),
-              ),
-              const SizedBox(height: 32),
-              if (_activeMoodId != null) _buildResultCard(),
-            ],
-          ),
+      body: SingleChildScrollView(
+        padding: const EdgeInsets.all(24.0),
+        child: Column(
+          children: [
+            Wrap(
+              spacing: 12,
+              runSpacing: 12,
+              alignment: WrapAlignment.center,
+              children: _moods.map((mood) {
+                final isActive = _activeMoodId == mood.id;
+                return ChoiceChip(
+                  label: Text(mood.nameEn),
+                  selected: isActive,
+                  onSelected: (_) => _onMoodSelected(mood.id),
+                  selectedColor: const Color(0xFF1E3A5F),
+                  labelStyle: TextStyle(
+                    color: isActive ? Colors.white : const Color(0xFF1E3A5F),
+                    fontWeight: FontWeight.bold,
+                  ),
+                );
+              }).toList(),
+            ),
+            const SizedBox(height: 40),
+            if (_activeMoodId != null) _buildResultCard(),
+          ],
         ),
       ),
     );
@@ -104,17 +104,61 @@ class _EmotionsPageState extends State<EmotionsPage> {
     final idx = _moodIndices[mood.id] ?? 0;
     final result = mood.results[idx];
 
-    return Card(
-      child: Padding(
-        padding: const EdgeInsets.all(24),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(result.source, style: const TextStyle(fontWeight: FontWeight.bold)),
-            const SizedBox(height: 8),
-            Text(result.text, style: const TextStyle(fontSize: 18)),
+    return Container(
+      padding: const EdgeInsets.all(32),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(24),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withAlpha(5),
+            blurRadius: 20,
+            offset: const Offset(0, 10),
+          ),
+        ],
+      ),
+      child: Column(
+        children: [
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+            decoration: BoxDecoration(
+              color: const Color(0xFF1E3A5F).withAlpha(20),
+              borderRadius: BorderRadius.circular(20),
+            ),
+            child: Text(
+              result.source,
+              style: const TextStyle(
+                color: Color(0xFF1E3A5F),
+                fontWeight: FontWeight.bold,
+                fontSize: 12,
+              ),
+            ),
+          ),
+          const SizedBox(height: 24),
+          Text(
+            result.text,
+            textAlign: TextAlign.center,
+            style: const TextStyle(
+              fontSize: 20,
+              height: 1.6,
+              fontWeight: FontWeight.w500,
+              color: Color(0xFF1E3A5F),
+            ),
+          ),
+          if (result.care.isNotEmpty) ...[
+            const SizedBox(height: 24),
+            const Divider(),
+            const SizedBox(height: 24),
+            Text(
+              result.care,
+              textAlign: TextAlign.center,
+              style: const TextStyle(
+                fontStyle: FontStyle.italic,
+                color: Colors.grey,
+              ),
+            ),
           ],
-        ),
+        ],
       ),
     );
   }

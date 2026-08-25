@@ -20,7 +20,8 @@ const List<Dua> dailyDuas = [
     title: 'Before Sleeping',
     arabic: 'بِاسْمِكَ اللَّهُمَّ أَمُوتُ وَأَحْيَا',
     meaningEn: 'In Your name, O Allah, I die and I live.',
-    meaningBn: 'হে আল্লাহ! আপনার নামেই আমি মৃত্যুবরণ করি এবং আপনার নামেই জীবিত হই।',
+    meaningBn:
+        'হে আল্লাহ! আপনার নামেই আমি মৃত্যুবরণ করি এবং আপনার নামেই জীবিত হই।',
   ),
   Dua(
     id: 2,
@@ -74,7 +75,8 @@ const List<Dua> dailyDuas = [
   Dua(
     id: 9,
     title: 'When in Distress',
-    arabic: 'لَا إِلَهَ إِلَّا أَنْتَ سُبْحَانَكَ إِنِّي كُنْتُ مِنَ الظَّالِمِينَ',
+    arabic:
+        'لَا إِلَهَ إِلَّا أَنْتَ سُبْحَانَكَ إِنِّي كُنْتُ مِنَ الظَّالِمِينَ',
     meaningEn: 'There is none worthy of worship but You, glory is to You. Surely, I was among the wrongdoers.',
     meaningBn: 'আপনি ছাড়া আর কোনো মাবুদ নেই, আপনি পবিত্র। নিশ্চয়ই আমি জালিমদের অন্তর্ভুক্ত।',
   ),

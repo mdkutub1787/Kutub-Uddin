@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:deen_life/core/localization/app_localizations.dart';
 
 class QuizQuestion {
   final String question;
   final List<String> options;
   final int correctIndex;
-
   QuizQuestion({
     required this.question,
     required this.options,
@@ -14,7 +14,6 @@ class QuizQuestion {
 
 class QuizPage extends StatefulWidget {
   const QuizPage({super.key});
-
   @override
   State<QuizPage> createState() => _QuizPageState();
 }
@@ -28,7 +27,12 @@ class _QuizPageState extends State<QuizPage> {
   final List<QuizQuestion> _questions = [
     QuizQuestion(
       question: 'Which Surah is considered the "Heart of the Quran"?',
-      options: ['Surah Yaseen', 'Surah Al-Fatiha', 'Surah Ar-Rahman', 'Surah Al-Baqarah'],
+      options: [
+        'Surah Yaseen',
+        'Surah Al-Fatiha',
+        'Surah Ar-Rahman',
+        'Surah Al-Baqarah',
+      ],
       correctIndex: 0,
     ),
     QuizQuestion(
@@ -36,34 +40,15 @@ class _QuizPageState extends State<QuizPage> {
       options: ['1', '4', '25', '99'],
       correctIndex: 1,
     ),
-    QuizQuestion(
-      question: 'In which month was the Quran first revealed?',
-      options: ['Muharram', 'Rajab', 'Ramadan', 'Shawwal'],
-      correctIndex: 2,
-    ),
-    QuizQuestion(
-      question: 'Who was the first person to accept Islam?',
-      options: ['Abu Bakr (RA)', 'Ali (RA)', 'Khadija (RA)', 'Zayd (RA)'],
-      correctIndex: 2,
-    ),
-    QuizQuestion(
-      question: 'Which Prophet built the Kaaba with his son?',
-      options: ['Prophet Musa', 'Prophet Ibrahim', 'Prophet Nuh', 'Prophet Isa'],
-      correctIndex: 1,
-    ),
   ];
 
   void _submitAnswer(int index) {
     if (_answered) return;
-    
     setState(() {
       _answered = true;
       _selectedIndex = index;
-      if (index == _questions[_currentIndex].correctIndex) {
-        _score++;
-      }
+      if (index == _questions[_currentIndex].correctIndex) _score++;
     });
-
     Future.delayed(const Duration(seconds: 2), () {
       if (_currentIndex < _questions.length - 1) {
         setState(() {
@@ -82,42 +67,32 @@ class _QuizPageState extends State<QuizPage> {
       context: context,
       barrierDismissible: false,
       builder: (context) => AlertDialog(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-        title: const Text('Quiz Completed!', textAlign: TextAlign.center),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
+        title: const Text(
+          'Quiz Completed!',
+          textAlign: TextAlign.center,
+          style: TextStyle(fontWeight: FontWeight.bold),
+        ),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
             Text(
               'Your Score: $_score / ${_questions.length}',
-              style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-            ),
-            const SizedBox(height: 16),
-            Text(
-              _score == _questions.length ? 'Perfect! MashaAllah!' : 'Good effort! Keep learning.',
-              textAlign: TextAlign.center,
-              style: const TextStyle(color: Colors.grey),
+              style: const TextStyle(
+                fontSize: 24,
+                fontWeight: FontWeight.bold,
+                color: Color(0xFF1E3A5F),
+              ),
             ),
           ],
         ),
         actions: [
           TextButton(
             onPressed: () {
-              Navigator.pop(context); // Close dialog
-              Navigator.pop(context); // Go back to home
+              Navigator.pop(context);
+              Navigator.pop(context);
             },
             child: const Text('Back to Home'),
-          ),
-          ElevatedButton(
-            onPressed: () {
-              Navigator.pop(context);
-              setState(() {
-                _currentIndex = 0;
-                _score = 0;
-                _answered = false;
-                _selectedIndex = null;
-              });
-            },
-            child: const Text('Retry'),
           ),
         ],
       ),
@@ -127,88 +102,106 @@ class _QuizPageState extends State<QuizPage> {
   @override
   Widget build(BuildContext context) {
     final question = _questions[_currentIndex];
-
     return Scaffold(
+      backgroundColor: const Color(0xFFF8F9FA),
       appBar: AppBar(
-        title: const Text('Islamic Quiz'),
+        title: Text(
+          context.tr('Islamic Quiz'),
+          style: const TextStyle(fontWeight: FontWeight.bold),
+        ),
         centerTitle: true,
+        backgroundColor: const Color(0xFF1E3A5F),
+        foregroundColor: Colors.white,
       ),
-      body: RefreshIndicator(
-        onRefresh: () async {
-          await Future.delayed(const Duration(milliseconds: 1000));
-        },
-        child: SingleChildScrollView(
-          physics: const AlwaysScrollableScrollPhysics(),
-          child: Padding(
-            padding: const EdgeInsets.all(20.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                LinearProgressIndicator(
-                  value: (_currentIndex + 1) / _questions.length,
-                  backgroundColor: Colors.grey[300],
-                  color: Theme.of(context).colorScheme.primary,
-                  minHeight: 8,
-                  borderRadius: BorderRadius.circular(4),
-                ),
-                const SizedBox(height: 24),
-                Text(
-                  'Question ${_currentIndex + 1} of ${_questions.length}',
-                  style: const TextStyle(
-                    color: Colors.grey,
-                    fontWeight: FontWeight.bold,
+      body: Padding(
+        padding: const EdgeInsets.all(24.0),
+        child: Column(
+          children: [
+            LinearProgressIndicator(
+              value: (_currentIndex + 1) / _questions.length,
+              backgroundColor: Colors.white,
+              color: const Color(0xFF1E3A5F),
+              minHeight: 10,
+              borderRadius: BorderRadius.circular(5),
+            ),
+            const SizedBox(height: 40),
+            Container(
+              padding: const EdgeInsets.all(32),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(24),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withAlpha(5),
+                    blurRadius: 20,
+                    offset: const Offset(0, 10),
                   ),
-                ),
-                const SizedBox(height: 12),
-                Text(
-                  question.question,
-                  style: const TextStyle(
-                    fontSize: 24,
-                    fontWeight: FontWeight.bold,
-                    height: 1.4,
+                ],
+              ),
+              child: Column(
+                children: [
+                  Text(
+                    'Question ${_currentIndex + 1}',
+                    style: const TextStyle(
+                      color: Colors.grey,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 14,
+                    ),
                   ),
-                ),
-                const SizedBox(height: 32),
-                ...List.generate(question.options.length, (index) {
-                  Color buttonColor = Theme.of(context).cardColor;
-                  Color textColor = Theme.of(context).textTheme.bodyLarge?.color ?? Colors.black;
-                  
+                  const SizedBox(height: 16),
+                  Text(
+                    question.question,
+                    textAlign: TextAlign.center,
+                    style: const TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                      color: Color(0xFF1E3A5F),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 32),
+            Expanded(
+              child: ListView.builder(
+                itemCount: question.options.length,
+                itemBuilder: (context, index) {
+                  Color color = Colors.white;
                   if (_answered) {
-                    if (index == question.correctIndex) {
-                      buttonColor = Colors.green;
-                      textColor = Colors.white;
-                    } else if (index == _selectedIndex) {
-                      buttonColor = Colors.red;
-                      textColor = Colors.white;
-                    }
+                    if (index == question.correctIndex)
+                      color = Colors.green[100]!;
+                    else if (index == _selectedIndex)
+                      color = Colors.red[100]!;
                   }
-
-                  return Padding(
-                    padding: const EdgeInsets.only(bottom: 16.0),
+                  return Container(
+                    margin: const EdgeInsets.only(bottom: 12),
                     child: ElevatedButton(
                       onPressed: () => _submitAnswer(index),
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: buttonColor,
-                        foregroundColor: textColor,
-                        padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 20),
-                        alignment: Alignment.centerLeft,
+                        backgroundColor: color,
+                        foregroundColor: const Color(0xFF1E3A5F),
+                        elevation: 0,
+                        padding: const EdgeInsets.all(20),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(16),
                           side: BorderSide(
-                            color: _answered ? Colors.transparent : Colors.grey.withOpacity(0.3),
+                            color: const Color(0xFF1E3A5F).withAlpha(30),
                           ),
                         ),
                       ),
                       child: Text(
                         question.options[index],
-                        style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
+                        style: const TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 16,
+                        ),
                       ),
                     ),
                   );
-                }),
-              ],
+                },
+              ),
             ),
-          ),
+          ],
         ),
       ),
     );

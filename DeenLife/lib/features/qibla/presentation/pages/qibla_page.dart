@@ -1,8 +1,10 @@
 import 'dart:math' as math;
+
 import 'package:flutter/material.dart';
 import 'package:flutter_compass/flutter_compass.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:deen_life/core/localization/app_localizations.dart';
+
 import '../providers/qibla_provider.dart';
 
 class QiblaPage extends ConsumerWidget {
@@ -21,7 +23,9 @@ class QiblaPage extends ConsumerWidget {
         stream: FlutterCompass.events,
         builder: (context, snapshot) {
           if (qiblaData.status == QiblaStatus.error) {
-            return Center(child: Text('${context.tr('Error')}: ${qiblaData.errorMsg}'));
+            return Center(
+              child: Text('${context.tr('Error')}: ${qiblaData.errorMsg}'),
+            );
           }
 
           if (snapshot.connectionState == ConnectionState.waiting) {
@@ -31,11 +35,13 @@ class QiblaPage extends ConsumerWidget {
           double? heading = snapshot.data?.heading;
 
           if (heading == null) {
-            return Center(child: Text(context.tr('Device does not have compass sensors.')));
+            return Center(
+              child: Text(context.tr('Device does not have compass sensors.')),
+            );
           }
 
           final double qiblaDirection = qiblaData.qiblaDirection;
-          
+
           return Center(
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
@@ -69,7 +75,8 @@ class QiblaPage extends ConsumerWidget {
                         decoration: BoxDecoration(
                           shape: BoxShape.circle,
                           border: Border.all(
-                            color: Theme.of(context).colorScheme.primary.withOpacity(0.5),
+                            color: Theme.of(context).colorScheme.primary
+                                .withOpacity(0.5),
                             width: 2,
                           ),
                         ),
@@ -78,25 +85,50 @@ class QiblaPage extends ConsumerWidget {
                           children: [
                             Positioned(
                               top: 10,
-                              child: Text('N', style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Colors.red)),
+                              child: Text(
+                                'N',
+                                style: TextStyle(
+                                  fontSize: 24,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.red,
+                                ),
+                              ),
                             ),
                             Positioned(
                               bottom: 10,
-                              child: Text('S', style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
+                              child: Text(
+                                'S',
+                                style: TextStyle(
+                                  fontSize: 24,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
                             ),
                             Positioned(
                               right: 10,
-                              child: Text('E', style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
+                              child: Text(
+                                'E',
+                                style: TextStyle(
+                                  fontSize: 24,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
                             ),
                             Positioned(
                               left: 10,
-                              child: Text('W', style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
+                              child: Text(
+                                'W',
+                                style: TextStyle(
+                                  fontSize: 24,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
                             ),
                           ],
                         ),
                       ),
                     ),
-                    
+
                     // The Qibla pointer
                     Transform.rotate(
                       angle: ((qiblaDirection - heading) * (math.pi / 180)),
@@ -112,7 +144,9 @@ class QiblaPage extends ConsumerWidget {
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 32.0),
                   child: Text(
-                    context.tr('Rotate your phone until the green arrow points to the top.'),
+                    context.tr(
+                      'Rotate your phone until the green arrow points to the top.',
+                    ),
                     textAlign: TextAlign.center,
                     style: const TextStyle(color: Colors.grey, fontSize: 16),
                   ),

@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+
 import 'dart:async';
+
 import '../../../../shared/widgets/main_layout.dart';
 
 class SplashPage extends StatefulWidget {
@@ -9,7 +11,8 @@ class SplashPage extends StatefulWidget {
   State<SplashPage> createState() => _SplashPageState();
 }
 
-class _SplashPageState extends State<SplashPage> with SingleTickerProviderStateMixin {
+class _SplashPageState extends State<SplashPage>
+    with SingleTickerProviderStateMixin {
   late AnimationController _controller;
   late Animation<double> _fadeAnimation;
   late Animation<double> _scaleAnimation;
@@ -22,20 +25,23 @@ class _SplashPageState extends State<SplashPage> with SingleTickerProviderStateM
       duration: const Duration(milliseconds: 1500),
     );
 
-    _fadeAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
-      CurvedAnimation(parent: _controller, curve: Curves.easeIn),
-    );
+    _fadeAnimation = Tween<double>(
+      begin: 0.0,
+      end: 1.0,
+    ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeIn));
 
-    _scaleAnimation = Tween<double>(begin: 0.8, end: 1.0).animate(
-      CurvedAnimation(parent: _controller, curve: Curves.easeOutBack),
-    );
+    _scaleAnimation = Tween<double>(
+      begin: 0.8,
+      end: 1.0,
+    ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeOutBack));
 
     _controller.forward();
 
     Timer(const Duration(seconds: 3), () {
       Navigator.of(context).pushReplacement(
         PageRouteBuilder(
-          pageBuilder: (context, animation, secondaryAnimation) => const MainLayout(),
+          pageBuilder: (context, animation, secondaryAnimation) =>
+              const MainLayout(),
           transitionsBuilder: (context, animation, secondaryAnimation, child) {
             return FadeTransition(opacity: animation, child: child);
           },
@@ -61,10 +67,7 @@ class _SplashPageState extends State<SplashPage> with SingleTickerProviderStateM
           // Subtle background pattern (reusing the faint quran pattern for elegance)
           Opacity(
             opacity: 0.05,
-            child: Image.asset(
-              'assets/quran_pattern.jpg',
-              fit: BoxFit.cover,
-            ),
+            child: Image.asset('assets/quran_pattern.jpg', fit: BoxFit.cover),
           ),
           Center(
             child: FadeTransition(

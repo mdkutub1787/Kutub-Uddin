@@ -1,5 +1,6 @@
 import 'package:adhan/adhan.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+
 import '../../../prayer_times/presentation/providers/prayer_times_provider.dart';
 
 enum QiblaStatus { loading, success, error }
@@ -28,10 +29,7 @@ final qiblaProvider = Provider<QiblaData>((ref) {
         status: QiblaStatus.success,
       );
     },
-    loading: () => QiblaData(
-      qiblaDirection: 0,
-      status: QiblaStatus.loading,
-    ),
+    loading: () => QiblaData(qiblaDirection: 0, status: QiblaStatus.loading),
     error: (err, stack) => QiblaData(
       qiblaDirection: 0,
       status: QiblaStatus.error,

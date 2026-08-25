@@ -32,7 +32,7 @@ class _HadithSectionPageState extends State<HadithSectionPage> {
     await _flutterTts.setSpeechRate(0.5);
     await _flutterTts.setVolume(1.0);
     await _flutterTts.setPitch(1.0);
-    
+
     _flutterTts.setCompletionHandler(() {
       if (mounted) {
         setState(() {
@@ -60,7 +60,7 @@ class _HadithSectionPageState extends State<HadithSectionPage> {
     setState(() {
       _playingIndex = index;
     });
-    
+
     await _flutterTts.stop();
     await _flutterTts.speak(text);
   }
@@ -69,7 +69,9 @@ class _HadithSectionPageState extends State<HadithSectionPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.sectionName.isEmpty ? 'Chapter' : widget.sectionName),
+        title: Text(
+          widget.sectionName.isEmpty ? 'Chapter' : widget.sectionName,
+        ),
         centerTitle: true,
       ),
       body: RefreshIndicator(
@@ -88,7 +90,12 @@ class _HadithSectionPageState extends State<HadithSectionPage> {
     );
   }
 
-  Widget _buildOnlineCard(BuildContext context, dynamic hadithJson, String bookName, int index) {
+  Widget _buildOnlineCard(
+    BuildContext context,
+    dynamic hadithJson,
+    String bookName,
+    int index,
+  ) {
     final textBn = hadithJson['text'] ?? '';
     final refBook = hadithJson['reference']?['book'] ?? '';
     final refHadith = hadithJson['reference']?['hadith'] ?? '';
@@ -108,7 +115,8 @@ class _HadithSectionPageState extends State<HadithSectionPage> {
                 Container(
                   padding: const EdgeInsets.all(8),
                   decoration: BoxDecoration(
-                    color: Theme.of(context).colorScheme.primary.withOpacity(0.1),
+                    color: Theme.of(context).colorScheme.primary
+                        .withOpacity(0.1),
                     shape: BoxShape.circle,
                   ),
                   child: Icon(
@@ -120,14 +128,19 @@ class _HadithSectionPageState extends State<HadithSectionPage> {
                 Expanded(
                   child: Text(
                     'Hadith Number: $number',
-                    style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                    style: const TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                 ),
                 IconButton(
                   onPressed: () => _speak(textBn, index),
                   icon: Icon(
                     isPlaying ? Icons.stop_circle : Icons.volume_up,
-                    color: isPlaying ? Colors.red : Theme.of(context).colorScheme.primary,
+                    color: isPlaying
+                        ? Colors.red
+                        : Theme.of(context).colorScheme.primary,
                     size: 28,
                   ),
                 ),
@@ -136,13 +149,20 @@ class _HadithSectionPageState extends State<HadithSectionPage> {
             const SizedBox(height: 16),
             Text(
               textBn,
-              style: const TextStyle(fontSize: 16, height: 1.5, color: Colors.black87),
+              style: const TextStyle(
+                fontSize: 16,
+                height: 1.5,
+                color: Colors.black87,
+              ),
             ),
             const SizedBox(height: 16),
             Align(
               alignment: Alignment.centerRight,
               child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 12,
+                  vertical: 6,
+                ),
                 decoration: BoxDecoration(
                   color: Colors.grey[200],
                   borderRadius: BorderRadius.circular(20),

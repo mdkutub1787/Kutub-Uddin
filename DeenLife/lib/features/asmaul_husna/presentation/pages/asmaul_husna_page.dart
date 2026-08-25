@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:deen_life/core/localization/app_localizations.dart';
+
 import '../../../../core/data/asmaul_husna_data.dart';
 
 class AsmaulHusnaPage extends StatelessWidget {
@@ -7,8 +9,14 @@ class AsmaulHusnaPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: const Color(0xFFF8F9FA),
       appBar: AppBar(
-        title: const Text('99 Names of Allah'),
+        title: Text(
+          context.tr('99 Names of Allah'),
+          style: const TextStyle(fontWeight: FontWeight.bold),
+        ),
+        backgroundColor: const Color(0xFF1E3A5F),
+        foregroundColor: Colors.white,
         centerTitle: true,
       ),
       body: RefreshIndicator(
@@ -21,65 +29,72 @@ class AsmaulHusnaPage extends StatelessWidget {
             crossAxisCount: 2,
             crossAxisSpacing: 16.0,
             mainAxisSpacing: 16.0,
-            childAspectRatio: 0.80,
+            childAspectRatio: 0.85,
           ),
           itemCount: asmaulHusnaData.length,
           itemBuilder: (context, index) {
             final name = asmaulHusnaData[index];
             return Container(
               decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  colors: [
-                    Theme.of(context).colorScheme.primary.withOpacity(0.1),
-                    Theme.of(context).colorScheme.primary.withOpacity(0.05),
-                  ],
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                ),
+                color: Colors.white,
                 borderRadius: BorderRadius.circular(16),
-                border: Border.all(
-                  color: Theme.of(context).colorScheme.primary.withOpacity(0.2),
-                ),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withAlpha(10),
+                    blurRadius: 10,
+                    offset: const Offset(0, 4),
+                  ),
+                ],
               ),
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Text(
-                    name.id.toString(),
-                    style: TextStyle(
-                      color: Theme.of(context).colorScheme.primary,
-                      fontWeight: FontWeight.bold,
+                  Container(
+                    padding: const EdgeInsets.all(6),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFF1E3A5F).withAlpha(30),
+                      shape: BoxShape.circle,
+                    ),
+                    child: Text(
+                      name.id.toString(),
+                      style: const TextStyle(
+                        color: Color(0xFF1E3A5F),
+                        fontWeight: FontWeight.bold,
+                        fontSize: 10,
+                      ),
                     ),
                   ),
                   const SizedBox(height: 8),
                   Text(
                     name.arabic,
                     style: const TextStyle(
-                      fontSize: 28,
+                      fontSize: 24,
                       fontWeight: FontWeight.bold,
-                      fontFamily: 'Amiri',
-                    ),
-                    textAlign: TextAlign.center,
-                  ),
-                  const SizedBox(height: 8),
-                  Text(
-                    name.transliteration,
-                    style: const TextStyle(
-                      fontWeight: FontWeight.w600,
-                      fontSize: 16,
+                      color: Color(0xFF1E3A5F),
                     ),
                     textAlign: TextAlign.center,
                   ),
                   const SizedBox(height: 4),
+                  Text(
+                    name.transliteration,
+                    style: const TextStyle(
+                      fontWeight: FontWeight.w600,
+                      fontSize: 14,
+                      color: Colors.black87,
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
                   Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 4.0),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 8.0,
+                      vertical: 2,
+                    ),
                     child: Text(
                       name.meaning,
-                      style: const TextStyle(
-                        fontSize: 12,
-                        color: Colors.grey,
-                      ),
+                      style: const TextStyle(fontSize: 11, color: Colors.grey),
                       textAlign: TextAlign.center,
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
                     ),
                   ),
                 ],

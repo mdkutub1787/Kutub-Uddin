@@ -48,12 +48,12 @@ class _RadioPageState extends State<RadioPage> {
       url: 'https://stream.radiojar.com/8s5u8tp48vduv',
     ),
     RadioStation(
-      title: 'Quran Radio - English Translation',
+      title: 'Quran Radio - English',
       subtitle: 'Quran with English Meaning',
       url: 'https://stream.zeno.fm/3r77vwa8mreuv',
     ),
     RadioStation(
-      title: 'Quran Radio - Bangla Translation',
+      title: 'Quran Radio - Bangla',
       subtitle: 'আল-কুরআন (বাংলা অনুবাদসহ)',
       url: 'https://qurango.net/radio/tarjumat_bangla',
     ),
@@ -63,23 +63,20 @@ class _RadioPageState extends State<RadioPage> {
   void initState() {
     super.initState();
     _audioPlayer = AudioPlayer();
-    
-    // Listen to player state to update UI
-    _audioPlayer.playerStateStream.listen((state) {
-      if (mounted) {
-        setState(() {
-          _isPlaying = state.playing;
-          if (state.processingState == ProcessingState.completed) {
-            _playingIndex = null;
-          }
-        });
-      }
-    }, onError: (Object e, StackTrace stackTrace) {
-      debugPrint('A stream error occurred: $e');
-      setState(() {
-        _loadingError = e.toString();
-      });
-    });
+    _audioPlayer.playerStateStream.listen(
+      (state) {
+        if (mounted) {
+          setState(() {
+            _isPlaying = state.playing;
+            if (state.processingState == ProcessingState.completed)
+              _playingIndex = null;
+          });
+        }
+      },
+      onError: (Object e, StackTrace stackTrace) {
+        setState(() => _loadingError = e.toString());
+      },
+    );
   }
 
   @override
@@ -90,16 +87,9 @@ class _RadioPageState extends State<RadioPage> {
 
   Future<void> _togglePlay(int index) async {
     try {
-      setState(() {
-        _loadingError = null;
-      });
-
+      setState(() => _loadingError = null);
       if (_playingIndex == index) {
-        if (_isPlaying) {
-          await _audioPlayer.pause();
-        } else {
-          await _audioPlayer.play();
-        }
+        _isPlaying ? await _audioPlayer.pause() : await _audioPlayer.play();
       } else {
         setState(() {
           _playingIndex = index;
@@ -110,141 +100,174 @@ class _RadioPageState extends State<RadioPage> {
         await _audioPlayer.play();
       }
     } catch (e) {
-      debugPrint("Error playing radio: $e");
-      if (mounted) {
+      if (mounted)
         setState(() {
           _loadingError = e.toString();
           _isPlaying = false;
         });
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Error playing radio: $e'),
-            backgroundColor: Colors.red,
-          ),
-        );
-      }
     }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: const Color(0xFFF8F9FA),
       appBar: AppBar(
-        title: Text(context.tr('Islamic Radio')),
+        title: Text(
+          context.tr('Islamic Radio'),
+          style: const TextStyle(fontWeight: FontWeight.bold),
+        ),
         centerTitle: true,
+        backgroundColor: const Color(0xFF1E3A5F),
+        foregroundColor: Colors.white,
       ),
       body: Column(
         children: [
-          // Now Playing Header
+          _buildNowPlayingHeader(),
+          Expanded(child: _buildStationList()),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildNowPlayingHeader() {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(32),
+      decoration: const BoxDecoration(
+        color: Color(0xFF1E3A5F),
+        borderRadius: BorderRadius.only(
+          bottomLeft: Radius.circular(40),
+          bottomRight: Radius.circular(40),
+        ),
+      ),
+      child: Column(
+        children: [
           Container(
-            padding: const EdgeInsets.all(24),
-            width: double.infinity,
+            padding: const EdgeInsets.all(20),
             decoration: BoxDecoration(
-              color: Theme.of(context).colorScheme.primary.withOpacity(0.9),
-              borderRadius: const BorderRadius.only(
-                bottomLeft: Radius.circular(32),
-                bottomRight: Radius.circular(32),
+              color: Colors.white.withAlpha(20),
+              shape: BoxShape.circle,
+            ),
+            child: const Icon(Icons.headset, size: 60, color: Colors.white70),
+          ),
+          const SizedBox(height: 24),
+          Text(
+            _playingIndex != null
+                ? stations[_playingIndex!].title
+                : context.tr('Select a Station'),
+            style: const TextStyle(
+              fontSize: 22,
+              fontWeight: FontWeight.bold,
+              color: Colors.white,
+            ),
+            textAlign: TextAlign.center,
+          ),
+          const SizedBox(height: 8),
+          Text(
+            _playingIndex != null
+                ? stations[_playingIndex!].subtitle
+                : context.tr('Ready to play'),
+            style: const TextStyle(color: Colors.white70, fontSize: 14),
+          ),
+          const SizedBox(height: 32),
+          if (_playingIndex != null) _buildPlayControl(),
+          if (_loadingError != null)
+            Text(
+              'Connection Error',
+              style: TextStyle(color: Colors.red[100], fontSize: 12),
+            ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildPlayControl() {
+    return StreamBuilder<PlayerState>(
+      stream: _audioPlayer.playerStateStream,
+      builder: (context, snapshot) {
+        final state = snapshot.data?.processingState;
+        if (state == ProcessingState.loading ||
+            state == ProcessingState.buffering) {
+          return const CircularProgressIndicator(color: Colors.white);
+        }
+        return FloatingActionButton.large(
+          onPressed: () => _togglePlay(_playingIndex!),
+          backgroundColor: Colors.white,
+          foregroundColor: const Color(0xFF1E3A5F),
+          child: Icon(_isPlaying ? Icons.pause : Icons.play_arrow, size: 48),
+        );
+      },
+    );
+  }
+
+  Widget _buildStationList() {
+    return ListView.builder(
+      padding: const EdgeInsets.all(20),
+      itemCount: stations.length,
+      itemBuilder: (context, index) {
+        final station = stations[index];
+        final isPlaying = _playingIndex == index;
+        return Container(
+          margin: const EdgeInsets.only(bottom: 12),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(16),
+            border: isPlaying
+                ? Border.all(color: const Color(0xFF1E3A5F), width: 2)
+                : null,
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withAlpha(5),
+                blurRadius: 10,
+                offset: const Offset(0, 4),
+              ),
+            ],
+          ),
+          child: ListTile(
+            contentPadding: const EdgeInsets.symmetric(
+              horizontal: 20,
+              vertical: 8,
+            ),
+            leading: CircleAvatar(
+              backgroundColor: isPlaying
+                  ? const Color(0xFF1E3A5F)
+                  : const Color(0xFFF1F3F5),
+              child: Icon(
+                isPlaying && _isPlaying ? Icons.pause : Icons.play_arrow,
+                color: isPlaying ? Colors.white : Colors.grey[600],
               ),
             ),
-            child: Column(
-              children: [
-                const Icon(Icons.radio, size: 64, color: Colors.white70),
-                const SizedBox(height: 16),
-                Text(
-                  _playingIndex != null ? stations[_playingIndex!].title : 'Select a Station',
-                  style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.white),
-                  textAlign: TextAlign.center,
-                ),
-                const SizedBox(height: 8),
-                Text(
-                  _playingIndex != null ? stations[_playingIndex!].subtitle : 'Ready to play',
-                  style: const TextStyle(color: Colors.white70),
-                ),
-                const SizedBox(height: 24),
-                if (_playingIndex != null)
-                  StreamBuilder<PlayerState>(
-                    stream: _audioPlayer.playerStateStream,
-                    builder: (context, snapshot) {
-                      final processingState = snapshot.data?.processingState;
-                      if (processingState == ProcessingState.loading || processingState == ProcessingState.buffering) {
-                        return const CircularProgressIndicator(color: Colors.white);
-                      }
-                      
-                      if (_loadingError != null) {
-                        return IconButton(
-                          icon: const Icon(Icons.refresh, color: Colors.white, size: 40),
-                          onPressed: () => _togglePlay(_playingIndex!),
-                        );
-                      }
-
-                      return FloatingActionButton(
-                        onPressed: () => _togglePlay(_playingIndex!),
-                        backgroundColor: Colors.white,
-                        foregroundColor: Theme.of(context).colorScheme.primary,
-                        child: Icon(_isPlaying ? Icons.pause : Icons.play_arrow, size: 32),
-                      );
-                    },
-                  ),
-                if (_loadingError != null)
-                  Padding(
-                    padding: const EdgeInsets.only(top: 8.0),
-                    child: Text(
-                      'Connection Error',
-                      style: TextStyle(color: Colors.red[100], fontSize: 12),
-                    ),
-                  ),
-              ],
+            title: Text(
+              station.title,
+              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
             ),
-          ),
-          const SizedBox(height: 16),
-          Expanded(
-            child: ListView.builder(
-              padding: const EdgeInsets.all(16),
-              itemCount: stations.length,
-              itemBuilder: (context, index) {
-                final station = stations[index];
-                final isCurrentlyPlaying = _playingIndex == index;
-
-                return Card(
-                  margin: const EdgeInsets.only(bottom: 12),
-                  elevation: isCurrentlyPlaying ? 4 : 1,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(16),
-                    side: isCurrentlyPlaying
-                        ? BorderSide(color: Theme.of(context).colorScheme.primary, width: 2)
-                        : BorderSide.none,
-                  ),
-                  child: ListTile(
-                    contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                    leading: CircleAvatar(
-                      backgroundColor: isCurrentlyPlaying ? Theme.of(context).colorScheme.primary : Colors.grey[200],
-                      child: Icon(
-                        isCurrentlyPlaying && _isPlaying ? Icons.pause : Icons.play_arrow,
-                        color: isCurrentlyPlaying ? Colors.white : Colors.grey[700],
-                      ),
-                    ),
-                    title: Text(
-                      station.title,
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        color: isCurrentlyPlaying ? Theme.of(context).colorScheme.primary : null,
-                      ),
-                    ),
-                    subtitle: Text(station.subtitle),
-                    trailing: station.isLive 
-                      ? Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                          decoration: BoxDecoration(color: Colors.red, borderRadius: BorderRadius.circular(4)),
-                          child: const Text('LIVE', style: TextStyle(color: Colors.white, fontSize: 10, fontWeight: FontWeight.bold)),
-                        )
-                      : null,
-                    onTap: () => _togglePlay(index),
-                  ),
-                );
-              },
+            subtitle: Text(
+              station.subtitle,
+              style: const TextStyle(fontSize: 12),
             ),
+            trailing: station.isLive ? _liveIndicator() : null,
+            onTap: () => _togglePlay(index),
           ),
-        ],
+        );
+      },
+    );
+  }
+
+  Widget _liveIndicator() {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+      decoration: BoxDecoration(
+        color: Colors.red,
+        borderRadius: BorderRadius.circular(6),
+      ),
+      child: const Text(
+        'LIVE',
+        style: TextStyle(
+          color: Colors.white,
+          fontSize: 10,
+          fontWeight: FontWeight.bold,
+        ),
       ),
     );
   }

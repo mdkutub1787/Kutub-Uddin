@@ -1,10 +1,14 @@
 import 'dart:convert';
 import 'dart:io';
+
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:http/http.dart' as http;
 import 'package:path_provider/path_provider.dart';
 
-final surahTranslationProvider = FutureProvider.family<List<dynamic>, int>((ref, surahNumber) async {
+final surahTranslationProvider = FutureProvider.family<List<dynamic>, int>((
+  ref,
+  surahNumber,
+) async {
   final directory = await getApplicationDocumentsDirectory();
   final file = File('${directory.path}/surah_bn_$surahNumber.json');
 

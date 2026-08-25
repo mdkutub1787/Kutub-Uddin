@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+
 import '../providers/online_hadith_provider.dart';
 import '../../../../core/data/sihah_sittah_data.dart';
 import 'hadith_section_page.dart';
@@ -10,7 +11,8 @@ class HadithBookDetailPage extends ConsumerStatefulWidget {
   const HadithBookDetailPage({super.key, required this.book});
 
   @override
-  ConsumerState<HadithBookDetailPage> createState() => _HadithBookDetailPageState();
+  ConsumerState<HadithBookDetailPage> createState() =>
+      _HadithBookDetailPageState();
 }
 
 class _HadithBookDetailPageState extends ConsumerState<HadithBookDetailPage> {
@@ -28,13 +30,11 @@ class _HadithBookDetailPageState extends ConsumerState<HadithBookDetailPage> {
     final bookDataAsync = ref.watch(onlineHadithProvider(widget.book.id));
 
     return Scaffold(
-      appBar: AppBar(
-        title: Text(widget.book.nameBn),
-        centerTitle: true,
-      ),
+      appBar: AppBar(title: Text(widget.book.nameBn), centerTitle: true),
       body: bookDataAsync.when(
         data: (data) {
-          final sections = data['metadata']?['sections'] as Map<String, dynamic>? ?? {};
+          final sections =
+              data['metadata']?['sections'] as Map<String, dynamic>? ?? {};
           final hadiths = data['hadiths'] as List<dynamic>? ?? [];
 
           // If searching, filter hadiths and show them directly
@@ -48,7 +48,8 @@ class _HadithBookDetailPageState extends ConsumerState<HadithBookDetailPage> {
           }
 
           // Otherwise show Chapters
-          final sectionKeys = sections.keys.toList()..sort((a, b) => int.parse(a).compareTo(int.parse(b)));
+          final sectionKeys = sections.keys.toList()
+            ..sort((a, b) => int.parse(a).compareTo(int.parse(b)));
 
           return Column(
             children: [
@@ -60,60 +61,77 @@ class _HadithBookDetailPageState extends ConsumerState<HadithBookDetailPage> {
                   },
                   child: ListView.builder(
                     padding: const EdgeInsets.all(16.0),
-                  itemCount: sectionKeys.length,
-                  itemBuilder: (context, index) {
-                    final key = sectionKeys[index];
-                    final sectionName = sections[key].toString();
-                    
-                    // Skip empty section names if they exist (usually '0' is empty)
-                    if (sectionName.isEmpty && key == '0') return const SizedBox();
+                    itemCount: sectionKeys.length,
+                    itemBuilder: (context, index) {
+                      final key = sectionKeys[index];
+                      final sectionName = sections[key].toString();
 
-                    return Card(
-                      margin: const EdgeInsets.only(bottom: 12),
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                      child: ListTile(
-                        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                        leading: CircleAvatar(
-                          backgroundColor: Theme.of(context).colorScheme.primary.withOpacity(0.1),
-                          child: Text(
-                            key,
-                            style: TextStyle(
-                              color: Theme.of(context).colorScheme.primary,
-                              fontWeight: FontWeight.bold,
-                            ),
+                      // Skip empty section names if they exist (usually '0' is empty)
+                      if (sectionName.isEmpty && key == '0')
+                        return const SizedBox();
+
+                      return Card(
+                        margin: const EdgeInsets.only(bottom: 12),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: ListTile(
+                          contentPadding: const EdgeInsets.symmetric(
+                            horizontal: 16,
+                            vertical: 8,
                           ),
-                        ),
-                        title: Text(
-                          sectionName.isEmpty ? 'Chapter $key' : sectionName,
-                          style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
-                        ),
-                        trailing: const Icon(Icons.arrow_forward_ios, size: 16),
-                        onTap: () {
-                          // Filter hadiths by this section
-                          final sectionHadiths = hadiths.where((h) {
-                            return h['reference']?['book'].toString() == key;
-                          }).toList();
-
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => HadithSectionPage(
-                                bookName: widget.book.nameEn,
-                                sectionName: sectionName.isEmpty ? 'Chapter $key' : sectionName,
-                                sectionHadiths: sectionHadiths,
+                          leading: CircleAvatar(
+                            backgroundColor: Theme.of(context)
+                                .colorScheme
+                                .primary
+                                .withOpacity(0.1),
+                            child: Text(
+                              key,
+                              style: TextStyle(
+                                color: Theme.of(context).colorScheme.primary,
+                                fontWeight: FontWeight.bold,
                               ),
                             ),
-                          );
-                        },
-                      ),
-                    );
-                  },
+                          ),
+                          title: Text(
+                            sectionName.isEmpty ? 'Chapter $key' : sectionName,
+                            style: const TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 16,
+                            ),
+                          ),
+                          trailing: const Icon(
+                            Icons.arrow_forward_ios,
+                            size: 16,
+                          ),
+                          onTap: () {
+                            // Filter hadiths by this section
+                            final sectionHadiths = hadiths.where((h) {
+                              return h['reference']?['book'].toString() == key;
+                            }).toList();
+
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => HadithSectionPage(
+                                  bookName: widget.book.nameEn,
+                                  sectionName: sectionName.isEmpty
+                                      ? 'Chapter $key'
+                                      : sectionName,
+                                  sectionHadiths: sectionHadiths,
+                                ),
+                              ),
+                            );
+                          },
+                        ),
+                      );
+                    },
+                  ),
                 ),
               ),
-            ),
-          ],
-        );
-      },
+            ],
+          );
+        },
         loading: () => Center(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
@@ -187,7 +205,10 @@ class _HadithBookDetailPageState extends ConsumerState<HadithBookDetailPage> {
             alignment: Alignment.centerLeft,
             child: Text(
               'Found ${searchResults.length} results',
-              style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.grey),
+              style: const TextStyle(
+                fontWeight: FontWeight.bold,
+                color: Colors.grey,
+              ),
             ),
           ),
         ),
@@ -199,37 +220,37 @@ class _HadithBookDetailPageState extends ConsumerState<HadithBookDetailPage> {
             },
             child: ListView.builder(
               padding: const EdgeInsets.all(16.0),
-            itemCount: searchResults.length,
-            itemBuilder: (context, index) {
-              final h = searchResults[index];
-              return Card(
-                margin: const EdgeInsets.only(bottom: 16),
-                child: Padding(
-                  padding: const EdgeInsets.all(16.0),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        'Hadith ${h['hadithnumber'] ?? ''}',
-                        style: TextStyle(
-                          color: Theme.of(context).colorScheme.primary,
-                          fontWeight: FontWeight.bold,
+              itemCount: searchResults.length,
+              itemBuilder: (context, index) {
+                final h = searchResults[index];
+                return Card(
+                  margin: const EdgeInsets.only(bottom: 16),
+                  child: Padding(
+                    padding: const EdgeInsets.all(16.0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'Hadith ${h['hadithnumber'] ?? ''}',
+                          style: TextStyle(
+                            color: Theme.of(context).colorScheme.primary,
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
-                      ),
-                      const SizedBox(height: 8),
-                      Text(
-                        h['text'] ?? '',
-                        style: const TextStyle(fontSize: 16, height: 1.5),
-                      ),
-                    ],
+                        const SizedBox(height: 8),
+                        Text(
+                          h['text'] ?? '',
+                          style: const TextStyle(fontSize: 16, height: 1.5),
+                        ),
+                      ],
+                    ),
                   ),
-                ),
-              );
-            },
+                );
+              },
+            ),
           ),
         ),
-      ),
-    ],
-  );
+      ],
+    );
   }
 }

@@ -5,6 +5,7 @@ import 'package:url_launcher/url_launcher.dart';
 import 'package:adhan/adhan.dart';
 import 'package:deen_life/core/localization/app_localizations.dart';
 import 'package:deen_life/core/localization/language_provider.dart';
+
 import '../../../prayer_times/presentation/providers/prayer_times_provider.dart';
 
 class SettingsPage extends ConsumerWidget {
@@ -15,10 +16,7 @@ class SettingsPage extends ConsumerWidget {
     final calcMethod = ref.watch(calculationMethodProvider);
 
     return Scaffold(
-      appBar: AppBar(
-        title: Text(context.tr('Settings')),
-        centerTitle: true,
-      ),
+      appBar: AppBar(title: Text(context.tr('Settings')), centerTitle: true),
       body: ListView(
         children: [
           Padding(
@@ -57,7 +55,7 @@ class SettingsPage extends ConsumerWidget {
             trailing: Switch(
               value: true,
               onChanged: (val) {
-                 ScaffoldMessenger.of(context).showSnackBar(
+                ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(content: Text(context.tr('Notifications enabled.'))),
                 );
               },
@@ -86,7 +84,8 @@ class SettingsPage extends ConsumerWidget {
                     value: 'en',
                     groupValue: currentLang.languageCode,
                     onChanged: (val) {
-                      if (val != null) ref.read(languageProvider.notifier).changeLanguage(val);
+                      if (val != null)
+                        ref.read(languageProvider.notifier).changeLanguage(val);
                     },
                   ),
                   RadioListTile<String>(
@@ -94,7 +93,8 @@ class SettingsPage extends ConsumerWidget {
                     value: 'bn',
                     groupValue: currentLang.languageCode,
                     onChanged: (val) {
-                      if (val != null) ref.read(languageProvider.notifier).changeLanguage(val);
+                      if (val != null)
+                        ref.read(languageProvider.notifier).changeLanguage(val);
                     },
                   ),
                 ],
@@ -135,7 +135,7 @@ class SettingsPage extends ConsumerWidget {
             title: Text(context.tr('Privacy Policy')),
             trailing: const Icon(Icons.open_in_new, size: 16),
             onTap: () async {
-               final url = Uri.parse('https://google.com');
+              final url = Uri.parse('https://google.com');
               if (await canLaunchUrl(url)) {
                 await launchUrl(url, mode: LaunchMode.externalApplication);
               }
@@ -163,7 +163,11 @@ class SettingsPage extends ConsumerWidget {
     }
   }
 
-  void _showCalcMethodDialog(BuildContext context, WidgetRef ref, CalculationMethod currentMethod) {
+  void _showCalcMethodDialog(
+    BuildContext context,
+    WidgetRef ref,
+    CalculationMethod currentMethod,
+  ) {
     showDialog(
       context: context,
       builder: (context) {
@@ -172,25 +176,27 @@ class SettingsPage extends ConsumerWidget {
           content: SingleChildScrollView(
             child: Column(
               mainAxisSize: MainAxisSize.min,
-              children: [
-                CalculationMethod.karachi,
-                CalculationMethod.muslim_world_league,
-                CalculationMethod.umm_al_qura,
-                CalculationMethod.egyptian,
-                CalculationMethod.north_america,
-              ].map((method) {
-                return RadioListTile<CalculationMethod>(
-                  title: Text(_getCalcMethodName(method)),
-                  value: method,
-                  groupValue: currentMethod,
-                  onChanged: (val) {
-                    if (val != null) {
-                      ref.read(calculationMethodProvider.notifier).state = val;
-                      Navigator.pop(context);
-                    }
-                  },
-                );
-              }).toList(),
+              children:
+                  [
+                    CalculationMethod.karachi,
+                    CalculationMethod.muslim_world_league,
+                    CalculationMethod.umm_al_qura,
+                    CalculationMethod.egyptian,
+                    CalculationMethod.north_america,
+                  ].map((method) {
+                    return RadioListTile<CalculationMethod>(
+                      title: Text(_getCalcMethodName(method)),
+                      value: method,
+                      groupValue: currentMethod,
+                      onChanged: (val) {
+                        if (val != null) {
+                          ref.read(calculationMethodProvider.notifier).state =
+                              val;
+                          Navigator.pop(context);
+                        }
+                      },
+                    );
+                  }).toList(),
             ),
           ),
           actions: [

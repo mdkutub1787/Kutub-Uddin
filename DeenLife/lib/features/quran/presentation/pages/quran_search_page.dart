@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:quran/quran.dart' as quran;
+
 import 'surah_detail_page.dart';
 
 class QuranSearchPage extends StatefulWidget {
@@ -47,11 +48,11 @@ class _QuranSearchPageState extends State<QuranSearchPage> {
     // Check if query is Surah + Ayat (e.g., "Baqarah 255" or "2 255")
     final regex = RegExp(r'([a-zA-Z]+|\d+)\s+(\d+)');
     final match = regex.firstMatch(queryLower);
-    
+
     if (match != null) {
       String surahPart = match.group(1)!;
       int? ayahPart = int.tryParse(match.group(2)!);
-      
+
       int? surahNum = int.tryParse(surahPart);
       if (surahNum == null) {
         // Try to match surah name
@@ -63,20 +64,24 @@ class _QuranSearchPageState extends State<QuranSearchPage> {
           }
         }
       }
-      
+
       if (surahNum != null && surahNum > 0 && surahNum <= 114) {
-        if (ayahPart != null && ayahPart > 0 && ayahPart <= quran.getVerseCount(surahNum)) {
-           results.add(SearchResult(
-             surahNumber: surahNum,
-             verseNumber: ayahPart,
-             text: quran.getVerse(surahNum, ayahPart, verseEndSymbol: true),
-             surahName: quran.getSurahName(surahNum),
-           ));
-           setState(() {
-             _results = results;
-             _isSearching = false;
-           });
-           return;
+        if (ayahPart != null &&
+            ayahPart > 0 &&
+            ayahPart <= quran.getVerseCount(surahNum)) {
+          results.add(
+            SearchResult(
+              surahNumber: surahNum,
+              verseNumber: ayahPart,
+              text: quran.getVerse(surahNum, ayahPart, verseEndSymbol: true),
+              surahName: quran.getSurahName(surahNum),
+            ),
+          );
+          setState(() {
+            _results = results;
+            _isSearching = false;
+          });
+          return;
         }
       }
     }
@@ -86,12 +91,14 @@ class _QuranSearchPageState extends State<QuranSearchPage> {
     for (int i = 1; i <= 114; i++) {
       if (quran.getSurahName(i).toLowerCase().contains(queryLower) ||
           quran.getSurahNameEnglish(i).toLowerCase().contains(queryLower)) {
-        results.add(SearchResult(
-          surahNumber: i,
-          verseNumber: 1, // point to first ayah
-          text: "Surah ${quran.getSurahName(i)} matched your search.",
-          surahName: quran.getSurahName(i),
-        ));
+        results.add(
+          SearchResult(
+            surahNumber: i,
+            verseNumber: 1, // point to first ayah
+            text: "Surah ${quran.getSurahName(i)} matched your search.",
+            surahName: quran.getSurahName(i),
+          ),
+        );
       }
     }
 
@@ -104,12 +111,14 @@ class _QuranSearchPageState extends State<QuranSearchPage> {
         // Remove diacritics for easier search? The quran package returns text with diacritics.
         // For simplicity, we just do a direct match
         if (arabicText.contains(queryLower)) {
-          results.add(SearchResult(
-            surahNumber: s,
-            verseNumber: v,
-            text: arabicText,
-            surahName: quran.getSurahName(s),
-          ));
+          results.add(
+            SearchResult(
+              surahNumber: s,
+              verseNumber: v,
+              text: arabicText,
+              surahName: quran.getSurahName(s),
+            ),
+          );
           count++;
           if (count > 50) break;
         }
@@ -145,44 +154,48 @@ class _QuranSearchPageState extends State<QuranSearchPage> {
               _searchController.clear();
               _performSearch('');
             },
-          )
+          ),
         ],
       ),
       body: _isSearching
           ? const Center(child: CircularProgressIndicator())
           : _results.isEmpty && _searchController.text.isNotEmpty
-              ? const Center(child: Text('No results found.'))
-              : ListView.separated(
-                  itemCount: _results.length,
-                  separatorBuilder: (context, index) => const Divider(),
-                  itemBuilder: (context, index) {
-                    final res = _results[index];
-                    return ListTile(
-                      title: Text(
-                        'Surah ${res.surahName} - Verse ${res.verseNumber}',
-                        style: const TextStyle(fontWeight: FontWeight.bold),
-                      ),
-                      subtitle: Text(
-                        res.text,
-                        textAlign: res.text.contains(RegExp(r'[a-zA-Z]')) ? TextAlign.left : TextAlign.right,
-                        style: TextStyle(
-                          fontSize: res.text.contains(RegExp(r'[a-zA-Z]')) ? 14 : 20,
+          ? const Center(child: Text('No results found.'))
+          : ListView.separated(
+              itemCount: _results.length,
+              separatorBuilder: (context, index) => const Divider(),
+              itemBuilder: (context, index) {
+                final res = _results[index];
+                return ListTile(
+                  title: Text(
+                    'Surah ${res.surahName} - Verse ${res.verseNumber}',
+                    style: const TextStyle(fontWeight: FontWeight.bold),
+                  ),
+                  subtitle: Text(
+                    res.text,
+                    textAlign: res.text.contains(RegExp(r'[a-zA-Z]'))
+                        ? TextAlign.left
+                        : TextAlign.right,
+                    style: TextStyle(
+                      fontSize: res.text.contains(RegExp(r'[a-zA-Z]'))
+                          ? 14
+                          : 20,
+                    ),
+                  ),
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => SurahDetailPage(
+                          surahNumber: res.surahNumber,
+                          surahName: res.surahName,
                         ),
                       ),
-                      onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => SurahDetailPage(
-                              surahNumber: res.surahNumber,
-                              surahName: res.surahName,
-                            ),
-                          ),
-                        );
-                      },
                     );
                   },
-                ),
+                );
+              },
+            ),
     );
   }
 }

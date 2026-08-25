@@ -15,9 +15,15 @@ class TasbeehPage extends ConsumerWidget {
     final goal = ref.watch(tasbeehGoalProvider);
 
     return Scaffold(
+      backgroundColor: const Color(0xFFF8F9FA),
       appBar: AppBar(
-        title: Text(context.tr('Tasbeeh Counter')),
+        title: Text(
+          context.tr('Tasbeeh Counter'),
+          style: const TextStyle(fontWeight: FontWeight.bold),
+        ),
         centerTitle: true,
+        backgroundColor: const Color(0xFF1E3A5F),
+        foregroundColor: Colors.white,
         actions: [
           IconButton(
             icon: const Icon(Icons.refresh),
@@ -34,74 +40,102 @@ class TasbeehPage extends ConsumerWidget {
           children: [
             Text(
               context.tr('Subhanallah'),
-              style: TextStyle(
-                fontSize: 32,
+              style: const TextStyle(
+                fontSize: 28,
                 fontWeight: FontWeight.bold,
-                color: Theme.of(context).colorScheme.primary,
+                color: Color(0xFF1E3A5F),
               ),
             ),
-            const SizedBox(height: 10),
+            const SizedBox(height: 8),
             Text(
               '${context.tr('Goal')}: $goal',
-              style: const TextStyle(fontSize: 18, color: Colors.grey),
+              style: const TextStyle(
+                fontSize: 16,
+                color: Colors.grey,
+                fontWeight: FontWeight.w600,
+              ),
             ),
-            const SizedBox(height: 50),
+            const SizedBox(height: 60),
             GestureDetector(
               onTap: () {
                 HapticFeedback.lightImpact();
                 ref.read(tasbeehCounterProvider.notifier).state++;
-                
                 if (ref.read(tasbeehCounterProvider) % goal == 0) {
-                  HapticFeedback.heavyImpact(); // Vibrate heavily on reaching goal
+                  HapticFeedback.heavyImpact();
                 }
               },
-              child: Container(
-                width: 250,
-                height: 250,
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  color: Theme.of(context).colorScheme.primary.withOpacity(0.1),
-                  border: Border.all(
-                    color: Theme.of(context).colorScheme.primary,
-                    width: 4,
-                  ),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Theme.of(context).colorScheme.primary.withOpacity(0.3),
-                      blurRadius: 30,
-                      spreadRadius: 5,
+              child: Stack(
+                alignment: Alignment.center,
+                children: [
+                  Container(
+                    width: 280,
+                    height: 280,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: Colors.white,
+                      boxShadow: [
+                        BoxShadow(
+                          color: const Color(0xFF1E3A5F).withAlpha(30),
+                          blurRadius: 30,
+                          spreadRadius: 10,
+                        ),
+                      ],
                     ),
-                  ],
-                ),
-                child: Center(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Text(
-                        '$count',
-                        style: TextStyle(
-                          fontSize: 80,
-                          fontWeight: FontWeight.bold,
-                          color: Theme.of(context).colorScheme.primary,
-                        ),
-                      ),
-                      Text(
-                        context.tr('Count'),
-                        style: TextStyle(
-                          fontSize: 18,
-                          color: Colors.grey.shade600,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ],
                   ),
-                ),
+                  Container(
+                    width: 240,
+                    height: 240,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      gradient: const LinearGradient(
+                        colors: [Color(0xFF1E3A5F), Color(0xFF2E5A8F)],
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                      ),
+                      boxShadow: [
+                        BoxShadow(
+                          color: const Color(0xFF1E3A5F).withAlpha(100),
+                          blurRadius: 20,
+                          offset: const Offset(0, 10),
+                        ),
+                      ],
+                    ),
+                    child: Center(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text(
+                            '$count',
+                            style: const TextStyle(
+                              fontSize: 80,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.white,
+                            ),
+                          ),
+                          Text(
+                            context.tr('Count').toUpperCase(),
+                            style: TextStyle(
+                              fontSize: 14,
+                              color: Colors.white.withAlpha(200),
+                              fontWeight: FontWeight.bold,
+                              letterSpacing: 2,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ],
               ),
             ),
-            const SizedBox(height: 50),
+            const SizedBox(height: 60),
             Text(
               context.tr('Tap the circle to count'),
-              style: const TextStyle(fontSize: 16, color: Colors.grey),
+              style: const TextStyle(
+                fontSize: 14,
+                color: Colors.grey,
+                fontStyle: FontStyle.italic,
+              ),
             ),
           ],
         ),

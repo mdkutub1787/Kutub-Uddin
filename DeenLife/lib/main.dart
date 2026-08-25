@@ -8,11 +8,7 @@ import 'core/localization/language_provider.dart';
 import 'features/splash/presentation/pages/splash_page.dart';
 
 void main() {
-  runApp(
-    const ProviderScope(
-      child: MyApp(),
-    ),
-  );
+  runApp(const ProviderScope(child: MyApp()));
 }
 
 class MyApp extends ConsumerWidget {
@@ -28,10 +24,7 @@ class MyApp extends ConsumerWidget {
       darkTheme: AppTheme.darkTheme,
       themeMode: ThemeMode.system,
       locale: locale,
-      supportedLocales: const [
-        Locale('en'),
-        Locale('bn'),
-      ],
+      supportedLocales: const [Locale('en'), Locale('bn')],
       localizationsDelegates: const [
         AppLocalizationsDelegate(),
         GlobalMaterialLocalizations.delegate,

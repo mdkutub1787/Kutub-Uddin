@@ -19,7 +19,7 @@ class _QuranMushafPageState extends State<QuranMushafPage> {
     final pageData = quran.getPageData(_currentPage);
     String surahName = "";
     int juzNumber = 1;
-    
+
     if (pageData.isNotEmpty) {
       final firstEntry = pageData.first;
       surahName = quran.getSurahName(firstEntry['surah']);
@@ -47,7 +47,10 @@ class _QuranMushafPageState extends State<QuranMushafPage> {
                   'Juz $juzNumber',
                   style: const TextStyle(fontWeight: FontWeight.bold),
                 ),
-                Text('Page $_currentPage', style: const TextStyle(fontWeight: FontWeight.bold)),
+                Text(
+                  'Page $_currentPage',
+                  style: const TextStyle(fontWeight: FontWeight.bold),
+                ),
                 Text(
                   surahName,
                   style: const TextStyle(fontWeight: FontWeight.bold),
@@ -55,7 +58,7 @@ class _QuranMushafPageState extends State<QuranMushafPage> {
               ],
             ),
           ),
-          
+
           Expanded(
             child: PageView.builder(
               controller: _pageController,
@@ -68,7 +71,7 @@ class _QuranMushafPageState extends State<QuranMushafPage> {
               itemBuilder: (context, index) {
                 final currentPageNumber = index + 1;
                 final currentPageData = quran.getPageData(currentPageNumber);
-                
+
                 // Check if this page starts a new Surah to show header
                 bool startsNewSurah = false;
                 int? newSurahNumber;
@@ -89,7 +92,10 @@ class _QuranMushafPageState extends State<QuranMushafPage> {
                         Container(
                           margin: const EdgeInsets.only(bottom: 24),
                           width: double.infinity,
-                          padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 32),
+                          padding: const EdgeInsets.symmetric(
+                            vertical: 12,
+                            horizontal: 32,
+                          ),
                           decoration: BoxDecoration(
                             color: const Color(0xFFE8DCC4),
                             borderRadius: BorderRadius.circular(8),
@@ -104,12 +110,18 @@ class _QuranMushafPageState extends State<QuranMushafPage> {
                             ),
                           ),
                         ),
-                      
+
                       // Arabic Text Block
                       SelectableText(
-                        currentPageData.map((e) {
-                          return quran.getVerse(e['surah'], e['start'], verseEndSymbol: true);
-                        }).join(' '),
+                        currentPageData
+                            .map((e) {
+                              return quran.getVerse(
+                                e['surah'],
+                                e['start'],
+                                verseEndSymbol: true,
+                              );
+                            })
+                            .join(' '),
                         textAlign: TextAlign.center,
                         style: GoogleFonts.lateef(
                           fontSize: 34,
@@ -123,7 +135,7 @@ class _QuranMushafPageState extends State<QuranMushafPage> {
               },
             ),
           ),
-          
+
           // Bottom Navigation
           Padding(
             padding: const EdgeInsets.all(16.0),
@@ -131,15 +143,21 @@ class _QuranMushafPageState extends State<QuranMushafPage> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 ElevatedButton(
-                  onPressed: _currentPage > 1 
-                    ? () => _pageController.previousPage(duration: const Duration(milliseconds: 300), curve: Curves.easeInOut)
-                    : null,
+                  onPressed: _currentPage > 1
+                      ? () => _pageController.previousPage(
+                          duration: const Duration(milliseconds: 300),
+                          curve: Curves.easeInOut,
+                        )
+                      : null,
                   child: const Text('Previous'),
                 ),
                 ElevatedButton(
                   onPressed: _currentPage < 604
-                    ? () => _pageController.nextPage(duration: const Duration(milliseconds: 300), curve: Curves.easeInOut)
-                    : null,
+                      ? () => _pageController.nextPage(
+                          duration: const Duration(milliseconds: 300),
+                          curve: Curves.easeInOut,
+                        )
+                      : null,
                   child: const Text('Next'),
                 ),
               ],

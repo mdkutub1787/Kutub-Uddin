@@ -5,9 +5,12 @@ class PrayerData {
   final DateTime maghrib;
   final DateTime isha;
   final DateTime sunrise;
-  
+
   final String nextPrayerName;
   final DateTime nextPrayerTime;
+
+  final String city;
+  final String hijriDate;
 
   PrayerData({
     required this.fajr,
@@ -18,5 +21,7 @@ class PrayerData {
     required this.sunrise,
     required this.nextPrayerName,
     required this.nextPrayerTime,
+    required this.city,
+    required this.hijriDate,
   });
 }

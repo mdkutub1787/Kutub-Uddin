@@ -22,3 +22,18 @@ subprojects {
 tasks.register<Delete>("clean") {
     delete(rootProject.layout.buildDirectory)
 }
+
+subprojects {
+    project.configurations.all {
+        resolutionStrategy.eachDependency {
+            if (requested.group == "androidx.fragment" && requested.name == "fragment") {
+                useVersion("1.6.2")
+            }
+        }
+    }
+    if (project.hasProperty("android")) {
+        project.extensions.configure<com.android.build.gradle.BaseExtension>("android") {
+            compileSdkVersion(36)
+        }
+    }
+}
