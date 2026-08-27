@@ -60,6 +60,7 @@ class _HadithBookDetailScreenState extends ConsumerState<HadithBookDetailScreen>
                     await Future.delayed(const Duration(milliseconds: 1000));
                   },
                   child: ListView.builder(
+                    physics: const AlwaysScrollableScrollPhysics(),
                     padding: const EdgeInsets.all(16.0),
                     itemCount: sectionKeys.length,
                     itemBuilder: (context, index) {

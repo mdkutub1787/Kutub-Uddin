@@ -2,22 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
-import 'package:deen_life/core/localization/app_localizations.dart';
-import 'dart:math' as math;
 
-import '../../../quran/presentation/screens/quran_search_screen.dart';
 import '../../../prayer_times/presentation/providers/prayer_times_provider.dart';
-import '../../../prayer_times/presentation/providers/prayer_completion_provider.dart';
-import '../../../settings/presentation/screens/settings_screen.dart';
-import '../../../quran/presentation/screens/tafsir_screen.dart';
-import '../../../qibla/presentation/screens/qibla_screen.dart';
-import '../../../emotions/presentation/screens/emotions_screen.dart';
 import '../../../prayer_times/domain/models/prayer_data.dart';
 import '../../../masjid/presentation/screens/set_masjid_times_screen.dart';
-import '../../../masjid/presentation/screens/masjid_list_screen.dart';
-import '../../../notifications/presentation/screens/notification_screen.dart';
-import '../../../duas/presentation/screens/dua_screen.dart';
 import '../../../masjid/presentation/screens/masjid_detail_screen.dart';
+import '../../../qibla/presentation/screens/qibla_screen.dart';
+import '../../../emotions/presentation/screens/emotions_screen.dart';
+import '../../../duas/presentation/screens/dua_screen.dart';
 
 class HomeScreen extends ConsumerWidget {
   const HomeScreen({super.key});
@@ -134,14 +126,14 @@ class HomeScreen extends ConsumerWidget {
             ),
             SafeArea(
               child: Padding(
-                padding: const EdgeInsets.only(top: kToolbarHeight, left: 20, right: 20, bottom: 10),
+                padding: const EdgeInsets.only(top: kToolbarHeight, left: 20, right: 20, bottom: 35),
                 child: Row(
                   crossAxisAlignment: CrossAxisAlignment.end,
                   children: [
                     // Hexagon Next Prayer
                     Expanded(
                       flex: 5,
-                      child: _buildHexagonPrayer(prayerData),
+                      child: _buildHexagonPrayer(prayerData, userIqamahTimes[prayerData.nextPrayerName] ?? "Not Set"),
                     ),
                     // Right Side Info
                     Expanded(
@@ -173,26 +165,13 @@ class HomeScreen extends ConsumerWidget {
                 ),
               ),
             ),
-            // Iqamah text at very bottom left
-            Positioned(
-              bottom: 16,
-              left: 20,
-              child: Text(
-                'Iqamah ${userIqamahTimes[prayerData.nextPrayerName] ?? "Not Set"}',
-                style: const TextStyle(
-                  color: Colors.white,
-                  fontSize: 14,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-            )
           ],
         ),
       ),
     );
   }
 
-  Widget _buildHexagonPrayer(PrayerData prayerData) {
+  Widget _buildHexagonPrayer(PrayerData prayerData, String iqamahTime) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       mainAxisAlignment: MainAxisAlignment.end,
@@ -256,7 +235,15 @@ class HomeScreen extends ConsumerWidget {
             ],
           ),
         ),
-        const SizedBox(height: 20), // Pushes hexagon up slightly
+        const SizedBox(height: 16),
+        Text(
+          'Iqamah $iqamahTime',
+          style: const TextStyle(
+            color: Colors.white,
+            fontSize: 14,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
       ],
     );
   }
@@ -651,17 +638,19 @@ class HomeScreen extends ConsumerWidget {
   );
 }
 
-  Widget _iconButton(IconData icon, VoidCallback onPressed) => Container(
-    margin: const EdgeInsets.only(left: 8),
-    decoration: BoxDecoration(
-      border: Border.all(color: Colors.white, width: 1.5),
-      shape: BoxShape.circle,
-    ),
-    child: IconButton(
-      icon: Icon(icon, color: Colors.white, size: 20),
-      onPressed: onPressed,
-      constraints: const BoxConstraints(),
-      padding: const EdgeInsets.all(8),
+  Widget _iconButton(IconData icon, VoidCallback onPressed) => Padding(
+    padding: const EdgeInsets.only(left: 8),
+    child: InkWell(
+      onTap: onPressed,
+      customBorder: const CircleBorder(),
+      child: Container(
+        padding: const EdgeInsets.all(8),
+        decoration: BoxDecoration(
+          border: Border.all(color: Colors.white, width: 1.5),
+          shape: BoxShape.circle,
+        ),
+        child: Icon(icon, color: Colors.white, size: 20),
+      ),
     ),
   );
 
@@ -712,4 +701,3 @@ class HexagonPainter extends CustomPainter {
   @override
   bool shouldRepaint(CustomPainter oldDelegate) => false;
 }
-

@@ -17,7 +17,6 @@ class _CalendarGridScreenState extends State<CalendarGridScreen> {
   final DateTime _today = DateTime.now();
   late PageController _pageController;
   final int _initialPage = 1200; 
-  late DateTime _currentMonth;
 
   final List<String> _weekdays = ['রবি', 'সোম', 'মঙ্গল', 'বুধ', 'বৃহঃ', 'শুক্র', 'শনি'];
   final List<String> _englishMonths = [
@@ -28,7 +27,6 @@ class _CalendarGridScreenState extends State<CalendarGridScreen> {
   @override
   void initState() {
     super.initState();
-    _currentMonth = DateTime(_today.year, _today.month, 1);
     _pageController = PageController(initialPage: _initialPage);
   }
 
@@ -39,10 +37,7 @@ class _CalendarGridScreenState extends State<CalendarGridScreen> {
   }
 
   void _onPageChanged(int index) {
-    int monthOffset = index - _initialPage;
-    setState(() {
-      _currentMonth = DateTime(_today.year, _today.month + monthOffset, 1);
-    });
+    // index is used in builder
   }
 
   int _daysInMonth(DateTime date) {

@@ -13,10 +13,7 @@ import '../../../radio/presentation/screens/radio_screen.dart';
 import '../../../quran/presentation/screens/tafsir_screen.dart';
 import '../../../duas/presentation/screens/dua_screen.dart';
 import '../../../qibla/presentation/screens/qibla_screen.dart';
-import '../../../tasbeeh/presentation/screens/tasbeeh_screen.dart';
 import '../../../learning/presentation/screens/namaz_shikkha_screen.dart';
-import '../../../learning/presentation/screens/knowledge_hub_screen.dart';
-import '../../../calendar/presentation/screens/calendar_screen.dart';
 import '../../../learning/presentation/screens/knowledge_hub_screen.dart';
 import '../../../calendar/presentation/screens/calendar_screen.dart';
 
@@ -32,17 +29,24 @@ class ExploreScreen extends ConsumerWidget {
         backgroundColor: const Color(0xFF1E3A5F),
         foregroundColor: Colors.white,
       ),
-      body: SingleChildScrollView(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const SizedBox(height: 16),
-            _buildSectionTitle(context, 'Essentials'),
-            _buildFeaturesGrid(context, _getEssentialsFeatures()),
+      body: RefreshIndicator(
+        onRefresh: () async {
+          await Future.delayed(const Duration(seconds: 1));
+        },
+        child: SingleChildScrollView(
+          physics: const AlwaysScrollableScrollPhysics(),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const SizedBox(height: 16),
+              _buildSectionTitle(context, 'Essentials'),
+              _buildFeaturesGrid(context, _getEssentialsFeatures()),
 
-            _buildSectionTitle(context, 'Learning & Utilities'),
-            _buildFeaturesGrid(context, _getLearningFeatures()),
-          ],
+              _buildSectionTitle(context, 'Learning & Utilities'),
+              _buildFeaturesGrid(context, _getLearningFeatures()),
+              const SizedBox(height: 40),
+            ],
+          ),
         ),
       ),
     );
@@ -207,4 +211,3 @@ class ExploreScreen extends ConsumerWidget {
     ];
   }
 }
-

@@ -202,60 +202,65 @@ class _RadioScreenState extends State<RadioScreen> {
   }
 
   Widget _buildStationList() {
-    return ListView.builder(
-      padding: const EdgeInsets.all(20),
-      itemCount: stations.length,
-      itemBuilder: (context, index) {
-        final station = stations[index];
-        final isPlaying = _playingIndex == index;
-        return Container(
-          margin: const EdgeInsets.only(bottom: 12),
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(16),
-            border: isPlaying
-                ? Border.all(color: const Color(0xFF1E3A5F), width: 2)
-                : null,
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withAlpha(5),
-                blurRadius: 10,
-                offset: const Offset(0, 4),
-              ),
-            ],
-          ),
-          child: Material(
-            color: Colors.transparent,
-            clipBehavior: Clip.antiAlias,
-            borderRadius: BorderRadius.circular(16),
-            child: ListTile(
-              contentPadding: const EdgeInsets.symmetric(
-                horizontal: 20,
-                vertical: 8,
-              ),
-              leading: CircleAvatar(
-                backgroundColor: isPlaying
-                    ? const Color(0xFF1E3A5F)
-                    : const Color(0xFFF1F3F5),
-                child: Icon(
-                  isPlaying && _isPlaying ? Icons.pause : Icons.play_arrow,
-                  color: isPlaying ? Colors.white : Colors.grey[600],
-                ),
-              ),
-              title: Text(
-                station.title,
-                style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
-              ),
-              subtitle: Text(
-                station.subtitle,
-                style: const TextStyle(fontSize: 12),
-              ),
-              trailing: station.isLive ? _liveIndicator() : null,
-              onTap: () => _togglePlay(index),
-            ),
-          ),
-        );
+    return RefreshIndicator(
+      onRefresh: () async {
+        await Future.delayed(const Duration(seconds: 1));
       },
+      child: ListView.builder(
+        physics: const AlwaysScrollableScrollPhysics(),
+        padding: const EdgeInsets.all(20),
+        itemCount: stations.length,
+        itemBuilder: (context, index) {
+          final station = stations[index];
+          final isPlaying = _playingIndex == index;
+          return Container(
+            margin: const EdgeInsets.only(bottom: 12),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(16),
+              border: isPlaying
+                  ? Border.all(color: const Color(0xFF1E3A5F), width: 2)
+                  : null,
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withAlpha(5),
+                  blurRadius: 10,
+                  offset: const Offset(0, 4),
+                ),
+              ],
+            ),
+            child: Material(
+              color: Colors.white,
+              clipBehavior: Clip.antiAlias,
+              borderRadius: BorderRadius.circular(16),
+              child: ListTile(
+                contentPadding: const EdgeInsets.symmetric(
+                  horizontal: 20,
+                  vertical: 8,
+                ),
+                leading: CircleAvatar(
+                  backgroundColor: isPlaying
+                      ? const Color(0xFF1E3A5F)
+                      : const Color(0xFFF1F3F5),
+                  child: Icon(
+                    isPlaying && _isPlaying ? Icons.pause : Icons.play_arrow,
+                    color: isPlaying ? Colors.white : Colors.grey[600],
+                  ),
+                ),
+                title: Text(
+                  station.title,
+                  style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
+                ),
+                subtitle: Text(
+                  station.subtitle,
+                  style: const TextStyle(fontSize: 12),
+                ),
+                trailing: station.isLive ? _liveIndicator() : null,
+                onTap: () => _togglePlay(index),
+              ),
+            ),
+          );
+        },
+      ),
     );
   }
 
@@ -277,4 +282,3 @@ class _RadioScreenState extends State<RadioScreen> {
     );
   }
 }
-

@@ -31,8 +31,17 @@ class _ZakatCalculatorScreenState extends State<ZakatCalculatorScreen> {
         backgroundColor: const Color(0xFF1E3A5F),
         foregroundColor: Colors.white,
       ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(24.0),
+      body: RefreshIndicator(
+        onRefresh: () async {
+          await Future.delayed(const Duration(seconds: 1));
+          setState(() {
+            _amountController.clear();
+            _zakatAmount = 0;
+          });
+        },
+        child: SingleChildScrollView(
+          physics: const AlwaysScrollableScrollPhysics(),
+          padding: const EdgeInsets.all(24.0),
         child: Column(
           children: [
             Container(
@@ -107,6 +116,7 @@ class _ZakatCalculatorScreenState extends State<ZakatCalculatorScreen> {
             ),
           ],
         ),
+      ),
       ),
     );
   }

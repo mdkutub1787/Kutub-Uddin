@@ -88,58 +88,70 @@ class MasjidListScreen extends ConsumerWidget {
         backgroundColor: const Color(0xFF1E3A5F),
         foregroundColor: Colors.white,
       ),
-      body: masjidsAsync.when(
-        data: (masjids) {
-          if (masjids.isEmpty) {
-            return Center(
-              child: Text(context.tr('No mosques found nearby (5km radius).')),
-            );
-          }
-          return Column(
-            children: [
-              Container(
-                padding: const EdgeInsets.all(16),
-                color: Colors.blue.withAlpha(20),
-                width: double.infinity,
-                child: Column(
-                  children: [
-                    const Icon(Icons.people_alt, size: 40, color: Colors.blue),
-                    const SizedBox(height: 8),
-                    Text(
-                      context.tr(
-                        'Find your local masjid and stay connected to community events, announcements, and accurate Iqamah times.',
-                      ),
-                      textAlign: TextAlign.center,
-                      style: const TextStyle(color: Colors.blueGrey),
-                    ),
-                  ],
-                ),
-              ),
-              Expanded(
-                child: ListView.builder(
-                  padding: const EdgeInsets.all(16),
-                  itemCount: masjids.length,
-                  itemBuilder: (context, index) {
-                    final masjid = masjids[index];
-                    return _buildMasjidCard(context, masjid);
-                  },
-                ),
-              ),
-            ],
-          );
+      body: RefreshIndicator(
+        onRefresh: () async {
+          ref.invalidate(realMasjidsProvider);
         },
-        loading: () => Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              const CircularProgressIndicator(),
-              const SizedBox(height: 16),
-              Text(context.tr('Searching for nearby Masjids...')),
-            ],
+        child: masjidsAsync.when(
+          data: (masjids) {
+            if (masjids.isEmpty) {
+              return ListView(
+                children: [
+                  SizedBox(
+                    height: MediaQuery.of(context).size.height * 0.7,
+                    child: Center(
+                      child: Text(context.tr('No mosques found nearby (5km radius).')),
+                    ),
+                  ),
+                ],
+              );
+            }
+            return Column(
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(16),
+                  color: Colors.blue.withAlpha(20),
+                  width: double.infinity,
+                  child: Column(
+                    children: [
+                      const Icon(Icons.people_alt, size: 40, color: Colors.blue),
+                      const SizedBox(height: 8),
+                      Text(
+                        context.tr(
+                          'Find your local masjid and stay connected to community events, announcements, and accurate Iqamah times.',
+                        ),
+                        textAlign: TextAlign.center,
+                        style: const TextStyle(color: Colors.blueGrey),
+                      ),
+                    ],
+                  ),
+                ),
+                Expanded(
+                  child: ListView.builder(
+                    padding: const EdgeInsets.all(16),
+                    itemCount: masjids.length,
+                    itemBuilder: (context, index) {
+                      final masjid = masjids[index];
+                      return _buildMasjidCard(context, masjid);
+                    },
+                  ),
+                ),
+              ],
+            );
+          },
+          loading: () => Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                const CircularProgressIndicator(),
+                const SizedBox(height: 16),
+                Text(context.tr('Searching for nearby Masjids...')),
+              ],
+            ),
           ),
+          error: (error, stack) =>
+              Center(child: Text('${context.tr('Error')}: $error')),
         ),
-        error: (error, stack) =>
-            Center(child: Text('${context.tr('Error')}: $error')),
       ),
     );
   }

@@ -36,8 +36,13 @@ class TafsirSurahListScreen extends StatelessWidget {
         ),
         centerTitle: true,
       ),
-      body: ListView.builder(
-        itemCount: quran.totalSurahCount,
+      body: RefreshIndicator(
+        onRefresh: () async {
+          await Future.delayed(const Duration(seconds: 1));
+        },
+        child: ListView.builder(
+          physics: const AlwaysScrollableScrollPhysics(),
+          itemCount: quran.totalSurahCount,
         itemBuilder: (context, index) {
           final surahNumber = index + 1;
           return ListTile(
@@ -74,6 +79,7 @@ class TafsirSurahListScreen extends StatelessWidget {
           );
         },
       ),
+    ),
     );
   }
 }

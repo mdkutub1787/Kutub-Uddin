@@ -69,31 +69,37 @@ class _EmotionsScreenState extends State<EmotionsScreen> {
         backgroundColor: const Color(0xFF1E3A5F),
         foregroundColor: Colors.white,
       ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(24.0),
-        child: Column(
-          children: [
-            Wrap(
-              spacing: 12,
-              runSpacing: 12,
-              alignment: WrapAlignment.center,
-              children: _moods.map((mood) {
-                final isActive = _activeMoodId == mood.id;
-                return ChoiceChip(
-                  label: Text(mood.nameEn),
-                  selected: isActive,
-                  onSelected: (_) => _onMoodSelected(mood.id),
-                  selectedColor: const Color(0xFF1E3A5F),
-                  labelStyle: TextStyle(
-                    color: isActive ? Colors.white : const Color(0xFF1E3A5F),
-                    fontWeight: FontWeight.bold,
-                  ),
-                );
-              }).toList(),
-            ),
-            const SizedBox(height: 40),
-            if (_activeMoodId != null) _buildResultCard(),
-          ],
+      body: RefreshIndicator(
+        onRefresh: () async {
+          await Future.delayed(const Duration(seconds: 1));
+        },
+        child: SingleChildScrollView(
+          physics: const AlwaysScrollableScrollPhysics(),
+          padding: const EdgeInsets.all(24.0),
+          child: Column(
+            children: [
+              Wrap(
+                spacing: 12,
+                runSpacing: 12,
+                alignment: WrapAlignment.center,
+                children: _moods.map((mood) {
+                  final isActive = _activeMoodId == mood.id;
+                  return ChoiceChip(
+                    label: Text(mood.nameEn),
+                    selected: isActive,
+                    onSelected: (_) => _onMoodSelected(mood.id),
+                    selectedColor: const Color(0xFF1E3A5F),
+                    labelStyle: TextStyle(
+                      color: isActive ? Colors.white : const Color(0xFF1E3A5F),
+                      fontWeight: FontWeight.bold,
+                    ),
+                  );
+                }).toList(),
+              ),
+              const SizedBox(height: 40),
+              if (_activeMoodId != null) _buildResultCard(),
+            ],
+          ),
         ),
       ),
     );
@@ -163,4 +169,3 @@ class _EmotionsScreenState extends State<EmotionsScreen> {
     );
   }
 }
-

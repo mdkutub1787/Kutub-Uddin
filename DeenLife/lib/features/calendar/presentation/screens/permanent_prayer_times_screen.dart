@@ -3,7 +3,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:adhan/adhan.dart';
 import 'package:intl/intl.dart';
 import 'package:geolocator/geolocator.dart';
-import 'package:bangla_utilities/bangla_utilities.dart';
 import '../../../prayer_times/presentation/providers/prayer_times_provider.dart';
 
 class PermanentPrayerTimesScreen extends ConsumerWidget {

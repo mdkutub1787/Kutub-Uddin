@@ -5,7 +5,6 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'core/theme/app_theme.dart';
 import 'core/localization/app_localizations.dart';
 import 'core/localization/language_provider.dart';
-import 'features/splash/presentation/screens/splash_screen.dart';
 import 'core/router/app_router.dart';
 
 import 'core/services/notification_service.dart';

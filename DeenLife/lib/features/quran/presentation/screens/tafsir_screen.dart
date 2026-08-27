@@ -17,10 +17,15 @@ class TafsirScreen extends ConsumerWidget {
         title: Text(context.tr('Tafsir Collection')),
         centerTitle: true,
       ),
-      body: tafsirsAsync.when(
-        data: (tafsirs) {
-          return GridView.builder(
-            padding: const EdgeInsets.all(16.0),
+      body: RefreshIndicator(
+        onRefresh: () async {
+          ref.invalidate(onlineTafsirsProvider);
+        },
+        child: tafsirsAsync.when(
+          data: (tafsirs) {
+            return GridView.builder(
+              physics: const AlwaysScrollableScrollPhysics(),
+              padding: const EdgeInsets.all(16.0),
             gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
               crossAxisCount: 2,
               crossAxisSpacing: 16,
@@ -118,6 +123,7 @@ class TafsirScreen extends ConsumerWidget {
             ),
           ),
         ),
+      ),
       ),
     );
   }
