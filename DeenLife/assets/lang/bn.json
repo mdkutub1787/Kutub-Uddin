@@ -61,5 +61,22 @@
   "No mosques found nearby (5km radius).": "৫ কিমি এর মধ্যে কোনো মসজিদ পাওয়া যায়নি।",
   "Error": "ত্রুটি",
   "Device does not have compass sensors.": "ডিভাইসে কম্পাস সেন্সর নেই।",
-  "Rotate your phone until the green arrow points to the top.": "সবুজ তীর উপরের দিকে না আসা পর্যন্ত আপনার ফোনটি ঘোরান।"
+  "Rotate your phone until the green arrow points to the top.": "সবুজ তীর উপরের দিকে না আসা পর্যন্ত আপনার ফোনটি ঘোরান।",
+  "Explore Tools": "এক্সপ্লোর টুলস",
+  "Essentials": "প্রয়োজনীয়",
+  "Learning & Utilities": "শিক্ষা ও ইউটিলিটি",
+  "Duas": "দোয়া",
+  "Tasbeeh": "তাসবিহ",
+  "Qibla": "কিবলা",
+  "Hadith": "হাদিস",
+  "6 Kalimas": "৬ কালিমা",
+  "Calendar": "ক্যালেন্ডার",
+  "Tafsir": "তাফসির",
+  "Namaz": "নামাজ",
+  "Library": "লাইব্রেরি",
+  "Asmaul Husna": "আসমাউল হুসনা",
+  "Zakat Calc": "যাকাত ক্যালকুলেটর",
+  "Islamic Quiz": "ইসলামিক কুইজ",
+  "Emotions": "আবেগ",
+  "Radio": "রেডিও"
 }

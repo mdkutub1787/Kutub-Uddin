@@ -1,14 +1,14 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:deen_life/core/localization/app_localizations.dart';
 import 'package:deen_life/core/utils/dialog_helper.dart';
 
-import '../../features/home/presentation/pages/home_page.dart';
-import '../../features/quran/presentation/pages/quran_page.dart';
-import '../../features/masjid/presentation/pages/masjid_list_page.dart';
-import '../../features/explore/presentation/pages/explore_page.dart';
-import '../../features/settings/presentation/pages/settings_page.dart';
+import '../../features/home/presentation/screens/home_screen.dart';
+import '../../features/quran/presentation/screens/quran_screen.dart';
+import '../../features/masjid/presentation/screens/masjid_list_screen.dart';
+import '../../features/explore/presentation/screens/explore_screen.dart';
+import '../../features/settings/presentation/screens/settings_screen.dart';
 
 final selectedIndexProvider = StateProvider<int>((ref) => 0);
 final lastPopTimeProvider = StateProvider<DateTime>(
@@ -23,11 +23,11 @@ class MainLayout extends ConsumerWidget {
     final selectedIndex = ref.watch(selectedIndexProvider);
 
     final pages = [
-      const HomePage(),
-      const QuranPage(),
-      const MasjidListPage(),
-      const ExplorePage(),
-      const SettingsPage(),
+      const HomeScreen(),
+      const QuranScreen(),
+      const MasjidListScreen(),
+      const ExploreScreen(),
+      const SettingsScreen(),
     ];
 
     return PopScope(
@@ -86,3 +86,4 @@ class MainLayout extends ConsumerWidget {
     );
   }
 }
+
