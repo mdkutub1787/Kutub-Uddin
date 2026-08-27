@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:http/http.dart' as http;
 import 'package:path_provider/path_provider.dart';
+import '../../../../core/constants/api_constants.dart';
 
 final onlineHadithProvider = FutureProvider.family<Map<String, dynamic>, String>((
   ref,
@@ -20,9 +21,7 @@ final onlineHadithProvider = FutureProvider.family<Map<String, dynamic>, String>
   }
 
   // If not cached, fetch from the internet (Live API)
-  final url =
-      'https://cdn.jsdelivr.net/gh/fawazahmed0/hadith-api@1/editions/ben-$bookId.json';
-  final response = await http.get(Uri.parse(url));
+  final response = await http.get(Uri.parse(ApiConstants.hadithBook(bookId)));
 
   if (response.statusCode == 200) {
     // Cache the entire JSON string to the local file for future offline use

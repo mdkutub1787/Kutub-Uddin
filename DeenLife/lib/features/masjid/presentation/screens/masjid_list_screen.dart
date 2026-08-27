@@ -7,6 +7,7 @@ import 'dart:convert';
 
 import 'package:geolocator/geolocator.dart';
 import 'package:deen_life/core/localization/app_localizations.dart';
+import 'package:deen_life/core/constants/api_constants.dart';
 
 import '../../../prayer_times/presentation/providers/prayer_times_provider.dart';
 import '../../domain/models/masjid.dart';
@@ -25,7 +26,7 @@ final realMasjidsProvider = FutureProvider<List<Masjid>>((ref) async {
   ''';
 
   final response = await http.post(
-    Uri.parse('https://overpass-api.de/api/interpreter'),
+    Uri.parse(ApiConstants.overpassApiUrl),
     headers: {
       'Content-Type': 'application/x-www-form-urlencoded',
       'User-Agent': 'DeenLifeApp/1.0',
@@ -333,10 +334,7 @@ class MasjidListScreen extends ConsumerWidget {
                   child: ElevatedButton.icon(
                     onPressed: () async {
                       Navigator.pop(context);
-                      final query = Uri.encodeComponent(masjid.nameEn);
-                      final url = Uri.parse(
-                        'https://www.google.com/maps/search/?api=1&query=$query',
-                      );
+                      final url = Uri.parse(ApiConstants.googleMapsSearch(masjid.nameEn));
                       if (await canLaunchUrl(url)) {
                         await launchUrl(
                           url,

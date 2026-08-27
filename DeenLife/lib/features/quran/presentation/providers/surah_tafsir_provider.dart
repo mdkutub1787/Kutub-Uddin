@@ -4,14 +4,14 @@ import 'dart:io';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:http/http.dart' as http;
 import 'package:path_provider/path_provider.dart';
+import '../../../../core/constants/api_constants.dart';
 
 final selectedTafsirIdProvider = StateProvider<int?>(
   (ref) => null,
 ); // null means default Translation (AlQuran Cloud)
 
 final onlineTafsirsProvider = FutureProvider<List<dynamic>>((ref) async {
-  final url = 'https://api.quran.com/api/v4/resources/tafsirs';
-  final response = await http.get(Uri.parse(url));
+  final response = await http.get(Uri.parse(ApiConstants.tafsirResources));
 
   if (response.statusCode == 200) {
     final data = jsonDecode(response.body);
@@ -36,23 +36,24 @@ final surahTafsirProvider = FutureProvider.family<Map<int, String>, int>((
       final String jsonString = await file.readAsString();
       final data = jsonDecode(jsonString);
       final ayahs = data['data']['ayahs'] as List<dynamic>;
-      return {
-        for (int i = 0; i < ayahs.length; i++)
-          (i + 1): ayahs[i]['text'].toString(),
-      };
+      Map<int, String> tafsirMap = {};
+      for (var a in ayahs) {
+        tafsirMap[a['numberInSurah'] as int] = a['text'].toString();
+      }
+      return tafsirMap;
     }
 
-    final url = 'https://api.alquran.cloud/v1/surah/$surahNumber/bn.bengali';
-    final response = await http.get(Uri.parse(url));
+    final response = await http.get(Uri.parse(ApiConstants.surahTranslation(surahNumber)));
 
     if (response.statusCode == 200) {
       await file.writeAsString(response.body);
       final data = jsonDecode(response.body);
       final ayahs = data['data']['ayahs'] as List<dynamic>;
-      return {
-        for (int i = 0; i < ayahs.length; i++)
-          (i + 1): ayahs[i]['text'].toString(),
-      };
+      Map<int, String> tafsirMap = {};
+      for (var a in ayahs) {
+        tafsirMap[a['numberInSurah'] as int] = a['text'].toString();
+      }
+      return tafsirMap;
     } else {
       throw Exception('Failed to load Translation');
     }
@@ -67,30 +68,37 @@ final surahTafsirProvider = FutureProvider.family<Map<int, String>, int>((
       final String jsonString = await file.readAsString();
       final data = jsonDecode(jsonString);
       final tafsirs = data['tafsirs'] as List<dynamic>;
-      // verse_id in quran.com api is absolute verse ID or sometimes just the verse number?
-      // Actually, in the /by_chapter/ endpoint, they have 'verse_id' which is absolute, BUT they also return them in order.
-      // So we can just map them sequentially since it returns all verses for the chapter.
-      return {
-        for (int i = 0; i < tafsirs.length; i++)
-          (i + 1): tafsirs[i]['text'].toString(),
-      };
+      Map<int, String> tafsirMap = {};
+      for (var t in tafsirs) {
+        if (t['verse_key'] != null) {
+          final parts = t['verse_key'].toString().split(':');
+          if (parts.length == 2) {
+            tafsirMap[int.parse(parts[1])] = t['text'].toString();
+          }
+        }
+      }
+      return tafsirMap;
     }
 
-    // per_page=300 to ensure we get all verses of even Al-Baqarah (286)
-    final url =
-        'https://api.quran.com/api/v4/tafsirs/$tafsirId/by_chapter/$surahNumber?per_page=300';
-    final response = await http.get(Uri.parse(url));
+    final response = await http.get(Uri.parse(ApiConstants.surahTafsir(tafsirId, surahNumber)));
 
     if (response.statusCode == 200) {
       await file.writeAsString(response.body);
       final data = jsonDecode(response.body);
       final tafsirs = data['tafsirs'] as List<dynamic>;
-      return {
-        for (int i = 0; i < tafsirs.length; i++)
-          (i + 1): tafsirs[i]['text'].toString(),
-      };
+      Map<int, String> tafsirMap = {};
+      for (var t in tafsirs) {
+        if (t['verse_key'] != null) {
+          final parts = t['verse_key'].toString().split(':');
+          if (parts.length == 2) {
+            tafsirMap[int.parse(parts[1])] = t['text'].toString();
+          }
+        }
+      }
+      return tafsirMap;
     } else {
       throw Exception('Failed to load Tafsir');
     }
   }
 });
+

@@ -3,14 +3,33 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:hijri/hijri_calendar.dart';
+import 'dart:async';
 import 'package:flutter/foundation.dart';
 import 'package:intl/intl.dart';
 
 import '../../../../core/services/notification_service.dart';
 import '../../../../features/masjid/presentation/screens/set_masjid_times_screen.dart';
 import '../../domain/models/prayer_data.dart';
+import '../../../location/presentation/providers/location_settings_provider.dart';
 
 final locationProvider = FutureProvider<Position>((ref) async {
+  final settings = ref.watch(locationSettingsProvider);
+  
+  if (!settings.isLiveLocationEnabled) {
+    return Position(
+      longitude: settings.selectedDistrict.lng,
+      latitude: settings.selectedDistrict.lat,
+      timestamp: DateTime.now(),
+      accuracy: 0,
+      altitude: 0,
+      heading: 0,
+      speed: 0,
+      speedAccuracy: 0,
+      altitudeAccuracy: 0,
+      headingAccuracy: 0,
+    );
+  }
+
   bool serviceEnabled;
   LocationPermission permission;
 
@@ -171,7 +190,7 @@ final prayerTimesProvider = FutureProvider<PrayerData>((ref) async {
     debugPrint('Error scheduling notifications: $e');
   }
 
-  return PrayerData(
+  final prayerData = PrayerData(
     fajr: prayerTimes.fajr,
     dhuhr: prayerTimes.dhuhr,
     asr: prayerTimes.asr,
@@ -184,6 +203,16 @@ final prayerTimesProvider = FutureProvider<PrayerData>((ref) async {
     city: city,
     hijriDate: hijriFormatted,
   );
+  
+  // Refresh the provider when the countdown finishes
+  final timeToWait = nextCountdownTime.difference(DateTime.now());
+  if (timeToWait.inSeconds > 0) {
+    Timer(timeToWait, () {
+      ref.invalidateSelf();
+    });
+  }
+
+  return prayerData;
 });
 
 final sevenDaysPrayerProvider = FutureProvider<List<PrayerTimes>>((ref) async {

@@ -474,13 +474,20 @@ class _SurahDetailScreenState extends ConsumerState<SurahDetailScreen> {
                                   ),
                                 );
                               },
-                              loading: () => const Text(
-                                'Loading tafsir...',
-                                style: TextStyle(color: Colors.grey),
+                              loading: () => const Center(
+                                child: Padding(
+                                  padding: EdgeInsets.all(32.0),
+                                  child: CircularProgressIndicator(),
+                                ),
                               ),
-                              error: (err, stack) => const Text(
-                                'Tap to download tafsir offline',
-                                style: TextStyle(color: Colors.grey),
+                              error: (err, stack) => Center(
+                                child: Padding(
+                                  padding: const EdgeInsets.all(16.0),
+                                  child: Text(
+                                    context.tr('Tap to download tafsir offline'),
+                                    style: const TextStyle(color: Colors.grey),
+                                  ),
+                                ),
                               ),
                             ),
                           ],

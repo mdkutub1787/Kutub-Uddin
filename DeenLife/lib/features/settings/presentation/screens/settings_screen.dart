@@ -5,6 +5,7 @@ import 'package:url_launcher/url_launcher.dart';
 import 'package:adhan/adhan.dart';
 import 'package:deen_life/core/localization/app_localizations.dart';
 import 'package:deen_life/core/localization/language_provider.dart';
+import 'package:deen_life/core/constants/api_constants.dart';
 
 import '../../../prayer_times/presentation/providers/prayer_times_provider.dart';
 
@@ -127,25 +128,25 @@ class SettingsScreen extends ConsumerWidget {
             ListTile(
               leading: const Icon(Icons.star),
               title: Text(context.tr('Rate Us')),
-              trailing: const Icon(Icons.open_in_new, size: 16),
-              onTap: () async {
-                final url = Uri.parse('https://play.google.com/store/apps');
-                if (await canLaunchUrl(url)) {
-                  await launchUrl(url, mode: LaunchMode.externalApplication);
-                }
-              },
-            ),
-            ListTile(
-              leading: const Icon(Icons.privacy_tip),
-              title: Text(context.tr('Privacy Policy')),
-              trailing: const Icon(Icons.open_in_new, size: 16),
-              onTap: () async {
-                final url = Uri.parse('https://google.com');
-                if (await canLaunchUrl(url)) {
-                  await launchUrl(url, mode: LaunchMode.externalApplication);
-                }
-              },
-            ),
+            trailing: const Icon(Icons.open_in_new, size: 16),
+            onTap: () async {
+              final url = Uri.parse(ApiConstants.playStoreUrl);
+              if (await canLaunchUrl(url)) {
+                await launchUrl(url, mode: LaunchMode.externalApplication);
+              }
+            },
+          ),
+          ListTile(
+            leading: const Icon(Icons.privacy_tip),
+            title: Text(context.tr('Privacy Policy')),
+            trailing: const Icon(Icons.open_in_new, size: 16),
+            onTap: () async {
+              final url = Uri.parse(ApiConstants.privacyPolicyUrl);
+              if (await canLaunchUrl(url)) {
+                await launchUrl(url, mode: LaunchMode.externalApplication);
+              }
+            },
+          ),
           ],
         ),
       ),

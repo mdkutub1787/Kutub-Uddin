@@ -8,6 +8,7 @@ import '../../features/explore/presentation/screens/explore_screen.dart';
 import '../../features/calendar/presentation/screens/calendar_screen.dart';
 import '../../features/quran/presentation/screens/quran_screen.dart';
 import '../../features/settings/presentation/screens/settings_screen.dart';
+import '../../features/location/presentation/screens/location_settings_screen.dart';
 import '../../features/qibla/presentation/screens/qibla_screen.dart';
 import '../../features/masjid/presentation/screens/masjid_list_screen.dart';
 import '../../features/masjid/presentation/screens/set_masjid_times_screen.dart';
@@ -103,6 +104,10 @@ final GoRouter appRouter = GoRouter(
     GoRoute(
       path: '/settings',
       builder: (context, state) => const SettingsScreen(),
+    ),
+    GoRoute(
+      path: '/location_settings',
+      builder: (context, state) => const LocationSettingsScreen(),
     ),
     GoRoute(
       path: '/qibla',

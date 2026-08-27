@@ -71,25 +71,30 @@ class HomeScreen extends ConsumerWidget {
       pinned: true,
       backgroundColor: const Color(0xFF1B3B2B),
       elevation: 0,
-      title: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            prayerData.city,
-            style: const TextStyle(
-              color: Colors.white,
-              fontSize: 22,
-              fontWeight: FontWeight.bold,
+      title: GestureDetector(
+        onTap: () {
+          context.push('/location_settings');
+        },
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              prayerData.city,
+              style: const TextStyle(
+                color: Colors.white,
+                fontSize: 22,
+                fontWeight: FontWeight.bold,
+              ),
             ),
-          ),
-          Text(
-            prayerData.hijriDate,
-            style: const TextStyle(
-              color: Colors.white,
-              fontSize: 14,
+            Text(
+              prayerData.hijriDate,
+              style: const TextStyle(
+                color: Colors.white,
+                fontSize: 14,
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
       actions: [
         _iconButton(Icons.search, () {
@@ -143,20 +148,22 @@ class HomeScreen extends ConsumerWidget {
                         crossAxisAlignment: CrossAxisAlignment.end,
                         children: [
                           _buildCountdown(prayerData),
-                          const SizedBox(height: 8),
+                          const SizedBox(height: 12),
                           const Text(
                             'Prayer timing for',
-                            style: TextStyle(color: Colors.white, fontSize: 12),
+                            style: TextStyle(color: Colors.white70, fontSize: 10),
                             textAlign: TextAlign.right,
                           ),
                           const Text(
-                            'Gulshan Society Jame Masjid', // Hardcoded for demo, normally dynamic
+                            'Gulshan Society Jame Masjid', // Normally dynamic
                             style: TextStyle(
                               color: Colors.white,
-                              fontSize: 14,
-                              fontWeight: FontWeight.bold,
+                              fontSize: 12,
+                              fontWeight: FontWeight.w600,
                             ),
                             textAlign: TextAlign.right,
+                            maxLines: 2,
+                            overflow: TextOverflow.ellipsis,
                           ),
                         ],
                       ),
@@ -256,14 +263,17 @@ class HomeScreen extends ConsumerWidget {
         final remaining = prayerData.nextPrayerCountdownTime.difference(now);
         final hours = remaining.inHours;
         final minutes = remaining.inMinutes % 60;
+        final seconds = remaining.inSeconds % 60;
+
+        final hoursStr = hours.toString().padLeft(2, '0');
+        final minutesStr = minutes.toString().padLeft(2, '0');
+        final secondsStr = seconds.toString().padLeft(2, '0');
         
         String timeStr;
         if (remaining.isNegative) {
-           timeStr = "0 min";
-        } else if (hours > 0) {
-           timeStr = '$hours hr $minutes min';
+           timeStr = "00:00:00";
         } else {
-           timeStr = '$minutes min';
+           timeStr = '-$hoursStr:$minutesStr:$secondsStr';
         }
 
         return Column(
@@ -273,8 +283,9 @@ class HomeScreen extends ConsumerWidget {
               timeStr,
               style: const TextStyle(
                 color: Colors.white,
-                fontSize: 28,
+                fontSize: 32,
                 fontWeight: FontWeight.bold,
+                letterSpacing: 1.5,
               ),
             ),
             Text(
