@@ -1,4 +1,4 @@
-﻿import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 
@@ -6,6 +6,7 @@ import 'core/theme/app_theme.dart';
 import 'core/localization/app_localizations.dart';
 import 'core/localization/language_provider.dart';
 import 'features/splash/presentation/screens/splash_screen.dart';
+import 'core/router/app_router.dart';
 
 void main() {
   runApp(const ProviderScope(child: MyApp()));
@@ -18,11 +19,12 @@ class MyApp extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final locale = ref.watch(languageProvider);
 
-    return MaterialApp(
+    return MaterialApp.router(
       title: 'DeenLife',
       theme: AppTheme.lightTheme,
       darkTheme: AppTheme.darkTheme,
       themeMode: ThemeMode.system,
+      routerConfig: appRouter,
       locale: locale,
       supportedLocales: const [Locale('en'), Locale('bn')],
       localizationsDelegates: const [
@@ -31,9 +33,7 @@ class MyApp extends ConsumerWidget {
         GlobalWidgetsLocalizations.delegate,
         GlobalCupertinoLocalizations.delegate,
       ],
-      home: const SplashScreen(),
       debugShowCheckedModeBanner: false,
     );
   }
 }
-
