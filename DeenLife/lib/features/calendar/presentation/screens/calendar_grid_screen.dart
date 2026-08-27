@@ -1,9 +1,10 @@
-﻿import 'dart:convert';
+import 'dart:convert';
 import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:hijri/hijri_calendar.dart';
 import 'package:bangla_utilities/bangla_utilities.dart';
+import '../../../diary/presentation/screens/diary_screen.dart';
 
 class CalendarGridScreen extends StatefulWidget {
   const CalendarGridScreen({super.key});
@@ -412,6 +413,23 @@ class _CalendarGridScreenState extends State<CalendarGridScreen> {
               _buildDetailRow('হিজরি তারিখ:', '${_toBanglaDigit(hijri.hDay)} ${hijri.longMonthName} ${hijri.hYear}', Colors.cyanAccent),
               const SizedBox(height: 12),
               _buildDetailRow('বার:', _weekdays[date.weekday % 7], Colors.white70),
+              const SizedBox(height: 24),
+              ElevatedButton.icon(
+                onPressed: () {
+                  Navigator.pop(context); // Close dialog
+                  // Navigate to DiaryScreen with specific date
+                  Navigator.push(context, MaterialPageRoute(
+                    builder: (context) => DiaryScreen(selectedDate: date),
+                  ));
+                },
+                icon: const Icon(Icons.edit_note, color: Colors.white),
+                label: const Text('ডায়েরি লিখুন', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.teal.shade600,
+                  minimumSize: const Size(double.infinity, 45),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                ),
+              ),
             ],
           ),
           actions: [

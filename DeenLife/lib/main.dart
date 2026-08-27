@@ -8,7 +8,13 @@ import 'core/localization/language_provider.dart';
 import 'features/splash/presentation/screens/splash_screen.dart';
 import 'core/router/app_router.dart';
 
-void main() {
+import 'core/services/notification_service.dart';
+
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await NotificationService().init();
+  await NotificationService().requestPermissions();
+  
   runApp(const ProviderScope(child: MyApp()));
 }
 

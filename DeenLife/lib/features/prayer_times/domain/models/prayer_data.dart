@@ -8,6 +8,7 @@ class PrayerData {
 
   final String nextPrayerName;
   final DateTime nextPrayerTime;
+  final DateTime nextPrayerCountdownTime;
 
   final String city;
   final String hijriDate;
@@ -21,6 +22,7 @@ class PrayerData {
     required this.sunrise,
     required this.nextPrayerName,
     required this.nextPrayerTime,
+    required this.nextPrayerCountdownTime,
     required this.city,
     required this.hijriDate,
   });
